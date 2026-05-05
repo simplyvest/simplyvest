@@ -1,0 +1,16 @@
+{
+  "name": "solana-tdp-monorepo",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "anchor:build": "cd apps/solana-tdp-anchor && anchor build",
+    "sdk:sync": "pnpm --filter @solana-tdp/sdk sync",
+    "sdk:build": "pnpm --filter @solana-tdp/sdk build",
+    "program:build": "pnpm anchor:build && pnpm sdk:sync && pnpm sdk:build"
+  }
+}
