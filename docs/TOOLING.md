@@ -1,21 +1,19 @@
 # Tooling — Solana Token Distribution Protocol
 
-Tooling decisions, testing strategy, code conventions, and repository organization for Solana TDP.
+Tooling decisions, testing strategy, and code conventions for Solana TDP.
 
 ## Contents
 
 1. [Anchor vs Pinocchio](#anchor-vs-pinocchio)
 2. [Testing tools](#testing-tools)
-3. [Fullstack architecture](#fullstack-architecture)
-4. [Repository organization](#repository-organization)
-5. [Code conventions](#code-conventions)
-6. [Key dependencies](#key-dependencies)
+3. [Repository organization](#repository-organization)
+4. [Code conventions](#code-conventions)
 
 ---
 
 ## Anchor vs Pinocchio
 
-| | Anchor 1.0 | Pinocchio |
+| | Anchor 0.32.1 | Pinocchio |
 |---|---|---|
 | **Approach** | Macro-based eDSL, automatic serialization, IDL generation | Lower-level, zero-copy deserialization, manual validation |
 | **DX** | High — `#[account]`, `#[derive(Accounts)]`, `anchor build` emits IDL | Low — manual account checking, discriminator handling |
@@ -23,7 +21,7 @@ Tooling decisions, testing strategy, code conventions, and repository organizati
 | **Client generation** | Automatic via IDL | Manual |
 | **Best for** | Teams building Solana familiarity, rapid development | Experienced teams optimizing for program size |
 
-**Decision: Anchor 1.0.** The team is building Solana familiarity and Anchor's guardrails (account validation, IDL generation, CPI macros) reduce the surface area for mistakes. If program size becomes a constraint later, Pinocchio is the path we would evaluate.
+**Decision: Anchor 0.32.1.** The team is building Solana familiarity and Anchor's guardrails (account validation, IDL generation, CPI macros) reduce the surface area for mistakes. If program size becomes a constraint later, Pinocchio is the path we would evaluate.
 
 ---
 
@@ -33,38 +31,15 @@ Tooling decisions, testing strategy, code conventions, and repository organizati
 
 | Tool | Status | Use case |
 |---|---|---|
-| **Anchor** | Active | Main framework for building Solana programs |
 | **LiteSVM** | Active (recommended) | Fast, in-process testing — Rust, TS/JS, Python |
 | **anchor-litesvm** | Active | Anchor-compatible testing without a validator |
 | **solana-test-validator** | Active | When you need a real local RPC node |
 | **Bankrun** | Deprecated (Mar 2025) | Migrate to LiteSVM |
 | **solana-program-test** | Legacy | Existing projects OK; new projects → LiteSVM |
-| **Pinocchio** | Active (specialized) | Lower-level alternative to Anchor for smaller programs |
 
-### Testing layer strategy
+**Testing is TypeScript-only, using `anchor-litesvm`.** Tests use `fromWorkspace` to bootstrap the SVM, `LiteSVMProvider` for the Anchor provider, and jest to cover each instruction lifecycle.
 
-```mermaid
-flowchart LR
-    subgraph Unit["Unit Tests (Rust)"]
-        LS1[LiteSVM]
-    end
-    subgraph Integration["Integration Tests (TypeScript)"]
-        LS2[LiteSVM + anchor-litesvm]
-    end
-    subgraph E2E["E2E Tests (TypeScript)"]
-        STV[solana-test-validator]
-    end
-
-    Unit -->|Instruction handlers,\nvalidation, edge cases| LS1
-    Integration -->|Full lifecycle,\nstate transitions, events| LS2
-    E2E -->|RPC methods,\nbrowser interactions| STV
-
-    style LS1 fill:#14f195,stroke:#14f195,color:#000
-    style LS2 fill:#14f195,stroke:#14f195,color:#000
-    style STV fill:#9945ff,stroke:#9945ff,color:#fff
-```
-
-**Rule of thumb:** Write program logic tests in LiteSVM + anchor-litesvm. Use solana-test-validator only for integration tests that touch RPC methods or multiple processes. Do not use Bankrun — it is deprecated.
+Use `solana-test-validator` only when you need a real local RPC node. Do not use Bankrun — it is deprecated.
 
 ### LiteSVM key capabilities
 
@@ -76,93 +51,20 @@ flowchart LR
 
 ### Install
 
-```toml
-# Cargo.toml (dev-dependencies)
-[dev-dependencies]
-anchor-litesvm = "0.4"
-litesvm = "0.11"
-litesvm-token = "0.11"
-litesvm-utils = "0.4"
-```
-
 ```json
 // package.json (devDependencies)
 {
   "anchor-litesvm": "^0.2.1",
-  "@coral-xyz/anchor": "^0.31.1",
+  "@coral-xyz/anchor": "^0.32.1",
   "@solana/web3.js": "^1.98.4"
 }
 ```
 
 ---
 
-## Fullstack architecture
-
-### Hybrid dApp model
-
-Solana TDP uses a hybrid architecture: on-chain for token logic and custody, hosted backend for user management, caching, and notifications.
-
-```mermaid
-graph LR
-    User[User Browser] --> Frontend[React Frontend]
-    Frontend -->|auth + wallet| WalletService["Privy / Dynamic"]
-    Frontend -->|queries + mutations| Backend[Convex Backend]
-    Backend -->|RPC calls| Solana[Solana Program]
-    WalletService -->|signs transactions| Solana
-    Backend -->|caches + indexes| DB[(Convex DB)]
-
-    style Solana fill:#9945ff,stroke:#9945ff,color:#fff
-    style Backend fill:#00c2ff,stroke:#00c2ff,color:#000
-    style WalletService fill:#14f195,stroke:#14f195,color:#000
-```
-
-### What lives where
-
-| Concern | Layer | Where |
-|---|---|---|
-| Token custody & vesting logic | On-chain | Solana program (Anchor) |
-| User authentication | Wallet service | Privy / Dynamic |
-| Wallet provisioning | Wallet service | Privy / Dynamic |
-| Transaction signing | Wallet service → On-chain | Privy / Dynamic + user approval |
-| Vesting schedule indexing | Backend | Convex (sync from chain) |
-| Dashboard real-time data | Backend | Convex reactive queries |
-| Email notifications | Backend | Convex scheduled functions |
-| User preferences | Backend | Convex database |
-| Tokenomics simulator | Frontend | React (pure client-side math) |
-
-### Wallet abstraction
-
-Evaluated Privy, Dynamic, Turnkey, Crossmint, Web3Auth, and Openfort. Leaning toward Privy or Dynamic:
-
-- Both support Solana embedded wallets with social login
-- Both have free tiers and React SDKs
-- Privy has Stripe integration (fiat onramps)
-- Dynamic has best multi-wallet UX (Phantom + embedded)
-
-### Backend
-
-Evaluated Convex, Supabase, Firebase, and PocketBase. Leaning toward **Convex**:
-
-- TypeScript-native with end-to-end type safety
-- Reactive queries — dashboard reflects vesting changes in real-time
-- Free tier (1M calls/mo) covers an MVP
-- Natural fit: vesting schedules change state over time and the dashboard should update automatically
-
----
-
 ## Repository organization
 
-### Monorepo vs polyrepo
-
-| Feature | Monorepo | Polyrepo |
-|---|---|---|
-| **Project phase** | Early to mid-stage. Rapid iteration, integrated teams. | Late-stage / enterprise. Independent teams. |
-| **Team coordination** | High — coordinated changes in one commit | Low — separate PRs and version bumps |
-| **Dependency management** | Trivial — all in one place | Complex — versioning across repos |
-| **Access control** | Coarse | High — per-repo granularity |
-| **Git performance** | Degrades with size | Stays fast |
-
-**Decision: Monorepo (pnpm workspaces).** We are a small team building a full-stack protocol. The ability to change a program instruction and the corresponding frontend client in one commit outweighs the overhead. We can split out stable contract repos later if the project grows.
+Monorepo managed by pnpm workspaces.
 
 ### Program file layout
 
@@ -241,5 +143,5 @@ The TypeScript SDK wraps the program IDL and provides helpers for common operati
 cluster = "localnet"
 
 [scripts]
-test = "yarn run ts-mocha -p ./tsconfig.json tests/**/*.ts"
+test = "jest"
 ```

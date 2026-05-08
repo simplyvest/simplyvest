@@ -10,7 +10,7 @@ A full-stack protocol for creating, managing, and claiming token vesting schedul
 
 Founders launching tokens on Solana face a fragmented toolchain. They model allocations and unlock schedules in Excel (error-prone), then manually transfer tokens through multisig wallets when cliffs hit. Existing vesting tools cover one or two distribution types but lack milestone support, batch creation for large teams, and post-creation flexibility. Worse, the tools that exist assume blockchain literacy — PDAs, CPIs, wallets — locking out non-technical founders.
 
-User interviews with 5 founders and builders confirmed the same pain point: **"The biggest problem is calculate and simulate. Founders struggle here before they even get to token engineering."** — Mas Rizary
+User interviews with 5 founders and builders confirmed the same pain point: **"The biggest problem is calculate and simulate. Founders struggle here before they even get to token engineering."** — Alex, founder and Solana developer
 
 ## The solution
 
@@ -27,31 +27,6 @@ Solana TDP is a token vesting protocol on Solana that combines:
 | **Web3 founders** launching new tokens | Manual Excel calculations, no simulation, high dump risk |
 | **Non-technical project owners** | Current tools assume blockchain literacy — steep learning curve |
 | **Launchpads & ecosystem operators** | No way to stress-test whether a project's distribution plan is sustainable |
-
-## Protocol overview
-
-```
-┌─────────────────────────────────────────────────┐
-│                 React Frontend                    │
-│  ┌──────────┐  ┌──────────┐  ┌───────────────┐  │
-│  │Simulator  │  │Dashboard  │  │Claim UI       │  │
-│  └──────────┘  └──────────┘  └───────────────┘  │
-└──────────────────────┬──────────────────────────┘
-                       │
-┌──────────────────────┴──────────────────────────┐
-│              Convex Backend                       │
-│  (auth, caching, notifications, indexing)         │
-└──────────────────────┬──────────────────────────┘
-                       │ RPC + CPI
-┌──────────────────────┴──────────────────────────┐
-│           Solana Program (Anchor)                 │
-│  ┌──────────────────────────────────────────┐    │
-│  │ VestingSchedule PDA → controls Escrow ATA │    │
-│  │ Instructions: create_vesting, withdraw,   │    │
-│  │ cancel                                    │    │
-│  └──────────────────────────────────────────┘    │
-└─────────────────────────────────────────────────┘
-```
 
 ## Project structure
 
@@ -76,8 +51,8 @@ docs/
 ### Prerequisites
 
 - [Rust](https://rustup.rs/) — `rustup install stable`
-- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v1.18+
-- [Anchor CLI](https://www.anchor-lang.com/docs/installation) — v0.32+
+- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v1.18.26
+- [Anchor CLI](https://www.anchor-lang.com/docs/installation) — v0.32.1
 - [Node.js](https://nodejs.org/) v18+ + [pnpm](https://pnpm.io/) (install: `corepack enable && corepack prepare pnpm@latest --activate`)
 
 ### Setup

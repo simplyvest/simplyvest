@@ -17,8 +17,8 @@ Building, testing, and deploying the Solana program and web frontend.
 ## Prerequisites
 
 - [Rust](https://rustup.rs/) — `rustup install stable`
-- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v1.18+
-- [Anchor CLI](https://www.anchor-lang.com/docs/installation) — v0.32+
+- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v1.18.26
+- [Anchor CLI](https://www.anchor-lang.com/docs/installation) — v0.32.1
 - [Node.js](https://nodejs.org/) v18+ + [pnpm](https://pnpm.io/) (install: `corepack enable && corepack prepare pnpm@latest --activate`)
 
 ---
@@ -67,11 +67,6 @@ anchor test
 
 ### Test files
 
-```mermaid
-flowchart LR
-    A[vesting.000.create.test.ts] -->|stream exists| B[vesting.001.withdraw.test.ts]
-    B -->|tokens claimed| C[vesting.002.cancel.test.ts]
-```
 
 | File | What it tests |
 |---|---|

@@ -66,27 +66,7 @@ flowchart TD
 
 ## The Solana program model
 
-Three concepts are essential to understanding how Solana TDP works on-chain:
-
-### Accounts
-
-Everything on Solana is an account — wallets, programs, stored data. An account is a chunk of data with a public key, a lamport balance, and an owner field. Programs are stateless; all state lives in data accounts.
-
-### PDAs (Program Derived Addresses)
-
-A PDA is an address deterministically derived from seeds + a program ID. Crucially, *it has no private key* — nobody can sign for it from outside. Only the program that derived it can authorize operations on it.
-
-This is the foundation of trustless token escrow. When a creator funds a vesting stream, the program creates a PDA to hold the locked tokens. Since the PDA has no private key, not even the program deployer can move those tokens except through the program's instructions.
-
-### CPIs (Cross-Program Invocations)
-
-A CPI is when your program calls another program's instruction. Solana TDP uses CPIs to:
-
-- Transfer SPL tokens via the Token Program (`invoke_signed` with PDA seeds)
-- Create Associated Token Accounts for recipients who don't have one yet
-- Allocate and initialize data accounts via the System Program
-
----
+Solana TDP relies on three Solana primitives: **Accounts** (everything on Solana is an account — wallets, programs, stored data), **PDAs** (program-derived addresses with no private key, enabling trustless escrow), and **CPIs** (cross-program invocations to transfer tokens, create ATAs, and allocate accounts). See [ARCHITECTURE.md](./ARCHITECTURE.md) for how these map to the protocol.
 
 ## Competitive landscape
 
@@ -158,11 +138,6 @@ We conducted 5 interviews with founders and builders on Solana. Every conversati
 
 **Morgan:** "The UI/UX is not friendly for non-technical users." Every project in their incubator uses Streamflow but the learning curve is steep.
 
-### Recurring pain points
-
-1. **UI/UX is unfriendly for non-technical users** — mentioned independently by Morgan and Jordan
-2. **Tokenomics calculation is manual** — every founder uses Excel or Google Sheets, one formula mistake can mislead investors
-3. **No way to simulate "what if" scenarios** — founders cannot stress-test their distribution plan before going live
 
 ---
 
@@ -195,9 +170,6 @@ A platform that helps founders plan, simulate, and automate their token vesting 
 
 ## BD insights
 
-### Key insight
-
-Token distribution is not just about automation. It is about **planning and simulation**. Founders need to model their tokenomics *before* they launch, not just automate payouts after. Every interviewee who currently uses a tool (Streamflow users like Taylor and Morgan) said the tool works fine for locking tokens. The frustration is upstream.
 
 ### Additional findings
 
