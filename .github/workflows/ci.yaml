@@ -90,3 +90,27 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Build web app
         run: pnpm --filter @solana-tdp/web build
+
+  deploy-web:
+    if: github.ref == 'refs/heads/main'
+    needs: web
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: pnpm/action-setup@v4
+      - run: pnpm install --frozen-lockfile
+      - name: Build web app
+        run: pnpm --filter @solana-tdp/web build
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/web/dist --project-name=solana-tdp-web
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

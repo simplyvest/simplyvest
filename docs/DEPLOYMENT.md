@@ -144,18 +144,17 @@ The CI pipeline (`.github/workflows/ci.yaml`) runs on:
 - Push to `main`
 - Pull requests targeting `main`
 
-Three parallel jobs:
+Four jobs:
 
 | Job | What it does | Tooling needed |
 |---|---|---|
 | `lint` | TypeScript check on web | Node only |
-| `anchor` | Build Anchor program + run tests | Rust, Solana CLI, Anchor CLI |
+| `anchor` | Build Anchor program + run tests | Solana CLI + Anchor CLI (cached) |
 | `web` | Production build of React frontend | Node only |
+| `deploy-web` | Deploy to Cloudflare Pages (main only) | Node + Cloudflare secrets |
 
-The `anchor` job uses `metadaoproject/setup-anchor@v3.3` with caching to install
-Solana CLI + Anchor CLI (~2 min) instead of compiling from source (~20 min).
-
-A push to `main` that touches `apps/web/` or `packages/solana-tdp-sdk/` also triggers a Cloudflare Pages deploy.
+The `deploy-web` job uses `cloudflare/wrangler-action@v3` and runs only on
+push to `main`. Preview deploys for PRs are handled by Cloudflare's git integration.
 
 ---
 
