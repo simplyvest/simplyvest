@@ -54,7 +54,7 @@ erDiagram
 
 ### VestingSchedule PDA
 
-One per vesting stream. Created at `create_vesting` time and closed when the stream completes or is cancelled.
+One per vesting stream. Created at `create_stream` time and closed when the stream completes or is cancelled.
 
 | Field | Type | Description |
 |---|---|---|
@@ -72,13 +72,13 @@ One per vesting stream. Created at `create_vesting` time and closed when the str
 
 ### Escrow Token Account
 
-A standard ATA owned by the VestingSchedule PDA. Created at `create_vesting` time using the Associated Token Program. Closed when the stream completes or is cancelled, returning rent-exempt SOL to the creator.
+A standard ATA owned by the VestingSchedule PDA. Created at `create_stream` time using the Associated Token Program. Closed when the stream completes or is cancelled, returning rent-exempt SOL to the creator.
 
 Using an ATA instead of a custom token account gives us standard wallet compatibility — wallets and explorers already know how to display ATAs.
 
 ### CreatorConfig PDA
 
-One per creator wallet. Stores the next vesting count and is created lazily on the first `create_vesting` call.
+One per creator wallet. Stores the next vesting count and is created lazily on the first `create_stream` call.
 
 | Field | Type | Description |
 |---|---|---|
@@ -95,7 +95,7 @@ One per creator wallet. Stores the next vesting count and is created lazily on t
 | Escrow (ATA) | `AssociatedToken(vesting_schedule_pda, mint)` |
 | CreatorConfig | `["creator_config", creator_pubkey]` |
 
-The `vesting_count` is a sequential nonce that lets the same creator fund multiple streams for the same recipient and token without address collisions. It increments on each `create_vesting` call.
+The `vesting_count` is a sequential nonce that lets the same creator fund multiple streams for the same recipient and token without address collisions. It increments on each `create_stream` call.
 
 VestingSchedule PDA derivation:
 
@@ -107,7 +107,7 @@ seeds = [b"vesting", creator.key.as_ref(), mint.key.as_ref(), &vesting_count.to_
 
 ## Program instructions
 
-### create_vesting
+### create_stream
 
 Initialize a new vesting stream. The creator specifies the recipient, token mint, amount, and time parameters. Tokens are transferred from the creator's token account into a newly created escrow ATA.
 
@@ -123,7 +123,7 @@ Initialize a new vesting stream. The creator specifies the recipient, token mint
 - Creator token balance ≥ `total_amount`
 - Caller is the `creator` on the CreatorConfig account
 
-**Effects:** Create CreatorConfig PDA if it does not exist. Create VestingSchedule PDA with status `Active`. Transfer `total_amount` tokens to escrow ATA. Emit `VestingCreated` event. Increment `vesting_count` on CreatorConfig.
+**Effects:** Create CreatorConfig PDA if it does not exist. Create VestingSchedule PDA with status `Active`. Transfer `total_amount` tokens to escrow ATA. Emit `StreamCreated` event. Increment `vesting_count` on CreatorConfig.
 
 **Error codes:** `ZeroAmount`, `InvalidTimeRange`, `InsufficientBalance`
 
@@ -164,7 +164,7 @@ Let the creator cancel an active stream. Recipient receives whatever has vested 
 - Caller is the `creator` on the VestingSchedule
 - Stream status is `Active`
 
-**Effects:** Calculate vested amount (same formula as withdraw). Transfer vested → recipient. Transfer unvested → creator. Close escrow ATA (rent to creator). Close VestingSchedule PDA (rent to creator). Set status to `Cancelled`. Emit `VestingCancelled` event.
+**Effects:** Calculate vested amount (same formula as withdraw). Transfer vested → recipient. Transfer unvested → creator. Close escrow ATA (rent to creator). Close VestingSchedule PDA (rent to creator). Set status to `Cancelled`. Emit `StreamCancelled` event.
 
 **Error codes:** `Unauthorized`, `StreamNotActive`
 
@@ -181,7 +181,7 @@ sequenceDiagram
     participant Program
     participant Escrow as Escrow (ATA)
 
-    Creator->>Program: create_vesting(recipient, mint, amount, start, cliff, end)
+    Creator->>Program: create_stream(recipient, mint, amount, start, cliff, end)
     Program->>Escrow: Transfer tokens from creator
     Program-->>Creator: VestingSchedule PDA initialized
 
@@ -204,7 +204,7 @@ sequenceDiagram
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Active : create_vesting()
+    [*] --> Active : create_stream()
     Active --> Active : withdraw() [partial claims]
     Active --> Completed : withdraw() [final claim, all vested]
     Active --> Cancelled : cancel() [creator cancels]
@@ -245,9 +245,9 @@ Events are emitted via Anchor's `emit!` macro and parsed from transaction logs b
 
 | Event | Fields |
 |---|---|
-| `VestingCreated` | `creator`, `recipient`, `mint`, `total_amount`, `start_ts`, `cliff_ts`, `end_ts` |
+| `StreamCreated` | `creator`, `recipient`, `mint`, `total_amount`, `start_ts`, `cliff_ts`, `end_ts` |
 | `TokensWithdrawn` | `recipient`, `vesting_schedule`, `amount`, `remaining` |
-| `VestingCancelled` | `creator`, `recipient`, `vested_to_recipient`, `returned_to_creator` |
+| `StreamCancelled` | `creator`, `recipient`, `vested_to_recipient`, `returned_to_creator` |
 
 ---
 

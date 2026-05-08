@@ -57,13 +57,13 @@ apps/
 │   │   ├── state/              # Account structs (VestingSchedule, enums)
 │   │   └── instructions/       # Instruction handlers
 │   │       ├── mod.rs
-│   │       ├── create_vesting.rs
+│   │       ├── create_stream.rs
 │   │       ├── withdraw.rs
 │   │       └── cancel.rs
 │   └── tests/
-│       ├── vesting.000.create.test.ts
-│       ├── vesting.001.withdraw.test.ts
-│       ├── vesting.002.cancel.test.ts
+│       ├── stream.000.create.test.ts
+│       ├── stream.001.withdraw.test.ts
+│       ├── stream.002.cancel.test.ts
 │       └── utils.ts
 ├── web/                         # React frontend
 packages/
@@ -89,9 +89,9 @@ packages/
 
 | What | Convention | Example |
 |---|---|---|
-| Test files | `vesting.NNN.instruction.test.ts` | `vesting.000.create.test.ts` |
+| Test files | `stream.NNN.instruction.test.ts` | `stream.000.create.test.ts` |
 | PDA seeds | Lowercase static strings | `"vesting"`, not `"VestingSchedule"` |
-| Instruction files | Match instruction name exactly | `create_vesting.rs` |
+| Instruction files | Match instruction name exactly | `create_stream.rs` |
 | TypeScript hooks | Kebab-case | `use-vesting-schedule.ts` |
 | SDK entry | Single re-export from `index.ts` | Everything imported from one entry point |
 
