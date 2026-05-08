@@ -74,7 +74,7 @@ StreamAccount (PDA)  [seeds: b"stream" + sender + recipient]
 |---|---|
 | Rust | stable ≥ 1.75 |
 | Solana CLI | ≥ 1.18 |
-| Anchor CLI | 0.30.1 |
+|| Anchor CLI | 0.32.1 |
 | Node.js | ≥ 20 |
 | pnpm | **10.33.0** |
 
@@ -126,16 +126,9 @@ anchor build
 
 ## Troubleshooting
 
-### Anchor 0.30.1 IDL Build Error
+### Anchor 0.30.1 → 0.32.1 Upgrade
 
-If you see an error like `no method named source_file found for struct proc_macro2::Span`, this is a known issue with Anchor 0.30.1 on some Rust versions.
-
-**Resolution:**
-Run the following command to build without IDL generation issues:
-```bash
-RUSTFLAGS="--cfg procmacro2_semver_exempt" anchor build
-```
-Or ensure you are using a stable Rust toolchain (`rustup default stable`).
+If you previously used Anchor 0.30.1 and saw errors like `no method named source_file found for struct proc_macro2::Span`, this was a known issue fixed in 0.32.0 onwards — IDL building now uses the stable Rust compiler.
 
 ### Stack Offset Error
 

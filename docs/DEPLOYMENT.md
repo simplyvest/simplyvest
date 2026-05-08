@@ -17,7 +17,7 @@ Building, testing, and deploying the Solana program and web frontend.
 ## Prerequisites
 
 - [Rust](https://rustup.rs/) — `rustup install stable`
-- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v1.18.26
+|- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v2.3.0
 - [Anchor CLI](https://www.anchor-lang.com/docs/installation) — v0.32.1
 - [Node.js](https://nodejs.org/) v18+ + [pnpm](https://pnpm.io/) (install: `corepack enable && corepack prepare pnpm@latest --activate`)
 
@@ -144,19 +144,16 @@ The CI pipeline (`.github/workflows/ci.yaml`) runs on:
 - Push to `main`
 - Pull requests targeting `main`
 
-```yaml
-# Current CI pipeline
-jobs:
-  ci:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4 (node-version: "22")
-      - uses: pnpm/action-setup@v4 (version: latest)
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      - run: pnpm test
-```
+Three parallel jobs:
+
+| Job | What it does | Tooling needed |
+|---|---|---|
+| `lint` | TypeScript check on web | Node only |
+| `anchor` | Build Anchor program + run tests | Rust, Solana CLI, Anchor CLI |
+| `web` | Production build of React frontend | Node only |
+
+The `anchor` job uses `metadaoproject/setup-anchor@v3.3` with caching to install
+Solana CLI + Anchor CLI (~2 min) instead of compiling from source (~20 min).
 
 A push to `main` that touches `apps/web/` or `packages/solana-tdp-sdk/` also triggers a Cloudflare Pages deploy.
 

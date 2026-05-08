@@ -51,7 +51,7 @@ docs/
 ### Prerequisites
 
 - [Rust](https://rustup.rs/) — `rustup install stable`
-- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v1.18.26
+|- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v2.3.0
 - [Anchor CLI](https://www.anchor-lang.com/docs/installation) — v0.32.1
 - [Node.js](https://nodejs.org/) v18+ + [pnpm](https://pnpm.io/) (install: `corepack enable && corepack prepare pnpm@latest --activate`)
 
