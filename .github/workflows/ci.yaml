@@ -1,0 +1,116 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  SOLANA_VERSION: "3.1.12"
+  ANCHOR_VERSION: "0.32.1"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: pnpm/action-setup@v4
+      - run: pnpm install --frozen-lockfile
+      - name: TypeScript check (web)
+        run: pnpm --filter @solana-tdp/web check:ts
+
+  anchor:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/solana-tdp-anchor
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Cache Solana + Anchor
+        id: cache-solana
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.local/share/solana/
+            ~/.local/share/anchor/
+          key: solana-anchor-${{ runner.os }}-${{ env.SOLANA_VERSION }}-${{ env.ANCHOR_VERSION }}
+
+      - name: Install Solana CLI
+        if: steps.cache-solana.outputs.cache-hit != 'true'
+        run: sh -c "$(curl -sSfL https://release.anza.xyz/v${{ env.SOLANA_VERSION }}/install)"
+
+      - name: Install Anchor CLI
+        if: steps.cache-solana.outputs.cache-hit != 'true'
+        run: |
+          curl -sL "https://github.com/solana-foundation/anchor/releases/download/v${{ env.ANCHOR_VERSION }}/anchor-${{ env.ANCHOR_VERSION }}-x86_64-unknown-linux-gnu" -o /tmp/anchor
+          chmod +x /tmp/anchor
+          mkdir -p ~/.local/share/anchor
+          mv /tmp/anchor ~/.local/share/anchor/anchor
+
+      - name: Set up PATH
+        run: |
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+          echo "$HOME/.local/share/anchor" >> $GITHUB_PATH
+
+      - name: Generate keypair
+        run: solana-keygen new --no-bip39-passphrase -f
+
+      - run: pnpm install --frozen-lockfile
+        working-directory: .
+
+      - name: Build program (BPF)
+        run: anchor build
+
+      - name: Stage program binary
+        run: mkdir -p target/deploy && cp programs/solana-tdp/target/deploy/solana_tdp.so target/deploy/
+
+      - name: Run tests
+        run: anchor test --skip-build
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: pnpm/action-setup@v4
+      - run: pnpm install --frozen-lockfile
+      - name: Build web app
+        run: pnpm --filter @solana-tdp/web build
+
+  deploy-web:
+    if: github.ref == 'refs/heads/main'
+    needs: web
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: pnpm/action-setup@v4
+      - run: pnpm install --frozen-lockfile
+      - name: Build web app
+        run: pnpm --filter @solana-tdp/web build
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/web/dist --project-name=solana-tdp-web
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
