@@ -1,0 +1,198 @@
+# Deployment — Solana Token Distribution Protocol
+
+Building, testing, and deploying the Solana program and web frontend.
+
+## Contents
+
+1. [Prerequisites](#prerequisites)
+2. [Building](#building)
+3. [Testing](#testing)
+4. [Program deployment](#program-deployment)
+5. [Frontend deployment](#frontend-deployment)
+6. [CI/CD](#cicd)
+7. [Browser compatibility](#browser-compatibility)
+
+---
+
+## Prerequisites
+
+- [Rust](https://rustup.rs/) — `rustup install stable`
+- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v1.18+
+- [Anchor CLI](https://www.anchor-lang.com/docs/installation) — v0.32+
+- [Node.js](https://nodejs.org/) v18+ + [pnpm](https://pnpm.io/) (install: `corepack enable && corepack prepare pnpm@latest --activate`)
+
+---
+
+## Building
+
+```bash
+# Install dependencies for all workspaces
+pnpm install
+
+# Build everything (packages + program)
+pnpm build
+```
+
+### Targeted scripts
+
+| Script | What it does |
+|---|---|
+| `pnpm program:build` | Builds the Anchor program, syncs the IDL into the SDK, builds SDK |
+| `pnpm sdk:sync` | Copies the latest IDL from the program build into the SDK package |
+| `pnpm sdk:build` | Builds only the SDK package |
+
+To get the program ID after building:
+
+```bash
+cd apps/solana-tdp-anchor
+anchor keys list
+```
+
+Update `declare_id!("...")` in `programs/tdp/src/lib.rs` and `[programs.localnet]` in `Anchor.toml` with the output, then rebuild.
+
+---
+
+## Testing
+
+Tests run on [Anchor LiteSVM](https://github.com/LiteSVM/anchor-litesvm) with [LiteSVM](https://github.com/LiteSVM/litesvm) underneath — no local validator needed.
+
+```bash
+# Run all tests (program + SDK)
+pnpm test
+
+# Or just the program tests using anchor
+cd apps/solana-tdp-anchor
+anchor test
+```
+
+### Test files
+
+```mermaid
+flowchart LR
+    A[vesting.000.create.test.ts] -->|stream exists| B[vesting.001.withdraw.test.ts]
+    B -->|tokens claimed| C[vesting.002.cancel.test.ts]
+```
+
+| File | What it tests |
+|---|---|
+| `vesting.000.create.test.ts` | Stream creation with valid/invalid parameters |
+| `vesting.001.withdraw.test.ts` | Claiming vested tokens, cliff checks, partial claims |
+| `vesting.002.cancel.test.ts` | Mid-stream cancellation, vested/unvested split |
+
+---
+
+## Program deployment
+
+```bash
+cd apps/solana-tdp-anchor
+
+# Switch to devnet
+solana config set --url devnet
+
+# Fund your wallet (if needed)
+# If the airdrop doesn't work, use https://faucet.solana.com
+solana airdrop 2
+
+# Deploy
+anchor deploy --provider.cluster devnet
+
+# Verify
+solana program show <PROGRAM_ID> --url devnet
+```
+
+### Deployment info
+
+| | |
+|---|---|
+| **Network** | Solana Devnet |
+| **Program ID** | *TBD on first deploy* |
+| **Solscan** | *TBD* |
+
+---
+
+## Frontend deployment
+
+The React frontend (`apps/web`) is deployed to Cloudflare Pages via GitHub Actions. A push to `main` that touches `apps/web/` or `packages/solana-tdp-sdk/` triggers an automatic build and deploy.
+
+Preview deploys are created for pull requests at `<branch>.solana-tdp-web.pages.dev`.
+
+### One-time setup
+
+1. Create a Cloudflare API token: Dashboard > API Tokens > Create Token > Custom > `Account > Cloudflare Pages > Edit`
+2. Get your Account ID from the Cloudflare dashboard sidebar
+3. Create the Pages project:
+   ```bash
+   pnpm dlx wrangler pages project create solana-tdp-web --production-branch=main
+   ```
+4. Add two GitHub repo secrets (Settings > Secrets and variables > Actions):
+   - `CLOUDFLARE_API_TOKEN`
+   - `CLOUDFLARE_ACCOUNT_ID`
+
+### Local manual deploy
+
+```bash
+# Authenticate once
+pnpm dlx wrangler login
+
+# Build and deploy
+pnpm --filter @solana-tdp/web build
+pnpm --filter @solana-tdp/web deploy
+```
+
+SPA routing works out of the box — Cloudflare Pages auto-detects a client-side router when there is no `404.html` and serves `index.html` for all unmatched paths.
+
+---
+
+## CI/CD
+
+The CI pipeline (`.github/workflows/ci.yaml`) runs on:
+
+- Push to `main`
+- Pull requests targeting `main`
+
+```yaml
+# Current CI pipeline
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4 (node-version: "22")
+      - uses: pnpm/action-setup@v4 (version: latest)
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm test
+```
+
+A push to `main` that touches `apps/web/` or `packages/solana-tdp-sdk/` also triggers a Cloudflare Pages deploy.
+
+---
+
+## Browser compatibility
+
+Solana's web3.js and wallet adapter libraries use Node.js globals (`Buffer`, `process`, `global`) that do not exist in browsers. The web frontend polyfills them in `apps/web/app/main.tsx`:
+
+```ts
+import { Buffer } from "buffer";
+import process from "process";
+globalThis.Buffer = Buffer;
+globalThis.process = process;
+```
+
+The Vite config also maps `global` to `globalThis`:
+
+```ts
+// apps/web/vite.config.ts
+define: {
+  global: "globalThis",
+}
+```
+
+If a new dependency triggers a `crypto is not defined` or `stream is not defined` error at runtime, add the corresponding alias to `vite.config.ts`:
+
+| Missing module | Polyfill package | Vite alias |
+|---|---|---|
+| `crypto` | `crypto-browserify` | `resolve: { alias: { crypto: "crypto-browserify" } }` |
+| `stream` | `stream-browserify` | `resolve: { alias: { stream: "stream-browserify" } }` |
+
+These are rarely needed — most Solana wallet adapters have browser-native fallbacks. Only add them if you hit actual runtime errors.

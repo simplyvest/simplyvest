@@ -1,10 +1,57 @@
-# solana-tdp
+# Solana Token Distribution Protocol
 
-Solana Token Distribution Protocol — tools and contracts for distributing SPL tokens on Solana.
+**Plan, simulate, and automate token distribution on Solana — without spreadsheets or smart contract code.**
 
-## Status
+A full-stack protocol for creating, managing, and claiming token vesting schedules. Built on Anchor for trustless on-chain custody, wrapped in a hybrid dApp that non-technical founders can use from day one.
 
-Early development. Placeholder repository.
+> **Status:** Early development. Monorepo scaffolded. Program and frontend implementation in progress.
+
+## The problem
+
+Founders launching tokens on Solana face a fragmented toolchain. They model allocations and unlock schedules in Excel (error-prone), then manually transfer tokens through multisig wallets when cliffs hit. Existing vesting tools cover one or two distribution types but lack milestone support, batch creation for large teams, and post-creation flexibility. Worse, the tools that exist assume blockchain literacy — PDAs, CPIs, wallets — locking out non-technical founders.
+
+User interviews with 5 founders and builders confirmed the same pain point: **"The biggest problem is calculate and simulate. Founders struggle here before they even get to token engineering."** — Mas Rizary
+
+## The solution
+
+Solana TDP is a token vesting protocol on Solana that combines:
+
+- **On-chain program** — Anchor-based program with PDA-custodied vesting schedules. Supports cliff and linear vesting. Only the program can move tokens.
+- **Tokenomics simulator** — Client-side tool to model allocations, stress-test unlock schedules, and catch dump risk before any tokens are locked.
+- **Fullstack application** — Hybrid dApp with embedded wallets (Privy/Dynamic), real-time dashboard (Convex), and recipient-facing claim UI.
+
+### Target audience
+
+| Who | Pain point |
+|---|---|
+| **Web3 founders** launching new tokens | Manual Excel calculations, no simulation, high dump risk |
+| **Non-technical project owners** | Current tools assume blockchain literacy — steep learning curve |
+| **Launchpads & ecosystem operators** | No way to stress-test whether a project's distribution plan is sustainable |
+
+## Protocol overview
+
+```
+┌─────────────────────────────────────────────────┐
+│                 React Frontend                    │
+│  ┌──────────┐  ┌──────────┐  ┌───────────────┐  │
+│  │Simulator  │  │Dashboard  │  │Claim UI       │  │
+│  └──────────┘  └──────────┘  └───────────────┘  │
+└──────────────────────┬──────────────────────────┘
+                       │
+┌──────────────────────┴──────────────────────────┐
+│              Convex Backend                       │
+│  (auth, caching, notifications, indexing)         │
+└──────────────────────┬──────────────────────────┘
+                       │ RPC + CPI
+┌──────────────────────┴──────────────────────────┐
+│           Solana Program (Anchor)                 │
+│  ┌──────────────────────────────────────────┐    │
+│  │ VestingSchedule PDA → controls Escrow ATA │    │
+│  │ Instructions: create_vesting, withdraw,   │    │
+│  │ cancel                                    │    │
+│  └──────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────┘
+```
 
 ## Project structure
 
@@ -12,28 +59,28 @@ A monorepo managed by pnpm workspaces.
 
 ```txt
 apps/
-├── solana-tdp-anchor/           # Anchor program (place for future Solana program)
-└── web/                         # Web frontend (place for future React/Vite SPA)
+├── solana-tdp-anchor/        # Anchor program (on-chain vesting logic)
+│   └── programs/tdp/src/     # lib.rs, error.rs, event.rs, state/, instructions/
+└── web/                      # React frontend (Vite + TanStack Router)
 packages/
-└── solana-tdp-sdk/              # TypeScript SDK (place for future typed IDL wrappers and PDA helpers)
+└── solana-tdp-sdk/           # TypeScript SDK (IDL types, PDA helpers, event parsing)
+docs/
+├── RESEARCH.md               # Vesting types, competitive landscape, market gap, user research
+├── ARCHITECTURE.md           # Account model, program instructions, data flow, events/errors
+├── TOOLING.md                # Solana tooling decisions, testing strategy, conventions
+└── DEPLOYMENT.md             # Build, test, deploy guides, CI/CD
 ```
 
-## Workspace packages
+## Quick start
 
-| Package           | Scope              | Location                     | Role                                     |
-| ----------------- | ------------------ | ---------------------------- | ---------------------------------------- |
-| Anchor program    | `@solana-tdp/anchor` | `apps/solana-tdp-anchor/`    | On-chain SPL token distribution protocol |
-| Web frontend      | `@solana-tdp/web`    | `apps/web/`                  | React frontend (Vite + TanStack Router)  |
-| TypeScript SDK    | `@solana-tdp/sdk`    | `packages/solana-tdp-sdk/`   | Typed IDL wrappers and PDA helpers       |
-
-## Prerequisites
+### Prerequisites
 
 - [Rust](https://rustup.rs/) — `rustup install stable`
 - [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v1.18+
 - [Anchor CLI](https://www.anchor-lang.com/docs/installation) — v0.32+
-- [Node.js](https://nodejs.org/) v18+ + [pnpm](https://pnpm.io/)
+- [Node.js](https://nodejs.org/) v18+ + [pnpm](https://pnpm.io/) (install: `corepack enable && corepack prepare pnpm@latest --activate`)
 
-## Setup
+### Setup
 
 ```bash
 # Install dependencies for all workspaces
@@ -43,14 +90,43 @@ pnpm install
 pnpm build
 ```
 
-Targeted scripts in the root `package.json`:
+### Targeted scripts
 
-| Script               | What it does                                                        |
-| -------------------- | ------------------------------------------------------------------- |
-| `pnpm program:build` | Builds the Anchor program, syncs the IDL into the SDK, builds SDK   |
-| `pnpm sdk:sync`      | Copies the latest IDL from the program build into the SDK package   |
-| `pnpm sdk:build`     | Builds only the SDK package                                         |
+| Script | What it does |
+|---|---|
+| `pnpm program:build` | Builds the Anchor program, syncs the IDL into the SDK, builds SDK |
+| `pnpm sdk:sync` | Copies the latest IDL from the program build into the SDK package |
+| `pnpm sdk:build` | Builds only the SDK package |
+| `pnpm test` | Runs all workspace tests |
 
-## SDK
+### Program ID
 
-The `@solana-tdp/sdk` package (`packages/solana-tdp-sdk`) is the TypeScript client for the program. The web app imports it as a workspace dependency.
+After building, get your program ID:
+
+```bash
+cd apps/solana-tdp-anchor
+anchor keys list
+```
+
+Update `declare_id!("...")` in `programs/tdp/src/lib.rs` and `[programs.localnet]` in `Anchor.toml`.
+
+## Documentation
+
+| Document | Contents |
+|---|---|
+| [Research](./docs/RESEARCH.md) | Vesting types (cliff/linear/milestone), competitive landscape, market gap analysis, user research findings, product positioning |
+| [Architecture](./docs/ARCHITECTURE.md) | Account structure, PDA seeds, program instructions, data flow, edge cases, events and error reference |
+| [Tooling](./docs/TOOLING.md) | Anchor vs Pinocchio, LiteSVM vs solana-test-validator, testing strategy, code conventions |
+| [Deployment](./docs/DEPLOYMENT.md) | Building, testing, program deployment, frontend deployment, CI/CD, browser compatibility |
+
+## Repository
+
+| | |
+|---|---|
+| **Program ID (devnet)** | *TBD on first deploy* |
+| **Solscan** | *TBD* |
+| **License** | MIT |
+
+## Team
+
+Built as part of the Mancer accelerator — Team 1.
