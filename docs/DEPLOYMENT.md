@@ -17,7 +17,7 @@ Building, testing, and deploying the Solana program and web frontend.
 ## Prerequisites
 
 - [Rust](https://rustup.rs/) — `rustup install stable`
-|- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v2.3.0
+|- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v3.1.12
 - [Anchor CLI](https://www.anchor-lang.com/docs/installation) — v0.32.1
 - [Node.js](https://nodejs.org/) v18+ + [pnpm](https://pnpm.io/) (install: `corepack enable && corepack prepare pnpm@latest --activate`)
 
