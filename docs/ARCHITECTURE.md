@@ -2,6 +2,8 @@
 
 This document describes the on-chain protocol architecture: account model, PDA seeds, program instructions, data flow, events, and error reference.
 
+*This document describes the planned protocol architecture. The implementation is in progress — details may change during development.*
+
 ## Contents
 
 1. [Account structure](#account-structure)
@@ -16,7 +18,7 @@ This document describes the on-chain protocol architecture: account model, PDA s
 
 ## Account structure
 
-The protocol uses two on-chain account types:
+The protocol uses three on-chain account types:
 
 - **VestingSchedule PDA** — stores the metadata for a single vesting stream
 - **Escrow Token Account** — an Associated Token Account (ATA) that holds the locked tokens
@@ -74,6 +76,15 @@ A standard ATA owned by the VestingSchedule PDA. Created at `create_vesting` tim
 
 Using an ATA instead of a custom token account gives us standard wallet compatibility — wallets and explorers already know how to display ATAs.
 
+### CreatorConfig PDA
+
+One per creator wallet. Stores the next vesting count and is created lazily on the first `create_vesting` call.
+
+| Field | Type | Description |
+|---|---|---|
+| `creator` | `Pubkey` | Creator wallet address |
+| `vesting_count` | `u64` | Next sequential nonce for this creator's streams |
+
 ---
 
 ## PDA seeds
@@ -82,6 +93,7 @@ Using an ATA instead of a custom token account gives us standard wallet compatib
 |---|---|
 | VestingSchedule | `["vesting", creator_pubkey, mint_pubkey, vesting_count (u64 LE)]` |
 | Escrow (ATA) | `AssociatedToken(vesting_schedule_pda, mint)` |
+| CreatorConfig | `["creator_config", creator_pubkey]` |
 
 The `vesting_count` is a sequential nonce that lets the same creator fund multiple streams for the same recipient and token without address collisions. It increments on each `create_vesting` call.
 
@@ -101,7 +113,7 @@ Initialize a new vesting stream. The creator specifies the recipient, token mint
 
 - **Caller:** Creator
 - **Parameters:** `recipient`, `mint`, `total_amount`, `start_ts`, `cliff_ts`, `end_ts`, `vesting_type`
-- **Accounts:** Creator (signer), VestingSchedule PDA (init), Escrow ATA (init), Creator Token Account, Token Program, Associated Token Program, System Program
+- **Accounts:** Creator (signer), CreatorConfig PDA (init if needed), VestingSchedule PDA (init), Escrow ATA (init), Creator Token Account, Token Program, Associated Token Program, System Program
 
 **Validations:**
 
@@ -109,8 +121,9 @@ Initialize a new vesting stream. The creator specifies the recipient, token mint
 - `end_ts > start_ts`
 - `cliff_ts == 0 || (cliff_ts > start_ts && cliff_ts <= end_ts)`
 - Creator token balance ≥ `total_amount`
+- Caller is the `creator` on the CreatorConfig account
 
-**Effects:** Create VestingSchedule PDA with status `Active`. Transfer `total_amount` tokens to escrow ATA. Emit `VestingCreated` event. Increment vesting counter.
+**Effects:** Create CreatorConfig PDA if it does not exist. Create VestingSchedule PDA with status `Active`. Transfer `total_amount` tokens to escrow ATA. Emit `VestingCreated` event. Increment `vesting_count` on CreatorConfig.
 
 **Error codes:** `ZeroAmount`, `InvalidTimeRange`, `InsufficientBalance`
 
@@ -120,7 +133,7 @@ Let the recipient claim vested tokens. Calculates claimable amount based on curr
 
 - **Caller:** Recipient
 - **Parameters:** none (all context on the VestingSchedule account)
-- **Accounts:** Recipient (signer), VestingSchedule PDA (mutable), Escrow ATA (mutable), Recipient Token Account, Token Program, Clock Sysvar
+- **Accounts:** Recipient (signer), VestingSchedule PDA (mutable), Escrow ATA (mutable), Recipient Token Account, Token Program, Associated Token Program, Clock Sysvar
 
 **Validations:**
 

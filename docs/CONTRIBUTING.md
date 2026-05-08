@@ -14,7 +14,7 @@ Start by making sure your local `main` is up to date with the remote.
 
 ```bash
 git checkout main
-git pull origin main
+git pull --rebase origin main
 ```
 
 ### 2. Create a branch off main
@@ -39,7 +39,7 @@ git commit -m "feat: add my change"
 Before pushing, pull the latest `main` into your branch to catch any conflicts early. This keeps the merge trivial.
 
 ```bash
-git pull origin main
+git pull --rebase origin main
 ```
 
 Resolve any conflicts if they appear, then commit the merge.
@@ -64,7 +64,7 @@ Update your local `main` after the merge.
 
 ```bash
 git checkout main
-git pull origin main
+git pull --rebase origin main
 ```
 
 Then repeat from step 1 for the next change.
