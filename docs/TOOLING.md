@@ -1,47 +1,25 @@
 # Tooling — Solana Token Distribution Protocol
 
-Tooling decisions, testing strategy, and code conventions for Solana TDP.
+Tools, dependencies, and code conventions for Solana TDP.
 
 ## Contents
 
-1. [Anchor vs Pinocchio](#anchor-vs-pinocchio)
-2. [Testing tools](#testing-tools)
-3. [Repository organization](#repository-organization)
+1. [Framework](#framework)
+2. [Testing](#testing)
+3. [Repository layout](#repository-layout)
 4. [Code conventions](#code-conventions)
 
 ---
 
-## Anchor vs Pinocchio
+## Framework
 
-| | Anchor 0.32.1 | Pinocchio |
-|---|---|---|
-| **Approach** | Macro-based eDSL, automatic serialization, IDL generation | Lower-level, zero-copy deserialization, manual validation |
-| **DX** | High — `#[account]`, `#[derive(Accounts)]`, `anchor build` emits IDL | Low — manual account checking, discriminator handling |
-| **Program size** | Larger binaries | Significantly smaller |
-| **Client generation** | Automatic via IDL | Manual |
-| **Best for** | Teams building Solana familiarity, rapid development | Experienced teams optimizing for program size |
+**Anchor 0.32.1** — Solana program framework. Provides `#[account]` and `#[derive(Accounts)]` macros for account validation, automatic IDL generation, and CPI helpers.
 
-**Decision: Anchor 0.32.1.** The team is building Solana familiarity and Anchor's guardrails (account validation, IDL generation, CPI macros) reduce the surface area for mistakes. If program size becomes a constraint later, Pinocchio is the path we would evaluate.
+## Testing
 
----
+**TypeScript + jest + anchor-litesvm.** Tests use `fromWorkspace` to bootstrap the SVM and `LiteSVMProvider` for the Anchor provider. No local validator needed.
 
-## Testing tools
-
-### Tool status
-
-| Tool | Status | Use case |
-|---|---|---|
-| **LiteSVM** | Active (recommended) | Fast, in-process testing — Rust, TS/JS, Python |
-| **anchor-litesvm** | Active | Anchor-compatible testing without a validator |
-| **solana-test-validator** | Active | When you need a real local RPC node |
-| **Bankrun** | Deprecated (Mar 2025) | Migrate to LiteSVM |
-| **solana-program-test** | Legacy | Existing projects OK; new projects → LiteSVM |
-
-**Testing is TypeScript-only, using `anchor-litesvm`.** Tests use `fromWorkspace` to bootstrap the SVM, `LiteSVMProvider` for the Anchor provider, and jest to cover each instruction lifecycle.
-
-Use `solana-test-validator` only when you need a real local RPC node. Do not use Bankrun — it is deprecated.
-
-### LiteSVM key capabilities
+### LiteSVM capabilities
 
 - Time travel via `warp_to_slot()`
 - Arbitrary account state seeding
@@ -49,24 +27,25 @@ Use `solana-test-validator` only when you need a real local RPC node. Do not use
 - Compute budget control
 - Built-in System Program and SPL Token programs
 
-### Install
+### Dependencies
 
 ```json
-// package.json (devDependencies)
+// apps/solana-tdp-anchor/package.json (devDependencies)
 {
   "anchor-litesvm": "^0.2.1",
   "@coral-xyz/anchor": "^0.32.1",
-  "@solana/web3.js": "^1.98.4"
+  "@solana/web3.js": "^1.98.4",
+  "jest": "^29.0.3",
+  "ts-jest": "^29.0.2",
+  "typescript": "^5.7.3"
 }
 ```
 
 ---
 
-## Repository organization
+## Repository layout
 
 Monorepo managed by pnpm workspaces.
-
-### Program file layout
 
 ```
 apps/
@@ -118,22 +97,20 @@ packages/
 
 ### Test numbering
 
-Test files are numbered by instruction execution order, not alphabetical:
+Test files numbered by instruction execution order:
 
 ```
-vesting.000.create.test.ts     # runs first — stream must exist
-vesting.001.withdraw.test.ts   # runs second — claim vested tokens
-vesting.002.cancel.test.ts     # runs third — cancel mid-stream
+vesting.000.create.test.ts     # stream must exist first
+vesting.001.withdraw.test.ts   # then claim vested tokens
+vesting.002.cancel.test.ts     # then cancel mid-stream
 ```
-
-This mirrors the natural lifecycle and makes dependencies obvious.
 
 ### SDK conventions
 
-The TypeScript SDK wraps the program IDL and provides helpers for common operations:
+The TypeScript SDK wraps the program IDL with typed helpers:
 
 - **PDA helpers** — `getVestingSchedulePda(creator, mint, count, programId)` returns `[PublicKey, bump]`
-- **Event parsing** — `parseEvents(provider, program, txSignature)` returns decoded event objects from transaction logs
+- **Event parsing** — `parseEvents(provider, program, txSignature)` returns decoded Anchor events from transaction logs
 - **Types** — Generated from the Anchor IDL; re-exported from `index.ts`
 
 ### Anchor.toml
