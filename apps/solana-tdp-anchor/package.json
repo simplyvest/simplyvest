@@ -1,0 +1,23 @@
+{
+  "name": "@solana-tdp/anchor",
+  "version": "0.1.0",
+  "description": "Solana TDP — Anchor program",
+  "license": "MIT",
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "build": "anchor build",
+    "test": "anchor test",
+    "deploy": "anchor deploy"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.32.1"
+  },
+  "devDependencies": {
+    "@types/bn.js": "^5.1.5",
+    "@types/chai": "^4.3.11",
+    "@types/mocha": "^10.0.6",
+    "chai": "^4.3.11",
+    "ts-mocha": "^10.0.0",
+    "typescript": "^5.3.3"
+  }
+}
