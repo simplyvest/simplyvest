@@ -91,7 +91,7 @@ Update `declare_id!("...")` in `programs/tdp/src/lib.rs` and `[programs.localnet
 |---|---|
 | [Research](./docs/RESEARCH.md) | Vesting types (cliff/linear/milestone), competitive landscape, market gap analysis, user research findings, product positioning |
 | [Architecture](./docs/ARCHITECTURE.md) | Account structure, PDA seeds, program instructions, data flow, edge cases, events and error reference |
-| [Tooling](./docs/TOOLING.md) | Anchor vs Pinocchio, LiteSVM vs solana-test-validator, testing strategy, code conventions |
+| [Tooling](./docs/TOOLING.md) | Framework, testing setup, repo layout, code conventions |
 | [Deployment](./docs/DEPLOYMENT.md) | Building, testing, program deployment, frontend deployment, CI/CD, browser compatibility |
 
 ## Repository

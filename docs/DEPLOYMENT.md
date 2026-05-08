@@ -67,7 +67,6 @@ anchor test
 
 ### Test files
 
-
 | File | What it tests |
 |---|---|
 | `vesting.000.create.test.ts` | Stream creation with valid/invalid parameters |

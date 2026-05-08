@@ -94,6 +94,7 @@ Solana TDP relies on three Solana primitives: **Accounts** (everything on Solana
 | **solana-program-test** | Legacy | Existing projects OK; new projects → LiteSVM |
 
 **Decision:** TypeScript tests with anchor-litesvm + jest. Tests use `fromWorkspace` to bootstrap the SVM and `LiteSVMProvider` for the Anchor provider. No local validator needed for most tests. Use solana-test-validator only when a real RPC node is required.
+---
 ## Competitive landscape
 
 Four major vesting solutions exist on Solana:
@@ -195,7 +196,6 @@ A platform that helps founders plan, simulate, and automate their token vesting 
 ---
 
 ## BD insights
-
 
 ### Additional findings
 
