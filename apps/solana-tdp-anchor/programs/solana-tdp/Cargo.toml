@@ -1,0 +1,22 @@
+[package]
+name = "solana-tdp"
+version = "0.1.0"
+description = "Solana Token Distribution Protocol"
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "solana_tdp"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = ["no-idl"]
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+
+[dependencies]
+anchor-lang = { version = "0.30.1", features = ["init-if-needed"] }
+anchor-spl  = { version = "0.30.1", features = ["token"] }
+block-buffer = "=0.10.4"
