@@ -22,8 +22,6 @@ jobs:
         with:
           node-version: "22"
       - uses: pnpm/action-setup@v4
-        with:
-          version: latest
       - run: pnpm install --frozen-lockfile
       - name: TypeScript check (web)
         run: pnpm --filter @solana-tdp/web check:ts
@@ -36,8 +34,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: latest
       - uses: metadaoproject/setup-anchor@v3.3
         with:
           anchor-version: ${{ env.ANCHOR_VERSION }}
@@ -60,8 +56,6 @@ jobs:
         with:
           node-version: "22"
       - uses: pnpm/action-setup@v4
-        with:
-          version: latest
       - run: pnpm install --frozen-lockfile
       - name: Build web app
         run: pnpm --filter @solana-tdp/web build
