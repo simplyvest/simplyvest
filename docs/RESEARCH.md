@@ -6,11 +6,12 @@ This document captures the Week 1 and Week 2 research that shaped Solana TDP: ve
 
 1. [Vesting types](#vesting-types)
 2. [The Solana program model](#the-solana-program-model)
-3. [Competitive landscape](#competitive-landscape)
-4. [Market gaps](#market-gaps)
-5. [User research](#user-research)
-6. [Product positioning](#product-positioning)
-7. [BD insights](#bd-insights)
+3. [Development tooling decisions](#development-tooling-decisions)
+4. [Competitive landscape](#competitive-landscape)
+5. [Market gaps](#market-gaps)
+6. [User research](#user-research)
+7. [Product positioning](#product-positioning)
+8. [BD insights](#bd-insights)
 
 ---
 
@@ -68,6 +69,31 @@ flowchart TD
 
 Solana TDP relies on three Solana primitives: **Accounts** (everything on Solana is an account — wallets, programs, stored data), **PDAs** (program-derived addresses with no private key, enabling trustless escrow), and **CPIs** (cross-program invocations to transfer tokens, create ATAs, and allocate accounts). See [ARCHITECTURE.md](./ARCHITECTURE.md) for how these map to the protocol.
 
+## Development tooling decisions
+
+### Framework: Anchor vs Pinocchio
+
+| | Anchor | Pinocchio |
+|---|---|---|
+| **Approach** | Macro-based eDSL, automatic serialization, IDL generation | Lower-level, zero-copy deserialization, manual validation |
+| **DX** | High — `#[account]`, `#[derive(Accounts)]`, `anchor build` emits IDL | Low — manual account checking, discriminator handling |
+| **Program size** | Larger binaries | Significantly smaller |
+| **Client generation** | Automatic via IDL | Manual |
+| **Best for** | Teams building Solana familiarity, rapid development | Experienced teams optimizing for program size |
+
+**Decision: Anchor 0.32.1.** The team is building Solana familiarity and Anchor's guardrails (account validation, IDL generation, CPI macros) reduce the surface area for mistakes. If program size becomes a constraint later, Pinocchio is the path to evaluate.
+
+### Testing tools
+
+| Tool | Status | Use case |
+|---|---|---|
+| **LiteSVM** | Active (recommended) | Fast, in-process testing — Rust, TS/JS, Python |
+| **anchor-litesvm** | Active | Anchor-compatible testing without a validator |
+| **solana-test-validator** | Active | When you need a real local RPC node |
+| **Bankrun** | Deprecated (Mar 2025) | Migrate to LiteSVM |
+| **solana-program-test** | Legacy | Existing projects OK; new projects → LiteSVM |
+
+**Decision:** TypeScript tests with anchor-litesvm + jest. Tests use `fromWorkspace` to bootstrap the SVM and `LiteSVMProvider` for the Anchor provider. No local validator needed for most tests. Use solana-test-validator only when a real RPC node is required.
 ## Competitive landscape
 
 Four major vesting solutions exist on Solana:
