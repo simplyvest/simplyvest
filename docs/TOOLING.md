@@ -13,19 +13,21 @@ Tools, dependencies, and code conventions for Solana TDP.
 
 ## Framework
 
-**Anchor 0.32.1** — Solana program framework. Provides `#[account]` and `#[derive(Accounts)]` macros for account validation, automatic IDL generation, and CPI helpers.
+  **Anchor 0.32.1** — Solana program framework. Provides `#[account]` and `#[derive(Accounts)]` macros for account validation, automatic IDL generation, and CPI helpers.
 
-## Testing
+  Anchor 0.32.1 is chosen over the latest Anchor v1 for stability. Anchor v1 introduced breaking changes to the CLI and program macros. While newer, v1's tooling ecosystem is still settling — key crates, testing libraries, and documentation are still being ported. 0.32.1 has mature documentation, broad crate compatibility, and a well-understood upgrade path.
 
-**TypeScript + jest + anchor-litesvm.** Tests use `fromWorkspace` to bootstrap the SVM and `LiteSVMProvider` for the Anchor provider. No local validator needed.
+  ## Testing
 
-### LiteSVM capabilities
+  Two test layers covering program logic and consumer integration.
 
-- Time travel via `warp_to_slot()`
-- Arbitrary account state seeding
-- Direct sysvar manipulation
-- Compute budget control
-- Built-in System Program and SPL Token programs
+  ### Rust-side tests
+
+  **anchor-litesvm** crate v0.2.0 ([crates.io/crates/anchor-litesvm/0.2.0](https://crates.io/crates/anchor-litesvm/0.2.0)) provides an in-process Solana Virtual Machine. Supports time travel via `warp_to_slot()`, arbitrary account seeding, direct sysvar manipulation, compute budget control, and built-in System Program + SPL Token programs. Run via `cargo test-sbf` or `anchor test`.
+
+  ### TypeScript client-side tests
+
+  **anchor-litesvm** npm package v0.2.1 ([github.com/LiteSVM/anchor-litesvm](https://github.com/LiteSVM/anchor-litesvm)) via `LiteSVMProvider` + jest. Tests use `fromWorkspace` to bootstrap the SVM and the generated Anchor IDL to construct transactions. No local validator needed.
 
 ### Dependencies
 
@@ -54,7 +56,7 @@ apps/
 │   │   ├── lib.rs              # Program entry + declare_id!
 │   │   ├── error.rs            # Custom error codes
 │   │   ├── event.rs            # Anchor event definitions
-│   │   ├── state/              # Account structs (VestingSchedule, enums)
+  │   │   ├── state/              # Account structs (StreamAccount, CreatorConfig)
 │   │   └── instructions/       # Instruction handlers
 │   │       ├── mod.rs
 │   │       ├── create_stream.rs
@@ -90,7 +92,7 @@ packages/
 | What | Convention | Example |
 |---|---|---|
 | Test files | `stream.NNN.instruction.test.ts` | `stream.000.create.test.ts` |
-| PDA seeds | Lowercase static strings | `"vesting"`, not `"VestingSchedule"` |
+  | PDA seeds | Lowercase static strings | `"stream"`, not `"VestingSchedule"` |
 | Instruction files | Match instruction name exactly | `create_stream.rs` |
 | TypeScript hooks | Kebab-case | `use-vesting-schedule.ts` |
 | SDK entry | Single re-export from `index.ts` | Everything imported from one entry point |
@@ -100,16 +102,16 @@ packages/
 Test files numbered by instruction execution order:
 
 ```
-vesting.000.create.test.ts     # stream must exist first
-vesting.001.withdraw.test.ts   # then claim vested tokens
-vesting.002.cancel.test.ts     # then cancel mid-stream
+  | stream.000.create.test.ts     # stream must exist first
+  | stream.001.withdraw.test.ts   # then claim vested tokens
+  | stream.002.cancel.test.ts     # then cancel mid-stream
 ```
 
 ### SDK conventions
 
 The TypeScript SDK wraps the program IDL with typed helpers:
 
-- **PDA helpers** — `getVestingSchedulePda(creator, mint, count, programId)` returns `[PublicKey, bump]`
+  \- **PDA helpers** — `getStreamAddress(creator, recipient, mint, count, programId)` returns `[PublicKey, bump]`
 - **Event parsing** — `parseEvents(provider, program, txSignature)` returns decoded Anchor events from transaction logs
 - **Types** — Generated from the Anchor IDL; re-exported from `index.ts`
 
