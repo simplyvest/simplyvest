@@ -109,7 +109,6 @@ solana program show <PROGRAM_ID> --url devnet
 The React frontend (`apps/web`) is deployed to Cloudflare Pages via GitHub Actions. A push to `main` that touches `apps/web/` or `packages/solana-tdp-sdk/` triggers an automatic build and deploy.
 
 Preview deploys are created for pull requests at `<branch>.solana-tdp-web.pages.dev`.
-
 ### One-time setup
 
 1. Create a Cloudflare API token: Dashboard > API Tokens > Create Token > Custom > `Account > Cloudflare Pages > Edit`
@@ -118,10 +117,15 @@ Preview deploys are created for pull requests at `<branch>.solana-tdp-web.pages.
    ```bash
    pnpm dlx wrangler pages project create solana-tdp-web --production-branch=main
    ```
-4. Add two GitHub repo secrets (Settings > Secrets and variables > Actions):
-   - `CLOUDFLARE_API_TOKEN`
-   - `CLOUDFLARE_ACCOUNT_ID`
+4. Add two GitHub Actions secrets:
+   - `CLOUDFLARE_API_TOKEN` — your Cloudflare API token
+   - `CLOUDFLARE_ACCOUNT_ID` — your Cloudflare Account ID
 
+   **Where to scope the secrets:**
+   - **Repository level** (recommended) — Settings > Secrets and variables > Actions > Secrets. Available to all workflows without extra config.
+   - **Environment level** — If scoped to an environment (e.g., `main`), the workflow job must declare `environment: main` or the secrets won't be visible. Our CI workflow's `deploy-web` job already includes this declaration.
+
+5. Ensure `wrangler` is listed as a root `devDependency` in `package.json`. The `cloudflare/wrangler-action@v3` action tries to install wrangler via `pnpm add wrangler`, but that fails in a pnpm workspace without the `-w` flag (`ERR_PNPM_ADDING_TO_ROOT`). Adding wrangler as a root devDependency pre-installs it so the action finds it ready to use.
 ### Local manual deploy
 
 ```bash

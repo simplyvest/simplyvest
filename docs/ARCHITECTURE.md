@@ -14,93 +14,117 @@ This document describes the on-chain protocol architecture: account model, PDA s
 6. [Events](#events)
 7. [Error reference](#error-reference)
 
+8. [Design Decisions](#design-decisions)
 ---
 
 ## Account structure
 
 The protocol uses three on-chain account types:
 
-- **VestingSchedule PDA** — stores the metadata for a single vesting stream
-- **Escrow Token Account** — an Associated Token Account (ATA) that holds the locked tokens
+- **StreamAccount PDA** — stores the metadata for a single vesting stream
+- **Vault Token Account** — a custom PDA token account that holds the locked tokens
+- **CreatorConfig PDA** — a per-creator account tracking the next stream nonce
 
-The VestingSchedule PDA is the authority over the escrow. Only the program (signing with PDA seeds via `invoke_signed`) can move tokens out.
+The StreamAccount PDA is the authority over the vault. Only the program (signing with PDA seeds via `invoke_signed`) can move tokens out.
 
 ### Entity relationship
 
 ```mermaid
 erDiagram
-    CREATOR_WALLET ||--o{ VESTING_SCHEDULE : "creates"
-    VESTING_SCHEDULE ||--|| ESCROW_ATA : "controls"
-    RECIPIENT_WALLET ||--o{ VESTING_SCHEDULE : "claims from"
-    VESTING_SCHEDULE {
+    CREATOR ||--o{ STREAM_ACCOUNT : "creates"
+    STREAM_ACCOUNT ||--|| VAULT : "controls"
+    RECIPIENT ||--o{ STREAM_ACCOUNT : "claims from"
+    STREAM_ACCOUNT {
         pubkey creator
         pubkey recipient
         pubkey mint
-        u64 total_amount
-        u64 claimed_amount
-        i64 start_ts
-        i64 cliff_ts
-        i64 end_ts
-        vesting_type vesting_type
-        vesting_status status
+        pubkey vault
+        u64 amount
+        u64 amount_withdrawn
+        i64 start_time
+        i64 cliff_time
+        i64 end_time
+        u64 stream_count
+        bool cancelled
         u8 bump
+        u8 vault_bump
     }
-    ESCROW_ATA {
+    VAULT {
         pubkey mint
         u64 amount
         pubkey authority
     }
+    CREATOR_CONFIG {
+        pubkey creator
+        u64 stream_count
+    }
 ```
 
-### VestingSchedule PDA
+### StreamAccount PDA
 
-One per vesting stream. Created at `create_stream` time and closed when the stream completes or is cancelled.
+One per vesting stream. Created at `create_stream` time and closed when the stream completes (final `withdraw`) or is cancelled. Status is derived at read time — only `cancelled: bool` is stored.
 
-| Field | Type | Description |
+| Field | Type | Purpose |
 |---|---|---|
 | `creator` | `Pubkey` | Wallet that funded the stream. Only this wallet can cancel. |
-| `recipient` | `Pubkey` | Wallet that receives vested tokens. Only this wallet can withdraw. |
-| `mint` | `Pubkey` | SPL token mint address (e.g. USDC, project token). |
-| `total_amount` | `u64` | Total tokens locked in this stream. |
-| `claimed_amount` | `u64` | Tokens already withdrawn by the recipient. |
-| `start_ts` | `i64` | Unix timestamp when vesting begins. |
-| `cliff_ts` | `i64` | Unix timestamp of the cliff date. Set to `0` if no cliff. |
-| `end_ts` | `i64` | Unix timestamp when the full amount is vested. |
-| `vesting_type` | `VestingType` | Enum: `Cliff` or `Linear`. Milestone is future scope. |
-| `status` | `VestingStatus` | Enum: `Active`, `Completed`, or `Cancelled`. |
-| `bump` | `u8` | PDA bump seed, stored to avoid re-derivation. |
+| `recipient` | `Pubkey` | Wallet that receives vested tokens. Immutable once created. |
+| `mint` | `Pubkey` | SPL Token or Token-2022 mint address. |
+| `vault` | `Pubkey` | Escrow token account address (cached for self-description). |
+| `amount` | `u64` | Total tokens locked in this stream. |
+| `amount_withdrawn` | `u64` | Tokens already claimed by the recipient. |
+| `start_time` | `i64` | Unix timestamp when vesting begins. |
+| `end_time` | `i64` | Unix timestamp when the full amount is vested. |
+| `cliff_time` | `i64` | Unix timestamp of cliff; 0 means no cliff. |
+| `stream_count` | `u64` | Nonce used in this stream's PDA seeds. |
+| `cancelled` | `bool` | True if the creator cancelled the stream. |
+| `bump` | `u8` | Stream PDA bump seed, stored to avoid re-derivation. |
+| `vault_bump` | `u8` | Vault PDA bump seed, stored to avoid re-derivation. |
 
-### Escrow Token Account
+**Account size:** 187 bytes (8 anchor discriminator + 128 pubkeys + 48 integers + 3 bool/u8).
 
-A standard ATA owned by the VestingSchedule PDA. Created at `create_stream` time using the Associated Token Program. Closed when the stream completes or is cancelled, returning rent-exempt SOL to the creator.
+### Vault Token Account
 
-Using an ATA instead of a custom token account gives us standard wallet compatibility — wallets and explorers already know how to display ATAs.
+A custom PDA token account created with seeds `["vault", stream.key()]`. The vault is initialized via the Token Program as a standard token account with the Stream PDA as authority.
+
+Chosen over an ATA because a custom PDA can be fully closed on stream completion or cancellation, returning the rent-exempt SOL to the creator. An ATA would remain on-chain permanently, locking rent.
+
+**Seeds:** `["vault", stream.key().as_ref()]`
 
 ### CreatorConfig PDA
 
-One per creator wallet. Stores the next vesting count and is created lazily on the first `create_stream` call.
+One per creator wallet. Created lazily on the first `create_stream` call via Anchor's `init_if_needed`. Stores a sequential nonce that increments on each `create_stream`, enabling multiple streams between the same creator and recipient for the same mint.
 
-| Field | Type | Description |
+| Field | Type | Purpose |
 |---|---|---|
-| `creator` | `Pubkey` | Creator wallet address |
-| `vesting_count` | `u64` | Next sequential nonce for this creator's streams |
+| `creator` | `Pubkey` | Creator wallet address. |
+| `stream_count` | `u64` | Next sequential nonce, starting at 0. |
+
+**Account size:** 48 bytes (8 discriminator + 32 pubkey + 8 u64).
 
 ---
 
 ## PDA seeds
 
-| Account | Seeds |
-|---|---|
-| VestingSchedule | `["vesting", creator_pubkey, mint_pubkey, vesting_count (u64 LE)]` |
-| Escrow (ATA) | `AssociatedToken(vesting_schedule_pda, mint)` |
-| CreatorConfig | `["creator_config", creator_pubkey]` |
+| Account | Seeds | Notes |
+|---|---|---|
+| CreatorConfig | `["creator_config", creator]` | One per creator wallet |
+| StreamAccount | `["stream", creator, recipient, mint, stream_count]` | `stream_count` from CreatorConfig |
+| Vault | `["vault", stream.key()]` | Escrow token account |
 
-The `vesting_count` is a sequential nonce that lets the same creator fund multiple streams for the same recipient and token without address collisions. It increments on each `create_stream` call.
+The `stream_count` is a sequential nonce that lets the same creator fund multiple streams for the same recipient and mint without address collisions. It increments on each `create_stream` call.
 
-VestingSchedule PDA derivation:
+> **Why recipient in the seed?** The PDA address cryptographically commits to the beneficiary. Even if account data were somehow corrupted, the address itself proves who the stream is for. This is an extra safety invariant beyond Anchor's `has_one` constraint.
 
+> **Why mint in the seed?** Prevents collisions between streams for different tokens to the same recipient.
+
+StreamAccount PDA derivation:
 ```
-seeds = [b"vesting", creator.key.as_ref(), mint.key.as_ref(), &vesting_count.to_le_bytes()]
+seeds = [b"stream", creator.key(), recipient.key(), mint.key(), &stream_count.to_le_bytes()]
+```
+
+Vault PDA derivation:
+```
+seeds = [b"vault", stream.key()]
 ```
 
 ---
@@ -109,64 +133,107 @@ seeds = [b"vesting", creator.key.as_ref(), mint.key.as_ref(), &vesting_count.to_
 
 ### create_stream
 
-Initialize a new vesting stream. The creator specifies the recipient, token mint, amount, and time parameters. Tokens are transferred from the creator's token account into a newly created escrow ATA.
+Initialize a new vesting stream. The creator specifies the recipient, token mint, amount, and time parameters. Tokens are transferred from the creator's token account into a newly created vault PDA.
 
-- **Caller:** Creator
-- **Parameters:** `recipient`, `mint`, `total_amount`, `start_ts`, `cliff_ts`, `end_ts`, `vesting_type`
-- **Accounts:** Creator (signer), CreatorConfig PDA (init if needed), VestingSchedule PDA (init), Escrow ATA (init), Creator Token Account, Token Program, Associated Token Program, System Program
+- **Caller:** Creator (signer)
+- **Parameters:** `recipient`, `mint`, `amount`, `start_time`, `end_time`, `cliff_time`
+- **Accounts:** Creator (signer, mut), Recipient, CreatorConfig (init_if_needed, mut), StreamAccount (init, mut), Vault (init, mut), CreatorTokenAccount (mut), Mint, TokenProgram, SystemProgram, Rent sysvar
 
 **Validations:**
 
-- `total_amount > 0`
-- `end_ts > start_ts`
-- `cliff_ts == 0 || (cliff_ts > start_ts && cliff_ts <= end_ts)`
-- Creator token balance ≥ `total_amount`
-- Caller is the `creator` on the CreatorConfig account
+| Condition | Error |
+|---|---|
+| `amount == 0` | `ZeroAmount` |
+| `end_time <= start_time` | `InvalidTimeRange` |
+| `cliff_time != 0 && (cliff_time <= start_time \|\| cliff_time > end_time)` | `InvalidCliffTime` |
+| `end_time - start_time < 60` (seconds) | `DurationTooShort` |
+| Creator token balance < `amount` | `InsufficientBalance` |
+| Mint owner is neither SPL Token nor Token-2022 program | `UnsupportedTokenProgram` |
+| Token-2022 mint has transfer-hook extension | `TokenHasTransferHook` |
 
-**Effects:** Create CreatorConfig PDA if it does not exist. Create VestingSchedule PDA with status `Active`. Transfer `total_amount` tokens to escrow ATA. Emit `StreamCreated` event. Increment `vesting_count` on CreatorConfig.
+**Effects:**
 
-**Error codes:** `ZeroAmount`, `InvalidTimeRange`, `InsufficientBalance`
+1. Create CreatorConfig PDA if it does not exist.
+2. Derive StreamAccount PDA from seed components and `CreatorConfig.stream_count`.
+3. Initialize StreamAccount with supplied parameters and store the current `stream_count` value. Set `cancelled = false`.
+4. Initialize vault as a custom PDA token account with Stream PDA as authority.
+5. Transfer `amount` tokens from creator's token account to vault via CPI.
+6. Increment `CreatorConfig.stream_count`.
+7. Emit `StreamCreated` event.
+
+**Error codes:** `ZeroAmount`, `InvalidTimeRange`, `InvalidCliffTime`, `DurationTooShort`, `InsufficientBalance`, `UnsupportedTokenProgram`, `TokenHasTransferHook`
 
 ### withdraw
 
-Let the recipient claim vested tokens. Calculates claimable amount based on current clock time, the vesting curve, and amount already claimed.
+Let the recipient claim all tokens that have vested since the last withdrawal. Calculates claimable amount based on current clock time, the vesting curve, and amount already claimed.
 
-- **Caller:** Recipient
-- **Parameters:** none (all context on the VestingSchedule account)
-- **Accounts:** Recipient (signer), VestingSchedule PDA (mutable), Escrow ATA (mutable), Recipient Token Account, Token Program, Associated Token Program, Clock Sysvar
+- **Caller:** Recipient (signer)
+- **Parameters:** none (all context on the StreamAccount and Clock sysvar)
+- **Accounts:** Recipient (signer, mut), Creator (unchecked, mut, rent return), StreamAccount (mut, close_if_needed), Vault (mut, close_if_needed), RecipientTokenAccount (init_if_needed, mut), TokenProgram, AssociatedTokenProgram, SystemProgram, Clock sysvar
 
 **Validations:**
 
-- Caller is the `recipient` on the VestingSchedule
-- Stream status is `Active`
-- Current clock ≥ `cliff_ts` (if cliff is set)
-- Calculated claimable > 0
+| Condition | Error |
+|---|---|
+| Status is Cancelled | `StreamNotActive` |
+| Status is Completed | `StreamNotActive` |
+| Clock timestamp < `cliff_time` | `CliffNotReached` |
+| Calculated claimable == 0 | `NothingToWithdraw` |
 
 **Claimable calculation:**
 
-- **Linear:** `claimable = min(total_amount * elapsed / duration, total_amount) - claimed_amount`
-- **Cliff:** Before cliff → 0. After cliff → `total_amount - claimed_amount`
+```
+if clock < cliff_time:    0
+else:
+    elapsed = clock - start_time
+    duration = end_time - start_time
+    vested = min(amount * elapsed / duration, amount)
+    claimable = vested - amount_withdrawn
+```
 
-**Effects:** Transfer claimable tokens via CPI. Update `claimed_amount`. If fully claimed, set status to `Completed`. Emit `TokensWithdrawn` event.
+Integer division truncates toward zero. Any remainder is claimed on the final withdrawal (when `clock >= end_time`, `elapsed / duration = 1`, so `vested = amount`).
 
-**Error codes:** `Unauthorized`, `StreamNotActive`, `CliffNotReached`, `NothingVested`
+**Effects:**
+
+1. Create recipient's ATA via CPI if it does not exist (payer = recipient).
+2. Transfer `claimable` tokens from vault to recipient's ATA via `invoke_signed`.
+3. Update `StreamAccount.amount_withdrawn += claimable`.
+4. If `amount_withdrawn == amount` after the update:
+   - Emit `StreamCompleted` event.
+   - Close StreamAccount: return rent SOL to creator.
+   - Close Vault: return rent SOL to creator.
+5. Otherwise, emit `TokensClaimed` event.
+
+**Error codes:** `StreamNotActive`, `CliffNotReached`, `NothingToWithdraw`
 
 ### cancel
 
-Let the creator cancel an active stream. Recipient receives whatever has vested (including unclaimed). Creator gets back the unvested portion. Both accounts are closed.
+Let the creator cancel an active stream. Recipient receives whatever has vested (including unclaimed). Creator receives the unvested portion. Both accounts are closed immediately.
 
-- **Caller:** Creator
+- **Caller:** Creator (signer)
 - **Parameters:** none
-- **Accounts:** Creator (signer), VestingSchedule PDA (mutable, close), Escrow ATA (mutable, close), Recipient Token Account, Creator Token Account, Token Program, Clock Sysvar
+- **Accounts:** Creator (signer, mut), Recipient (unchecked), StreamAccount (mut, close), Vault (mut, close), CreatorTokenAccount (mut), RecipientTokenAccount (init_if_needed, mut), TokenProgram, AssociatedTokenProgram, SystemProgram, Clock sysvar
 
 **Validations:**
 
-- Caller is the `creator` on the VestingSchedule
-- Stream status is `Active`
+| Condition | Error |
+|---|---|
+| Status is Cancelled | `StreamNotActive` |
+| Status is Completed | `StreamNotActive` |
+| CreatorTokenAccount missing at cancel time | `InsufficientBalance` |
 
-**Effects:** Calculate vested amount (same formula as withdraw). Transfer vested → recipient. Transfer unvested → creator. Close escrow ATA (rent to creator). Close VestingSchedule PDA (rent to creator). Set status to `Cancelled`. Emit `StreamCancelled` event.
+**Effects:**
 
-**Error codes:** `Unauthorized`, `StreamNotActive`
+1. Calculate vested amount (same formula as `withdraw`).
+2. Calculate unvested amount = `amount - amount_withdrawn - vested_amount`.
+3. Create recipient's ATA via CPI if it does not exist (payer = creator).
+4. Transfer `vested_amount` from vault to recipient's ATA via `invoke_signed`.
+5. Transfer `unvested_amount` from vault to creator's token account via `invoke_signed`.
+6. Emit `StreamCancelled` event.
+7. Close StreamAccount: return rent SOL to creator.
+8. Close Vault: return rent SOL to creator.
+
+**Error codes:** `Unauthorized`, `StreamNotActive`, `InsufficientBalance`
 
 ---
 
@@ -179,46 +246,73 @@ sequenceDiagram
     actor Creator
     actor Recipient
     participant Program
-    participant Escrow as Escrow (ATA)
+    participant Vault as Vault (Custom PDA)
 
     Creator->>Program: create_stream(recipient, mint, amount, start, cliff, end)
-    Program->>Escrow: Transfer tokens from creator
-    Program-->>Creator: VestingSchedule PDA initialized
+    Program->>Vault: Transfer tokens from creator
+    Program-->>Creator: StreamAccount initialized
 
     Note over Program: Time passes...
 
     Recipient->>Program: withdraw()
-    Program->>Program: Calculate claimable (vested - claimed)
-    Program->>Escrow: CPI transfer to recipient
-    Escrow-->>Recipient: Vested tokens received
+    Program->>Program: Calculate claimable (vested - withdrawn)
+    Program->>Vault: CPI transfer to recipient
+    Vault-->>Recipient: Vested tokens received
 
-    Note over Program: Later: creator cancels
+    Note over Program: Creator cancels mid-stream
 
     Creator->>Program: cancel()
-    Program->>Escrow: Transfer vested to recipient
-    Program->>Escrow: Transfer unvested to creator
-    Program-->>Creator: VestingSchedule status = cancelled
+    Program->>Vault: Transfer vested to recipient
+    Program->>Vault: Transfer unvested to creator
+    Program-->>Creator: StreamAccount closed
 ```
 
-### VestingSchedule state machine
+### StreamAccount state machine
 
 ```mermaid
 stateDiagram-v2
     [*] --> Active : create_stream()
     Active --> Active : withdraw() [partial claims]
-    Active --> Completed : withdraw() [final claim, all vested]
-    Active --> Cancelled : cancel() [creator cancels]
-    Completed --> [*]
-    Cancelled --> [*]
+    Active --> Completed : withdraw() [final claim]
+    Active --> Cancelled : cancel()
+    Completed --> [*] : close accounts, rent to creator
+    Cancelled --> [*] : close accounts, rent to creator
 ```
 
 ### Clock dependency
 
 Vesting calculations depend on Solana's `Clock` sysvar `unix_timestamp`. No oracle needed — the blockchain itself provides timestamps. Solana slots are roughly 400ms, giving per-second resolution for streaming.
 
-### CPI pattern
+### CPI patterns
 
-All token transfers use `invoke_signed` with the VestingSchedule PDA's seeds. The PDA is the authority over the escrow ATA, so the program must prove it is the one authorizing the transfer. Seeds are reconstructed from the stored `bump` and account fields.
+**Token transfer (withdraw/cancel):**
+Uses `invoke_signed` with both Stream and Vault PDA seeds. The Stream PDA is the authority over the vault, so the program must prove it is the one authorizing the transfer. Seeds are reconstructed from the stored `bump`, `vault_bump`, and stored account fields.
+
+**ATA creation (withdraw/cancel):**
+If the recipient has no ATA for the vesting token, the program creates one via CPI to the Associated Token Program and Token Program. The payer is the instruction caller (recipient for `withdraw`, creator for `cancel`).
+
+**Account closure (withdraw completion / cancel):**
+StreamAccount and Vault are closed via Anchor's `close` constraint, returning rent-exempt SOL to the creator. The rent amount is deterministic — the creator paid exactly this upon creation, and gets it back in full.
+
+### Batch creation strategy
+
+The program supports single-stream creation only (`create_stream`). Batch creation is handled at the SDK level:
+
+1. The SDK derives all stream PDA addresses upfront using predicted `stream_count` values.
+2. Multiple `create_stream` instructions are packed into a single transaction (typically 3–4 per transaction due to Solana's ~1232 byte tx size limit).
+3. Solana sequentially executes instructions in a transaction — `CreatorConfig.stream_count` is incremented after each instruction, so the next instruction picks up the incremented value.
+4. Each chunk is one signature, one base fee, and atomic all-or-nothing.
+
+This avoids complexity in the on-chain program while providing near-atomic batch creation for large teams.
+
+### Token-2022 handling
+
+At `create_stream`, the program checks:
+
+1. **Mint owner:** Must be either the SPL Token program (`Tokenkeg...`) or Token-2022 program (`Tokenz...`).
+2. **Transfer-hook rejection:** If the mint is Token-2022 and has an active transfer-hook extension, creation is rejected with `TokenHasTransferHook`. Transfer hooks can block CPI transfers, causing silent failures during `withdraw` and `cancel`.
+
+Standard SPL Token mints pass through without additional checks.
 
 ---
 
@@ -226,28 +320,36 @@ All token transfers use `invoke_signed` with the VestingSchedule PDA's seeds. Th
 
 | # | Scenario | Input | Expected behavior | Error |
 |---|---|---|---|---|
-| 1 | Withdraw before cliff | `clock < cliff_ts` | Reject claim | `CliffNotReached` |
-| 2 | Cancel mid-stream | 40% vested | 40% → recipient, 60% → creator | — |
-| 3 | Zero amount create | `total_amount = 0` | Reject creation | `ZeroAmount` |
-| 4 | Fully vested, unclaimed | `end_ts` passed, `claimed = 0` | Cancel allowed (vested → recipient) | — |
-| 5 | Same recipient and creator | `recipient == creator` | Allowed — self-scheduling | — |
-| 6 | Multiple streams, same pair | Duplicate seeds | Differentiated by `vesting_count` nonce | — |
-| 7 | No recipient ATA | Recipient has no token account | Created via CPI at withdraw time | — |
-| 8 | Withdraw after fully claimed | `claimed == total_amount` | Reject | `NothingVested` |
-| 9 | Cancel already-cancelled stream | Status is `Cancelled` | Reject | `StreamNotActive` |
-| 10 | Overflow handling | Large `total_amount` | Safe math via checked arithmetic | — |
+| 1 | Withdraw before cliff | `clock < cliff_time` | Reject claim | `CliffNotReached` |
+| 2 | Cancel mid-stream | 40% vested | 40% → recipient, 60% → creator, accounts closed | — |
+| 3 | Zero amount create | `amount = 0` | Reject creation | `ZeroAmount` |
+| 4 | Fully vested, unclaimed | `end_time` passed, `withdrawn = 0` | Cancel allowed (all vested → recipient) | — |
+| 5 | Self-vesting | `recipient == creator` | Allowed — trial or self-reward use case | — |
+| 6 | Multiple streams, same pair | Same creator/recipient/mint | Differentiated by `stream_count` nonce | — |
+| 7 | No recipient ATA | Recipient has no token account | Created via CPI at withdraw/cancel time | — |
+| 8 | Creator missing ATA | Creator closed ATA before cancel | Reject | `InsufficientBalance` |
+| 9 | Withdraw after fully claimed | `withdrawn == amount` | Reject | `NothingToWithdraw` |
+| 10 | Cancel cancelled stream | Status is Cancelled | Reject | `StreamNotActive` |
+| 11 | Cancel completed stream | Status is Completed | Reject | `StreamNotActive` |
+| 12 | Duration less than 60 seconds | `end - start < 60` | Reject creation | `DurationTooShort` |
+| 13 | Token-2022 with transfer hook | Mint has transfer-hook extension | Reject creation | `TokenHasTransferHook` |
+| 14 | Overflow handling | Large `amount` | Safe math via Rust checked arithmetic | — |
+| 15 | Integer rounding at final claim | Truncated fractional tokens | Remainder claimed on final `withdraw` | — |
 
 ---
 
 ## Events
 
-Events are emitted via Anchor's `emit!` macro and parsed from transaction logs by the SDK.
+Events are emitted via Anchor's `emit!` macro and parsed from transaction logs by the SDK. Events are the authoritative on-chain record of stream activity — since accounts are fully closed on completion or cancellation, indexers rely on events to reconstruct stream history.
 
-| Event | Fields |
-|---|---|
-| `StreamCreated` | `creator`, `recipient`, `mint`, `total_amount`, `start_ts`, `cliff_ts`, `end_ts` |
-| `TokensWithdrawn` | `recipient`, `vesting_schedule`, `amount`, `remaining` |
-| `StreamCancelled` | `creator`, `recipient`, `vested_to_recipient`, `returned_to_creator` |
+**SDK responsibility:** The TypeScript SDK provides event parsing, PDA derivation helpers, computed status/claimable getters, and instruction builders. Frontend code should never derive PDAs or calculate vesting amounts directly — all math lives in the SDK.
+
+| Event | Fields | When |
+|---|---|---|
+| `StreamCreated` | `stream`, `creator`, `recipient`, `mint`, `amount`, `start_time`, `cliff_time`, `end_time` | On successful `create_stream` |
+| `TokensClaimed` | `stream`, `recipient`, `amount`, `claimed`, `total_claimed` | On every `withdraw` (including final) |
+| `StreamCompleted` | `stream`, `recipient`, `total_amount` | On `withdraw` when fully vested — followed by account closure |
+| `StreamCancelled` | `stream`, `creator`, `recipient`, `vested_to_recipient`, `returned_to_creator` | On `cancel` — followed by account closure |
 
 ---
 
@@ -255,10 +357,195 @@ Events are emitted via Anchor's `emit!` macro and parsed from transaction logs b
 
 | Error | Cause |
 |---|---|
-| `ZeroAmount` | `total_amount` is 0 |
-| `InvalidTimeRange` | `end_ts <= start_ts` |
-| `CliffNotReached` | Withdraw attempted before `cliff_ts` |
-| `NothingVested` | Withdraw when calculated claimable = 0 |
+| `ZeroAmount` | `amount` is 0 |
+| `InvalidTimeRange` | `end_time <= start_time` |
+| `InvalidCliffTime` | `cliff_time` is between `start_time` and `end_time` (or equal to `end_time` for pure cliff) |
+| `DurationTooShort` | `end_time - start_time < 60` seconds (anti-griefing minimum) |
+| `UnsupportedTokenProgram` | Mint owner is neither SPL Token nor Token-2022 |
+| `TokenHasTransferHook` | Token-2022 mint has a transfer-hook extension (would block CPI) |
+| `CliffNotReached` | Withdraw attempted before `cliff_time` |
+| `NothingToWithdraw` | Withdraw when calculated claimable = 0 |
 | `StreamNotActive` | Withdraw/cancel on a completed or cancelled stream |
 | `Unauthorized` | Non-creator calling cancel, or non-recipient calling withdraw |
-| `InsufficientBalance` | Creator token balance < `total_amount` at creation time |
+| `InsufficientBalance` | Cannot fund stream or creator's token ATA is missing at cancel time |
+
+
+---
+
+## Design Decisions
+
+Each decision documents the alternatives considered and why the chosen approach was selected. Knowing what was ruled out is as important as knowing what was picked — it tells a future reader when to revisit.
+
+### StreamAccount (vs VestingSchedule, StreamSchedule)
+
+**Alternatives considered:** "VestingSchedule" (architecture documentation), "StreamSchedule", "DistributionStream".
+
+**Rationale:** "Stream" is shorter than "VestingSchedule" for a frequently-referenced type. It matches the code convention (the stub used `StreamAccount`) and aligns with industry conventions (Streamflow, streaming vesting). The terms "vesting" and "schedule" add no semantic value — the protocol only does vesting, and every stream has its own schedule implicitly.
+
+**Trade-off:** Replaces a self-documenting name with a shorter one. The domain glossary (CONTEXT.md) compensates.
+
+### PDA seeds: recipient and mint in the derivation path
+
+**Alternatives considered:**
+1. `["vesting", creator, mint, vesting_count]` (architecture documentation) — recipient is not in seeds, verified via `has_one` constraint.
+2. `["stream", sender, recipient]` (stub code) — one stream per (sender, recipient) pair max; no mint in seeds means cross-token collisions.
+3. `["stream", creator, recipient, mint, stream_count]` (chosen).
+
+**Rationale:** Putting recipient in the seed cryptographically commits the beneficiary to the PDA address itself — an extra safety invariant beyond Anchor's `has_one`. Mint in the seed prevents address collisions between streams for different tokens sent to the same recipient. The `stream_count` nonce (per-creator) allows unlimited streams for the same (creator, recipient, mint) triple.
+
+**Trade-off:** The recipient cannot be changed after creation without closing and recreating the stream. This is intentional — recipient immutability is a protocol invariant, not a limitation.
+
+### Vault: custom PDA token account (vs Associated Token Account)
+
+**Alternatives considered:**
+1. ATA (architecture documentation) — wallet-compatible, auto-discovered by explorers.
+2. Custom PDA token account `["vault", stream.key()]` (chosen).
+
+**Rationale:** A custom PDA can be fully closed on stream completion or cancellation, returning the rent-exempt SOL to the creator. An ATA would remain on-chain permanently, locking ~0.002 SOL per stream indefinitely. At 1,000 completed streams that is ~2 SOL locked with no way to reclaim it.
+
+**Trade-off:** Custom PDAs are not auto-discovered by wallets and explorers. Users must derive the vault address from the stream PDA. The SDK provides a derivation helper for this.
+
+### Token standard: SPL Token + Token-2022 (vs SPL-only)
+
+**Alternatives considered:**
+1. SPL-only — simpler program, fewer failure modes.
+2. Both SPL Token and Token-2022 with validation gate (chosen).
+
+**Rationale:** Token-2022 adoption is growing. New tokens increasingly launch with Token-2022 features (metadata extensions, transfer hooks). Rejecting them at protocol level would limit adoption in the near future. The validation gate at `create_stream` ensures only safe mints pass through — specifically rejecting transfer-hook extensions that would cause silent CPI failures during `withdraw` or `cancel`.
+
+**Trade-off:** Extra validation logic at creation time. Slightly larger instruction due to token program detection. Token-2022 transfer-hook tokens are rejected entirely, though they could be supported with additional CPI routing (deferred to v2).
+
+### Vesting curve: timestamps define the curve (vs VestingType enum)
+
+**Alternatives considered:**
+1. `VestingType` enum: `Cliff` or `Linear` (architecture documentation) — explicit type tag per stream.
+2. No enum: `start_time`, `cliff_time`, `end_time` define the curve (chosen).
+
+**Rationale:** Three real-world vesting curves exist (pure linear, cliff-then-linear, pure cliff). All three are naturally expressed by three timestamps:
+- `cliff_time == 0` → pure linear from start to end
+- `cliff_time > start_time`, `end_time > cliff_time` → cliff-then-linear
+- `cliff_time > start_time`, `end_time == cliff_time` → pure cliff (100% at single point)
+
+A single formula handles all three cases without branching on a type tag. This is smaller, simpler, and cannot desync — the curve is the timestamps.
+
+**Trade-off:** The curve type is implicit rather than explicit in the account data. Frontends must derive the display label from timestamps. The SDK provides a helper for this.
+
+### Stream status: derived from data (vs stored VestingStatus enum)
+
+**Alternatives considered:**
+1. `VestingStatus` enum: `Active | Completed | Cancelled` (architecture documentation).
+2. Derived: `cancelled: bool` stored, completion derived from `amount_withdrawn == amount` (chosen).
+
+**Rationale:** Single source of truth. Completion is a mathematical fact derived from amounts, not a separate field that must be kept in sync. With a stored enum, every `withdraw` instruction must update both `amount_withdrawn` and the status field — if either update is missed, the account enters an inconsistent state. With derived status, consistency is guaranteed by the data itself.
+
+**Trade-off:** Clients must compute status rather than read it. The SDK provides a computed `status()` getter.
+
+### Account closure: close on completion or cancel (vs keep as tombstone)
+
+**Alternatives considered:**
+1. Keep accounts with status set to `Cancelled` or `Completed` — preserves on-chain history, but permanently locks rent.
+2. Close accounts — return rent to creator, rely on events for history (chosen).
+
+**Rationale:** Solana rent is not a gas fee — it is locked SOL. A creator with 1,000 completed streams would have ~2.4 SOL permanently locked if accounts persist. Event-based history via emitted events is the standard Solana pattern for auditability.
+
+**Trade-off:** No on-chain tombstone. Indexers must capture events to reconstruct stream history. If the indexer misses events, the history is unrecoverable. This is acceptable for MVP.
+
+### Withdraw: claim all vested tokens (vs claim specific amount)
+
+**Alternatives considered:**
+1. `withdraw(amount: u64)` — flexible, enables power-use patterns (claim-and-stake).
+2. `withdraw()` — claims all currently vested tokens (chosen).
+
+**Rationale:** The primary user is a non-technical founder or contributor who wants one-click "claim my tokens." Claim-all eliminates a common user error (under-claiming then paying another transaction fee). If a power user needs partial claims, they can call `withdraw()` and re-deposit what they do not want into another stream.
+
+**Trade-off:** No composability for smart contracts that want to claim a precise amount. Deferred to v2 as an optional `withdraw_partial()` instruction.
+
+### Batch creation: SDK-level multi-instruction (vs native create_batch instruction)
+
+**Alternatives considered:**
+1. On-chain `create_batch` instruction — packs multiple stream creations in one program invocation.
+2. SDK-level batch — packs multiple `create_stream` instructions into one transaction (chosen).
+
+**Rationale:** Keeps the on-chain program simple (three instructions, no complex batch logic). Solana processes instructions sequentially within a transaction, so `CreatorConfig.stream_count` increments naturally. Each chunk is one signature, one base fee, and atomic all-or-nothing.
+
+**Trade-off:** Solana's 1232-byte transaction size limits each chunk to ~3-4 streams. For teams of 100+, this requires 25-33 transactions. If this becomes a bottleneck, a native `create_batch` instruction can be added in v2.
+
+### Rent return: always to creator (vs to caller)
+
+**Alternatives considered:**
+1. Close to instruction caller — simpler (no extra account needed), recipient gets a small SOL bonus on completion.
+2. Close to creator (chosen) — requires `creator` unchecked account in `withdraw` instruction.
+
+**Rationale:** The creator paid the rent at creation time. Returning it to them is transparent and predictable. The research identified "fee transparency" as a market gap — founders not knowing what they pay. Creator-always-return is part of the transparency promise.
+
+**Trade-off:** `withdraw` on completion must include `creator` as an extra unchecked account (mut, just for rent). Slightly larger instruction account list.
+
+### Recipient ATA: create via CPI if missing (vs require pre-existing)
+
+**Alternatives considered:**
+1. Require pre-existing ATA — simpler program, but recipient gets a confusing "transaction failed" error.
+2. Create via CPI if missing (chosen) — seamless UX.
+
+**Rationale:** The product targets non-technical users who should not need to know what an ATA is. Creating it automatically on first claim or cancel removes a blockchain-literacy barrier identified in user research.
+
+**Trade-off:** Extra CPI call to the Associated Token Program. Additional accounts in the instruction (ATokenProgram, SystemProgram). The payer is the instruction caller (recipient on withdraw, creator on cancel).
+
+### Global protocol config: skipped for MVP
+
+**Alternatives considered:**
+1. `ProgramConfig` PDA storing protocol-level parameters (fee rate, fee recipient, pause flag, authority).
+2. No global config (chosen).
+
+**Rationale:** MVP has no fees, no pause mechanism, no governance. Upgrade authority is handled by Solana CLI (`solana program upgrade` with authority keypair). A global config would add instruction complexity (every instruction must pass the config account) for zero MVP benefit.
+
+**Trade-off:** Adding protocol-level parameters later requires a migration. Deferred to v2.
+
+### StreamAccount: store vault address (vs derive on read)
+
+**Alternatives considered:**
+1. Derive `vault` from `stream.key()` on every usage — saves 32 bytes per account.
+2. Store `vault` as a field (chosen).
+
+**Rationale:** A self-describing account is easier to debug and inspect in an explorer. The 32-byte cost is acceptable within a 187-byte account (well under the 10KB rent-exempt threshold).
+
+**Trade-off:** 32 bytes of redundant storage, since vault is deterministically derived from stream.
+
+### Vault bump: store in StreamAccount (vs re-derive at runtime)
+
+**Alternatives considered:**
+1. Re-derive via `Pubkey::find_program_address(["vault", stream.key()])` — saves 1 byte per account, costs ~100 CUs per instruction.
+2. Store `vault_bump: u8` (chosen).
+
+**Rationale:** 1 byte is negligible. Not re-deriving saves compute units on every `withdraw` and `cancel` instruction, which are the most frequently called operations.
+
+**Trade-off:** 1 extra byte per account (187 bytes → 188 bytes).
+
+### CreatorConfig stream_count: starts at 0 (vs 1)
+
+**Alternatives considered:**
+1. Start at 1 — common pattern where 0 means "not yet initialized."
+2. Start at 0 (chosen).
+
+**Rationale:** Anchor's `init_if_needed` initializes all fields to zero. Starting at 0 means the first stream uses `stream_count = 0` without any special handling. No off-by-one adjustments needed.
+
+**Trade-off:** None significant. The PDA address for the first stream uses nonce 0, which is indistinguishable from a naive default — safe because the CreatorConfig PDA existence check prevents accidental reuse.
+
+### Minimum duration: 60-second anti-griefing (vs no minimum)
+
+**Alternatives considered:**
+1. No minimum — trust the creator.
+2. 60-second minimum (chosen).
+
+**Rationale:** Prevents program account space bloat from sub-minute streams. A single malicious actor could theoretically create millions of 1-second streams, each costing rent. 60 seconds is short enough for legitimate testing (one block conf time is ~2 seconds) but long enough to prevent practical griefing.
+
+**Trade-off:** Blocks legitimate sub-minute test streams. A developer who wants to test the full lifecycle (create → wait 1 second → withdraw → close) cannot use real wall-clock time and must use `warp_to_slot()` in tests.
+
+### Self-vesting: allowed (vs disallowed)
+
+**Alternatives considered:**
+1. Disallow — reject streams where `recipient == creator`.
+2. Allow (chosen).
+
+**Rationale:** Self-vesting enables useful patterns: trialing the protocol before committing real recipients, and self-reward mechanisms where a user vests tokens to themselves. From a program perspective, self-vesting is a no-op financially (on cancel, all tokens return to the same wallet) but harmless.
+
+**Trade-off:** The cancel instruction must handle the case where creator and recipient are the same wallet — all tokens go to one ATA, the other ATA is unused but must still be passed in the account list.
