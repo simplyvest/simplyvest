@@ -19,21 +19,24 @@ This document describes the on-chain protocol architecture: account model, PDA s
 
 ## Account structure
 
-The protocol uses three on-chain account types:
+The protocol uses four on-chain account types:
 
-- **StreamAccount PDA** — stores the metadata for a single vesting stream
+- **StreamAccount PDA** — stores the metadata for a single time-based vesting stream
+- **MilestoneStream PDA** — stores the metadata for a single milestone-gated vesting stream
 - **Vault Token Account** — a custom PDA token account that holds the locked tokens
-- **CreatorConfig PDA** — a per-creator account tracking the next stream nonce
+- **CreatorConfig PDA** — a per-creator account tracking the next vesting nonce
 
 The StreamAccount PDA is the authority over the vault. Only the program (signing with PDA seeds via `invoke_signed`) can move tokens out.
 
 ### Entity relationship
-
 ```mermaid
 erDiagram
     CREATOR ||--o{ STREAM_ACCOUNT : "creates"
+    CREATOR ||--o{ MILESTONE_STREAM : "creates"
     STREAM_ACCOUNT ||--|| VAULT : "controls"
+    MILESTONE_STREAM ||--|| VAULT : "controls"
     RECIPIENT ||--o{ STREAM_ACCOUNT : "claims from"
+    RECIPIENT ||--o{ MILESTONE_STREAM : "claims from"
     STREAM_ACCOUNT {
         pubkey creator
         pubkey recipient
@@ -44,8 +47,22 @@ erDiagram
         i64 start_time
         i64 cliff_time
         i64 end_time
-        u64 stream_count
+        u64 vesting_count
         bool cancelled
+        u8 bump
+        u8 vault_bump
+    }
+    MILESTONE_STREAM {
+        pubkey creator
+        pubkey recipient
+        pubkey mint
+        pubkey vault
+        u64 amount
+        u64 amount_withdrawn
+        pubkey milestone_authority
+        bool milestone_reached
+        bool cancelled
+        u64 vesting_count
         u8 bump
         u8 vault_bump
     }
@@ -56,7 +73,7 @@ erDiagram
     }
     CREATOR_CONFIG {
         pubkey creator
-        u64 stream_count
+        u64 vesting_count
     }
 ```
 
@@ -75,7 +92,7 @@ One per vesting stream. Created at `create_stream` time and closed when the stre
 | `start_time` | `i64` | Unix timestamp when vesting begins. |
 | `end_time` | `i64` | Unix timestamp when the full amount is vested. |
 | `cliff_time` | `i64` | Unix timestamp of cliff; 0 means no cliff. |
-| `stream_count` | `u64` | Nonce used in this stream's PDA seeds. |
+|| `vesting_count` | `u64` | Nonce used in this stream's PDA seeds. |
 | `cancelled` | `bool` | True if the creator cancelled the stream. |
 | `bump` | `u8` | Stream PDA bump seed, stored to avoid re-derivation. |
 | `vault_bump` | `u8` | Vault PDA bump seed, stored to avoid re-derivation. |
@@ -92,15 +109,36 @@ Chosen over an ATA because a custom PDA can be fully closed on stream completion
 
 ### CreatorConfig PDA
 
-One per creator wallet. Created lazily on the first `create_stream` call via Anchor's `init_if_needed`. Stores a sequential nonce that increments on each `create_stream`, enabling multiple streams between the same creator and recipient for the same mint.
+One per creator wallet. Created lazily on the first `create_stream` or `create_milestone_stream` call via Anchor's `init_if_needed`. Stores a sequential nonce that increments on each `create_stream` and `create_milestone_stream`, enabling multiple streams between the same creator and recipient for the same mint.
 
 | Field | Type | Purpose |
 |---|---|---|
 | `creator` | `Pubkey` | Creator wallet address. |
-| `stream_count` | `u64` | Next sequential nonce, starting at 0. |
+|| `vesting_count` | `u64` | Next sequential nonce, starting at 0. |
 
 **Account size:** 48 bytes (8 discriminator + 32 pubkey + 8 u64).
 
+
+### MilestoneStream PDA
+
+One per milestone-gated vesting stream. Created at `create_milestone_stream` time and closed when the stream completes (final `withdraw_milestone`) or is cancelled. Status is derived at read time — `milestone_reached` gates withdrawal, `cancelled` prevents further actions.
+
+| Field | Type | Purpose |
+|---|---|---|
+| `creator` | `Pubkey` | Wallet that funded the stream. Only this wallet can cancel. |
+| `recipient` | `Pubkey` | Wallet that receives vested tokens. Immutable once created. |
+| `mint` | `Pubkey` | SPL Token or Token-2022 mint address. |
+| `vault` | `Pubkey` | Escrow token account address (cached for self-description). |
+| `amount` | `u64` | Total tokens locked in this stream. |
+| `amount_withdrawn` | `u64` | Tokens already claimed by the recipient. |
+| `milestone_authority` | `Pubkey` | Wallet authorized to trigger `milestone_reached`. |
+| `milestone_reached` | `bool` | True once the milestone authority triggers the release. |
+| `cancelled` | `bool` | True if the creator cancelled the milestone stream. |
+| `vesting_count` | `u64` | Nonce used in this stream's PDA seeds. |
+| `bump` | `u8` | MilestoneStream PDA bump seed, stored to avoid re-derivation. |
+| `vault_bump` | `u8` | Vault PDA bump seed, stored to avoid re-derivation. |
+
+**Account size:** 196 bytes (8 anchor discriminator + 160 pubkeys + 24 integers + 4 bool/u8).
 ---
 
 ## PDA seeds
@@ -108,10 +146,11 @@ One per creator wallet. Created lazily on the first `create_stream` call via Anc
 | Account | Seeds | Notes |
 |---|---|---|
 | CreatorConfig | `["creator_config", creator]` | One per creator wallet |
-| StreamAccount | `["stream", creator, recipient, mint, stream_count]` | `stream_count` from CreatorConfig |
+|| StreamAccount | `["stream", creator, recipient, mint, vesting_count]` | `vesting_count` from CreatorConfig |
 | Vault | `["vault", stream.key()]` | Escrow token account |
+|| MilestoneStream | `["milestone-stream", creator, recipient, mint, vesting_count]` | `vesting_count` from CreatorConfig |
 
-The `stream_count` is a sequential nonce that lets the same creator fund multiple streams for the same recipient and mint without address collisions. It increments on each `create_stream` call.
+The `vesting_count` is a sequential nonce that lets the same creator fund multiple streams and milestone streams for the same recipient and mint without address collisions. It increments on each `create_stream` and `create_milestone_stream` call.
 
 > **Why recipient in the seed?** The PDA address cryptographically commits to the beneficiary. Even if account data were somehow corrupted, the address itself proves who the stream is for. This is an extra safety invariant beyond Anchor's `has_one` constraint.
 
@@ -119,7 +158,11 @@ The `stream_count` is a sequential nonce that lets the same creator fund multipl
 
 StreamAccount PDA derivation:
 ```
-seeds = [b"stream", creator.key(), recipient.key(), mint.key(), &stream_count.to_le_bytes()]
+seeds = [b"stream", creator.key(), recipient.key(), mint.key(), &vesting_count.to_le_bytes()]
+```
+MilestoneStream PDA derivation:
+```
+seeds = [b"milestone-stream", creator.key(), recipient.key(), mint.key(), &vesting_count.to_le_bytes()]
 ```
 
 Vault PDA derivation:
@@ -154,21 +197,21 @@ Initialize a new vesting stream. The creator specifies the recipient, token mint
 **Effects:**
 
 1. Create CreatorConfig PDA if it does not exist.
-2. Derive StreamAccount PDA from seed components and `CreatorConfig.stream_count`.
-3. Initialize StreamAccount with supplied parameters and store the current `stream_count` value. Set `cancelled = false`.
+2. Derive StreamAccount PDA from seed components and `CreatorConfig.vesting_count`.
+3. Initialize StreamAccount with supplied parameters and store the current `vesting_count` value. Set `cancelled = false`.
 4. Initialize vault as a custom PDA token account with Stream PDA as authority.
 5. Transfer `amount` tokens from creator's token account to vault via CPI.
-6. Increment `CreatorConfig.stream_count`.
+6. Increment `CreatorConfig.vesting_count`.
 7. Emit `StreamCreated` event.
 
 **Error codes:** `ZeroAmount`, `InvalidTimeRange`, `InvalidCliffTime`, `DurationTooShort`, `InsufficientBalance`, `UnsupportedTokenProgram`, `TokenHasTransferHook`
 
 ### withdraw
 
-Let the recipient claim all tokens that have vested since the last withdrawal. Calculates claimable amount based on current clock time, the vesting curve, and amount already claimed.
+Let the recipient claim a specific amount of vested tokens. Calculates the total claimable amount based on current clock time, the vesting curve, and amount already claimed, then validates that the requested amount does not exceed the claimable.
 
 - **Caller:** Recipient (signer)
-- **Parameters:** none (all context on the StreamAccount and Clock sysvar)
+- **Parameters:** `amount: u64` — amount of tokens to claim (must be > 0 and <= total claimable)
 - **Accounts:** Recipient (signer, mut), Creator (unchecked, mut, rent return), StreamAccount (mut, close_if_needed), Vault (mut, close_if_needed), RecipientTokenAccount (init_if_needed, mut), TokenProgram, AssociatedTokenProgram, SystemProgram, Clock sysvar
 
 **Validations:**
@@ -179,6 +222,7 @@ Let the recipient claim all tokens that have vested since the last withdrawal. C
 | Status is Completed | `StreamNotActive` |
 | Clock timestamp < `cliff_time` | `CliffNotReached` |
 | Calculated claimable == 0 | `NothingToWithdraw` |
+| `amount > claimable` | `ExceedsClaimable` |
 
 **Claimable calculation:**
 
@@ -196,15 +240,16 @@ Integer division truncates toward zero. Any remainder is claimed on the final wi
 **Effects:**
 
 1. Create recipient's ATA via CPI if it does not exist (payer = recipient).
-2. Transfer `claimable` tokens from vault to recipient's ATA via `invoke_signed`.
-3. Update `StreamAccount.amount_withdrawn += claimable`.
-4. If `amount_withdrawn == amount` after the update:
+2. Validate `amount > 0` and `amount <= claimable`. Reject with `ExceedsClaimable` if exceeded.
+3. Transfer `amount` tokens from vault to recipient's ATA via `invoke_signed`.
+4. Update `StreamAccount.amount_withdrawn += amount`.
+5. If `amount_withdrawn == amount` after the update:
    - Emit `StreamCompleted` event.
    - Close StreamAccount: return rent SOL to creator.
    - Close Vault: return rent SOL to creator.
-5. Otherwise, emit `TokensClaimed` event.
+6. Otherwise, emit `TokensClaimed` event.
 
-**Error codes:** `StreamNotActive`, `CliffNotReached`, `NothingToWithdraw`
+**Error codes:** `StreamNotActive`, `CliffNotReached`, `NothingToWithdraw`, `ExceedsClaimable`
 
 ### cancel
 
@@ -235,6 +280,109 @@ Let the creator cancel an active stream. Recipient receives whatever has vested 
 
 **Error codes:** `Unauthorized`, `StreamNotActive`, `InsufficientBalance`
 
+
+### create_milestone_stream
+
+Initialize a new milestone-gated vesting stream. The creator specifies the recipient, token mint, amount, and milestone authority. Tokens are transferred from the creator's token account into a newly created vault PDA. No time parameters — withdrawal is gated by `milestone_reached` rather than a vesting schedule.
+
+- **Caller:** Creator (signer)
+- **Parameters:** `recipient`, `mint`, `amount`, `milestone_authority`
+- **Accounts:** Creator (signer, mut), Recipient, MilestoneAuthority, CreatorConfig (init_if_needed, mut), MilestoneStream (init, mut), Vault (init, mut), CreatorTokenAccount (mut), Mint, TokenProgram, SystemProgram, Rent sysvar
+
+**Validations:**
+
+| Condition | Error |
+|---|---|
+| `amount == 0` | `ZeroAmount` |
+| Creator token balance < `amount` | `InsufficientBalance` |
+| Mint owner is neither SPL Token nor Token-2022 program | `UnsupportedTokenProgram` |
+| Token-2022 mint has transfer-hook extension | `TokenHasTransferHook` |
+
+**Effects:**
+
+1. Create CreatorConfig PDA if it does not exist.
+2. Derive MilestoneStream PDA from seed components and `CreatorConfig.vesting_count`.
+3. Initialize MilestoneStream with supplied parameters and store the current `vesting_count` value. Set `milestone_reached = false`, `cancelled = false`.
+4. Initialize vault as a custom PDA token account with MilestoneStream PDA as authority.
+5. Transfer `amount` tokens from creator's token account to vault via CPI.
+6. Increment `CreatorConfig.vesting_count`.
+7. Emit `MilestoneStreamCreated` event.
+
+**Error codes:** `ZeroAmount`, `InsufficientBalance`, `UnsupportedTokenProgram`, `TokenHasTransferHook`
+
+### trigger_milestone
+
+Let the milestone authority mark a milestone stream as reached. Once triggered, the recipient can withdraw all tokens. This is a one-way gate — once `milestone_reached` is set, it cannot be unset.
+
+- **Caller:** MilestoneAuthority (signer)
+- **Parameters:** none
+- **Accounts:** MilestoneAuthority (signer), MilestoneStream (mut), Clock sysvar
+
+**Validations:**
+
+| Condition | Error |
+|---|---|
+| Status is Cancelled | `StreamNotActive` |
+| `milestone_reached == true` | `MilestoneAlreadyReached` |
+| Caller is not `milestone_authority` | `Unauthorized` |
+
+**Effects:**
+
+1. Set `MilestoneStream.milestone_reached = true`.
+2. Emit `MilestoneTriggered` event.
+
+**Error codes:** `StreamNotActive`, `MilestoneAlreadyReached`, `Unauthorized`
+
+### withdraw_milestone
+
+Let the recipient withdraw the full stream amount after the milestone has been reached. Unlike time-based `withdraw`, there is no partial claiming — the entire amount is released at once.
+
+- **Caller:** Recipient (signer)
+- **Parameters:** none
+- **Accounts:** Recipient (signer, mut), Creator (unchecked, mut, rent return), MilestoneStream (mut, close), Vault (mut, close), RecipientTokenAccount (init_if_needed, mut), TokenProgram, AssociatedTokenProgram, SystemProgram, Clock sysvar
+
+**Validations:**
+
+| Condition | Error |
+|---|---|
+| Status is Cancelled | `StreamNotActive` |
+| `milestone_reached == false` | `MilestoneNotReached` |
+| `amount_withdrawn > 0` | `NothingToWithdraw` |
+
+**Effects:**
+
+1. Create recipient's ATA via CPI if it does not exist (payer = recipient).
+2. Transfer `amount - amount_withdrawn` tokens from vault to recipient's ATA via `invoke_signed`.
+3. Update `MilestoneStream.amount_withdrawn = amount`.
+4. Emit `MilestoneCompleted` event.
+5. Close MilestoneStream: return rent SOL to creator.
+6. Close Vault: return rent SOL to creator.
+
+**Error codes:** `StreamNotActive`, `MilestoneNotReached`, `NothingToWithdraw`
+
+### cancel_milestone
+
+Let the creator cancel an active milestone stream before the milestone is reached. Creator receives the full `amount` back. Recipient receives nothing (no time-based vesting has occurred). Both accounts are closed immediately.
+
+- **Caller:** Creator (signer)
+- **Parameters:** none
+- **Accounts:** Creator (signer, mut), Recipient (unchecked), MilestoneStream (mut, close), Vault (mut, close), CreatorTokenAccount (mut), TokenProgram, SystemProgram, Clock sysvar
+
+**Validations:**
+
+| Condition | Error |
+|---|---|
+| `milestone_reached == true` | `StreamNotActive` (milestone already reached — use withdraw path) |
+| Status is Cancelled | `StreamNotActive` |
+
+**Effects:**
+
+1. Transfer `amount - amount_withdrawn` tokens from vault to creator's token account via `invoke_signed`.
+2. Emit `MilestoneCancelled` event.
+3. Close MilestoneStream: return rent SOL to creator.
+4. Close Vault: return rent SOL to creator.
+
+**Error codes:** `Unauthorized`, `StreamNotActive`
 ---
 
 ## Data flow
@@ -254,7 +402,7 @@ sequenceDiagram
 
     Note over Program: Time passes...
 
-    Recipient->>Program: withdraw()
+    Recipient->>Program: withdraw(amount)
     Program->>Program: Calculate claimable (vested - withdrawn)
     Program->>Vault: CPI transfer to recipient
     Vault-->>Recipient: Vested tokens received
@@ -272,8 +420,8 @@ sequenceDiagram
 ```mermaid
 stateDiagram-v2
     [*] --> Active : create_stream()
-    Active --> Active : withdraw() [partial claims]
-    Active --> Completed : withdraw() [final claim]
+    Active --> Active : withdraw(amount) [partial claims]
+    Active --> Completed : withdraw(amount) [final claim]
     Active --> Cancelled : cancel()
     Completed --> [*] : close accounts, rent to creator
     Cancelled --> [*] : close accounts, rent to creator
@@ -298,9 +446,9 @@ StreamAccount and Vault are closed via Anchor's `close` constraint, returning re
 
 The program supports single-stream creation only (`create_stream`). Batch creation is handled at the SDK level:
 
-1. The SDK derives all stream PDA addresses upfront using predicted `stream_count` values.
+1. The SDK derives all stream PDA addresses upfront using predicted `vesting_count` values.
 2. Multiple `create_stream` instructions are packed into a single transaction (typically 3–4 per transaction due to Solana's ~1232 byte tx size limit).
-3. Solana sequentially executes instructions in a transaction — `CreatorConfig.stream_count` is incremented after each instruction, so the next instruction picks up the incremented value.
+3. Solana sequentially executes instructions in a transaction — `CreatorConfig.vesting_count` is incremented after each instruction, so the next instruction picks up the incremented value.
 4. Each chunk is one signature, one base fee, and atomic all-or-nothing.
 
 This avoids complexity in the on-chain program while providing near-atomic batch creation for large teams.
@@ -325,7 +473,7 @@ Standard SPL Token mints pass through without additional checks.
 | 3 | Zero amount create | `amount = 0` | Reject creation | `ZeroAmount` |
 | 4 | Fully vested, unclaimed | `end_time` passed, `withdrawn = 0` | Cancel allowed (all vested → recipient) | — |
 | 5 | Self-vesting | `recipient == creator` | Allowed — trial or self-reward use case | — |
-| 6 | Multiple streams, same pair | Same creator/recipient/mint | Differentiated by `stream_count` nonce | — |
+| 6 | Multiple streams, same pair | Same creator/recipient/mint | Differentiated by `vesting_count` nonce | — |
 | 7 | No recipient ATA | Recipient has no token account | Created via CPI at withdraw/cancel time | — |
 | 8 | Creator missing ATA | Creator closed ATA before cancel | Reject | `InsufficientBalance` |
 | 9 | Withdraw after fully claimed | `withdrawn == amount` | Reject | `NothingToWithdraw` |
@@ -335,6 +483,7 @@ Standard SPL Token mints pass through without additional checks.
 | 13 | Token-2022 with transfer hook | Mint has transfer-hook extension | Reject creation | `TokenHasTransferHook` |
 | 14 | Overflow handling | Large `amount` | Safe math via Rust checked arithmetic | — |
 | 15 | Integer rounding at final claim | Truncated fractional tokens | Remainder claimed on final `withdraw` | — |
+| 16 | Withdraw amount exceeds claimable | `amount > claimable` | Reject partial claim | `ExceedsClaimable` |
 
 ---
 
@@ -350,6 +499,10 @@ Events are emitted via Anchor's `emit!` macro and parsed from transaction logs b
 | `TokensClaimed` | `stream`, `recipient`, `amount`, `claimed`, `total_claimed` | On every `withdraw` (including final) |
 | `StreamCompleted` | `stream`, `recipient`, `total_amount` | On `withdraw` when fully vested — followed by account closure |
 | `StreamCancelled` | `stream`, `creator`, `recipient`, `vested_to_recipient`, `returned_to_creator` | On `cancel` — followed by account closure |
+| `MilestoneStreamCreated` | `stream`, `creator`, `recipient`, `mint`, `amount`, `milestone_authority` | On successful `create_milestone_stream` |
+| `MilestoneTriggered` | `stream`, `milestone_authority` | On successful `trigger_milestone` |
+| `MilestoneCompleted` | `stream`, `recipient`, `total_amount` | On `withdraw_milestone` — followed by account closure |
+| `MilestoneCancelled` | `stream`, `creator`, `recipient`, `amount` | On `cancel_milestone` — followed by account closure |
 
 ---
 
@@ -366,7 +519,10 @@ Events are emitted via Anchor's `emit!` macro and parsed from transaction logs b
 | `CliffNotReached` | Withdraw attempted before `cliff_time` |
 | `NothingToWithdraw` | Withdraw when calculated claimable = 0 |
 | `StreamNotActive` | Withdraw/cancel on a completed or cancelled stream |
+| `ExceedsClaimable` | Withdraw amount exceeds the claimable total |
 | `Unauthorized` | Non-creator calling cancel, or non-recipient calling withdraw |
+| `MilestoneAlreadyReached` | `trigger_milestone` called when milestone is already reached |
+| `MilestoneNotReached` | `withdraw_milestone` called before milestone is triggered |
 | `InsufficientBalance` | Cannot fund stream or creator's token ATA is missing at cancel time |
 
 
@@ -389,9 +545,9 @@ Each decision documents the alternatives considered and why the chosen approach 
 **Alternatives considered:**
 1. `["vesting", creator, mint, vesting_count]` (architecture documentation) — recipient is not in seeds, verified via `has_one` constraint.
 2. `["stream", sender, recipient]` (stub code) — one stream per (sender, recipient) pair max; no mint in seeds means cross-token collisions.
-3. `["stream", creator, recipient, mint, stream_count]` (chosen).
+3. `["stream", creator, recipient, mint, vesting_count]` (chosen).
 
-**Rationale:** Putting recipient in the seed cryptographically commits the beneficiary to the PDA address itself — an extra safety invariant beyond Anchor's `has_one`. Mint in the seed prevents address collisions between streams for different tokens sent to the same recipient. The `stream_count` nonce (per-creator) allows unlimited streams for the same (creator, recipient, mint) triple.
+**Rationale:** Putting recipient in the seed cryptographically commits the beneficiary to the PDA address itself — an extra safety invariant beyond Anchor's `has_one`. Mint in the seed prevents address collisions between streams for different tokens sent to the same recipient. The `vesting_count` nonce (per-creator) allows unlimited streams for the same (creator, recipient, mint) triple.
 
 **Trade-off:** The recipient cannot be changed after creation without closing and recreating the stream. This is intentional — recipient immutability is a protocol invariant, not a limitation.
 
@@ -450,15 +606,15 @@ A single formula handles all three cases without branching on a type tag. This i
 
 **Trade-off:** No on-chain tombstone. Indexers must capture events to reconstruct stream history. If the indexer misses events, the history is unrecoverable. This is acceptable for MVP.
 
-### Withdraw: claim all vested tokens (vs claim specific amount)
+### Withdraw: parameterized amount (vs claim-all)
 
 **Alternatives considered:**
-1. `withdraw(amount: u64)` — flexible, enables power-use patterns (claim-and-stake).
-2. `withdraw()` — claims all currently vested tokens (chosen).
+1. `withdraw(amount: u64)` — flexible, enables power-use patterns (claim-and-stake, claim-and-swap). (chosen)
+2. `withdraw()` — claims all currently vested tokens automatically.
 
-**Rationale:** The primary user is a non-technical founder or contributor who wants one-click "claim my tokens." Claim-all eliminates a common user error (under-claiming then paying another transaction fee). If a power user needs partial claims, they can call `withdraw()` and re-deposit what they do not want into another stream.
+**Rationale:** Parameterized withdrawal enables composability — smart contracts can claim a precise amount for staking, swapping, or delegation without over-withdrawing. Claim-all is still achievable: the SDK provides a `claimAll()` helper that derives the total claimable and passes it as the amount. This gives power users flexibility without sacrificing UX for non-technical users at the SDK level.
 
-**Trade-off:** No composability for smart contracts that want to claim a precise amount. Deferred to v2 as an optional `withdraw_partial()` instruction.
+**Trade-off:** The on-chain instruction is slightly more complex (parameter validation, `ExceedsClaimable` error). Non-technical users must understand the amount parameter when calling directly. The SDK abstraction mitigates this by exposing a `claimAll()` convenience method.
 
 ### Batch creation: SDK-level multi-instruction (vs native create_batch instruction)
 
@@ -466,7 +622,7 @@ A single formula handles all three cases without branching on a type tag. This i
 1. On-chain `create_batch` instruction — packs multiple stream creations in one program invocation.
 2. SDK-level batch — packs multiple `create_stream` instructions into one transaction (chosen).
 
-**Rationale:** Keeps the on-chain program simple (three instructions, no complex batch logic). Solana processes instructions sequentially within a transaction, so `CreatorConfig.stream_count` increments naturally. Each chunk is one signature, one base fee, and atomic all-or-nothing.
+**Rationale:** Keeps the on-chain program simple (the core instructions, no complex batch logic). Solana processes instructions sequentially within a transaction, so `CreatorConfig.vesting_count` increments naturally. Each chunk is one signature, one base fee, and atomic all-or-nothing.
 
 **Trade-off:** Solana's 1232-byte transaction size limits each chunk to ~3-4 streams. For teams of 100+, this requires 25-33 transactions. If this becomes a bottleneck, a native `create_batch` instruction can be added in v2.
 
@@ -520,13 +676,13 @@ A single formula handles all three cases without branching on a type tag. This i
 
 **Trade-off:** 1 extra byte per account (187 bytes → 188 bytes).
 
-### CreatorConfig stream_count: starts at 0 (vs 1)
+### CreatorConfig vesting_count: starts at 0 (vs 1)
 
 **Alternatives considered:**
 1. Start at 1 — common pattern where 0 means "not yet initialized."
 2. Start at 0 (chosen).
 
-**Rationale:** Anchor's `init_if_needed` initializes all fields to zero. Starting at 0 means the first stream uses `stream_count = 0` without any special handling. No off-by-one adjustments needed.
+**Rationale:** Anchor's `init_if_needed` initializes all fields to zero. Starting at 0 means the first stream uses `vesting_count = 0` without any special handling. No off-by-one adjustments needed.
 
 **Trade-off:** None significant. The PDA address for the first stream uses nonce 0, which is indistinguishable from a naive default — safe because the CreatorConfig PDA existence check prevents accidental reuse.
 
