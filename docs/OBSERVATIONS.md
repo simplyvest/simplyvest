@@ -20,21 +20,6 @@ This document captures architectural decisions, market gaps, and feature request
 
 **Re-evaluate when:** Teams consistently need >50 streams per batch and the SDK chunking approach causes UX friction.
 
-## Partial withdrawal
-
-**What:** An instruction that lets the recipient claim a specific amount rather than all vested tokens.
-
-**Why deferred:** The MVP targets non-technical users who want to click "claim all" and receive everything available. Partial withdrawal adds parameter complexity to the instruction and increases the surface for user error (claiming less than vested, wasting a transaction fee).
-
-**Re-evaluate when:** Power users request "claim and stake" or "claim and swap" patterns where they want only a portion of the vested amount.
-
-## Milestone-based vesting
-
-**What:** Tokens unlock when a specific event occurs (oracle-fed or admin-triggered), rather than linearly over time.
-
-**Why deferred:** Requires oracle infrastructure or admin verification, significantly increasing on-chain complexity. The RESEARCH.md identified this as a market gap and future scope. MVP covers the vast majority of real-world use cases with time-based vesting (cliff + linear).
-
-**Re-evaluate when:** A concrete use case emerges with clear verification logic, or when the protocol has enough adoption to justify the complexity.
 
 ## Post-creation modification
 
