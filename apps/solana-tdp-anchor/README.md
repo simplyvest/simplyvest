@@ -103,9 +103,9 @@ cd apps/solana-tdp-anchor
 anchor build
 ```
 
-## How to Test (Localnet)
+## How to Test
 
-Run the full test suite against a local Solana validator:
+Tests run in-process with [LiteSVM](https://github.com/LiteSVM/litesvm) — no local validator needed.
 
 ```bash
 cd apps/solana-tdp-anchor
@@ -114,31 +114,43 @@ anchor test
 
 This will:
 1. Build the program (BPF)
-2. Start a local `solana-test-validator` with the program pre-deployed
-3. Run all TypeScript tests against it using `ts-mocha`
+2. Run all 16 TypeScript tests against LiteSVM using Jest
 
-Tests create fresh token mints, airdrop SOL to generated keypairs, and verify stream creation, cliff enforcement, and validation edge cases — all on the local validator. No network connection required.
+Tests use the `anchor-litesvm` provider (`fromWorkspace("./")` + `LiteSVMProvider`) to load the compiled `.so` and IDL directly. Each test creates fresh token mints, keypairs, and stream fixtures — fully isolated, no network required.
 
-> CI runs `anchor test` automatically on every push and pull request to `main`.
+### Test files
+
+| File | Tests |
+|---|---|
+| `solana-tdp.000.create-stream.test.ts` | 6 — happy path, cliff variant, 4 validation rejections |
+| `solana-tdp.001.withdraw.test.ts` | 6 — partial/full vesting, cumulative tracking, cliff/start/cancelled rejections |
+| `solana-tdp.002.cancel.test.ts` | 4 — pre-start/partial/post-end splits, double-cancel rejection |
+
+---
 
 ## How to Deploy to Devnet
 
-> Devnet testing is manual. The project uses the same program ID (`6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk`) for both localnet and devnet, so no IDL or address changes are needed between environments.
+> Uses the same program ID (`6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk`) for both localnet and devnet.
 
-1. **Configure Solana CLI for devnet:**
+1. **Fund the devnet wallet:**
    ```bash
-   solana config set --url devnet
+   pnpm run setup-wallet
+   # Paste your keypair JSON array when prompted
    ```
-
-2. **Ensure the devnet wallet has SOL:**
+   Or generate a fresh keypair:
    ```bash
+   solana-keygen new --outfile ./keypairs/devnet-wallet.json
    solana airdrop 2 ./keypairs/devnet-wallet.json
    ```
 
-3. **Deploy:**
+2. **Deploy:**
    ```bash
-   cd apps/solana-tdp-anchor
    anchor deploy --provider.cluster devnet
+   ```
+
+3. **Verify:**
+   ```bash
+   solana program show 6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk --url devnet
    ```
 
 ## Troubleshooting

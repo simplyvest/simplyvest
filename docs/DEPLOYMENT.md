@@ -69,9 +69,9 @@ anchor test
 
 | File | What it tests |
 |---|---|
-| `vesting.000.create.test.ts` | Stream creation with valid/invalid parameters |
-| `vesting.001.withdraw.test.ts` | Claiming vested tokens, cliff checks, partial claims |
-| `vesting.002.cancel.test.ts` | Mid-stream cancellation, vested/unvested split |
+| `solana-tdp.000.create-stream.test.ts` | Stream creation with valid/invalid parameters |
+| `solana-tdp.001.withdraw.test.ts` | Claiming vested tokens, cliff checks, partial claims |
+| `solana-tdp.002.cancel.test.ts` | Mid-stream cancellation, vested/unvested split |
 
 ---
 
