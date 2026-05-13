@@ -4,7 +4,7 @@ import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { setupTest, createMint, createTokenAccount, mintTo } from "./utils";
 import { findStreamPDA, findVaultPDA, now } from "./helpers";
 
-describe("create_stream", () => {
+describe("Feature 0: create_stream", () => {
   it("creates stream and transfers tokens to vault", async () => {
     const { provider, program, svmAirdrop, svmTokenBalance } = setupTest();
     const sender = Keypair.generate();
