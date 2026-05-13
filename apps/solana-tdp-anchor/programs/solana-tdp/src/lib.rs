@@ -1,11 +1,11 @@
 //! Solana Token Distribution Protocol (TDP)
-//! Program ID: Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS
+//! Program ID: 6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk
 
 #![allow(unexpected_cfgs)]
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 
-declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+declare_id!("6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk");
 
 #[program]
 pub mod solana_tdp {

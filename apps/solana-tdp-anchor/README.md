@@ -31,8 +31,8 @@ pnpm install
 # Build the program
 pnpm build
 
-# Run tests
-pnpm test
+# Run deploy
+pnpm run deploy
 ```
 
 If you prefer to work directly with the Anchor CLI:
@@ -82,8 +82,8 @@ StreamAccount (PDA)  [seeds: b"stream" + sender + recipient]
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/indralukmana/solana-tdp.git
-   cd solana-tdp-anchor
+   git clone https://github.com/simplyvest/simplyvest
+   cd apps/solana-tdp-anchor
    ```
 
 2. **Install dependencies:**

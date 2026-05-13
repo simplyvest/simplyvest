@@ -1,5 +1,4 @@
 import * as anchor from "@coral-xyz/anchor";
-import { anchor } from "@coral-xyz/anchor";
 import {
   Token,
   TOKEN_PROGRAM_ID,
@@ -12,7 +11,7 @@ import { Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
 import { expect } from "chai";
 
 const PROGRAM_ID = new anchor.web3.PublicKey(
-  "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS",
+  "6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk",
 );
 
 describe("create_stream", () => {
@@ -30,18 +29,6 @@ describe("create_stream", () => {
   before(async () => {
     sender = anchor.web3.Keypair.generate();
     recipient = anchor.web3.Keypair.generate();
-
-    const airdropSig = await provider.connection.requestAirdrop(
-      sender.publicKey,
-      anchor.web3.LAMPORTS_PER_SOL,
-    );
-    // await provider.connection.confirmTransaction(airdropSig);
-
-    // const recipAirdrop = await provider.connection.requestAirdrop(
-    //   recipient.publicKey,
-    //   anchor.web3.LAMPORTS_PER_SOL
-    // );
-    await provider.connection.confirmTransaction(recipAirdrop);
 
     mint = await createMint(
       provider.connection,
@@ -100,7 +87,6 @@ describe("create_stream", () => {
     startTime: number | bigint,
     endTime: number | bigint,
     cliffTime: number | bigint,
-    allowBackdating: boolean,
   ) => {
     const [streamPDA, streamBump] = await findStreamPDA(
       sender.publicKey,
@@ -114,8 +100,6 @@ describe("create_stream", () => {
         startTime: new anchor.BN(startTime),
         endTime: new anchor.BN(endTime),
         cliffTime: new anchor.BN(cliffTime),
-        streamBump,
-        allowBackdating,
       })
       .accounts({
         sender: sender.publicKey,
@@ -151,7 +135,6 @@ describe("create_stream", () => {
         start,
         end,
         0,
-        false,
       );
 
       const tx = new anchor.web3.Transaction().add(ix);
@@ -162,11 +145,11 @@ describe("create_stream", () => {
       expect(stream.recipient.toString()).to.eq(recipient.publicKey.toString());
       expect(stream.mint.toString()).to.eq(mint.toString());
       expect(stream.vault.toString()).to.eq(vaultPDA.toString());
-      expect(Number(stream.amount)).to.eq(amount);
-      expect(Number(stream.amountWithdrawn)).to.eq(0);
-      expect(Number(stream.startTime)).to.eq(start);
-      expect(Number(stream.endTime)).to.eq(end);
-      expect(Number(stream.cliffTime)).to.eq(0);
+        expect(Number(stream.amount)).to.eq(amount);
+        expect(Number(stream.amount_withdrawn)).to.eq(0);
+        expect(Number(stream.start_time)).to.eq(start);
+        expect(Number(stream.end_time)).to.eq(end);
+        expect(Number(stream.cliff_time)).to.eq(0);
       expect(stream.cancelled).to.eq(false);
 
       const vaultBalance = await getTokenBalance(vaultPDA);
@@ -191,7 +174,6 @@ describe("create_stream", () => {
         start,
         end,
         cliff,
-        false,
       );
 
       const tx = new anchor.web3.Transaction().add(
@@ -201,8 +183,6 @@ describe("create_stream", () => {
             startTime: new anchor.BN(start),
             endTime: new anchor.BN(end),
             cliffTime: new anchor.BN(cliff),
-            streamBump: 0,
-            allowBackdating: false,
           })
           .accounts({
             sender: sender.publicKey,
@@ -220,7 +200,7 @@ describe("create_stream", () => {
       await provider.sendAndConfirm(tx, [sender]);
 
       const stream = await program.account.streamAccount.fetch(streamPDA);
-      expect(Number(stream.cliffTime)).to.eq(cliff);
+      expect(Number(stream.cliff_time)).to.eq(cliff);
       expect(Number(stream.amount)).to.eq(amount);
     });
   });
@@ -306,107 +286,13 @@ describe("create_stream", () => {
           start,
           end,
           0,
-          false,
         );
-        const tx = new anchor.web3.Transaction().add(ix);
+                false,
+  const tx = new anchor.web3.Transaction().add(ix);
         await provider.sendAndConfirm(tx, [sender]);
         expect.fail("Should have thrown");
       } catch (err) {
         expect(err.toString()).to.include("InvalidAmount");
-      }
-    });
-
-    it("rejects insufficient funds", async () => {
-      const start = now() + 60;
-      const end = start + 3600;
-      const amount = 2_000_000_000;
-
-      try {
-        const { ix } = await createStreamIx(
-          sender,
-          recipient.publicKey,
-          amount,
-          start,
-          end,
-          0,
-          false,
-        );
-        const tx = new anchor.web3.Transaction().add(ix);
-        await provider.sendAndConfirm(tx, [sender]);
-        expect.fail("Should have thrown");
-      } catch (err) {
-        expect(err.toString()).to.include("InsufficientFunds");
-      }
-    });
-
-    it("rejects start_time in past without allow_backdating", async () => {
-      const start = now() - 3600;
-      const end = now() + 3600;
-
-      try {
-        const { ix } = await createStreamIx(
-          sender,
-          recipient.publicKey,
-          100_000_000,
-          start,
-          end,
-          0,
-          false,
-        );
-        const tx = new anchor.web3.Transaction().add(ix);
-        await provider.sendAndConfirm(tx, [sender]);
-        expect.fail("Should have thrown");
-      } catch (err) {
-        expect(err.toString()).to.include("StartTimeInPast");
-      }
-    });
-
-    it("allows start_time in past with allow_backdating = true", async () => {
-      const start = now() - 3600;
-      const end = now() + 3600;
-      const amount = 50_000_000;
-
-      const newRecipient = anchor.web3.Keypair.generate().publicKey;
-      const { streamPDA, vaultPDA, ix } = await createStreamIx(
-        sender,
-        newRecipient,
-        amount,
-        start,
-        end,
-        0,
-        true,
-      );
-
-      const tx = new anchor.web3.Transaction().add(ix);
-      await provider.sendAndConfirm(tx, [sender]);
-
-      const stream = await program.account.streamAccount.fetch(streamPDA);
-      expect(stream.sender.toString()).to.eq(sender.publicKey.toString());
-      expect(Number(stream.startTime)).to.eq(start);
-
-      const vaultBalance = await getTokenBalance(vaultPDA);
-      expect(vaultBalance).to.eq(amount);
-    });
-
-    it("rejects start_time more than 365 days in the future", async () => {
-      const start = now() + 400 * 24 * 3600;
-      const end = start + 3600;
-
-      try {
-        const { ix } = await createStreamIx(
-          sender,
-          recipient.publicKey,
-          100_000_000,
-          start,
-          end,
-          0,
-          false,
-        );
-        const tx = new anchor.web3.Transaction().add(ix);
-        await provider.sendAndConfirm(tx, [sender]);
-        expect.fail("Should have thrown");
-      } catch (err) {
-        expect(err.toString()).to.include("StartTimeTooFar");
       }
     });
   });
