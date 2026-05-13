@@ -10,16 +10,19 @@ import {
 } from "@solana/spl-token";
 import { fromWorkspace, LiteSVMProvider } from "anchor-litesvm";
 
-// Initialize base SVM once (shared across tests for speed)
-const baseSvm = fromWorkspace("./").withDefaultPrograms().withBuiltins().withSysvars();
+// Fresh SVM per call to prevent memory accumulation across tests
+const newSvm = () => fromWorkspace("./").withDefaultPrograms().withBuiltins().withSysvars();
 
 export const setupTest = () => {
-  const svm: any = baseSvm;
+  const svm: any = newSvm();
   const provider = new LiteSVMProvider(svm);
 
   anchor.setProvider(provider as any);
 
-  const program = anchor.workspace.SolanaTdp;
+  const program: any = new anchor.Program(
+    require("../target/idl/solana_tdp.json"),
+    provider,
+  );
 
   const svmAirdrop = (addresses: PublicKey[]) => {
     for (const address of addresses) {
