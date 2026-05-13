@@ -9,7 +9,7 @@ pub struct CreateStreamParams {
 }
 
 #[account]
-#[derive(Default, Debug)]
+#[derive(InitSpace, Debug)]
 pub struct StreamAccount {
     pub sender: Pubkey,
     pub recipient: Pubkey,
@@ -22,8 +22,4 @@ pub struct StreamAccount {
     pub cliff_time: i64,
     pub cancelled: bool,
     pub bump: u8,
-}
-
-impl StreamAccount {
-    pub const LEN: usize = 8 + 32 + 32 + 32 + 32 + 8 + 8 + 8 + 8 + 8 + 1 + 1;
 }
