@@ -25,4 +25,4 @@ wallet = "./keypairs/devnet-wallet.json"
 startup_wait = 20000
 
 [scripts]
-test = "pnpm exec ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+test = "pnpm exec jest --runInBand --verbose"
