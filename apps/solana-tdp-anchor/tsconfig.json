@@ -1,9 +1,6 @@
 {
   "compilerOptions": {
-    "types": [
-      "mocha",
-      "chai"
-    ],
+    "types": ["jest"],
     "typeRoots": [
       "./node_modules/@types"
     ],

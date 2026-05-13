@@ -103,25 +103,54 @@ cd apps/solana-tdp-anchor
 anchor build
 ```
 
+## How to Test
+
+Tests run in-process with [LiteSVM](https://github.com/LiteSVM/litesvm) — no local validator needed.
+
+```bash
+cd apps/solana-tdp-anchor
+anchor test
+```
+
+This will:
+1. Build the program (BPF)
+2. Run all 16 TypeScript tests against LiteSVM using Jest
+
+Tests use the `anchor-litesvm` provider (`fromWorkspace("./")` + `LiteSVMProvider`) to load the compiled `.so` and IDL directly. Each test creates fresh token mints, keypairs, and stream fixtures — fully isolated, no network required.
+
+### Test files
+
+| File | Tests |
+|---|---|
+| `solana-tdp.000.create-stream.test.ts` | 6 — happy path, cliff variant, 4 validation rejections |
+| `solana-tdp.001.withdraw.test.ts` | 6 — partial/full vesting, cumulative tracking, cliff/start/cancelled rejections |
+| `solana-tdp.002.cancel.test.ts` | 4 — pre-start/partial/post-end splits, double-cancel rejection |
+
+---
+
 ## How to Deploy to Devnet
 
-1. **Configure Solana CLI for devnet:**
+> Uses the same program ID (`6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk`) for both localnet and devnet.
+
+1. **Fund the devnet wallet:**
    ```bash
-   solana config set --url devnet
+   pnpm run setup-wallet
+   # Paste your keypair JSON array when prompted
+   ```
+   Or generate a fresh keypair:
+   ```bash
+   solana-keygen new --outfile ./keypairs/devnet-wallet.json
+   solana airdrop 2 ./keypairs/devnet-wallet.json
    ```
 
-2. **Ensure you have a wallet with devnet SOL:**
+2. **Deploy:**
    ```bash
-   solana airdrop 2
-   ```
-
-3. **Update Program ID (if needed):**
-   Update `declare_id!` in `apps/solana-tdp-anchor/programs/solana-tdp/src/lib.rs` and `Anchor.toml` with your program's public key.
-
-4. **Deploy:**
-   ```bash
-   cd apps/solana-tdp-anchor
    anchor deploy --provider.cluster devnet
+   ```
+
+3. **Verify:**
+   ```bash
+   solana program show 6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk --url devnet
    ```
 
 ## Troubleshooting

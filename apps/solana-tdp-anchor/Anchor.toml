@@ -17,17 +17,12 @@ solana_tdp = "6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "devnet"
+cluster = "localnet"
 wallet = "./keypairs/devnet-wallet.json"
 
 [test]
 # This helps when running 'anchor test' without a pre-started validator
 startup_wait = 20000
 
-[test.validator]
-url = "http://127.0.0.1:8899"
-rpc_port = 8899
-
-
 [scripts]
-test = "pnpm exec ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+test = "pnpm exec jest --runInBand --verbose"

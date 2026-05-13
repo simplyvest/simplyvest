@@ -69,9 +69,9 @@ anchor test
 
 | File | What it tests |
 |---|---|
-| `vesting.000.create.test.ts` | Stream creation with valid/invalid parameters |
-| `vesting.001.withdraw.test.ts` | Claiming vested tokens, cliff checks, partial claims |
-| `vesting.002.cancel.test.ts` | Mid-stream cancellation, vested/unvested split |
+| `solana-tdp.000.create-stream.test.ts` | Stream creation with valid/invalid parameters |
+| `solana-tdp.001.withdraw.test.ts` | Claiming vested tokens, cliff checks, partial claims |
+| `solana-tdp.002.cancel.test.ts` | Mid-stream cancellation, vested/unvested split |
 
 ---
 
@@ -148,14 +148,12 @@ The CI pipeline (`.github/workflows/ci.yaml`) runs on:
 - Push to `main`
 - Pull requests targeting `main`
 
-Four jobs:
-
 | Job | What it does | Tooling needed |
 |---|---|---|
-| `lint` | TypeScript check on web | Node only |
-| `anchor` | Build Anchor program + run tests | Solana CLI + Anchor CLI (cached) |
-| `web` | Production build of React frontend | Node only |
-| `deploy-web` | Deploy to Cloudflare Pages (main only) | Node + Cloudflare secrets |
+| `lint` | TypeScript check on web | Node 24, pnpm (cached) |
+| `anchor` | Build Anchor program + run LiteSVM tests | Solana CLI + Anchor CLI (cached), Rust (cached via Swatinem/rust-cache), Node 24, pnpm |
+| `web` | Production build of React frontend | Node 24, pnpm (cached) |
+| `deploy-web` | Deploy to Cloudflare Pages (main only) | Node 24, pnpm + Cloudflare secrets |
 
 The `deploy-web` job uses `cloudflare/wrangler-action@v3` and runs only on
 push to `main`. Preview deploys for PRs are handled by Cloudflare's git integration.
