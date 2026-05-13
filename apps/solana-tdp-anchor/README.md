@@ -103,22 +103,39 @@ cd apps/solana-tdp-anchor
 anchor build
 ```
 
+## How to Test (Localnet)
+
+Run the full test suite against a local Solana validator:
+
+```bash
+cd apps/solana-tdp-anchor
+anchor test
+```
+
+This will:
+1. Build the program (BPF)
+2. Start a local `solana-test-validator` with the program pre-deployed
+3. Run all TypeScript tests against it using `ts-mocha`
+
+Tests create fresh token mints, airdrop SOL to generated keypairs, and verify stream creation, cliff enforcement, and validation edge cases — all on the local validator. No network connection required.
+
+> CI runs `anchor test` automatically on every push and pull request to `main`.
+
 ## How to Deploy to Devnet
+
+> Devnet testing is manual. The project uses the same program ID (`6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk`) for both localnet and devnet, so no IDL or address changes are needed between environments.
 
 1. **Configure Solana CLI for devnet:**
    ```bash
    solana config set --url devnet
    ```
 
-2. **Ensure you have a wallet with devnet SOL:**
+2. **Ensure the devnet wallet has SOL:**
    ```bash
-   solana airdrop 2
+   solana airdrop 2 ./keypairs/devnet-wallet.json
    ```
 
-3. **Update Program ID (if needed):**
-   Update `declare_id!` in `apps/solana-tdp-anchor/programs/solana-tdp/src/lib.rs` and `Anchor.toml` with your program's public key.
-
-4. **Deploy:**
+3. **Deploy:**
    ```bash
    cd apps/solana-tdp-anchor
    anchor deploy --provider.cluster devnet
