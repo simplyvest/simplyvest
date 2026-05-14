@@ -257,7 +257,7 @@ Let the creator cancel an active stream. Recipient receives whatever has vested 
 
 - **Caller:** Creator (signer)
 - **Parameters:** none
-- **Accounts:** Creator (signer, mut), Recipient (unchecked), StreamAccount (mut, close), Vault (mut, close), CreatorTokenAccount (mut), RecipientTokenAccount (init_if_needed, mut), TokenProgram, AssociatedTokenProgram, SystemProgram, Clock sysvar
+- **Accounts:** Creator (signer, mut), Recipient (unchecked), Mint, StreamAccount (mut), Vault (mut), CreatorTokenAccount (mut), RecipientTokenAccount (init_if_needed, mut), TokenProgram, AssociatedTokenProgram, SystemProgram
 
 **Validations:**
 
@@ -270,14 +270,14 @@ Let the creator cancel an active stream. Recipient receives whatever has vested 
 **Effects:**
 
 1. Calculate vested amount (same formula as `withdraw`).
-2. Calculate unvested amount = `amount - amount_withdrawn - vested_amount`.
-3. Create recipient's ATA via CPI if it does not exist (payer = creator).
-4. Transfer `vested_amount` from vault to recipient's ATA via `invoke_signed`.
-5. Transfer `unvested_amount` from vault to creator's token account via `invoke_signed`.
-6. Emit `StreamCancelled` event.
-7. Close StreamAccount: return rent SOL to creator.
-8. Close Vault: return rent SOL to creator.
-
+2. Calculate recipient's unclaimed vested share = `vested_amount - amount_withdrawn`.
+3. Calculate unvested share = `amount - vested_amount` (returned to creator).
+4. Create recipient's ATA via `init_if_needed` if it does not exist (payer = creator).
+5. Transfer recipient share from vault to recipient's ATA via `invoke_signed`.
+6. Transfer unvested share from vault to creator's token account via `invoke_signed`.
+7. Emit `StreamCancelled` event.
+8. Close vault token account via CPI `close_account`: rent SOL to creator.
+9. Close StreamAccount: zero data and transfer rent SOL to creator.
 **Error codes:** `Unauthorized`, `StreamNotActive`, `InsufficientBalance`
 
 
