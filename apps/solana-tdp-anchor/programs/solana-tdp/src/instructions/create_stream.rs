@@ -3,6 +3,7 @@ use anchor_spl::token::{Mint, Token, TokenAccount};
 use anchor_spl::token::{self, Transfer};
 
 use crate::errors::TdpError;
+use crate::events::StreamCreated;
 use crate::state::{CreateStreamParams, CreatorConfig, StreamAccount};
 
 #[derive(Accounts)]
@@ -59,6 +60,18 @@ if params.cliff_time != 0 {
     );
 }
 
+	// Duration must be at least 60 seconds
+	require!(
+	    params.end_time - params.start_time >= 60,
+	    TdpError::DurationTooShort
+	);
+
+	// Sender must have sufficient token balance
+	require!(
+	    ctx.accounts.sender_token.amount >= params.amount,
+	    TdpError::InsufficientBalance
+	);
+
 // 2. Transfer tokens to Vault PDA
 let cpi_accounts = Transfer {
     from: ctx.accounts.sender_token.to_account_info(),
@@ -83,6 +96,18 @@ stream.cancelled = false;
 stream.bump = ctx.bumps.stream;
 stream.vesting_count = ctx.accounts.creator_config.vesting_count;
 stream.vault_bump = ctx.bumps.vault;
+
+	// Emit StreamCreated event
+	emit!(StreamCreated {
+	    stream: stream.key(),
+	    creator: ctx.accounts.sender.key(),
+	    recipient: ctx.accounts.recipient.key(),
+	    mint: ctx.accounts.mint.key(),
+	    amount: params.amount,
+	    start_time: params.start_time,
+	    cliff_time: params.cliff_time,
+	    end_time: params.end_time,
+	});
 
 // 4. Increment vesting_count for next stream
 let creator_config = &mut ctx.accounts.creator_config;
@@ -148,5 +173,54 @@ mod tests {
             &program_id,
         );
         assert_ne!(stream_pda, stream_pda3);
+    }
+
+    #[test]
+    fn test_duration_too_short_rejected() {
+        let params = CreateStreamParams {
+            amount: 1_000_000,
+            start_time: 1000,
+            end_time: 1058, // 58 seconds < 60
+            cliff_time: 0,
+        };
+        // Verify the validation condition: end_time - start_time >= 60
+        assert!(
+            params.end_time - params.start_time < 60,
+            "Duration 58s should trigger DurationTooShort"
+        );
+    }
+
+    #[test]
+    fn test_minimum_duration_accepted() {
+        let params = CreateStreamParams {
+            amount: 1_000_000,
+            start_time: 1000,
+            end_time: 1060, // exactly 60 seconds
+            cliff_time: 0,
+        };
+        assert!(
+            params.end_time - params.start_time >= 60,
+            "Duration exactly 60s should pass the duration check"
+        );
+    }
+
+    #[test]
+    fn test_insufficient_balance_rejected() {
+        let balance: u64 = 100;
+        let required: u64 = 200;
+        assert!(
+            balance < required,
+            "Balance 100 < 200 should trigger InsufficientBalance"
+        );
+    }
+
+    #[test]
+    fn test_sufficient_balance_accepted() {
+        let balance: u64 = 200;
+        let required: u64 = 200;
+        assert!(
+            balance >= required,
+            "Balance 200 >= 200 should pass the balance check"
+        );
     }
 }

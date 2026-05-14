@@ -24,6 +24,23 @@ export const setupTest = () => {
     provider,
   );
 
+  // --- SVM-based helpers ---
+
+  const svmGetTransaction = (txSig: string) => {
+    const meta = svm.getTransaction(anchor.utils.bytes.bs58.decode(txSig));
+    if (!meta) return null;
+    const logs = "logs" in meta ? (meta as any).logs() : (meta as any).meta().logs();
+    return {
+      meta: {
+        logMessages: logs,
+        err: "err" in meta ? (meta as any).err() : null,
+      },
+    };
+  };
+
+  // Monkey-patch for EventParser + parseEvents compatibility
+  (provider.connection as any).getTransaction = async (sig: string) => svmGetTransaction(sig);
+
   const svmAirdrop = (addresses: PublicKey[]) => {
     for (const address of addresses) {
       svm.airdrop(address, BigInt(10 * 1_000_000_000));
