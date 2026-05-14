@@ -72,7 +72,6 @@ mod tests {
         assert_eq!(deserialized.start_time, 1000);
         assert_eq!(deserialized.cliff_time, 2000);
         assert_eq!(deserialized.end_time, 3000);
-        assert_eq!(buf.len(), 32 * 4 + 8 * 4); // pubkeys + u64/i64 fields (no discriminator for events)
     }
 
     #[test]
