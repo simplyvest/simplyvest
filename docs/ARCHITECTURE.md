@@ -176,11 +176,11 @@ seeds = [b"vault", stream.key()]
 
 ### create_stream
 
-Initialize a new vesting stream. The creator specifies the recipient, token mint, amount, and time parameters. Tokens are transferred from the creator's token account into a newly created vault PDA.
+Initialize a new vesting stream. The creator specifies the amount, time parameters, recipient, and token mint. Tokens are transferred from the creator's token account into a newly created vault PDA.
 
 - **Caller:** Creator (signer)
-- **Parameters:** `recipient`, `mint`, `amount`, `start_time`, `end_time`, `cliff_time`
-- **Accounts:** Creator (signer, mut), Recipient, CreatorConfig (init_if_needed, mut), StreamAccount (init, mut), Vault (init, mut), CreatorTokenAccount (mut), Mint, TokenProgram, SystemProgram, Rent sysvar
+- **Parameters:** `{ amount, start_time, end_time, cliff_time }` — `recipient` and `mint` are derived from accounts
+- **Accounts:** Creator (signer, mut), Recipient, Mint, CreatorConfig (init_if_needed, mut), StreamAccount (init, mut), Vault (init, mut), CreatorTokenAccount (mut), TokenProgram, SystemProgram, Rent sysvar
 
 **Validations:**
 
@@ -211,8 +211,8 @@ Initialize a new vesting stream. The creator specifies the recipient, token mint
 Let the recipient claim a specific amount of vested tokens. Calculates the total claimable amount based on current clock time, the vesting curve, and amount already claimed, then validates that the requested amount does not exceed the claimable.
 
 - **Caller:** Recipient (signer)
-- **Parameters:** `amount: u64` — amount of tokens to claim (must be > 0 and <= total claimable)
-- **Accounts:** Recipient (signer, mut), Creator (unchecked, mut, rent return), StreamAccount (mut, close_if_needed), Vault (mut, close_if_needed), RecipientTokenAccount (init_if_needed, mut), TokenProgram, AssociatedTokenProgram, SystemProgram, Clock sysvar
+- **Parameters:** `{ amount: u64 }` — amount of tokens to claim (must be > 0 and <= total claimable)
+- **Accounts:** Recipient (signer, mut), Sender (unchecked, mut, rent return), Mint, StreamAccount (mut), Vault (mut), RecipientTokenAccount (init_if_needed, mut), TokenProgram, AssociatedTokenProgram, SystemProgram
 
 **Validations:**
 
@@ -243,11 +243,11 @@ Integer division truncates toward zero. Any remainder is claimed on the final wi
 2. Validate `amount > 0` and `amount <= claimable`. Reject with `ExceedsClaimable` if exceeded.
 3. Transfer `amount` tokens from vault to recipient's ATA via `invoke_signed`.
 4. Update `StreamAccount.amount_withdrawn += amount`.
-5. If `amount_withdrawn == amount` after the update:
+5. Emit `TokensClaimed` event.
+6. If `amount_withdrawn == amount` after the update (final withdrawal):
+   - Close vault token account via CPI `close_account`: rent SOL to sender.
+   - Close StreamAccount: zero data and transfer rent SOL to sender.
    - Emit `StreamCompleted` event.
-   - Close StreamAccount: return rent SOL to creator.
-   - Close Vault: return rent SOL to creator.
-6. Otherwise, emit `TokensClaimed` event.
 
 **Error codes:** `StreamNotActive`, `CliffNotReached`, `NothingToWithdraw`, `ExceedsClaimable`
 
@@ -440,7 +440,7 @@ Uses `invoke_signed` with both Stream and Vault PDA seeds. The Stream PDA is the
 If the recipient has no ATA for the vesting token, the program creates one via CPI to the Associated Token Program and Token Program. The payer is the instruction caller (recipient for `withdraw`, creator for `cancel`).
 
 **Account closure (withdraw completion / cancel):**
-StreamAccount and Vault are closed via Anchor's `close` constraint, returning rent-exempt SOL to the creator. The rent amount is deterministic — the creator paid exactly this upon creation, and gets it back in full.
+StreamAccount and Vault are closed manually after the final withdrawal or cancel. The vault token account is closed via CPI to the Token Program's `close_account` instruction. The StreamAccount data is zeroed and its rent-exempt SOL is transferred to the sender. Anchor's `close` constraint is not used because closure is conditional (only on final withdrawal), not unconditional at the accounts-struct level.
 
 ### Batch creation strategy
 
