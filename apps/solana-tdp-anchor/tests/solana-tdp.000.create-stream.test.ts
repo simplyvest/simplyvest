@@ -2,7 +2,7 @@ import * as anchor from "@coral-xyz/anchor";
 import { Keypair, SystemProgram } from "@solana/web3.js";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { setupTest, createMint, createTokenAccount, mintTo } from "./utils";
-import { findStreamPDA, findVaultPDA, now } from "./helpers";
+import { findStreamPDA, findVaultPDA, findCreatorConfigPDA, now } from "./helpers";
 
 describe("Feature 0: create_stream", () => {
   it("creates stream and transfers tokens to vault", async () => {
@@ -21,8 +21,9 @@ describe("Feature 0: create_stream", () => {
     const end = start + 3600;
     const cliff = 0;
 
-    const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey);
+    const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey, mint, new anchor.BN(0));
     const [vaultPDA] = await findVaultPDA(streamPDA);
+    const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
 
     const senderBalanceBefore = svmTokenBalance(senderTokenAccount);
 
@@ -40,6 +41,7 @@ describe("Feature 0: create_stream", () => {
         vault: vaultPDA,
         senderToken: senderTokenAccount,
         mint,
+        creatorConfig: creatorConfigPDA,
         tokenProgram: TOKEN_PROGRAM_ID,
         systemProgram: SystemProgram.programId,
         rent: anchor.web3.SYSVAR_RENT_PUBKEY,
@@ -82,8 +84,9 @@ describe("Feature 0: create_stream", () => {
     const cliff = start + 1800;
     const end = cliff + 3600;
 
-    const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey);
+    const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey, mint, new anchor.BN(0));
     const [vaultPDA] = await findVaultPDA(streamPDA);
+    const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
 
     await program.methods
       .createStream({
@@ -99,6 +102,7 @@ describe("Feature 0: create_stream", () => {
         vault: vaultPDA,
         senderToken: senderTokenAccount,
         mint,
+        creatorConfig: creatorConfigPDA,
         tokenProgram: TOKEN_PROGRAM_ID,
         systemProgram: SystemProgram.programId,
         rent: anchor.web3.SYSVAR_RENT_PUBKEY,
@@ -124,8 +128,9 @@ describe("Feature 0: create_stream", () => {
 
       const start = now() + 60;
       const end = start - 10;
-      const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey);
+      const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey, mint, new anchor.BN(0));
       const [vaultPDA] = await findVaultPDA(streamPDA);
+      const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
 
       await expect(
         program.methods
@@ -142,6 +147,7 @@ describe("Feature 0: create_stream", () => {
             vault: vaultPDA,
             senderToken: senderTokenAccount,
             mint,
+            creatorConfig: creatorConfigPDA,
             tokenProgram: TOKEN_PROGRAM_ID,
             systemProgram: SystemProgram.programId,
             rent: anchor.web3.SYSVAR_RENT_PUBKEY,
@@ -164,8 +170,9 @@ describe("Feature 0: create_stream", () => {
       const start = now() + 60;
       const end = start + 3600;
       const cliff = end + 100;
-      const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey);
+      const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey, mint, new anchor.BN(0));
       const [vaultPDA] = await findVaultPDA(streamPDA);
+      const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
 
       await expect(
         program.methods
@@ -182,6 +189,7 @@ describe("Feature 0: create_stream", () => {
             vault: vaultPDA,
             senderToken: senderTokenAccount,
             mint,
+            creatorConfig: creatorConfigPDA,
             tokenProgram: TOKEN_PROGRAM_ID,
             systemProgram: SystemProgram.programId,
             rent: anchor.web3.SYSVAR_RENT_PUBKEY,
@@ -204,8 +212,9 @@ describe("Feature 0: create_stream", () => {
       const start = now() + 60;
       const cliff = start - 60;
       const end = start + 3600;
-      const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey);
+      const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey, mint, new anchor.BN(0));
       const [vaultPDA] = await findVaultPDA(streamPDA);
+      const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
 
       await expect(
         program.methods
@@ -222,6 +231,7 @@ describe("Feature 0: create_stream", () => {
             vault: vaultPDA,
             senderToken: senderTokenAccount,
             mint,
+            creatorConfig: creatorConfigPDA,
             tokenProgram: TOKEN_PROGRAM_ID,
             systemProgram: SystemProgram.programId,
             rent: anchor.web3.SYSVAR_RENT_PUBKEY,
@@ -243,8 +253,9 @@ describe("Feature 0: create_stream", () => {
 
       const start = now() + 60;
       const end = start + 3600;
-      const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey);
+      const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey, mint, new anchor.BN(0));
       const [vaultPDA] = await findVaultPDA(streamPDA);
+      const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
 
       await expect(
         program.methods
@@ -261,6 +272,7 @@ describe("Feature 0: create_stream", () => {
             vault: vaultPDA,
             senderToken: senderTokenAccount,
             mint,
+            creatorConfig: creatorConfigPDA,
             tokenProgram: TOKEN_PROGRAM_ID,
             systemProgram: SystemProgram.programId,
             rent: anchor.web3.SYSVAR_RENT_PUBKEY,

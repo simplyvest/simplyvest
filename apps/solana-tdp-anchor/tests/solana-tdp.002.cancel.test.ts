@@ -3,7 +3,7 @@ import { BN } from "@coral-xyz/anchor";
 import { Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { setupTest, createMint, createTokenAccount, mintTo } from "./utils";
-import { findStreamPDA, findVaultPDA } from "./helpers";
+import { findStreamPDA, findVaultPDA, findCreatorConfigPDA } from "./helpers";
 
 describe("Feature 2: cancel", () => {
   let program: any;
@@ -41,8 +41,9 @@ describe("Feature 2: cancel", () => {
     const cliff = start + cliffOffset;
     const end = start + endOffset;
 
-    const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey);
+    const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey, mint, new BN(0));
     const [vaultPDA] = await findVaultPDA(streamPDA);
+    const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
 
     await program.methods
       .createStream({
@@ -58,6 +59,7 @@ describe("Feature 2: cancel", () => {
         vault: vaultPDA,
         senderToken,
         mint,
+        creatorConfig: creatorConfigPDA,
         tokenProgram: TOKEN_PROGRAM_ID,
         systemProgram: SystemProgram.programId,
         rent: anchor.web3.SYSVAR_RENT_PUBKEY,

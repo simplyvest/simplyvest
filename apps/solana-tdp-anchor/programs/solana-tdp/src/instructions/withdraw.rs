@@ -11,7 +11,7 @@ pub struct Withdraw<'info> {
     pub recipient: Signer<'info>,
     #[account(
         mut,
-        seeds = [b"stream", stream.sender.as_ref(), recipient.key().as_ref()],
+        seeds = [b"stream", stream.sender.as_ref(), recipient.key().as_ref(), stream.mint.as_ref(), &stream.vesting_count.to_le_bytes()],
         bump = stream.bump,
         has_one = recipient,
     )]
@@ -30,7 +30,7 @@ pub struct Withdraw<'info> {
 pub fn withdraw_handler(ctx: Context<Withdraw>) -> Result<()> { let stream = &mut ctx.accounts.stream;
 let now = Clock::get()?.unix_timestamp;
 
-require!(!stream.cancelled, TdpError::AlreadyCancelled);
+require!(!stream.cancelled, TdpError::StreamNotActive);
 require!(now >= stream.cliff_time, TdpError::CliffNotReached);
 
 // 1. Calculate Linear Vesting
@@ -61,6 +61,8 @@ let seeds = &[
     b"stream",
     stream.sender.as_ref(),
     stream.recipient.as_ref(),
+    stream.mint.as_ref(),
+    &stream.vesting_count.to_le_bytes(),
     &[stream.bump],
 ];
 let signer = &[&seeds[..]];

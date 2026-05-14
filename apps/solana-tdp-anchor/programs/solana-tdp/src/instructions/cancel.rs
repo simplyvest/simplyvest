@@ -13,7 +13,7 @@ pub struct Cancel<'info> {
     pub recipient: AccountInfo<'info>,
     #[account(
         mut,
-        seeds = [b"stream", sender.key().as_ref(), recipient.key().as_ref()],
+        seeds = [b"stream", sender.key().as_ref(), recipient.key().as_ref(), stream.mint.as_ref(), &stream.vesting_count.to_le_bytes()],
         bump = stream.bump,
         has_one = sender,
     )]
@@ -34,7 +34,7 @@ pub struct Cancel<'info> {
 pub fn cancel_handler(ctx: Context<Cancel>) -> Result<()> { let stream = &mut ctx.accounts.stream;
 let now = Clock::get()?.unix_timestamp;
 
-require!(!stream.cancelled, TdpError::AlreadyCancelled);
+require!(!stream.cancelled, TdpError::StreamNotActive);
 
 // Calculate split at moment of cancellation
 let vested_at_cancel = if now >= stream.end_time {
@@ -61,6 +61,8 @@ let seeds = &[
     b"stream",
     stream.sender.as_ref(),
     stream.recipient.as_ref(),
+    stream.mint.as_ref(),
+    &stream.vesting_count.to_le_bytes(),
     &[stream.bump],
 ];
 let signer = &[&seeds[..]];

@@ -3,7 +3,7 @@ use anchor_spl::token::{Mint, Token, TokenAccount};
 use anchor_spl::token::{self, Transfer};
 
 use crate::errors::TdpError;
-use crate::state::{CreateStreamParams, StreamAccount};
+use crate::state::{CreateStreamParams, CreatorConfig, StreamAccount};
 
 #[derive(Accounts)]
 #[instruction(params: CreateStreamParams)]
@@ -13,10 +13,18 @@ pub struct CreateStream<'info> {
     /// CHECK: Recipient doesn't sign
     pub recipient: AccountInfo<'info>,
     #[account(
+        init_if_needed,
+        payer = sender,
+        space = 8 + CreatorConfig::INIT_SPACE,
+        seeds = [b"creator_config", sender.key().as_ref()],
+        bump,
+    )]
+    pub creator_config: Box<Account<'info, CreatorConfig>>,
+    #[account(
         init,
         payer = sender,
         space = 8 + StreamAccount::INIT_SPACE,
-        seeds = [b"stream", sender.key().as_ref(), recipient.key().as_ref()],
+        seeds = [b"stream", sender.key().as_ref(), recipient.key().as_ref(), mint.key().as_ref(), &creator_config.vesting_count.to_le_bytes()],
         bump,
     )]
     pub stream: Box<Account<'info, StreamAccount>>,
@@ -38,7 +46,7 @@ pub struct CreateStream<'info> {
 }
 
 pub fn create_stream_handler(ctx: Context<CreateStream>, params: CreateStreamParams) -> Result<()> { // 1. Validations
-require!(params.amount > 0, TdpError::InvalidAmount);
+require!(params.amount > 0, TdpError::ZeroAmount);
 require!(
     params.start_time < params.end_time,
     TdpError::InvalidTimeRange
@@ -73,5 +81,72 @@ stream.end_time = params.end_time;
 stream.cliff_time = params.cliff_time;
 stream.cancelled = false;
 stream.bump = ctx.bumps.stream;
+stream.vesting_count = ctx.accounts.creator_config.vesting_count;
+stream.vault_bump = ctx.bumps.vault;
+
+// 4. Increment vesting_count for next stream
+let creator_config = &mut ctx.accounts.creator_config;
+creator_config.creator = ctx.accounts.sender.key();
+creator_config.vesting_count = creator_config.vesting_count.checked_add(1).unwrap();
 
 Ok(()) }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_pda_derivation() {
+        let program_id = crate::ID;
+        let creator = Pubkey::new_unique();
+        let recipient = Pubkey::new_unique();
+        let mint = Pubkey::new_unique();
+        let vesting_count: u64 = 0;
+
+        // Derive CreatorConfig PDA
+        let (creator_config_pda, _) = Pubkey::find_program_address(
+            &[b"creator_config", creator.as_ref()],
+            &program_id,
+        );
+
+        // Derive Stream PDA using new seed pattern
+        let (stream_pda, _) = Pubkey::find_program_address(
+            &[
+                b"stream",
+                creator.as_ref(),
+                recipient.as_ref(),
+                mint.as_ref(),
+                &vesting_count.to_le_bytes(),
+            ],
+            &program_id,
+        );
+        assert_ne!(stream_pda, Pubkey::default());
+        assert_ne!(stream_pda, creator_config_pda);
+
+        // Verify same seeds produce same PDA (deterministic)
+        let (stream_pda2, _) = Pubkey::find_program_address(
+            &[
+                b"stream",
+                creator.as_ref(),
+                recipient.as_ref(),
+                mint.as_ref(),
+                &vesting_count.to_le_bytes(),
+            ],
+            &program_id,
+        );
+        assert_eq!(stream_pda, stream_pda2);
+
+        // Verify different vesting_count produces different PDA
+        let (stream_pda3, _) = Pubkey::find_program_address(
+            &[
+                b"stream",
+                creator.as_ref(),
+                recipient.as_ref(),
+                mint.as_ref(),
+                &1u64.to_le_bytes(),
+            ],
+            &program_id,
+        );
+        assert_ne!(stream_pda, stream_pda3);
+    }
+}

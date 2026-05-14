@@ -2,16 +2,66 @@ use anchor_lang::prelude::*;
 
 #[error_code]
 pub enum TdpError {
-    #[msg("Stream has already been cancelled.")]
-    AlreadyCancelled,
-    #[msg("Cliff time has not been reached yet.")]
-    CliffNotReached,
-    #[msg("No tokens are available to withdraw at this time.")]
-    NothingToWithdraw,
+    #[msg("Amount must be greater than zero.")]
+    ZeroAmount,
     #[msg("start_time must be before end_time.")]
     InvalidTimeRange,
     #[msg("cliff_time must be between start_time and end_time.")]
     InvalidCliffTime,
-    #[msg("Amount must be greater than zero.")]
-    InvalidAmount,
+    #[msg("Stream duration must be at least 60 seconds.")]
+    DurationTooShort,
+    #[msg("Sender does not have enough token balance.")]
+    InsufficientBalance,
+    #[msg("Unsupported token program. Only SPL Token is supported.")]
+    UnsupportedTokenProgram,
+    #[msg("Token mint has a transfer hook; not supported.")]
+    TokenHasTransferHook,
+    #[msg("Cliff time has not been reached yet.")]
+    CliffNotReached,
+    #[msg("No tokens are available to withdraw at this time.")]
+    NothingToWithdraw,
+    #[msg("Stream is not active.")]
+    StreamNotActive,
+    #[msg("Requested amount exceeds claimable tokens.")]
+    ExceedsClaimable,
+    #[msg("You are not authorized to perform this action.")]
+    Unauthorized,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_error_discriminants() {
+        // Each variant should map to the correct numeric discriminant (0-indexed)
+        assert_eq!(TdpError::ZeroAmount as u32, 0);
+        assert_eq!(TdpError::InvalidTimeRange as u32, 1);
+        assert_eq!(TdpError::InvalidCliffTime as u32, 2);
+        assert_eq!(TdpError::DurationTooShort as u32, 3);
+        assert_eq!(TdpError::InsufficientBalance as u32, 4);
+        assert_eq!(TdpError::UnsupportedTokenProgram as u32, 5);
+        assert_eq!(TdpError::TokenHasTransferHook as u32, 6);
+        assert_eq!(TdpError::CliffNotReached as u32, 7);
+        assert_eq!(TdpError::NothingToWithdraw as u32, 8);
+        assert_eq!(TdpError::StreamNotActive as u32, 9);
+        assert_eq!(TdpError::ExceedsClaimable as u32, 10);
+        assert_eq!(TdpError::Unauthorized as u32, 11);
+    }
+
+    #[test]
+    fn test_error_messages() {
+        assert_eq!(TdpError::ZeroAmount.to_string(), "Amount must be greater than zero.");
+        assert_eq!(TdpError::InvalidTimeRange.to_string(), "start_time must be before end_time.");
+        assert_eq!(TdpError::InvalidCliffTime.to_string(), "cliff_time must be between start_time and end_time.");
+        assert_eq!(TdpError::DurationTooShort.to_string(), "Stream duration must be at least 60 seconds.");
+        assert_eq!(TdpError::InsufficientBalance.to_string(), "Sender does not have enough token balance.");
+        assert_eq!(TdpError::UnsupportedTokenProgram.to_string(), "Unsupported token program. Only SPL Token is supported.");
+        assert_eq!(TdpError::TokenHasTransferHook.to_string(), "Token mint has a transfer hook; not supported.");
+        assert_eq!(TdpError::CliffNotReached.to_string(), "Cliff time has not been reached yet.");
+        assert_eq!(TdpError::NothingToWithdraw.to_string(), "No tokens are available to withdraw at this time.");
+        assert_eq!(TdpError::StreamNotActive.to_string(), "Stream is not active.");
+        assert_eq!(TdpError::ExceedsClaimable.to_string(), "Requested amount exceeds claimable tokens.");
+        assert_eq!(TdpError::Unauthorized.to_string(), "You are not authorized to perform this action.");
+    }
 }
