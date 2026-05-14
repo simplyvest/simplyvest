@@ -345,4 +345,70 @@ describe("Feature 1: withdraw", () => {
     const senderAfter = svm.getBalance(sender.publicKey);
     expect(senderAfter > senderBefore).toBe(true);
   });
+
+  // ── Vesting percentages, partial claims, and authorization ──────────────
+
+  it("withdraws 25% at quarter vesting", async () => {
+    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, start, end } =
+      await createStreamFixture(1_000_000, 0, 400, 0);
+    warp(100); // 25% elapsed (100 / 400)
+    const expected = Math.floor((amount * 100) / 400);
+
+    await program.methods
+      .withdraw({ amount: new BN(expected) })
+      .accounts(withdrawAccounts(recipient.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+      .signers([recipient])
+      .rpc();
+
+    const stream = await program.account.streamAccount.fetch(streamPDA);
+    expect(Number(stream.amountWithdrawn)).toBe(expected);
+  });
+
+  it("withdraws 50% then remaining 50% on same stream", async () => {
+    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, start, end } =
+      await createStreamFixture(1_000_000, 0, 400, 0);
+
+    // First withdrawal at 50% elapsed
+    warp(200);
+    const half = Math.floor((amount * 200) / 400);
+    await program.methods
+      .withdraw({ amount: new BN(half) })
+      .accounts(withdrawAccounts(recipient.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+      .signers([recipient])
+      .rpc();
+
+    const streamAfterFirst = await program.account.streamAccount.fetch(streamPDA);
+    expect(Number(streamAfterFirst.amountWithdrawn)).toBe(half);
+    expect(svmTokenBalance(vaultPDA)).toBe(BigInt(amount - half));
+  });
+
+  it("rejects withdraw by third party", async () => {
+    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, start, end } =
+      await createStreamFixture(1_000_000, 0, 400, 0);
+    warp(200);
+    const thirdParty = Keypair.generate();
+    svmAirdrop([thirdParty.publicKey]);
+
+    await expect(
+      program.methods
+        .withdraw({ amount: new BN(100) })
+        .accounts(withdrawAccounts(thirdParty.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+        .signers([thirdParty])
+        .rpc(),
+    ).rejects.toThrow();
+  });
+
+  it("rejects withdraw by creator (not recipient)", async () => {
+    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, start, end } =
+      await createStreamFixture(1_000_000, 0, 400, 0);
+    warp(200);
+
+    await expect(
+      program.methods
+        .withdraw({ amount: new BN(100) })
+        .accounts(withdrawAccounts(sender.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+        .signers([sender])
+        .rpc(),
+    ).rejects.toThrow();
+  });
 });
