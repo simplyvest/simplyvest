@@ -145,14 +145,26 @@ Tests use the `anchor-litesvm` provider (`fromWorkspace("./")` + `LiteSVMProvide
 
 2. **Deploy:**
    ```bash
-   anchor deploy --provider.cluster devnet
+   pnpm run deploy
    ```
+   This executes `solana program deploy` directly (not `anchor deploy`). The devnet wallet must be the program's upgrade authority.
 
 3. **Verify:**
    ```bash
    solana program show 6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk --url devnet
    ```
 
+## Devnet Smoke Test
+
+Run the happy-path end-to-end test against real devnet:
+
+```bash
+pnpm run devnet-test
+```
+
+This executes all three instructions (`create_stream` → `withdraw` → `cancel`) using the devnet wallet as both sender and recipient. A fresh SPL token mint is created for each run. Every transaction links to Solana Explorer for inspection.
+
+**Prerequisites:** The devnet wallet must be funded and the program must be deployed (see above).
 ## Troubleshooting
 
 ### Anchor 0.30.1 → 0.32.1 Upgrade
