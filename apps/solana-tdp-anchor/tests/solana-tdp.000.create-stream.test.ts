@@ -506,7 +506,7 @@ describe("Feature 0: create_stream", () => {
         sender,
         BigInt(100_000_000),
       );
-      const start = now() - 60; // past time
+      const start = 1000; // Unix timestamp year 1970 - definitely in the past
       const end = start + 3600;
       const [streamPDA] = await findStreamPDA(
         sender.publicKey,
