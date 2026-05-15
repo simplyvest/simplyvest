@@ -363,6 +363,7 @@ describe("Feature 0: create_stream", () => {
           .rpc(),
       ).rejects.toThrow(/Sender does not have enough token balance/);
     });
+    
     it("rejects start_time in the past", async () => {
       const { provider, program, svmAirdrop } = setupTest();
       const sender = Keypair.generate();
@@ -371,7 +372,7 @@ describe("Feature 0: create_stream", () => {
       const mint = await createMint(provider, sender, sender.publicKey, 6);
       const senderTokenAccount = await createTokenAccount(provider, sender, mint, sender.publicKey);
       await mintTo(provider, mint, senderTokenAccount, sender, BigInt(100_000_000));
-      const start = now() - 6000; // past time
+      const start = now() - 60; // past time
       const end = start + 3600;
       const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey, mint, new anchor.BN(0));
       const [vaultPDA] = await findVaultPDA(streamPDA);
