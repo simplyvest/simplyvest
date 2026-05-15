@@ -14,6 +14,7 @@ env:
   ANCHOR_VERSION: "0.32.1"
   CARGO_INCREMENTAL: "0"
   CARGO_PROFILE_TEST_DEBUG: "0"
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
   lint:
@@ -85,7 +86,7 @@ jobs:
         working-directory: .
 
       - name: Build program (BPF)
-        run: anchor build ${{ github.ref != 'refs/heads/main' && '--no-idl' || '' }}
+        run: anchor build
 
       - name: Stage program binary
         run: mkdir -p target/deploy && cp programs/solana-tdp/target/deploy/solana_tdp.so target/deploy/

@@ -98,8 +98,8 @@ Update `declare_id!("...")` in `programs/tdp/src/lib.rs` and `[programs.localnet
 
 | | |
 |---|---|
-| **Program ID (devnet)** | *TBD on first deploy* |
-| **Solscan** | *TBD* |
+| **Program ID (devnet)** | [`6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk`](https://explorer.solana.com/address/6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk?cluster=devnet) |
+| **Explorer** | [Solana Explorer (devnet)](https://explorer.solana.com/?cluster=devnet) |
 | **License** | MIT |
 
 ## Team

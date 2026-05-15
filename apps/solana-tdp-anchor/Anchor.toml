@@ -2,15 +2,13 @@
 anchor_version = "0.32.1"
 
 [features]
-default = []
-idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
-seeds = false
+resolution = true
 skip-lint = true
 
-[programs.localnet]
+[programs.devnet]
 solana_tdp = "6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk"
 
-[programs.devnet]
+[programs.localnet]
 solana_tdp = "6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk"
 
 [registry]
@@ -20,9 +18,10 @@ url = "https://api.apr.dev"
 cluster = "localnet"
 wallet = "./keypairs/devnet-wallet.json"
 
-[test]
-# This helps when running 'anchor test' without a pre-started validator
-startup_wait = 20000
-
 [scripts]
 test = "pnpm exec jest --runInBand --verbose"
+
+[test]
+startup_wait = 20000
+shutdown_wait = 2000
+upgradeable = false
