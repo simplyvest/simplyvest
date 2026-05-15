@@ -10,6 +10,8 @@ pub enum TdpError {
     InvalidCliffTime,
     #[msg("Stream duration must be at least 60 seconds.")]
     DurationTooShort,
+    #[msg("Stream starttime cannot be in the past.")]
+    StartTimeInPast,
     #[msg("Sender does not have enough token balance.")]
     InsufficientBalance,
     #[msg("Unsupported token program. Only SPL Token is supported.")]
@@ -39,6 +41,7 @@ mod tests {
         assert_eq!(TdpError::InvalidTimeRange as u32, 1);
         assert_eq!(TdpError::InvalidCliffTime as u32, 2);
         assert_eq!(TdpError::DurationTooShort as u32, 3);
+        assert_eq!(TdpError::StartTimeInPast as u32, 3);
         assert_eq!(TdpError::InsufficientBalance as u32, 4);
         assert_eq!(TdpError::UnsupportedTokenProgram as u32, 5);
         assert_eq!(TdpError::TokenHasTransferHook as u32, 6);
@@ -51,17 +54,57 @@ mod tests {
 
     #[test]
     fn test_error_messages() {
-        assert_eq!(TdpError::ZeroAmount.to_string(), "Amount must be greater than zero.");
-        assert_eq!(TdpError::InvalidTimeRange.to_string(), "start_time must be before end_time.");
-        assert_eq!(TdpError::InvalidCliffTime.to_string(), "cliff_time must be between start_time and end_time.");
-        assert_eq!(TdpError::DurationTooShort.to_string(), "Stream duration must be at least 60 seconds.");
-        assert_eq!(TdpError::InsufficientBalance.to_string(), "Sender does not have enough token balance.");
-        assert_eq!(TdpError::UnsupportedTokenProgram.to_string(), "Unsupported token program. Only SPL Token is supported.");
-        assert_eq!(TdpError::TokenHasTransferHook.to_string(), "Token mint has a transfer hook; not supported.");
-        assert_eq!(TdpError::CliffNotReached.to_string(), "Cliff time has not been reached yet.");
-        assert_eq!(TdpError::NothingToWithdraw.to_string(), "No tokens are available to withdraw at this time.");
-        assert_eq!(TdpError::StreamNotActive.to_string(), "Stream is not active.");
-        assert_eq!(TdpError::ExceedsClaimable.to_string(), "Requested amount exceeds claimable tokens.");
-        assert_eq!(TdpError::Unauthorized.to_string(), "You are not authorized to perform this action.");
+        assert_eq!(
+            TdpError::ZeroAmount.to_string(),
+            "Amount must be greater than zero."
+        );
+        assert_eq!(
+            TdpError::InvalidTimeRange.to_string(),
+            "start_time must be before end_time."
+        );
+        assert_eq!(
+            TdpError::InvalidCliffTime.to_string(),
+            "cliff_time must be between start_time and end_time."
+        );
+        assert_eq!(
+            TdpError::DurationTooShort.to_string(),
+            "Stream duration must be at least 60 seconds."
+        );
+        assert_eq!(
+            TdpError::StartTimeInPast.to_string(),
+            "start_time cannot be in the past."
+        );
+        assert_eq!(
+            TdpError::InsufficientBalance.to_string(),
+            "Sender does not have enough token balance."
+        );
+        assert_eq!(
+            TdpError::UnsupportedTokenProgram.to_string(),
+            "Unsupported token program. Only SPL Token is supported."
+        );
+        assert_eq!(
+            TdpError::TokenHasTransferHook.to_string(),
+            "Token mint has a transfer hook; not supported."
+        );
+        assert_eq!(
+            TdpError::CliffNotReached.to_string(),
+            "Cliff time has not been reached yet."
+        );
+        assert_eq!(
+            TdpError::NothingToWithdraw.to_string(),
+            "No tokens are available to withdraw at this time."
+        );
+        assert_eq!(
+            TdpError::StreamNotActive.to_string(),
+            "Stream is not active."
+        );
+        assert_eq!(
+            TdpError::ExceedsClaimable.to_string(),
+            "Requested amount exceeds claimable tokens."
+        );
+        assert_eq!(
+            TdpError::Unauthorized.to_string(),
+            "You are not authorized to perform this action."
+        );
     }
 }
