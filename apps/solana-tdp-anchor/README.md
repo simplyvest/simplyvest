@@ -130,7 +130,7 @@ Tests use the `anchor-litesvm` provider (`fromWorkspace("./")` + `LiteSVMProvide
 
 ## How to Deploy to Devnet
 
-> Uses the same program ID (`6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk`) for both localnet and devnet.
+> Program ID: [`6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk`](https://explorer.solana.com/address/6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk?cluster=devnet) — same for both localnet and devnet.
 
 1. **Fund the devnet wallet:**
    ```bash
@@ -147,7 +147,7 @@ Tests use the `anchor-litesvm` provider (`fromWorkspace("./")` + `LiteSVMProvide
    ```bash
    pnpm run deploy
    ```
-   This executes `solana program deploy` directly (not `anchor deploy`). The devnet wallet must be the program's upgrade authority.
+   This executes `solana program deploy` directly (not `anchor deploy`) on [devnet](https://explorer.solana.com/?cluster=devnet). The devnet wallet must be the program's upgrade authority.
 
 3. **Verify:**
    ```bash
