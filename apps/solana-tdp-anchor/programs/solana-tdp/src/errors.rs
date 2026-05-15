@@ -41,15 +41,15 @@ mod tests {
         assert_eq!(TdpError::InvalidTimeRange as u32, 1);
         assert_eq!(TdpError::InvalidCliffTime as u32, 2);
         assert_eq!(TdpError::DurationTooShort as u32, 3);
-        assert_eq!(TdpError::StartTimeInPast as u32, 3);
-        assert_eq!(TdpError::InsufficientBalance as u32, 4);
-        assert_eq!(TdpError::UnsupportedTokenProgram as u32, 5);
-        assert_eq!(TdpError::TokenHasTransferHook as u32, 6);
-        assert_eq!(TdpError::CliffNotReached as u32, 7);
-        assert_eq!(TdpError::NothingToWithdraw as u32, 8);
-        assert_eq!(TdpError::StreamNotActive as u32, 9);
-        assert_eq!(TdpError::ExceedsClaimable as u32, 10);
-        assert_eq!(TdpError::Unauthorized as u32, 11);
+        assert_eq!(TdpError::StartTimeInPast as u32, 4);
+        assert_eq!(TdpError::InsufficientBalance as u32, 5);
+        assert_eq!(TdpError::UnsupportedTokenProgram as u32, 6);
+        assert_eq!(TdpError::TokenHasTransferHook as u32, 7);
+        assert_eq!(TdpError::CliffNotReached as u32, 8);
+        assert_eq!(TdpError::NothingToWithdraw as u32, 9);
+        assert_eq!(TdpError::StreamNotActive as u32, 10);
+        assert_eq!(TdpError::ExceedsClaimable as u32, 11);
+        assert_eq!(TdpError::Unauthorized as u32, 12);
     }
 
     #[test]
