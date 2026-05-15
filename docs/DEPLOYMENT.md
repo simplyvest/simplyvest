@@ -76,31 +76,26 @@ anchor test
 ---
 
 ## Program deployment
-
 ```bash
 cd apps/solana-tdp-anchor
 
-# Switch to devnet
-solana config set --url devnet
-
-# Fund your wallet (if needed)
-# If the airdrop doesn't work, use https://faucet.solana.com
-solana airdrop 2
-
-# Deploy
-anchor deploy --provider.cluster devnet
+# Deploy to devnet
+pnpm run deploy
 
 # Verify
-solana program show <PROGRAM_ID> --url devnet
+solana program show 6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk --url devnet
 ```
+
+Program ID: [`6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk`](https://explorer.solana.com/address/6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk?cluster=devnet)
+
 
 ### Deployment info
 
 | | |
 |---|---|
 | **Network** | Solana Devnet |
-| **Program ID** | *TBD on first deploy* |
-| **Solscan** | *TBD* |
+| **Program ID** | [`6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk`](https://explorer.solana.com/address/6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk?cluster=devnet) |
+| **Explorer** | [Solana Explorer (devnet)](https://explorer.solana.com/?cluster=devnet) |
 
 ---
 
