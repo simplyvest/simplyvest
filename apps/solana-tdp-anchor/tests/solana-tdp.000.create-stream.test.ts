@@ -363,6 +363,32 @@ describe("Feature 0: create_stream", () => {
           .rpc(),
       ).rejects.toThrow(/Sender does not have enough token balance/);
     });
+    it("rejects start_time in the past", async () => {
+      const { provider, program, svmAirdrop } = setupTest();
+      const sender = Keypair.generate();
+      const recipient = Keypair.generate();
+      svmAirdrop([sender.publicKey]);
+      const mint = await createMint(provider, sender, sender.publicKey, 6);
+      const senderTokenAccount = await createTokenAccount(provider, sender, mint, sender.publicKey);
+      await mintTo(provider, mint, senderTokenAccount, sender, BigInt(100_000_000));
+      const start = now() - 6000; // past time
+      const end = start + 3600;
+      const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey, mint, new anchor.BN(0));
+      const [vaultPDA] = await findVaultPDA(streamPDA);
+      const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
+      await expect(
+        program.methods
+          .createStream({
+            amount: new anchor.BN(100_000_000),
+            startTime: new anchor.BN(start),
+            endTime: new anchor.BN(end),
+            cliffTime: new anchor.BN(0),
+          })
+          .accounts({ /* same accounts as other tests */ })
+          .signers([sender])
+          .rpc(),
+      ).rejects.toThrow(/start_time cannot be in the past/);
+    });
   });
 
   it("emits StreamCreated event with correct data", async () => {
