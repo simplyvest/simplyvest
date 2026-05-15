@@ -48,8 +48,6 @@ pub struct CreateStream<'info> {
 
 pub fn create_stream_handler(ctx: Context<CreateStream>, params: CreateStreamParams) -> Result<()> {
     let now = Clock::get()?.unix_timestamp;
-    require!(params.start_time >= now, TdpError::StartTimeInPast);
-    let now = Clock::get()?.unix_timestamp;
     require!(params.start_time >= now, TdpError::StartTimeInPast); // 1. Validations
     require!(params.amount > 0, TdpError::ZeroAmount);
     require!(
