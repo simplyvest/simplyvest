@@ -8,4 +8,5 @@ test-ledger
 dist/
 .tanstack/
 .wrangler/
+.env
 .dev.vars
