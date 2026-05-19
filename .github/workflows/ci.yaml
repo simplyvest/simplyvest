@@ -16,8 +16,15 @@ env:
   CARGO_PROFILE_TEST_DEBUG: "0"
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
+# Future jobs to add:
+#   lint       — eslint + prettier check across all JS/TS
+#   format     — prettier --check
+#   test-web   — vitest / jest
+#   test-sdk   — SDK tests
+#   publish-sdk — npm publish (main only)
+
 jobs:
-  lint:
+  typecheck-web:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -31,6 +38,37 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: TypeScript check (web)
         run: pnpm --filter @solana-tdp/web check:ts
+
+  typecheck-api:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: TypeScript check (api)
+        run: pnpm --filter @solana-tdp/api typecheck
+
+  build-web:
+    needs: typecheck-web
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build web app
+        run: pnpm --filter @solana-tdp/web build
 
   anchor:
     runs-on: ubuntu-24.04
@@ -94,24 +132,9 @@ jobs:
       - name: Run tests
         run: anchor test --skip-build
 
-  web:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10.33.0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - name: Build web app
-        run: pnpm --filter @solana-tdp/web build
-
   deploy-web:
     if: github.ref == 'refs/heads/main'
-    needs: web
+    needs: typecheck-web
     runs-on: ubuntu-24.04
     environment: main
     env:
@@ -134,7 +157,7 @@ jobs:
 
   deploy-api:
     if: github.ref == 'refs/heads/main'
-    needs: lint
+    needs: typecheck-api
     runs-on: ubuntu-24.04
     environment: main
     env:
