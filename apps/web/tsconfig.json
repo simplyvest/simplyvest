@@ -20,5 +20,5 @@
       "@/*": ["app/*"]
     }
   },
-  "include": ["app", "components"]
+  "include": ["app", "components", "vite-env.d.ts"]
 }

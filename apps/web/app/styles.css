@@ -1,26 +1,192 @@
 @import "tailwindcss";
 
+@variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root, :root[data-theme="dark"] {
+  --bg: #0a0b0f;
+  --bg1: #111318;
+  --bg2: #181b22;
+  --border: #22262f;
+  --border2: #2e3340;
+  --text: #dde1ec;
+  --muted: #8b93a5;
+  --dim: #4d5565;
+  --sol: #9945ff;
+  --sol2: #14f195;
+  --sol3: #00c2ff;
+  --warn: #f7931a;
+  --code-bg: #0f1117;
+  --code-bdr: #1e2330;
+  --tag1: #1d1030;
+  --tag1t: #c084fc;
+  --tag2: #0a2018;
+  --tag2t: #34d399;
+  --tag3: #001a2e;
+  --tag3t: #38bdf8;
+  --glow: 0 0 60px rgba(153, 69, 255, 0.12);
+}
+
+:root[data-theme="light"] {
+  --bg: #f5f4f0;
+  --bg1: #ffffff;
+  --bg2: #f0eeea;
+  --border: #e2ddd6;
+  --border2: #cbc5bc;
+  --text: #1c1a17;
+  --muted: #6b6359;
+  --dim: #b5afa6;
+  --sol: #6d28d9;
+  --sol2: #047857;
+  --sol3: #0369a1;
+  --warn: #c2410c;
+  --code-bg: #1c1a17;
+  --code-bdr: #2e2a24;
+  --tag1: #ede9fe;
+  --tag1t: #5b21b6;
+  --tag2: #d1fae5;
+  --tag2t: #065f46;
+  --tag3: #e0f2fe;
+  --tag3t: #0c4a6e;
+  --glow: 0 0 40px rgba(109, 40, 217, 0.06);
+}
+
 @theme {
-  --color-background: #0a0a0a;
-  --color-foreground: #fafafa;
-  --color-card: #171717;
-  --color-card-foreground: #fafafa;
-  --color-popover: #171717;
-  --color-popover-foreground: #fafafa;
-  --color-primary: #e5e5e5;
-  --color-primary-foreground: #0a0a0a;
-  --color-secondary: #262626;
-  --color-secondary-foreground: #fafafa;
-  --color-muted: #262626;
-  --color-muted-foreground: #a3a3a3;
-  --color-accent: #262626;
-  --color-accent-foreground: #fafafa;
-  --color-destructive: #dc2626;
-  --color-destructive-foreground: #fafafa;
-  --color-border: #262626;
-  --color-input: #262626;
-  --color-ring: #d4d4d4;
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
+  --color-bg: var(--bg);
+  --color-bg1: var(--bg1);
+  --color-bg2: var(--bg2);
+  --color-border: var(--border);
+  --color-border2: var(--border2);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-dim: var(--dim);
+  --color-sol: var(--sol);
+  --color-sol2: var(--sol2);
+  --color-sol3: var(--sol3);
+  --color-warn: var(--warn);
+  --color-code-bg: var(--code-bg);
+  --color-code-bdr: var(--code-bdr);
+  --color-tag1: var(--tag1);
+  --color-tag1t: var(--tag1t);
+  --color-tag2: var(--tag2);
+  --color-tag2t: var(--tag2t);
+  --color-tag3: var(--tag3);
+  --color-tag3t: var(--tag3t);
+  --font-display: "Bebas Neue", sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  line-height: 1.75;
+  transition: background 0.3s, color 0.3s;
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 6rem);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  margin-bottom: 1.5rem;
+}
+
+h1 em {
+  font-style: normal;
+  color: var(--sol);
+}
+
+h2 {
+  font-weight: 700;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin-bottom: 0.5rem;
+}
+
+h3 {
+  font-weight: 600;
+  font-size: 1.15rem;
+  margin-bottom: 0.4rem;
+}
+
+h4 {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+}
+
+p {
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+p + p {
+  margin-top: 0.7rem;
+}
+
+strong {
+  font-weight: 600;
+}
+
+a:where(:not([class])) {
+  color: var(--sol);
+  text-decoration: none;
+}
+
+a:where(:not([class])):hover {
+  text-decoration: underline;
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  color: var(--sol3);
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--code-bdr);
+  border-radius: 8px;
+  padding: 1.2rem 1.4rem;
+  margin: 1.2rem 0;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.7;
+}
+
+pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: inherit;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility fade-in {
+  animation: fadeUp 0.45s ease both;
 }

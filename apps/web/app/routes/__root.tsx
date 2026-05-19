@@ -7,11 +7,14 @@ import {
 } from "@tanstack/react-router";
 import { SolanaProvider } from "@/components/solana/solana-provider";
 import { Toaster } from "sonner";
-import { WalletButton } from "@/components/solana/wallet-button";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+
+const DEV = import.meta.env.DEV;
+import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,10 +31,10 @@ export const Route = createRootRoute({
     <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
         <h1 className="text-4xl font-semibold tracking-tight">404</h1>
-        <p className="mt-2 text-muted-foreground">Page not found.</p>
+        <p className="mt-2 text-muted">Page not found.</p>
         <Link
           to="/"
-          className="mt-6 inline-block text-sm font-medium text-primary hover:underline"
+          className="mt-6 inline-block text-sm font-medium text-sol hover:underline"
         >
           Go home
         </Link>
@@ -42,50 +45,66 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   const routerState = useRouterState();
+  const location = routerState.location;
+  const isAppRoute = location.pathname.startsWith("/app");
   const isLoading = routerState.status === "pending";
 
   return (
     <QueryClientProvider client={queryClient}>
       <SolanaProvider>
-        <div className="flex min-h-screen flex-col bg-background text-foreground">
-          <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur">
-            <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4">
-              <Link to="/" className="text-xl font-semibold tracking-tight">
-                Solana TDP
-              </Link>
-              <nav className="flex items-center gap-6">
+        <div className="flex min-h-screen flex-col bg-bg text-text">
+          {isAppRoute ? (
+            <header className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur">
+              <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
                 <Link
                   to="/"
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  className="flex items-center gap-2.5 text-lg font-semibold tracking-tight no-underline hover:no-underline"
                 >
-                  Home
+                  <div className="flex items-center gap-2.5 rounded-md bg-sol p-1.5 dark:bg-transparent">
+                    <img
+                      src="/simplyvest.png"
+                      alt="SimplyVest"
+                      className="h-6 w-auto"
+                    />
+                  </div>
+                  SimplyVest
                 </Link>
-                <WalletButton />
-              </nav>
-            </div>
-          </header>
+              </div>
+            </header>
+          ) : (
+            <Header />
+          )}
 
-          <main className="flex-1">
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-sol focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:no-underline"
+          >
+            Skip to main content
+          </a>
+
+          <main id="main-content" className="flex-1">
             {isLoading ? (
               <div className="flex h-64 items-center justify-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-sol border-t-transparent" />
               </div>
             ) : (
               <Outlet />
             )}
           </main>
 
-          <footer className="border-t border-border py-8">
-            <div className="mx-auto max-w-4xl px-4 text-center text-sm text-muted-foreground">
-              Solana Token Distribution Protocol
-            </div>
-          </footer>
-          <TanStackDevtools
-            plugins={[
-              { name: "TanStack Query", render: <ReactQueryDevtoolsPanel /> },
-              { name: "TanStack Router", render: <TanStackRouterDevtoolsPanel /> },
-            ]}
-          />
+          {!isAppRoute && <Footer />}
+
+          {DEV && (
+            <TanStackDevtools
+              plugins={[
+                { name: "TanStack Query", render: <ReactQueryDevtoolsPanel /> },
+                {
+                  name: "TanStack Router",
+                  render: <TanStackRouterDevtoolsPanel />,
+                },
+              ]}
+            />
+          )}
         </div>
         <Toaster richColors />
       </SolanaProvider>
