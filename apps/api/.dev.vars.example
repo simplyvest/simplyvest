@@ -1,0 +1,5 @@
+# Paste your service account JSON values here:
+# GOOGLE_SERVICE_ACCOUNT_EMAIL=your-sa@project.iam.gserviceaccount.com
+# GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
+# GOOGLE_SHEET_ID=your-google-sheet-id
+# ALLOWED_ORIGIN=http://localhost:5173

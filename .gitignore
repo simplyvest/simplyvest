@@ -7,3 +7,6 @@ test-ledger
 .yarn
 dist/
 .tanstack/
+.wrangler/
+.env
+.dev.vars
