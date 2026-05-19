@@ -34,9 +34,34 @@ function WaitlistPage() {
     }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  const [error, setError] = React.useState("");
+  const [sending, setSending] = React.useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitted(true);
+    setSending(true);
+    setError("");
+
+    try {
+      const apiUrl =
+        import.meta.env.VITE_API_URL ?? "http://localhost:8787";
+      const res = await fetch(`${apiUrl}/api/waitlist`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      if (!res.ok) {
+        const data = (await res.json()) as { error?: string };
+        throw new Error(data.error ?? "Submission failed");
+      }
+
+      setSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
@@ -124,12 +149,19 @@ function WaitlistPage() {
               />
             </div>
 
+            {error && (
+              <div className="mt-6 rounded-lg border border-warn/30 bg-warn/5 px-4 py-3 text-sm text-warn">
+                {error}
+              </div>
+            )}
+
             <div className="mt-8">
               <button
                 type="submit"
-                className="rounded-md bg-[#7c3aed] px-8 py-3 text-sm font-semibold text-white transition-all hover:bg-[#6d28d9] focus-visible:ring-2 focus-visible:ring-sol focus-visible:outline-none"
+                disabled={sending}
+                className="rounded-md bg-[#7c3aed] px-8 py-3 text-sm font-semibold text-white transition-all hover:bg-[#6d28d9] focus-visible:ring-2 focus-visible:ring-sol focus-visible:outline-none disabled:opacity-50"
               >
-                Join Waitlist
+                {sending ? "Submitting..." : "Join Waitlist"}
               </button>
             </div>
 
