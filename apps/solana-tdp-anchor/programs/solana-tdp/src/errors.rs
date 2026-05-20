@@ -22,6 +22,10 @@ pub enum TdpError {
     NothingToWithdraw,
     #[msg("Stream is not active.")]
     StreamNotActive,
+    #[msg("Stream is fully vested; no tokens remain to cancel.")]
+    FullyVested,
+    #[msg("Stream start time must be in the future.")]
+    StreamExpired,
     #[msg("Requested amount exceeds claimable tokens.")]
     ExceedsClaimable,
     #[msg("You are not authorized to perform this action.")]
@@ -47,6 +51,8 @@ mod tests {
         assert_eq!(TdpError::StreamNotActive as u32, 9);
         assert_eq!(TdpError::ExceedsClaimable as u32, 10);
         assert_eq!(TdpError::Unauthorized as u32, 11);
+        assert_eq!(TdpError::FullyVested as u32, 12);
+        assert_eq!(TdpError::StreamExpired as u32, 13);
     }
 
     #[test]
@@ -63,5 +69,7 @@ mod tests {
         assert_eq!(TdpError::StreamNotActive.to_string(), "Stream is not active.");
         assert_eq!(TdpError::ExceedsClaimable.to_string(), "Requested amount exceeds claimable tokens.");
         assert_eq!(TdpError::Unauthorized.to_string(), "You are not authorized to perform this action.");
+        assert_eq!(TdpError::FullyVested.to_string(), "Stream is fully vested; no tokens remain to cancel.");
+        assert_eq!(TdpError::StreamExpired.to_string(), "Stream start time must be in the future.");
     }
 }

@@ -73,6 +73,13 @@ pub fn create_stream_handler(ctx: Context<CreateStream>, params: CreateStreamPar
         TdpError::InsufficientBalance
     );
 
+    // Start time must be in the future
+    let clock = Clock::get()?;
+    require!(
+        params.start_time > clock.unix_timestamp,
+        TdpError::StreamExpired
+    );
+
     // 2. Transfer tokens to Vault PDA
     let cpi_accounts = Transfer {
         from: ctx.accounts.sender_token.to_account_info(),
