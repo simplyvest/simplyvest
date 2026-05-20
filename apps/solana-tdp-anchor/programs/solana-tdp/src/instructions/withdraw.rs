@@ -61,7 +61,7 @@ pub fn withdraw_handler(ctx: Context<Withdraw>, params: WithdrawParams) -> Resul
     let now = Clock::get()?.unix_timestamp;
 
     // 1. Validations
-    require!(!stream.cancelled, TdpError::StreamNotActive);
+    require!(!stream.cancelled, TdpError::AlreadyCancelled);
     require!(now >= stream.cliff_time, TdpError::CliffNotReached);
     require!(params.amount > 0, TdpError::ZeroAmount);
 

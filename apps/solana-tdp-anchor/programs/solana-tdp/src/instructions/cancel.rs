@@ -58,7 +58,14 @@ pub fn cancel_handler(ctx: Context<Cancel>) -> Result<()> {
     let stream = &mut ctx.accounts.stream;
     let now = Clock::get()?.unix_timestamp;
 
-    require!(!stream.cancelled, TdpError::StreamNotActive);
+    // 1. Only the stream creator can cancel
+    require_keys_eq!(ctx.accounts.sender.key(), stream.sender, TdpError::Unauthorized);
+
+    // 2. Cannot cancel an already-cancelled stream
+    require!(!stream.cancelled, TdpError::AlreadyCancelled);
+
+    // 3. Cannot cancel a fully withdrawn stream
+    require!(stream.amount_withdrawn < stream.amount, TdpError::FullyVested);
 
     // Calculate split at moment of cancellation (cliff-aware: vesting starts at cliff_time)
     let vest_start = if stream.cliff_time != 0 { stream.cliff_time } else { stream.start_time };
