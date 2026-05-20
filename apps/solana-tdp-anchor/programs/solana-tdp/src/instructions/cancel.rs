@@ -60,14 +60,15 @@ pub fn cancel_handler(ctx: Context<Cancel>) -> Result<()> {
 
     require!(!stream.cancelled, TdpError::StreamNotActive);
 
-    // Calculate split at moment of cancellation
+    // Calculate split at moment of cancellation (cliff-aware: vesting starts at cliff_time)
+    let vest_start = if stream.cliff_time != 0 { stream.cliff_time } else { stream.start_time };
     let vested_at_cancel = if now >= stream.end_time {
         stream.amount
-    } else if now <= stream.start_time {
+    } else if now <= vest_start {
         0
     } else {
-        let elapsed = (now - stream.start_time) as u64;
-        let duration = (stream.end_time - stream.start_time) as u64;
+        let elapsed = (now - vest_start) as u64;
+        let duration = (stream.end_time - vest_start) as u64;
         stream
             .amount
             .checked_mul(elapsed)
