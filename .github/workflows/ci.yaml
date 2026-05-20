@@ -172,4 +172,4 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Deploy API Worker
-        run: pnpm --filter @solana-tdp/api deploy
+        run: pnpm --filter @solana-tdp/api run deploy

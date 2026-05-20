@@ -129,7 +129,7 @@ pnpm dlx wrangler login
 
 # Build and deploy
 pnpm --filter @solana-tdp/web build
-pnpm --filter @solana-tdp/web deploy
+pnpm wrangler pages deploy apps/web/dist --project-name=simplyvest
 ```
 
 SPA routing works out of the box — Cloudflare Pages auto-detects a client-side router when there is no `404.html` and serves `index.html` for all unmatched paths.
