@@ -37,6 +37,37 @@ pub struct StreamCancelled {
     pub returned_to_creator: u64,
 }
 
+#[event]
+pub struct MilestoneStreamCreated {
+    pub stream: Pubkey,
+    pub creator: Pubkey,
+    pub recipient: Pubkey,
+    pub mint: Pubkey,
+    pub amount: u64,
+    pub milestone_authority: Pubkey,
+}
+
+#[event]
+pub struct MilestoneTriggered {
+    pub stream: Pubkey,
+    pub milestone_authority: Pubkey,
+}
+
+#[event]
+pub struct MilestoneCompleted {
+    pub stream: Pubkey,
+    pub recipient: Pubkey,
+    pub amount: u64,
+}
+
+#[event]
+pub struct MilestoneCancelled {
+    pub stream: Pubkey,
+    pub creator: Pubkey,
+    pub recipient: Pubkey,
+    pub returned_to_creator: u64,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
