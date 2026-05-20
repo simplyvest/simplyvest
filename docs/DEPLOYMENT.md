@@ -72,6 +72,7 @@ anchor test
 | `solana-tdp.000.create-stream.test.ts` | Stream creation with valid/invalid parameters |
 | `solana-tdp.001.withdraw.test.ts` | Claiming vested tokens, cliff checks, partial claims |
 | `solana-tdp.002.cancel.test.ts` | Mid-stream cancellation, vested/unvested split |
+| `solana-tdp.003.milestone.test.ts` | Milestone stream creation, trigger, withdraw, cancel |
 
 ---
 

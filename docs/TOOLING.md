@@ -55,6 +55,7 @@ Tests use the `anchor-litesvm` npm package (v0.2.1) via `LiteSVMProvider`. Each 
 | `solana-tdp.000.create-stream.test.ts` | 9 tests — happy path, cliff variant, 4 validation rejections, DurationTooShort, InsufficientBalance, StreamCreated event |
 | `solana-tdp.001.withdraw.test.ts` | 13 tests — partial/full vesting, cumulative tracking, cliff/start/cancelled rejections, ExceedsClaimable, TokensClaimed event, closure, 25%/50% percentages, third-party/creator rejections |
 | `solana-tdp.002.cancel.test.ts` | 6 tests — pre-start/partial/post-end splits, double-cancel rejection, StreamCancelled event, closure |
+| `solana-tdp.003.milestone.test.ts` | Milestone stream creation, trigger, withdraw, cancel |
 
 ---
 
@@ -85,14 +86,18 @@ apps/
 │   │   ├── lib.rs              # Program entry + declare_id!
 │   │   ├── errors.rs           # Custom error codes
 │   │   ├── events.rs           # Anchor event definitions
-│   │   ├── state/              # Account structs (StreamAccount, CreatorConfig)
+│   │   ├── state/              # Account structs (StreamAccount, MilestoneStreamAccount, CreatorConfig)
 │   │   │   ├── mod.rs
 │   │   │   └── stream_account.rs
 │   │   └── instructions/       # Instruction handlers
 │   │       ├── mod.rs
 │   │       ├── create_stream.rs
 │   │       ├── withdraw.rs
-│   │       └── cancel.rs
+│   │       ├── cancel.rs
+│   │       ├── create_milestone_stream.rs
+│   │       ├── trigger_milestone.rs
+│   │       ├── withdraw_milestone.rs
+│   │       └── cancel_milestone.rs
 │   └── tests/
 │       ├── solana-tdp.000.create-stream.test.ts
 │       ├── solana-tdp.001.withdraw.test.ts
@@ -131,6 +136,7 @@ Test files numbered by instruction execution order:
 solana-tdp.000.create-stream.test.ts    # stream must exist first
 solana-tdp.001.withdraw.test.ts          # then claim vested tokens
 solana-tdp.002.cancel.test.ts            # then cancel mid-stream
+solana-tdp.003.milestone.test.ts         # milestone lifecycle
 ```
 
 ### Anchor.toml

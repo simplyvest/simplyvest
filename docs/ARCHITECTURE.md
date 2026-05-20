@@ -191,6 +191,7 @@ Initialize a new vesting stream. The creator specifies the amount, time paramete
 | `cliff_time != 0 && (cliff_time <= start_time \|\| cliff_time > end_time)` | `InvalidCliffTime` |
 | `end_time - start_time < 60` (seconds) | `DurationTooShort` |
 | Creator token balance < `amount` | `InsufficientBalance` |
+| `start_time <= clock` | `StreamExpired` |
 | Mint owner is neither SPL Token nor Token-2022 program | `UnsupportedTokenProgram` |
 | Token-2022 mint has transfer-hook extension | `TokenHasTransferHook` |
 
@@ -204,7 +205,7 @@ Initialize a new vesting stream. The creator specifies the amount, time paramete
 6. Increment `CreatorConfig.vesting_count`.
 7. Emit `StreamCreated` event.
 
-**Error codes:** `ZeroAmount`, `InvalidTimeRange`, `InvalidCliffTime`, `DurationTooShort`, `InsufficientBalance`, `UnsupportedTokenProgram`, `TokenHasTransferHook`
+**Error codes:** `ZeroAmount`, `InvalidTimeRange`, `InvalidCliffTime`, `DurationTooShort`, `InsufficientBalance`, `StreamExpired`, `UnsupportedTokenProgram`, `TokenHasTransferHook`
 
 ### withdraw
 
@@ -218,8 +219,7 @@ Let the recipient claim a specific amount of vested tokens. Calculates the total
 
 | Condition | Error |
 |---|---|
-| Status is Cancelled | `StreamNotActive` |
-| Status is Completed | `StreamNotActive` |
+| Status is Cancelled | `AlreadyCancelled` |
 | Clock timestamp < `cliff_time` | `CliffNotReached` |
 | Calculated claimable == 0 | `NothingToWithdraw` |
 | `amount > claimable` | `ExceedsClaimable` |
@@ -227,10 +227,12 @@ Let the recipient claim a specific amount of vested tokens. Calculates the total
 **Claimable calculation:**
 
 ```
-if clock < cliff_time:    0
+if clock < cliff_time:
+    claimable = 0
 else:
-    elapsed = clock - start_time
-    duration = end_time - start_time
+    vest_start = cliff_time if cliff_time != 0 else start_time
+    elapsed = clock - vest_start
+    duration = end_time - vest_start
     vested = min(amount * elapsed / duration, amount)
     claimable = vested - amount_withdrawn
 ```
@@ -249,7 +251,7 @@ Integer division truncates toward zero. Any remainder is claimed on the final wi
    - Close StreamAccount: zero data and transfer rent SOL to sender.
    - Emit `StreamCompleted` event.
 
-**Error codes:** `StreamNotActive`, `CliffNotReached`, `NothingToWithdraw`, `ExceedsClaimable`
+**Error codes:** `AlreadyCancelled`, `CliffNotReached`, `NothingToWithdraw`, `ExceedsClaimable`
 
 ### cancel
 
@@ -263,9 +265,9 @@ Let the creator cancel an active stream. Recipient receives whatever has vested 
 
 | Condition | Error |
 |---|---|
-| Status is Cancelled | `StreamNotActive` |
-| Status is Completed | `StreamNotActive` |
-| CreatorTokenAccount missing at cancel time | `InsufficientBalance` |
+| Caller is not `creator` | `Unauthorized` |
+| Status is Cancelled | `AlreadyCancelled` |
+| Status is Completed (`amount_withdrawn == amount`) | `FullyVested` |
 
 **Effects:**
 
@@ -278,7 +280,7 @@ Let the creator cancel an active stream. Recipient receives whatever has vested 
 7. Emit `StreamCancelled` event.
 8. Close vault token account via CPI `close_account`: rent SOL to creator.
 9. Close StreamAccount: zero data and transfer rent SOL to creator.
-**Error codes:** `Unauthorized`, `StreamNotActive`, `InsufficientBalance`
+**Error codes:** `Unauthorized`, `AlreadyCancelled`, `FullyVested`
 
 
 ### create_milestone_stream
@@ -322,16 +324,16 @@ Let the milestone authority mark a milestone stream as reached. Once triggered, 
 
 | Condition | Error |
 |---|---|
-| Status is Cancelled | `StreamNotActive` |
-| `milestone_reached == true` | `MilestoneAlreadyReached` |
 | Caller is not `milestone_authority` | `Unauthorized` |
+| Status is Cancelled | `AlreadyCancelled` |
+| `milestone_reached == true` | `FullyVested` |
 
 **Effects:**
 
 1. Set `MilestoneStream.milestone_reached = true`.
 2. Emit `MilestoneTriggered` event.
 
-**Error codes:** `StreamNotActive`, `MilestoneAlreadyReached`, `Unauthorized`
+**Error codes:** `Unauthorized`, `AlreadyCancelled`, `FullyVested`
 
 ### withdraw_milestone
 
@@ -345,9 +347,9 @@ Let the recipient withdraw the full stream amount after the milestone has been r
 
 | Condition | Error |
 |---|---|
-| Status is Cancelled | `StreamNotActive` |
-| `milestone_reached == false` | `MilestoneNotReached` |
-| `amount_withdrawn > 0` | `NothingToWithdraw` |
+| Status is Cancelled | `AlreadyCancelled` |
+| `milestone_reached == false` | `NothingToWithdraw` |
+| `amount_withdrawn > 0` | `FullyVested` |
 
 **Effects:**
 
@@ -358,7 +360,7 @@ Let the recipient withdraw the full stream amount after the milestone has been r
 5. Close MilestoneStream: return rent SOL to creator.
 6. Close Vault: return rent SOL to creator.
 
-**Error codes:** `StreamNotActive`, `MilestoneNotReached`, `NothingToWithdraw`
+**Error codes:** `AlreadyCancelled`, `NothingToWithdraw`, `FullyVested`
 
 ### cancel_milestone
 
@@ -372,8 +374,9 @@ Let the creator cancel an active milestone stream before the milestone is reache
 
 | Condition | Error |
 |---|---|
-| `milestone_reached == true` | `StreamNotActive` (milestone already reached — use withdraw path) |
-| Status is Cancelled | `StreamNotActive` |
+| Caller is not `creator` | `Unauthorized` |
+| Status is Cancelled | `AlreadyCancelled` |
+| `milestone_reached == true` | `FullyVested` |
 
 **Effects:**
 
@@ -382,7 +385,7 @@ Let the creator cancel an active milestone stream before the milestone is reache
 3. Close MilestoneStream: return rent SOL to creator.
 4. Close Vault: return rent SOL to creator.
 
-**Error codes:** `Unauthorized`, `StreamNotActive`
+**Error codes:** `Unauthorized`, `AlreadyCancelled`, `FullyVested`
 ---
 
 ## Data flow
@@ -475,15 +478,19 @@ Standard SPL Token mints pass through without additional checks.
 | 5 | Self-vesting | `recipient == creator` | Allowed — trial or self-reward use case | — |
 | 6 | Multiple streams, same pair | Same creator/recipient/mint | Differentiated by `vesting_count` nonce | — |
 | 7 | No recipient ATA | Recipient has no token account | Created via CPI at withdraw/cancel time | — |
-| 8 | Creator missing ATA | Creator closed ATA before cancel | Reject | `InsufficientBalance` |
+| 8 | Cancel by non-creator | Caller is not `creator` | Reject | `Unauthorized` |
 | 9 | Withdraw after fully claimed | `withdrawn == amount` | Reject | `NothingToWithdraw` |
-| 10 | Cancel cancelled stream | Status is Cancelled | Reject | `StreamNotActive` |
-| 11 | Cancel completed stream | Status is Completed | Reject | `StreamNotActive` |
+| 10 | Cancel cancelled stream | Status is Cancelled | Reject | `AlreadyCancelled` |
+| 11 | Cancel completed stream | Status is Completed | Reject | `FullyVested` |
 | 12 | Duration less than 60 seconds | `end - start < 60` | Reject creation | `DurationTooShort` |
 | 13 | Token-2022 with transfer hook | Mint has transfer-hook extension | Reject creation | `TokenHasTransferHook` |
 | 14 | Overflow handling | Large `amount` | Safe math via Rust checked arithmetic | — |
 | 15 | Integer rounding at final claim | Truncated fractional tokens | Remainder claimed on final `withdraw` | — |
 | 16 | Withdraw amount exceeds claimable | `amount > claimable` | Reject partial claim | `ExceedsClaimable` |
+| 17 | Create stream with past `start_time` | `start_time <= clock` | Reject creation | `StreamExpired` |
+| 18 | Trigger already-triggered milestone | `milestone_reached == true` | Reject trigger | `FullyVested` |
+| 19 | Withdraw milestone before trigger | `milestone_reached == false` | Reject withdraw | `NothingToWithdraw` |
+| 20 | Cancel milestone after triggered | `milestone_reached == true` | Reject cancel | `FullyVested` |
 
 ---
 
@@ -502,7 +509,7 @@ Events are emitted via Anchor's `emit!` macro and parsed from transaction logs b
 | `MilestoneStreamCreated` | `stream`, `creator`, `recipient`, `mint`, `amount`, `milestone_authority` | On successful `create_milestone_stream` |
 | `MilestoneTriggered` | `stream`, `milestone_authority` | On successful `trigger_milestone` |
 | `MilestoneCompleted` | `stream`, `recipient`, `total_amount` | On `withdraw_milestone` — followed by account closure |
-| `MilestoneCancelled` | `stream`, `creator`, `recipient`, `amount` | On `cancel_milestone` — followed by account closure |
+| `MilestoneCancelled` | `stream`, `creator`, `recipient`, `returned_to_creator` | On `cancel_milestone` — followed by account closure |
 
 ---
 
@@ -512,18 +519,18 @@ Events are emitted via Anchor's `emit!` macro and parsed from transaction logs b
 |---|---|
 | `ZeroAmount` | `amount` is 0 |
 | `InvalidTimeRange` | `end_time <= start_time` |
-| `InvalidCliffTime` | `cliff_time` is between `start_time` and `end_time` (or equal to `end_time` for pure cliff) |
+| `InvalidCliffTime` | `cliff_time` is before `start_time` or after `end_time` (or equal to `end_time` for pure cliff) |
 | `DurationTooShort` | `end_time - start_time < 60` seconds (anti-griefing minimum) |
+| `InsufficientBalance` | Sender does not have enough token balance |
 | `UnsupportedTokenProgram` | Mint owner is neither SPL Token nor Token-2022 |
 | `TokenHasTransferHook` | Token-2022 mint has a transfer-hook extension (would block CPI) |
 | `CliffNotReached` | Withdraw attempted before `cliff_time` |
-| `NothingToWithdraw` | Withdraw when calculated claimable = 0 |
-| `StreamNotActive` | Withdraw/cancel on a completed or cancelled stream |
+| `NothingToWithdraw` | No tokens available to withdraw, milestone not reached, or milestone already triggered |
+| `AlreadyCancelled` | Operation attempted on an already-cancelled stream |
+| `FullyVested` | Stream is fully withdrawn (cancel), milestone already reached (trigger/cancel milestone) |
+| `StreamExpired` | `create_stream` called with a `start_time` in the past |
 | `ExceedsClaimable` | Withdraw amount exceeds the claimable total |
-| `Unauthorized` | Non-creator calling cancel, or non-recipient calling withdraw |
-| `MilestoneAlreadyReached` | `trigger_milestone` called when milestone is already reached |
-| `MilestoneNotReached` | `withdraw_milestone` called before milestone is triggered |
-| `InsufficientBalance` | Cannot fund stream or creator's token ATA is missing at cancel time |
+| `Unauthorized` | Non-creator, non-recipient, or non-authority caller |
 
 
 ---
