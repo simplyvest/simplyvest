@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
-use anchor_spl::token::{Mint, Token, TokenAccount};
 use anchor_spl::token::{self, CloseAccount, Transfer};
+use anchor_spl::token::{Mint, Token, TokenAccount};
 
 use crate::errors::TdpError;
 use crate::events::StreamCancelled;
@@ -58,16 +58,30 @@ pub fn cancel_handler(ctx: Context<Cancel>) -> Result<()> {
     let stream = &mut ctx.accounts.stream;
     let now = Clock::get()?.unix_timestamp;
 
-    require!(!stream.cancelled, TdpError::StreamNotActive);
+    // 1. Only the stream creator can cancel
+    require_keys_eq!(
+        ctx.accounts.sender.key(),
+        stream.sender,
+        TdpError::Unauthorized
+    );
 
-    // Calculate split at moment of cancellation
-    let vested_at_cancel = if now >= stream.end_time {
-        stream.amount
-    } else if now <= stream.start_time {
+    // 2. Cannot cancel an already-cancelled stream
+    require!(!stream.cancelled, TdpError::AlreadyCancelled);
+
+    // 3. Cannot cancel after end_time — use withdraw instead
+    require!(now < stream.end_time, TdpError::StreamExpired);
+
+    // Calculate split at moment of cancellation (cliff-aware: vesting starts at cliff_time)
+    let vest_start = if stream.cliff_time != 0 {
+        stream.cliff_time
+    } else {
+        stream.start_time
+    };
+    let vested_at_cancel = if now <= vest_start {
         0
     } else {
-        let elapsed = (now - stream.start_time) as u64;
-        let duration = (stream.end_time - stream.start_time) as u64;
+        let elapsed = (now - vest_start) as u64;
+        let duration = (stream.end_time - vest_start) as u64;
         stream
             .amount
             .checked_mul(elapsed)
@@ -135,7 +149,6 @@ pub fn cancel_handler(ctx: Context<Cancel>) -> Result<()> {
         )?;
     }
 
-
     // Emit StreamCancelled
     emit!(StreamCancelled {
         stream: stream.key(),
@@ -160,7 +173,11 @@ pub fn cancel_handler(ctx: Context<Cancel>) -> Result<()> {
     let stream_info = stream.to_account_info();
     let rent = Rent::get()?;
     let rent_lamports = rent.minimum_balance(stream_info.data_len());
-    **ctx.accounts.sender.to_account_info().try_borrow_mut_lamports()? += rent_lamports;
+    **ctx
+        .accounts
+        .sender
+        .to_account_info()
+        .try_borrow_mut_lamports()? += rent_lamports;
     **stream_info.try_borrow_mut_lamports()? -= rent_lamports;
     stream_info.data.borrow_mut().fill(0);
 

@@ -61,18 +61,19 @@ pub fn withdraw_handler(ctx: Context<Withdraw>, params: WithdrawParams) -> Resul
     let now = Clock::get()?.unix_timestamp;
 
     // 1. Validations
-    require!(!stream.cancelled, TdpError::StreamNotActive);
+    require!(!stream.cancelled, TdpError::AlreadyCancelled);
     require!(now >= stream.cliff_time, TdpError::CliffNotReached);
     require!(params.amount > 0, TdpError::ZeroAmount);
 
-    // 2. Calculate Linear Vesting
+    // 2. Calculate linear vesting from cliff_time (or start_time if no cliff) to end_time
+    let vest_start = if stream.cliff_time != 0 { stream.cliff_time } else { stream.start_time };
     let total_vested = if now >= stream.end_time {
         stream.amount
-    } else if now <= stream.start_time {
+    } else if now <= vest_start {
         0
     } else {
-        let elapsed = (now - stream.start_time) as u64;
-        let duration = (stream.end_time - stream.start_time) as u64;
+        let elapsed = (now - vest_start) as u64;
+        let duration = (stream.end_time - vest_start) as u64;
         stream
             .amount
             .checked_mul(elapsed)

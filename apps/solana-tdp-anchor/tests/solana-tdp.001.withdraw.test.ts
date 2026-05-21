@@ -118,12 +118,12 @@ describe("Feature 1: withdraw", () => {
   });
 
   it("withdraws vested amount after cliff (partial vesting)", async () => {
-    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, start, end } =
+    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, cliff, end } =
       await createStreamFixture(1_000_000, 60, 3600, 60);
     warp(1800); // half-way through vesting
 
-    const elapsed = clockNow() - start;
-    const duration = end - start;
+    const elapsed = clockNow() - cliff;
+    const duration = end - cliff;
     const expectedVested = Math.floor((amount * elapsed) / duration);
 
     const vaultBefore = svmTokenBalance(vaultPDA);
@@ -167,12 +167,12 @@ describe("Feature 1: withdraw", () => {
   });
 
   it("tracks cumulative amount_withdrawn", async () => {
-    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, start, end } =
+    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, cliff, end } =
       await createStreamFixture(1_000_000, 10, 3600, 10);
     warp(1800);
 
-    const elapsed = clockNow() - start;
-    const duration = end - start;
+    const elapsed = clockNow() - cliff;
+    const duration = end - cliff;
     const withdraw1 = Math.floor((amount * elapsed) / duration);
 
     await program.methods
@@ -187,12 +187,12 @@ describe("Feature 1: withdraw", () => {
     expect(withdraw1).toBeLessThan(amount);
 
     // Second fixture: different amounts to verify cumulative tracking
-    const { sender: s2, recipient: r2, mint: m2, recipientToken: rt2, vaultPDA: v2, streamPDA: s2p, amount: a2, start: st2, end: en2 } =
+    const { sender: s2, recipient: r2, mint: m2, recipientToken: rt2, vaultPDA: v2, streamPDA: s2p, amount: a2, cliff: cl2, end: en2 } =
       await createStreamFixture(2_000_000, 10, 7200, 10);
     warp(3600);
 
-    const elapsed2 = clockNow() - st2;
-    const duration2 = en2 - st2;
+    const elapsed2 = clockNow() - cl2;
+    const duration2 = en2 - cl2;
     const withdraw2 = Math.floor((a2 * elapsed2) / duration2);
 
     await program.methods
@@ -276,12 +276,12 @@ describe("Feature 1: withdraw", () => {
   });
 
   it("rejects amount > claimable", async () => {
-    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, start, end } =
+    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, cliff, end } =
       await createStreamFixture(1_000_000, 10, 3600, 10);
     warp(1800); // partially vested
 
-    const elapsed = clockNow() - start;
-    const duration = end - start;
+    const elapsed = clockNow() - cliff;
+    const duration = end - cliff;
     const claimable = Math.floor((amount * elapsed) / duration);
 
     // Withdraw more than what's vested
@@ -295,12 +295,12 @@ describe("Feature 1: withdraw", () => {
   });
 
   it("emits TokensClaimed event", async () => {
-    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, start, end } =
+    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, cliff, end } =
       await createStreamFixture(1_000_000, 10, 3600, 10);
     warp(1800);
 
-    const elapsed = clockNow() - start;
-    const duration = end - start;
+    const elapsed = clockNow() - cliff;
+    const duration = end - cliff;
     const expectedVested = Math.floor((amount * elapsed) / duration);
 
     const txSig = await program.methods
@@ -350,8 +350,8 @@ describe("Feature 1: withdraw", () => {
 
   it("withdraws 25% at quarter vesting", async () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, start, end } =
-      await createStreamFixture(1_000_000, 0, 400, 0);
-    warp(100); // 25% elapsed (100 / 400)
+      await createStreamFixture(1_000_000, 10, 400, 0);
+    warp(110); // 25% elapsed (100 / 400)
     const expected = Math.floor((amount * 100) / 400);
 
     await program.methods
@@ -366,10 +366,10 @@ describe("Feature 1: withdraw", () => {
 
   it("withdraws 50% then remaining 50% on same stream", async () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, start, end } =
-      await createStreamFixture(1_000_000, 0, 400, 0);
+      await createStreamFixture(1_000_000, 10, 400, 0);
 
     // First withdrawal at 50% elapsed
-    warp(200);
+    warp(210);
     const half = Math.floor((amount * 200) / 400);
     await program.methods
       .withdraw({ amount: new BN(half) })
@@ -384,8 +384,8 @@ describe("Feature 1: withdraw", () => {
 
   it("rejects withdraw by third party", async () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, start, end } =
-      await createStreamFixture(1_000_000, 0, 400, 0);
-    warp(200);
+      await createStreamFixture(1_000_000, 10, 400, 0);
+    warp(210);
     const thirdParty = Keypair.generate();
     svmAirdrop([thirdParty.publicKey]);
 
@@ -400,8 +400,8 @@ describe("Feature 1: withdraw", () => {
 
   it("rejects withdraw by creator (not recipient)", async () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, start, end } =
-      await createStreamFixture(1_000_000, 0, 400, 0);
-    warp(200);
+      await createStreamFixture(1_000_000, 10, 400, 0);
+    warp(210);
 
     await expect(
       program.methods

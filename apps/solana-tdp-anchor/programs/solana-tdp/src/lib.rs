@@ -32,4 +32,20 @@ pub mod solana_tdp {
     pub fn cancel(ctx: Context<Cancel>) -> Result<()> {
         instructions::cancel::cancel_handler(ctx)
     }
+
+    pub fn create_milestone_stream(ctx: Context<CreateMilestoneStream>, params: CreateMilestoneStreamParams) -> Result<()> {
+        instructions::create_milestone_stream::create_milestone_stream_handler(ctx, params)
+    }
+
+    pub fn trigger_milestone(ctx: Context<TriggerMilestone>) -> Result<()> {
+        instructions::trigger_milestone::trigger_milestone_handler(ctx)
+    }
+
+    pub fn withdraw_milestone(ctx: Context<WithdrawMilestone>) -> Result<()> {
+        instructions::withdraw_milestone::withdraw_milestone_handler(ctx)
+    }
+
+    pub fn cancel_milestone(ctx: Context<CancelMilestone>) -> Result<()> {
+        instructions::cancel_milestone::cancel_milestone_handler(ctx)
+    }
 }
