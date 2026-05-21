@@ -77,7 +77,7 @@ pub fn create_stream_handler(ctx: Context<CreateStream>, params: CreateStreamPar
     let clock = Clock::get()?;
     require!(
         params.start_time > clock.unix_timestamp,
-        TdpError::StreamExpired
+        TdpError::StartTimeInPast
     );
 
     // 2. Transfer tokens to Vault PDA

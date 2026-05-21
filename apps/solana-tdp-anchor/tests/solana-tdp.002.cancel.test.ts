@@ -149,24 +149,18 @@ describe("Feature 2: cancel", () => {
     expect(recipientGained + senderGained).toBe(vaultBefore);
   });
 
-  it("cancel after end_time gives all to recipient", async () => {
+  it("rejects cancel after end_time — use withdraw instead", async () => {
     const { sender, recipient, mint, senderToken, recipientToken, vaultPDA, streamPDA } =
       await setupStream(1_000_000, 10, 300, 10);
     warp(600); // well past end
 
-    const senderBefore = svmTokenBalance(senderToken);
-    const recipientBefore = svmTokenBalance(recipientToken);
-    const vaultBefore = svmTokenBalance(vaultPDA);
-
-    await program.methods
-      .cancel()
-      .accounts(cancelAccounts(sender.publicKey, recipient.publicKey, streamPDA, vaultPDA, senderToken, recipientToken, mint))
-      .signers([sender])
-      .rpc();
-
-    expect(svm.getAccount(vaultPDA)).toBeNull();
-    expect(svmTokenBalance(senderToken)).toBe(senderBefore); // nothing returned to sender
-    expect(svmTokenBalance(recipientToken)).toBe(recipientBefore + vaultBefore);
+    await expect(
+      program.methods
+        .cancel()
+        .accounts(cancelAccounts(sender.publicKey, recipient.publicKey, streamPDA, vaultPDA, senderToken, recipientToken, mint))
+        .signers([sender])
+        .rpc(),
+    ).rejects.toThrow();
   });
 
   it("rejects if already cancelled", async () => {

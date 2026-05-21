@@ -191,7 +191,7 @@ Initialize a new vesting stream. The creator specifies the amount, time paramete
 | `cliff_time != 0 && (cliff_time <= start_time \|\| cliff_time > end_time)` | `InvalidCliffTime` |
 | `end_time - start_time < 60` (seconds) | `DurationTooShort` |
 | Creator token balance < `amount` | `InsufficientBalance` |
-| `start_time <= clock` | `StreamExpired` |
+| `start_time <= clock` | `StartTimeInPast` |
 | Mint owner is neither SPL Token nor Token-2022 program | `UnsupportedTokenProgram` |
 | Token-2022 mint has transfer-hook extension | `TokenHasTransferHook` |
 
@@ -205,7 +205,7 @@ Initialize a new vesting stream. The creator specifies the amount, time paramete
 6. Increment `CreatorConfig.vesting_count`.
 7. Emit `StreamCreated` event.
 
-**Error codes:** `ZeroAmount`, `InvalidTimeRange`, `InvalidCliffTime`, `DurationTooShort`, `InsufficientBalance`, `StreamExpired`, `UnsupportedTokenProgram`, `TokenHasTransferHook`
+**Error codes:** `ZeroAmount`, `InvalidTimeRange`, `InvalidCliffTime`, `DurationTooShort`, `InsufficientBalance`, `StartTimeInPast`, `UnsupportedTokenProgram`, `TokenHasTransferHook`
 
 ### withdraw
 
@@ -267,7 +267,7 @@ Let the creator cancel an active stream. Recipient receives whatever has vested 
 |---|---|
 | Caller is not `creator` | `Unauthorized` |
 | Status is Cancelled | `AlreadyCancelled` |
-| Status is Completed (`amount_withdrawn == amount`) | `FullyVested` |
+| Clock timestamp >= `end_time` | `StreamExpired` |
 
 **Effects:**
 
@@ -280,7 +280,7 @@ Let the creator cancel an active stream. Recipient receives whatever has vested 
 7. Emit `StreamCancelled` event.
 8. Close vault token account via CPI `close_account`: rent SOL to creator.
 9. Close StreamAccount: zero data and transfer rent SOL to creator.
-**Error codes:** `Unauthorized`, `AlreadyCancelled`, `FullyVested`
+**Error codes:** `Unauthorized`, `AlreadyCancelled`, `StreamExpired`
 
 
 ### create_milestone_stream
@@ -474,20 +474,20 @@ Standard SPL Token mints pass through without additional checks.
 | 1 | Withdraw before cliff | `clock < cliff_time` | Reject claim | `CliffNotReached` |
 | 2 | Cancel mid-stream | 40% vested | 40% → recipient, 60% → creator, accounts closed | — |
 | 3 | Zero amount create | `amount = 0` | Reject creation | `ZeroAmount` |
-| 4 | Fully vested, unclaimed | `end_time` passed, `withdrawn = 0` | Cancel allowed (all vested → recipient) | — |
+| 4 | Fully vested, unclaimed | `end_time` passed, `withdrawn = 0` | Cancel rejected → use withdraw | `StreamExpired` |
 | 5 | Self-vesting | `recipient == creator` | Allowed — trial or self-reward use case | — |
 | 6 | Multiple streams, same pair | Same creator/recipient/mint | Differentiated by `vesting_count` nonce | — |
 | 7 | No recipient ATA | Recipient has no token account | Created via CPI at withdraw/cancel time | — |
 | 8 | Cancel by non-creator | Caller is not `creator` | Reject | `Unauthorized` |
 | 9 | Withdraw after fully claimed | `withdrawn == amount` | Reject | `NothingToWithdraw` |
 | 10 | Cancel cancelled stream | Status is Cancelled | Reject | `AlreadyCancelled` |
-| 11 | Cancel completed stream | Status is Completed | Reject | `FullyVested` |
+| 11 | Cancel after end_time | Clock >= `end_time` | Reject | `StreamExpired` |
 | 12 | Duration less than 60 seconds | `end - start < 60` | Reject creation | `DurationTooShort` |
 | 13 | Token-2022 with transfer hook | Mint has transfer-hook extension | Reject creation | `TokenHasTransferHook` |
 | 14 | Overflow handling | Large `amount` | Safe math via Rust checked arithmetic | — |
 | 15 | Integer rounding at final claim | Truncated fractional tokens | Remainder claimed on final `withdraw` | — |
 | 16 | Withdraw amount exceeds claimable | `amount > claimable` | Reject partial claim | `ExceedsClaimable` |
-| 17 | Create stream with past `start_time` | `start_time <= clock` | Reject creation | `StreamExpired` |
+| 17 | Create stream with past `start_time` | `start_time <= clock` | Reject creation | `StartTimeInPast` |
 | 18 | Trigger already-triggered milestone | `milestone_reached == true` | Reject trigger | `FullyVested` |
 | 19 | Withdraw milestone before trigger | `milestone_reached == false` | Reject withdraw | `NothingToWithdraw` |
 | 20 | Cancel milestone after triggered | `milestone_reached == true` | Reject cancel | `FullyVested` |
@@ -527,8 +527,9 @@ Events are emitted via Anchor's `emit!` macro and parsed from transaction logs b
 | `CliffNotReached` | Withdraw attempted before `cliff_time` |
 | `NothingToWithdraw` | No tokens available to withdraw, milestone not reached, or milestone already triggered |
 | `AlreadyCancelled` | Operation attempted on an already-cancelled stream |
-| `FullyVested` | Stream is fully withdrawn (cancel), milestone already reached (trigger/cancel milestone) |
-| `StreamExpired` | `create_stream` called with a `start_time` in the past |
+| `FullyVested` | Milestone already reached (trigger/cancel milestone) |
+| `StartTimeInPast` | `create_stream` called with a `start_time` in the past |
+| `StreamExpired` | Cancel attempted after `end_time` — use withdraw instead |
 | `ExceedsClaimable` | Withdraw amount exceeds the claimable total |
 | `Unauthorized` | Non-creator, non-recipient, or non-authority caller |
 
