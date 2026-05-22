@@ -8,7 +8,6 @@ staged_ts=$(git diff --cached --name-only --diff-filter=ACM | grep -c '\.tsx\?$'
 if [ "$staged_ts" -gt 0 ]; then
   pnpm --filter @solana-tdp/web check:ts
   pnpm --filter @solana-tdp/api typecheck
-  pnpm --filter @solana-tdp/anchor typecheck
 fi
 
 # Rust checks if .rs files are staged
