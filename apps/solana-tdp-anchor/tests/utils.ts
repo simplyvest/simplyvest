@@ -35,7 +35,11 @@ interface SvmGetTxResult {
 
 interface ProviderSend {
   connection: Connection;
-  sendAndConfirm?(tx: Transaction | VersionedTransaction, signers?: Signer[], _opts?: ConfirmOptions): Promise<string>;
+  sendAndConfirm?(
+    tx: Transaction | VersionedTransaction,
+    signers?: Signer[],
+    _opts?: ConfirmOptions,
+  ): Promise<string>;
 }
 
 // Fresh SVM per call to prevent memory accumulation across tests
@@ -55,7 +59,8 @@ export const setupTest = () => {
     const meta: unknown = svm.getTransaction(anchor.utils.bytes.bs58.decode(txSig));
     if (!meta) return null;
     const m = meta as SvmTxMeta;
-    const logs = "logs" in m ? (m.logs as () => string[])() : (m.meta as () => { logs(): string[] })().logs();
+    const logs =
+      "logs" in m ? (m.logs as () => string[])() : (m.meta as () => { logs(): string[] })().logs();
     return {
       meta: {
         logMessages: logs,

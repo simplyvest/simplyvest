@@ -58,6 +58,8 @@ jobs:
           node-version: "24"
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Build SDK
+        run: pnpm --filter @solana-tdp/sdk build
       - name: TypeScript check (anchor)
         run: pnpm --filter @solana-tdp/anchor typecheck
 

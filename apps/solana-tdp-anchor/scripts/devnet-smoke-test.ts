@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 import * as anchor from "@coral-xyz/anchor";
+import type { SolanaTdp } from "@solana-tdp/sdk";
 import {
   createMint,
   mintTo,
@@ -10,7 +11,6 @@ import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { Connection, Keypair, SystemProgram } from "@solana/web3.js";
-import type { SolanaTdp } from "@solana-tdp/sdk";
 
 import { findStreamPDA, findVaultPDA, findCreatorConfigPDA } from "../tests/helpers";
 
