@@ -8,97 +8,97 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as DocsRouteImport } from "./routes/docs";
-import { Route as FaqRouteImport } from "./routes/faq";
-import { Route as IndexRouteImport } from "./routes/index";
-import { Route as WaitlistRouteImport } from "./routes/waitlist";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as WaitlistRouteImport } from './routes/waitlist'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as DocsRouteImport } from './routes/docs'
+import { Route as IndexRouteImport } from './routes/index'
 
 const WaitlistRoute = WaitlistRouteImport.update({
-  id: "/waitlist",
-  path: "/waitlist",
+  id: '/waitlist',
+  path: '/waitlist',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const FaqRoute = FaqRouteImport.update({
-  id: "/faq",
-  path: "/faq",
+  id: '/faq',
+  path: '/faq',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const DocsRoute = DocsRouteImport.update({
-  id: "/docs",
-  path: "/docs",
+  id: '/docs',
+  path: '/docs',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "/docs": typeof DocsRoute;
-  "/faq": typeof FaqRoute;
-  "/waitlist": typeof WaitlistRoute;
+  '/': typeof IndexRoute
+  '/docs': typeof DocsRoute
+  '/faq': typeof FaqRoute
+  '/waitlist': typeof WaitlistRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "/docs": typeof DocsRoute;
-  "/faq": typeof FaqRoute;
-  "/waitlist": typeof WaitlistRoute;
+  '/': typeof IndexRoute
+  '/docs': typeof DocsRoute
+  '/faq': typeof FaqRoute
+  '/waitlist': typeof WaitlistRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  "/": typeof IndexRoute;
-  "/docs": typeof DocsRoute;
-  "/faq": typeof FaqRoute;
-  "/waitlist": typeof WaitlistRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/docs': typeof DocsRoute
+  '/faq': typeof FaqRoute
+  '/waitlist': typeof WaitlistRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/docs" | "/faq" | "/waitlist";
-  fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/docs" | "/faq" | "/waitlist";
-  id: "__root__" | "/" | "/docs" | "/faq" | "/waitlist";
-  fileRoutesById: FileRoutesById;
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths: '/' | '/docs' | '/faq' | '/waitlist'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/' | '/docs' | '/faq' | '/waitlist'
+  id: '__root__' | '/' | '/docs' | '/faq' | '/waitlist'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  DocsRoute: typeof DocsRoute;
-  FaqRoute: typeof FaqRoute;
-  WaitlistRoute: typeof WaitlistRoute;
+  IndexRoute: typeof IndexRoute
+  DocsRoute: typeof DocsRoute
+  FaqRoute: typeof FaqRoute
+  WaitlistRoute: typeof WaitlistRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/waitlist": {
-      id: "/waitlist";
-      path: "/waitlist";
-      fullPath: "/waitlist";
-      preLoaderRoute: typeof WaitlistRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/faq": {
-      id: "/faq";
-      path: "/faq";
-      fullPath: "/faq";
-      preLoaderRoute: typeof FaqRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/docs": {
-      id: "/docs";
-      path: "/docs";
-      fullPath: "/docs";
-      preLoaderRoute: typeof DocsRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+    '/waitlist': {
+      id: '/waitlist'
+      path: '/waitlist'
+      fullPath: '/waitlist'
+      preLoaderRoute: typeof WaitlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,7 +107,7 @@ const rootRouteChildren: RootRouteChildren = {
   DocsRoute: DocsRoute,
   FaqRoute: FaqRoute,
   WaitlistRoute: WaitlistRoute,
-};
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
