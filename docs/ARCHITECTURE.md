@@ -234,9 +234,8 @@ Let the recipient claim a specific amount of vested tokens. Calculates the total
 if clock < cliff_time:
     claimable = 0
 else:
-    vest_start = cliff_time if cliff_time != 0 else start_time
-    elapsed = clock - vest_start
-    duration = end_time - vest_start
+    elapsed = clock - start_time
+    duration = end_time - start_time
     vested = min(amount * elapsed / duration, amount)
     claimable = vested - amount_withdrawn
 ```
