@@ -164,6 +164,14 @@ jobs:
       - name: Build program (BPF)
         run: anchor build
 
+      - name: Check Rust formatting
+        run: cargo fmt --check
+        working-directory: apps/solana-tdp-anchor/programs/solana-tdp
+
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+        working-directory: apps/solana-tdp-anchor/programs/solana-tdp
+
       - name: Stage program binary
         run: mkdir -p target/deploy && cp programs/solana-tdp/target/deploy/solana_tdp.so target/deploy/
 
