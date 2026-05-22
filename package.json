@@ -10,6 +10,8 @@
     "program:build": "pnpm anchor:build && pnpm sdk:sync && pnpm sdk:build",
     "lint": "oxlint --fix .",
     "format": "oxfmt .",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "check:ts": "pnpm --filter @solana-tdp/web check:ts",
     "lint:rust": "cd apps/solana-tdp-anchor/programs/solana-tdp && cargo clippy --all-targets -- -D warnings",
     "format:rust": "cd apps/solana-tdp-anchor/programs/solana-tdp && cargo fmt",
     "format:rust:check": "cd apps/solana-tdp-anchor/programs/solana-tdp && cargo fmt --check",
