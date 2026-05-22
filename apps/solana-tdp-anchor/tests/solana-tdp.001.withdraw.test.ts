@@ -86,7 +86,7 @@ describe("Feature 1: withdraw", () => {
         endTime: new BN(end),
         cliffTime: new BN(cliff),
       })
-      .accounts({
+      .accountsPartial({
         sender: sender.publicKey,
         recipient: recipient.publicKey,
         stream: streamPDA,
@@ -130,7 +130,7 @@ describe("Feature 1: withdraw", () => {
 
     await program.methods
       .withdraw({ amount: new BN(expectedVested) })
-      .accounts(
+      .accountsPartial(
         withdrawAccounts(
           recipient.publicKey,
           streamPDA,
@@ -160,7 +160,7 @@ describe("Feature 1: withdraw", () => {
 
     await program.methods
       .withdraw({ amount: new BN(amount) })
-      .accounts(
+      .accountsPartial(
         withdrawAccounts(
           recipient.publicKey,
           streamPDA,
@@ -194,7 +194,7 @@ describe("Feature 1: withdraw", () => {
 
     await program.methods
       .withdraw({ amount: new BN(withdraw1) })
-      .accounts(
+      .accountsPartial(
         withdrawAccounts(
           recipient.publicKey,
           streamPDA,
@@ -232,7 +232,7 @@ describe("Feature 1: withdraw", () => {
 
     await program.methods
       .withdraw({ amount: new BN(withdraw2) })
-      .accounts(withdrawAccounts(r2.publicKey, s2p, v2, rt2, s2.publicKey, m2))
+      .accountsPartial(withdrawAccounts(r2.publicKey, s2p, v2, rt2, s2.publicKey, m2))
       .signers([r2])
       .rpc();
 
@@ -248,7 +248,7 @@ describe("Feature 1: withdraw", () => {
     await expect(
       program.methods
         .withdraw({ amount: new BN(1) })
-        .accounts(
+        .accountsPartial(
           withdrawAccounts(
             recipient.publicKey,
             streamPDA,
@@ -270,7 +270,7 @@ describe("Feature 1: withdraw", () => {
     await expect(
       program.methods
         .withdraw({ amount: new BN(1) })
-        .accounts(
+        .accountsPartial(
           withdrawAccounts(
             recipient.publicKey,
             streamPDA,
@@ -294,7 +294,7 @@ describe("Feature 1: withdraw", () => {
     await expect(
       program.methods
         .withdraw({ amount: new BN(1) })
-        .accounts(
+        .accountsPartial(
           withdrawAccounts(
             recipient.publicKey,
             streamPDA,
@@ -318,7 +318,7 @@ describe("Feature 1: withdraw", () => {
     await expect(
       program.methods
         .withdraw({ amount: new BN(1) })
-        .accounts(
+        .accountsPartial(
           withdrawAccounts(
             recipient.publicKey,
             streamPDA,
@@ -348,11 +348,11 @@ describe("Feature 1: withdraw", () => {
         mint,
       ),
     );
-    await provider.sendAndConfirm(ataTx, [recipient]);
+    await provider.sendAndConfirm!(ataTx, [recipient]);
 
     await program.methods
       .cancel()
-      .accounts({
+      .accountsPartial({
         sender: sender.publicKey,
         recipient: recipient.publicKey,
         stream: streamPDA,
@@ -370,7 +370,7 @@ describe("Feature 1: withdraw", () => {
     await expect(
       program.methods
         .withdraw({ amount: new BN(1) })
-        .accounts(
+        .accountsPartial(
           withdrawAccounts(
             recipient.publicKey,
             streamPDA,
@@ -398,7 +398,7 @@ describe("Feature 1: withdraw", () => {
     await expect(
       program.methods
         .withdraw({ amount: new BN(claimable + 1) })
-        .accounts(
+        .accountsPartial(
           withdrawAccounts(
             recipient.publicKey,
             streamPDA,
@@ -424,7 +424,7 @@ describe("Feature 1: withdraw", () => {
 
     const txSig = await program.methods
       .withdraw({ amount: new BN(expectedVested) })
-      .accounts(
+      .accountsPartial(
         withdrawAccounts(
           recipient.publicKey,
           streamPDA,
@@ -451,11 +451,11 @@ describe("Feature 1: withdraw", () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount } =
       await createStreamFixture(500_000_000, 10, 300, 10);
     warp(600); // past end — fully vested
-    const senderBefore = svm.getBalance(sender.publicKey);
+    const senderBefore = svm.getBalance(sender.publicKey) ?? BigInt(0);
 
     await program.methods
       .withdraw({ amount: new BN(amount) })
-      .accounts(
+      .accountsPartial(
         withdrawAccounts(
           recipient.publicKey,
           streamPDA,
@@ -479,7 +479,7 @@ describe("Feature 1: withdraw", () => {
     }
 
     // Sender should have received rent from vault + stream closure
-    const senderAfter = svm.getBalance(sender.publicKey);
+    const senderAfter = svm.getBalance(sender.publicKey) ?? BigInt(0);
     expect(senderAfter > senderBefore).toBe(true);
   });
 
@@ -493,7 +493,7 @@ describe("Feature 1: withdraw", () => {
 
     await program.methods
       .withdraw({ amount: new BN(expected) })
-      .accounts(
+      .accountsPartial(
         withdrawAccounts(
           recipient.publicKey,
           streamPDA,
@@ -519,7 +519,7 @@ describe("Feature 1: withdraw", () => {
     const half = Math.floor((amount * 200) / 400);
     await program.methods
       .withdraw({ amount: new BN(half) })
-      .accounts(
+      .accountsPartial(
         withdrawAccounts(
           recipient.publicKey,
           streamPDA,
@@ -538,8 +538,12 @@ describe("Feature 1: withdraw", () => {
   });
 
   it("rejects withdraw by third party", async () => {
-    const { sender, mint, recipientToken, vaultPDA, streamPDA } =
-      await createStreamFixture(1_000_000, 10, 400, 0);
+    const { sender, mint, recipientToken, vaultPDA, streamPDA } = await createStreamFixture(
+      1_000_000,
+      10,
+      400,
+      0,
+    );
     warp(210);
     const thirdParty = Keypair.generate();
     svmAirdrop([thirdParty.publicKey]);
@@ -547,7 +551,7 @@ describe("Feature 1: withdraw", () => {
     await expect(
       program.methods
         .withdraw({ amount: new BN(100) })
-        .accounts(
+        .accountsPartial(
           withdrawAccounts(
             thirdParty.publicKey,
             streamPDA,
@@ -563,14 +567,18 @@ describe("Feature 1: withdraw", () => {
   });
 
   it("rejects withdraw by creator (not recipient)", async () => {
-    const { sender, mint, recipientToken, vaultPDA, streamPDA } =
-      await createStreamFixture(1_000_000, 10, 400, 0);
+    const { sender, mint, recipientToken, vaultPDA, streamPDA } = await createStreamFixture(
+      1_000_000,
+      10,
+      400,
+      0,
+    );
     warp(210);
 
     await expect(
       program.methods
         .withdraw({ amount: new BN(100) })
-        .accounts(
+        .accountsPartial(
           withdrawAccounts(
             sender.publicKey,
             streamPDA,

@@ -2,14 +2,14 @@
   "name": "@solana-tdp/sdk",
   "version": "0.1.0",
   "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     }
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "sync:idl": "cp ../../apps/solana-tdp-anchor/target/idl/solana_tdp.json src/idl/solana_tdp.json",

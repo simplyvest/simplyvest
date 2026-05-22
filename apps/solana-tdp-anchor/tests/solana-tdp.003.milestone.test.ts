@@ -75,8 +75,6 @@ describe("Feature 3: milestone streams", () => {
     ({ program, provider, svm, svmAirdrop, svmTokenBalance } = setupTest());
   });
 
-
-
   const createMilestoneStreamFixture = async (amount: number) => {
     const sender = Keypair.generate();
     const recipient = Keypair.generate();
@@ -98,7 +96,7 @@ describe("Feature 3: milestone streams", () => {
 
     await program.methods
       .createMilestoneStream({ amount: new BN(amount) })
-      .accounts({
+      .accountsPartial({
         sender: sender.publicKey,
         recipient: recipient.publicKey,
         milestoneAuthority: milestoneAuthority.publicKey,
@@ -175,7 +173,7 @@ describe("Feature 3: milestone streams", () => {
 
     const txSig = await prog2.methods
       .createMilestoneStream({ amount: new BN(amount) })
-      .accounts({
+      .accountsPartial({
         sender: s2.publicKey,
         recipient: r2.publicKey,
         milestoneAuthority: ma2.publicKey,
@@ -209,7 +207,7 @@ describe("Feature 3: milestone streams", () => {
 
     await program.methods
       .triggerMilestone()
-      .accounts(triggerAccounts(milestoneAuthority.publicKey, streamPDA))
+      .accountsPartial(triggerAccounts(milestoneAuthority.publicKey, streamPDA))
       .signers([milestoneAuthority])
       .rpc();
 
@@ -222,7 +220,7 @@ describe("Feature 3: milestone streams", () => {
 
     const txSig = await program.methods
       .triggerMilestone()
-      .accounts(triggerAccounts(milestoneAuthority.publicKey, streamPDA))
+      .accountsPartial(triggerAccounts(milestoneAuthority.publicKey, streamPDA))
       .signers([milestoneAuthority])
       .rpc();
 
@@ -241,7 +239,7 @@ describe("Feature 3: milestone streams", () => {
     await expect(
       program.methods
         .triggerMilestone()
-        .accounts(triggerAccounts(imposter.publicKey, streamPDA))
+        .accountsPartial(triggerAccounts(imposter.publicKey, streamPDA))
         .signers([imposter])
         .rpc(),
     ).rejects.toThrow();
@@ -256,14 +254,16 @@ describe("Feature 3: milestone streams", () => {
     // Cancel first
     await program.methods
       .cancelMilestone()
-      .accounts(cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint))
+      .accountsPartial(
+        cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint),
+      )
       .signers([sender])
       .rpc();
 
     await expect(
       program.methods
         .triggerMilestone()
-        .accounts(triggerAccounts(milestoneAuthority.publicKey, streamPDA))
+        .accountsPartial(triggerAccounts(milestoneAuthority.publicKey, streamPDA))
         .signers([milestoneAuthority])
         .rpc(),
     ).rejects.toThrow();
@@ -275,7 +275,7 @@ describe("Feature 3: milestone streams", () => {
     // First trigger succeeds
     await program.methods
       .triggerMilestone()
-      .accounts(triggerAccounts(milestoneAuthority.publicKey, streamPDA))
+      .accountsPartial(triggerAccounts(milestoneAuthority.publicKey, streamPDA))
       .signers([milestoneAuthority])
       .rpc();
 
@@ -283,7 +283,7 @@ describe("Feature 3: milestone streams", () => {
     await expect(
       program.methods
         .triggerMilestone()
-        .accounts(triggerAccounts(milestoneAuthority.publicKey, streamPDA))
+        .accountsPartial(triggerAccounts(milestoneAuthority.publicKey, streamPDA))
         .signers([milestoneAuthority])
         .rpc(),
     ).rejects.toThrow();
@@ -298,7 +298,7 @@ describe("Feature 3: milestone streams", () => {
     // Trigger milestone
     await program.methods
       .triggerMilestone()
-      .accounts(triggerAccounts(milestoneAuthority.publicKey, streamPDA))
+      .accountsPartial(triggerAccounts(milestoneAuthority.publicKey, streamPDA))
       .signers([milestoneAuthority])
       .rpc();
 
@@ -308,7 +308,7 @@ describe("Feature 3: milestone streams", () => {
 
     await program.methods
       .withdrawMilestone()
-      .accounts(
+      .accountsPartial(
         withdrawMilestoneAccounts(
           recipient.publicKey,
           streamPDA,
@@ -334,7 +334,7 @@ describe("Feature 3: milestone streams", () => {
 
     await program.methods
       .triggerMilestone()
-      .accounts(triggerAccounts(milestoneAuthority.publicKey, streamPDA))
+      .accountsPartial(triggerAccounts(milestoneAuthority.publicKey, streamPDA))
       .signers([milestoneAuthority])
       .rpc();
 
@@ -342,7 +342,7 @@ describe("Feature 3: milestone streams", () => {
 
     const txSig = await program.methods
       .withdrawMilestone()
-      .accounts(
+      .accountsPartial(
         withdrawMilestoneAccounts(
           recipient.publicKey,
           streamPDA,
@@ -372,7 +372,7 @@ describe("Feature 3: milestone streams", () => {
     await expect(
       program.methods
         .withdrawMilestone()
-        .accounts(
+        .accountsPartial(
           withdrawMilestoneAccounts(
             recipient.publicKey,
             streamPDA,
@@ -393,7 +393,7 @@ describe("Feature 3: milestone streams", () => {
 
     await program.methods
       .triggerMilestone()
-      .accounts(triggerAccounts(milestoneAuthority.publicKey, streamPDA))
+      .accountsPartial(triggerAccounts(milestoneAuthority.publicKey, streamPDA))
       .signers([milestoneAuthority])
       .rpc();
 
@@ -402,7 +402,7 @@ describe("Feature 3: milestone streams", () => {
     // First withdraw succeeds
     await program.methods
       .withdrawMilestone()
-      .accounts(
+      .accountsPartial(
         withdrawMilestoneAccounts(
           recipient.publicKey,
           streamPDA,
@@ -419,7 +419,7 @@ describe("Feature 3: milestone streams", () => {
     await expect(
       program.methods
         .withdrawMilestone()
-        .accounts(
+        .accountsPartial(
           withdrawMilestoneAccounts(
             recipient.publicKey,
             streamPDA,
@@ -440,7 +440,7 @@ describe("Feature 3: milestone streams", () => {
 
     await program.methods
       .triggerMilestone()
-      .accounts(triggerAccounts(milestoneAuthority.publicKey, streamPDA))
+      .accountsPartial(triggerAccounts(milestoneAuthority.publicKey, streamPDA))
       .signers([milestoneAuthority])
       .rpc();
 
@@ -452,7 +452,7 @@ describe("Feature 3: milestone streams", () => {
     // (tokens go to the signer's ATA via init_if_needed)
     await program.methods
       .withdrawMilestone()
-      .accounts(
+      .accountsPartial(
         withdrawMilestoneAccounts(
           thirdParty.publicKey,
           streamPDA,
@@ -471,15 +471,16 @@ describe("Feature 3: milestone streams", () => {
   // ── cancel_milestone ─────────────────────────────────────────────
 
   it("cancel_milestone before trigger returns all to creator", async () => {
-    const { sender, mint, streamPDA, vaultPDA } =
-      await createMilestoneStreamFixture(100_000_000);
+    const { sender, mint, streamPDA, vaultPDA } = await createMilestoneStreamFixture(100_000_000);
 
     const senderAtaAddr = senderAta(mint, sender.publicKey);
     const vaultBefore = svmTokenBalance(vaultPDA);
 
     await program.methods
       .cancelMilestone()
-      .accounts(cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint))
+      .accountsPartial(
+        cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint),
+      )
       .signers([sender])
       .rpc();
 
@@ -497,7 +498,9 @@ describe("Feature 3: milestone streams", () => {
 
     const txSig = await program.methods
       .cancelMilestone()
-      .accounts(cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint))
+      .accountsPartial(
+        cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint),
+      )
       .signers([sender])
       .rpc();
 
@@ -519,7 +522,7 @@ describe("Feature 3: milestone streams", () => {
     await expect(
       program.methods
         .cancelMilestone()
-        .accounts(
+        .accountsPartial(
           cancelMilestoneAccounts(imposter.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint),
         )
         .signers([imposter])
@@ -535,7 +538,9 @@ describe("Feature 3: milestone streams", () => {
     // First cancel succeeds
     await program.methods
       .cancelMilestone()
-      .accounts(cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint))
+      .accountsPartial(
+        cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint),
+      )
       .signers([sender])
       .rpc();
 
@@ -543,7 +548,7 @@ describe("Feature 3: milestone streams", () => {
     await expect(
       program.methods
         .cancelMilestone()
-        .accounts(
+        .accountsPartial(
           cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint),
         )
         .signers([sender])
@@ -560,7 +565,7 @@ describe("Feature 3: milestone streams", () => {
     // Trigger milestone
     await program.methods
       .triggerMilestone()
-      .accounts(triggerAccounts(milestoneAuthority.publicKey, streamPDA))
+      .accountsPartial(triggerAccounts(milestoneAuthority.publicKey, streamPDA))
       .signers([milestoneAuthority])
       .rpc();
 
@@ -568,7 +573,7 @@ describe("Feature 3: milestone streams", () => {
     await expect(
       program.methods
         .cancelMilestone()
-        .accounts(
+        .accountsPartial(
           cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint),
         )
         .signers([sender])
@@ -580,11 +585,13 @@ describe("Feature 3: milestone streams", () => {
     const { sender, mint, streamPDA, vaultPDA } = await createMilestoneStreamFixture(100_000_000);
 
     const senderAtaAddr = senderAta(mint, sender.publicKey);
-    const senderBefore = svm.getBalance(sender.publicKey);
+    const senderBefore = svm.getBalance(sender.publicKey) ?? BigInt(0);
 
     await program.methods
       .cancelMilestone()
-      .accounts(cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint))
+      .accountsPartial(
+        cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint),
+      )
       .signers([sender])
       .rpc();
 
@@ -596,7 +603,7 @@ describe("Feature 3: milestone streams", () => {
       expect(data.every((b: number) => b === 0)).toBe(true);
     }
 
-    const senderAfter = svm.getBalance(sender.publicKey);
+    const senderAfter = svm.getBalance(sender.publicKey) ?? BigInt(0);
     expect(senderAfter > senderBefore).toBe(true);
   });
 });

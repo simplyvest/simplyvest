@@ -56,7 +56,7 @@ export const now = () => Math.floor(Date.now() / 1000);
 
 export const parseEvents = async (
   provider: anchor.Provider,
-  program: anchor.Program,
+  program: { programId: PublicKey; coder: anchor.Coder },
   txSig: string,
 ): Promise<anchor.Event[]> => {
   const tx = await provider.connection.getTransaction(txSig, {

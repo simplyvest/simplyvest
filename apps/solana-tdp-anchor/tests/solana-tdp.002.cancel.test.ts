@@ -86,7 +86,7 @@ describe("Feature 2: cancel", () => {
         endTime: new BN(end),
         cliffTime: new BN(cliff),
       })
-      .accounts({
+      .accountsPartial({
         sender: sender.publicKey,
         recipient: recipient.publicKey,
         stream: streamPDA,
@@ -127,7 +127,7 @@ describe("Feature 2: cancel", () => {
 
     await program.methods
       .cancel()
-      .accounts(
+      .accountsPartial(
         cancelAccounts(
           sender.publicKey,
           recipient.publicKey,
@@ -158,7 +158,7 @@ describe("Feature 2: cancel", () => {
 
     await program.methods
       .cancel()
-      .accounts(
+      .accountsPartial(
         cancelAccounts(
           sender.publicKey,
           recipient.publicKey,
@@ -196,7 +196,7 @@ describe("Feature 2: cancel", () => {
 
     await program.methods
       .cancel()
-      .accounts(
+      .accountsPartial(
         cancelAccounts(
           sender.publicKey,
           recipient.publicKey,
@@ -228,7 +228,7 @@ describe("Feature 2: cancel", () => {
     await expect(
       program.methods
         .cancel()
-        .accounts(
+        .accountsPartial(
           cancelAccounts(
             sender.publicKey,
             recipient.publicKey,
@@ -252,7 +252,7 @@ describe("Feature 2: cancel", () => {
     // First cancel
     await program.methods
       .cancel()
-      .accounts(
+      .accountsPartial(
         cancelAccounts(
           sender.publicKey,
           recipient.publicKey,
@@ -269,7 +269,7 @@ describe("Feature 2: cancel", () => {
     // Second cancel should fail (stream is closed)
     const promise = program.methods
       .cancel()
-      .accounts(
+      .accountsPartial(
         cancelAccounts(
           sender.publicKey,
           recipient.publicKey,
@@ -293,7 +293,7 @@ describe("Feature 2: cancel", () => {
 
     const txSig = await program.methods
       .cancel()
-      .accounts(
+      .accountsPartial(
         cancelAccounts(
           sender.publicKey,
           recipient.publicKey,
@@ -325,11 +325,11 @@ describe("Feature 2: cancel", () => {
     const { sender, recipient, mint, senderToken, recipientToken, vaultPDA, streamPDA } =
       await setupStream(1_000_000, 10, 3600, 10);
     warp(100);
-    const senderBefore = svm.getBalance(sender.publicKey);
+    const senderBefore = svm.getBalance(sender.publicKey) ?? BigInt(0);
 
     await program.methods
       .cancel()
-      .accounts(
+      .accountsPartial(
         cancelAccounts(
           sender.publicKey,
           recipient.publicKey,
@@ -354,7 +354,7 @@ describe("Feature 2: cancel", () => {
     }
 
     // Sender received rent from vault + stream closure
-    const senderAfter = svm.getBalance(sender.publicKey);
+    const senderAfter = svm.getBalance(sender.publicKey) ?? BigInt(0);
     expect(senderAfter > senderBefore).toBe(true);
   });
 });

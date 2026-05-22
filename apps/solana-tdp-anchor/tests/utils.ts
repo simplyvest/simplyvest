@@ -1,4 +1,5 @@
 import * as anchor from "@coral-xyz/anchor";
+import type { SolanaTdp } from "@solana-tdp/sdk";
 import {
   TOKEN_PROGRAM_ID,
   createInitializeMintInstruction,
@@ -7,7 +8,16 @@ import {
   AccountLayout,
   MintLayout,
 } from "@solana/spl-token";
-import { ConfirmOptions, Connection, PublicKey, Keypair, Signer, SystemProgram, Transaction, VersionedTransaction } from "@solana/web3.js";
+import {
+  ConfirmOptions,
+  Connection,
+  PublicKey,
+  Keypair,
+  Signer,
+  SystemProgram,
+  Transaction,
+  VersionedTransaction,
+} from "@solana/web3.js";
 import { fromWorkspace, LiteSVMProvider } from "anchor-litesvm";
 
 interface SvmTxMeta {
@@ -25,7 +35,11 @@ interface SvmGetTxResult {
 
 interface ProviderSend {
   connection: Connection;
-  sendAndConfirm?(tx: Transaction | VersionedTransaction, signers?: Signer[], _opts?: ConfirmOptions): Promise<string>;
+  sendAndConfirm?(
+    tx: Transaction | VersionedTransaction,
+    signers?: Signer[],
+    _opts?: ConfirmOptions,
+  ): Promise<string>;
 }
 
 // Fresh SVM per call to prevent memory accumulation across tests
@@ -37,7 +51,7 @@ export const setupTest = () => {
 
   anchor.setProvider(provider);
 
-  const program: anchor.Program = new anchor.Program(require("../target/idl/solana_tdp.json"), provider);
+  const program = new anchor.Program<SolanaTdp>(require("../target/idl/solana_tdp.json"), provider);
 
   // --- SVM-based helpers ---
 
@@ -55,7 +69,11 @@ export const setupTest = () => {
   };
 
   // Monkey-patch for EventParser + parseEvents compatibility
-  (provider.connection as Omit<Connection, "getTransaction"> & { getTransaction(sig: string): Promise<SvmGetTxResult | null> }).getTransaction = async (sig: string) => svmGetTransaction(sig);
+  (
+    provider.connection as Omit<Connection, "getTransaction"> & {
+      getTransaction(sig: string): Promise<SvmGetTxResult | null>;
+    }
+  ).getTransaction = async (sig: string) => svmGetTransaction(sig);
 
   const svmAirdrop = (addresses: PublicKey[]) => {
     for (const address of addresses) {

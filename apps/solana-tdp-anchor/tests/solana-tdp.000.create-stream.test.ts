@@ -14,7 +14,7 @@ import { setupTest, createMint, createTokenAccount, mintTo } from "./utils";
 
 describe("Feature 0: create_stream", () => {
   it("creates stream and transfers tokens to vault", async () => {
-    const { provider, program, svmAirdrop } = setupTest();
+    const { provider, program, svmAirdrop, svmTokenBalance } = setupTest();
     const sender = Keypair.generate();
     const recipient = Keypair.generate();
     svmAirdrop([sender.publicKey]);
@@ -47,7 +47,7 @@ describe("Feature 0: create_stream", () => {
         endTime: new anchor.BN(end),
         cliffTime: new anchor.BN(cliff),
       })
-      .accounts({
+      .accountsPartial({
         sender: sender.publicKey,
         recipient: recipient.publicKey,
         stream: streamPDA,
@@ -113,7 +113,7 @@ describe("Feature 0: create_stream", () => {
         endTime: new anchor.BN(end),
         cliffTime: new anchor.BN(cliff),
       })
-      .accounts({
+      .accountsPartial({
         sender: sender.publicKey,
         recipient: recipient.publicKey,
         stream: streamPDA,
@@ -163,7 +163,7 @@ describe("Feature 0: create_stream", () => {
             endTime: new anchor.BN(end),
             cliffTime: new anchor.BN(0),
           })
-          .accounts({
+          .accountsPartial({
             sender: sender.publicKey,
             recipient: recipient.publicKey,
             stream: streamPDA,
@@ -210,7 +210,7 @@ describe("Feature 0: create_stream", () => {
             endTime: new anchor.BN(end),
             cliffTime: new anchor.BN(cliff),
           })
-          .accounts({
+          .accountsPartial({
             sender: sender.publicKey,
             recipient: recipient.publicKey,
             stream: streamPDA,
@@ -257,7 +257,7 @@ describe("Feature 0: create_stream", () => {
             endTime: new anchor.BN(end),
             cliffTime: new anchor.BN(cliff),
           })
-          .accounts({
+          .accountsPartial({
             sender: sender.publicKey,
             recipient: recipient.publicKey,
             stream: streamPDA,
@@ -303,7 +303,7 @@ describe("Feature 0: create_stream", () => {
             endTime: new anchor.BN(end),
             cliffTime: new anchor.BN(0),
           })
-          .accounts({
+          .accountsPartial({
             sender: sender.publicKey,
             recipient: recipient.publicKey,
             stream: streamPDA,
@@ -349,7 +349,7 @@ describe("Feature 0: create_stream", () => {
             endTime: new anchor.BN(end),
             cliffTime: new anchor.BN(0),
           })
-          .accounts({
+          .accountsPartial({
             sender: sender.publicKey,
             recipient: recipient.publicKey,
             stream: streamPDA,
@@ -395,7 +395,7 @@ describe("Feature 0: create_stream", () => {
             endTime: new anchor.BN(end),
             cliffTime: new anchor.BN(0),
           })
-          .accounts({
+          .accountsPartial({
             sender: sender.publicKey,
             recipient: recipient.publicKey,
             stream: streamPDA,
@@ -445,7 +445,7 @@ describe("Feature 0: create_stream", () => {
         endTime: new anchor.BN(end),
         cliffTime: new anchor.BN(cliff),
       })
-      .accounts({
+      .accountsPartial({
         sender: sender.publicKey,
         recipient: recipient.publicKey,
         stream: streamPDA,
