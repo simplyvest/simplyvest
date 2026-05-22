@@ -40,4 +40,3 @@ export function SolanaProvider({ children }: { children: React.ReactNode }) {
     </ConnectionProvider>
   );
 }
-

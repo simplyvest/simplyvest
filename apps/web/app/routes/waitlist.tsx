@@ -6,10 +6,9 @@ import { CheckboxInput } from "@/components/ui/checkbox-input";
 import { FormField } from "@/components/ui/form-field";
 import { SelectInput } from "@/components/ui/select-input";
 import { TextInput, InputGroup } from "@/components/ui/text-input";
-
-import { Route as RootRoute } from "./__root";
 import { trackEvent } from "@/utils/analytics";
 
+import { Route as RootRoute } from "./__root";
 
 export const Route = createRoute({
   getParentRoute: () => RootRoute,
