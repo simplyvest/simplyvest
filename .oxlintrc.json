@@ -9,11 +9,13 @@
   "categories": {
     "correctness": "error",
     "suspicious": "error",
-    "perf": "error"
+    "perf": "error",
+    "style": "off",
+    "restriction": "off"
   },
   "rules": {
     "no-console": "warn",
-    "typescript/no-explicit-any": "warn",
+    "typescript/no-explicit-any": "error",
     "react/self-closing-comp": "error",
     "react/react-in-jsx-scope": "off",
     "import/no-cycle": "error",
@@ -34,7 +36,6 @@
       "plugins": ["jest"],
       "env": { "jest": true },
       "rules": {
-        "typescript/no-explicit-any": "off",
         "jest/require-to-throw-message": "off",
         "jest/no-conditional-expect": "off"
       }

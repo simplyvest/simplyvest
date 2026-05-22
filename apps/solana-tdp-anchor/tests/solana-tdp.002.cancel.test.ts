@@ -14,7 +14,7 @@ import {
   parseEvents,
   findEvent,
 } from "./helpers";
-import { setupTest, createMint, createTokenAccount, mintTo } from "./utils";
+import { setupTest, SetupTest, createMint, createTokenAccount, mintTo } from "./utils";
 
 // Shared accounts for cancel instructions
 const cancelAccounts = (
@@ -39,12 +39,12 @@ const cancelAccounts = (
 });
 
 describe("Feature 2: cancel", () => {
-  let program: any;
-  let svm: any;
-  let svmAirdrop: (addresses: PublicKey[]) => void;
-  let svmTokenBalance: (pk: PublicKey) => bigint;
-  let warp: (seconds: number) => void;
-  let provider: any;
+  let program: SetupTest["program"];
+  let svm: SetupTest["svm"];
+  let svmAirdrop: SetupTest["svmAirdrop"];
+  let svmTokenBalance: SetupTest["svmTokenBalance"];
+  let warp: SetupTest["warp"];
+  let provider: SetupTest["provider"];
 
   beforeEach(() => {
     ({ program, provider, svm, svmAirdrop, warp, svmTokenBalance } = setupTest());

@@ -14,7 +14,7 @@ import {
   parseEvents,
   findEvent,
 } from "./helpers";
-import { setupTest, createMint, createTokenAccount, mintTo } from "./utils";
+import { setupTest, SetupTest, createMint, createTokenAccount, mintTo } from "./utils";
 
 // Shared accounts for trigger
 const triggerAccounts = (milestoneAuthority: PublicKey, stream: PublicKey) => ({
@@ -65,11 +65,11 @@ const senderAta = (mint: PublicKey, sender: PublicKey) =>
   getAssociatedTokenAddressSync(mint, sender, true);
 
 describe("Feature 3: milestone streams", () => {
-  let program: any;
-  let svm: any;
-  let svmAirdrop: (addresses: PublicKey[]) => void;
-  let svmTokenBalance: (pk: PublicKey) => bigint;
-  let provider: any;
+  let program: SetupTest["program"];
+  let svm: SetupTest["svm"];
+  let svmAirdrop: SetupTest["svmAirdrop"];
+  let svmTokenBalance: SetupTest["svmTokenBalance"];
+  let provider: SetupTest["provider"];
 
   beforeEach(() => {
     ({ program, provider, svm, svmAirdrop, svmTokenBalance } = setupTest());

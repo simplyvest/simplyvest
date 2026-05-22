@@ -63,7 +63,7 @@ export const parseEvents = async (
     commitment: "confirmed",
     maxSupportedTransactionVersion: 0,
   });
-  const logs = (tx as any)?.meta?.logMessages ?? [];
+  const logs = tx?.meta?.logMessages ?? [];
   const parser = new anchor.EventParser(program.programId, program.coder);
   const events: anchor.Event[] = [];
   for (const event of parser.parseLogs(logs)) {

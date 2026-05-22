@@ -7,36 +7,55 @@ import {
   AccountLayout,
   MintLayout,
 } from "@solana/spl-token";
-import { PublicKey, Keypair, SystemProgram } from "@solana/web3.js";
+import { ConfirmOptions, Connection, PublicKey, Keypair, Signer, SystemProgram, Transaction, VersionedTransaction } from "@solana/web3.js";
 import { fromWorkspace, LiteSVMProvider } from "anchor-litesvm";
+
+interface SvmTxMeta {
+  logs?(): string[];
+  meta?(): { logs(): string[] };
+  err?(): null;
+}
+
+interface SvmGetTxResult {
+  meta: {
+    logMessages: string[];
+    err: null;
+  };
+}
+
+interface ProviderSend {
+  connection: Connection;
+  sendAndConfirm?(tx: Transaction | VersionedTransaction, signers?: Signer[], _opts?: ConfirmOptions): Promise<string>;
+}
 
 // Fresh SVM per call to prevent memory accumulation across tests
 const newSvm = () => fromWorkspace("./").withDefaultPrograms().withBuiltins().withSysvars();
 
 export const setupTest = () => {
-  const svm: any = newSvm();
+  const svm = newSvm();
   const provider = new LiteSVMProvider(svm);
 
-  anchor.setProvider(provider as any);
+  anchor.setProvider(provider);
 
-  const program: any = new anchor.Program(require("../target/idl/solana_tdp.json"), provider);
+  const program: anchor.Program = new anchor.Program(require("../target/idl/solana_tdp.json"), provider);
 
   // --- SVM-based helpers ---
 
   const svmGetTransaction = (txSig: string) => {
-    const meta = svm.getTransaction(anchor.utils.bytes.bs58.decode(txSig));
+    const meta: unknown = svm.getTransaction(anchor.utils.bytes.bs58.decode(txSig));
     if (!meta) return null;
-    const logs = "logs" in meta ? (meta as any).logs() : (meta as any).meta().logs();
+    const m = meta as SvmTxMeta;
+    const logs = "logs" in m ? m.logs!() : m.meta!().logs();
     return {
       meta: {
         logMessages: logs,
-        err: "err" in meta ? (meta as any).err() : null,
+        err: "err" in m ? m.err!() : null,
       },
-    };
+    } satisfies SvmGetTxResult;
   };
 
   // Monkey-patch for EventParser + parseEvents compatibility
-  (provider.connection as any).getTransaction = async (sig: string) => svmGetTransaction(sig);
+  (provider.connection as Omit<Connection, "getTransaction"> & { getTransaction(sig: string): Promise<SvmGetTxResult | null> }).getTransaction = async (sig: string) => svmGetTransaction(sig);
 
   const svmAirdrop = (addresses: PublicKey[]) => {
     for (const address of addresses) {
@@ -62,6 +81,8 @@ export const setupTest = () => {
   return { svm, provider, program, svmAirdrop, warp, svmTokenBalance };
 };
 
+export type SetupTest = ReturnType<typeof setupTest>;
+
 // ── SPL Token Helpers ──────────────────────────────────────────────────────
 // These build manual transactions because LiteSVMConnectionProxy doesn't
 // expose sendTransaction() — the @solana/spl-token convenience functions
@@ -71,7 +92,7 @@ const MINT_LEN = MintLayout.span;
 const ACCOUNT_LEN = AccountLayout.span;
 
 export const createMint = async (
-  provider: any,
+  provider: ProviderSend,
   payer: Keypair,
   mintAuthority: PublicKey,
   decimals: number,
@@ -96,12 +117,12 @@ export const createMint = async (
     ),
   );
 
-  await provider.sendAndConfirm(tx, [payer, mintKp]);
+  await provider.sendAndConfirm!(tx, [payer, mintKp]);
   return mintKp.publicKey;
 };
 
 export const createTokenAccount = async (
-  provider: any,
+  provider: ProviderSend,
   payer: Keypair,
   mint: PublicKey,
   owner: PublicKey,
@@ -120,12 +141,12 @@ export const createTokenAccount = async (
     createInitializeAccountInstruction(accountKp.publicKey, mint, owner, TOKEN_PROGRAM_ID),
   );
 
-  await provider.sendAndConfirm(tx, [payer, accountKp]);
+  await provider.sendAndConfirm!(tx, [payer, accountKp]);
   return accountKp.publicKey;
 };
 
 export const mintTo = async (
-  provider: any,
+  provider: ProviderSend,
   mint: PublicKey,
   destination: PublicKey,
   authority: Keypair,
@@ -135,5 +156,5 @@ export const mintTo = async (
     createMintToInstruction(mint, destination, authority.publicKey, amount, [], TOKEN_PROGRAM_ID),
   );
 
-  await provider.sendAndConfirm(tx, [authority]);
+  await provider.sendAndConfirm!(tx, [authority]);
 };

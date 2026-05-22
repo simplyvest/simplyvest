@@ -80,9 +80,12 @@ async function main() {
   // Fetch creator_config to get the actual vesting_count from chain.
   // If it doesn't exist yet (first run), vesting_count = 0.
   const [creatorConfigPDA] = await findCreatorConfigPDA(wallet.publicKey);
+  const creatorConfigAccount = program.account.creatorConfig as {
+    fetch(pda: PublicKey): Promise<{ vestingCount: anchor.BN }>;
+  };
   let vestingCount: anchor.BN;
   try {
-    const config = await (program.account as any).creatorConfig.fetch(creatorConfigPDA);
+    const config = await creatorConfigAccount.fetch(creatorConfigPDA);
     vestingCount = config.vestingCount;
     console.log(`  • creator config exists, vesting_count = ${vestingCount.toString()}`);
   } catch {
@@ -153,8 +156,8 @@ async function main() {
       .signers([wallet])
       .rpc();
     console.log("  ✗ Unexpected — withdraw should have been rejected\n");
-  } catch (err: any) {
-    const msg = err.message ?? String(err);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
     console.log(`  ✔ Correctly rejected: "${simplifyError(msg)}"\n`);
   }
 
