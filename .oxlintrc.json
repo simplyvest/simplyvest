@@ -1,0 +1,59 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "import", "unicorn", "oxc"],
+  "env": {
+    "node": true,
+    "browser": true,
+    "es2022": true
+  },
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "rules": {
+    "no-debugger": "error",
+    "no-console": "warn",
+    "typescript/no-explicit-any": "warn",
+    "typescript/no-unused-vars": "warn",
+    "react/jsx-key": "error",
+    "react/no-array-index-key": "warn",
+    "react/self-closing-comp": "error",
+    "react/react-in-jsx-scope": "off",
+    "import/no-cycle": "warn",
+    "import/no-unassigned-import": "off"
+  },
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/target/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.anchor/**",
+    "**/test-ledger/**",
+    "**/keypairs/**"
+  ],
+  "overrides": [
+    {
+      "files": ["*.test.ts", "*.spec.ts"],
+      "plugins": ["jest"],
+      "env": { "jest": true },
+      "rules": {
+        "typescript/no-explicit-any": "off",
+        "jest/require-to-throw-message": "off",
+        "jest/no-conditional-expect": "off"
+      }
+    },
+    {
+      "files": ["apps/api/**/*.ts"],
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
+      "files": ["apps/solana-tdp-anchor/scripts/**/*.ts"],
+      "rules": {
+        "no-console": "off"
+      }
+    }
+  ]
+}

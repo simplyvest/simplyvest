@@ -22,11 +22,11 @@ Solana TDP is a token vesting protocol on Solana that combines:
 
 ### Target audience
 
-| Who | Pain point |
-|---|---|
-| **Web3 founders** launching new tokens | Manual Excel calculations, no simulation, high dump risk |
-| **Non-technical project owners** | Current tools assume blockchain literacy — steep learning curve |
-| **Launchpads & ecosystem operators** | No way to stress-test whether a project's distribution plan is sustainable |
+| Who                                    | Pain point                                                                 |
+| -------------------------------------- | -------------------------------------------------------------------------- |
+| **Web3 founders** launching new tokens | Manual Excel calculations, no simulation, high dump risk                   |
+| **Non-technical project owners**       | Current tools assume blockchain literacy — steep learning curve            |
+| **Launchpads & ecosystem operators**   | No way to stress-test whether a project's distribution plan is sustainable |
 
 ## Project structure
 
@@ -51,7 +51,7 @@ docs/
 ### Prerequisites
 
 - [Rust](https://rustup.rs/) — `rustup install stable`
-|- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v3.1.12
+  |- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v3.1.12
 - [Anchor CLI](https://www.anchor-lang.com/docs/installation) — v0.32.1
 - [Node.js](https://nodejs.org/) v18+ + [pnpm](https://pnpm.io/) (install: `corepack enable && corepack prepare pnpm@latest --activate`)
 
@@ -67,12 +67,12 @@ pnpm build
 
 ### Targeted scripts
 
-| Script | What it does |
-|---|---|
+| Script               | What it does                                                      |
+| -------------------- | ----------------------------------------------------------------- |
 | `pnpm program:build` | Builds the Anchor program, syncs the IDL into the SDK, builds SDK |
-| `pnpm sdk:sync` | Copies the latest IDL from the program build into the SDK package |
-| `pnpm sdk:build` | Builds only the SDK package |
-| `pnpm test` | Runs all workspace tests |
+| `pnpm sdk:sync`      | Copies the latest IDL from the program build into the SDK package |
+| `pnpm sdk:build`     | Builds only the SDK package                                       |
+| `pnpm test`          | Runs all workspace tests                                          |
 
 ### Program ID
 
@@ -87,20 +87,20 @@ Update `declare_id!("...")` in `programs/tdp/src/lib.rs` and `[programs.localnet
 
 ## Documentation
 
-| Document | Contents |
-|---|---|
-| [Research](./docs/RESEARCH.md) | Vesting types (cliff/linear/milestone), competitive landscape, market gap analysis, user research findings, product positioning |
-| [Architecture](./docs/ARCHITECTURE.md) | Account structure, PDA seeds, program instructions, data flow, edge cases, events and error reference |
-| [Tooling](./docs/TOOLING.md) | Framework, testing setup, repo layout, code conventions |
-| [Deployment](./docs/DEPLOYMENT.md) | Building, testing, program deployment, frontend deployment, CI/CD, browser compatibility |
+| Document                               | Contents                                                                                                                        |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [Research](./docs/RESEARCH.md)         | Vesting types (cliff/linear/milestone), competitive landscape, market gap analysis, user research findings, product positioning |
+| [Architecture](./docs/ARCHITECTURE.md) | Account structure, PDA seeds, program instructions, data flow, edge cases, events and error reference                           |
+| [Tooling](./docs/TOOLING.md)           | Framework, testing setup, repo layout, code conventions                                                                         |
+| [Deployment](./docs/DEPLOYMENT.md)     | Building, testing, program deployment, frontend deployment, CI/CD, browser compatibility                                        |
 
 ## Repository
 
-| | |
-|---|---|
+|                         |                                                                                                                                                   |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Program ID (devnet)** | [`6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk`](https://explorer.solana.com/address/6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk?cluster=devnet) |
-| **Explorer** | [Solana Explorer (devnet)](https://explorer.solana.com/?cluster=devnet) |
-| **License** | MIT |
+| **Explorer**            | [Solana Explorer (devnet)](https://explorer.solana.com/?cluster=devnet)                                                                           |
+| **License**             | MIT                                                                                                                                               |
 
 ## Team
 

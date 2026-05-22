@@ -1,0 +1,3 @@
+#!/bin/sh
+eval "$(mise activate bash)"
+pnpm exec nano-staged

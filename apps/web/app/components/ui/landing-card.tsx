@@ -1,4 +1,5 @@
 import * as React from "react";
+
 import { cn } from "@/utils/cn";
 
 export function LandingCard({
@@ -18,9 +19,7 @@ export function LandingCard({
 }) {
   const classes = cn(
     "block rounded-xl border border-border bg-bg1 px-5 py-5 transition-all no-underline",
-    isStatic
-      ? "cursor-default"
-      : "hover:translate-x-1 hover:border-sol hover:no-underline",
+    isStatic ? "cursor-default" : "hover:translate-x-1 hover:border-sol hover:no-underline",
     className,
   );
 
@@ -28,9 +27,7 @@ export function LandingCard({
     <>
       <span className="block font-semibold text-text">{title}</span>
       {desc && <p className="mt-1.5 text-[0.9rem] leading-relaxed text-muted">{desc}</p>}
-      {meta && (
-        <p className="mt-1 font-mono text-[0.75rem] text-dim">{meta}</p>
-      )}
+      {meta && <p className="mt-1 font-mono text-[0.75rem] text-dim">{meta}</p>}
     </>
   );
 

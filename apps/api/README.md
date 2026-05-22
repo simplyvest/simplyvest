@@ -20,9 +20,9 @@ Secrets are set via `wrangler secret put` and persist across deploys.
 
 ## Environment
 
-| Variable | Required | Description |
-|---|---|---|
-| `GOOGLE_SERVICE_ACCOUNT_EMAIL` | Yes | Service account email from GCP JSON |
-| `GOOGLE_PRIVATE_KEY` | Yes | PEM private key (with real newlines) |
-| `GOOGLE_SHEET_ID` | Yes | ID from the sheet URL |
-| `GOOGLE_SHEET_NAME` | No | Sheet tab name (default: "Sheet1") |
+| Variable                       | Required | Description                          |
+| ------------------------------ | -------- | ------------------------------------ |
+| `GOOGLE_SERVICE_ACCOUNT_EMAIL` | Yes      | Service account email from GCP JSON  |
+| `GOOGLE_PRIVATE_KEY`           | Yes      | PEM private key (with real newlines) |
+| `GOOGLE_SHEET_ID`              | Yes      | ID from the sheet URL                |
+| `GOOGLE_SHEET_NAME`            | No       | Sheet tab name (default: "Sheet1")   |

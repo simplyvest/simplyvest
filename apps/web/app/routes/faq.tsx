@@ -1,17 +1,16 @@
 import { createRoute } from "@tanstack/react-router";
-import { Route as RootRoute } from "./__root";
+
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/utils/cn";
 import { faqs } from "@/data/faqs";
+import { cn } from "@/utils/cn";
+
+import { Route as RootRoute } from "./__root";
 
 function Accordion({ items }: { items: { q: string; a: string }[] }) {
   return (
     <div className="divide-y divide-border rounded-xl border border-border">
       {items.map((item, i) => (
-        <details
-          key={i}
-          className="group open:bg-bg1"
-        >
+        <details key={i} className="group open:bg-bg1">
           <summary
             className={cn(
               "flex cursor-pointer items-center justify-between px-6 py-4 text-[0.95rem] font-medium transition-colors hover:bg-bg2",
@@ -19,14 +18,15 @@ function Accordion({ items }: { items: { q: string; a: string }[] }) {
             )}
           >
             {item.q}
-            <span className="ml-4 font-mono text-sm text-dim transition-transform group-open:rotate-45" aria-hidden="true">
+            <span
+              className="ml-4 font-mono text-sm text-dim transition-transform group-open:rotate-45"
+              aria-hidden="true"
+            >
               +
             </span>
           </summary>
           <div className="border-t border-border px-6 py-4">
-            <p className="text-[0.9rem] leading-relaxed text-muted">
-              {item.a}
-            </p>
+            <p className="text-[0.9rem] leading-relaxed text-muted">{item.a}</p>
           </div>
         </details>
       ))}
@@ -45,7 +45,8 @@ function FAQPage() {
     <div className="mx-auto max-w-4xl px-6 pt-28">
       <Badge variant="sol">FAQ</Badge>
       <h1 className="mt-4">
-        FREQUENTLY<br />
+        FREQUENTLY
+        <br />
         <em>ASKED</em>
       </h1>
       <p className="max-w-[580px] text-lg leading-relaxed text-muted">

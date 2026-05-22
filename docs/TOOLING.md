@@ -36,10 +36,10 @@ anchor build             # BPF compilation (for on-chain deployment)
 
 Run with `cargo test` — no SVM/validator required. Tests live in `#[cfg(test)] mod tests {}` blocks co-located with the source they cover.
 
-
 ### TypeScript integration tests (Jest + anchor-litesvm)
 
 Run with:
+
 ```bash
 cd apps/solana-tdp-anchor
 pnpm test
@@ -121,12 +121,12 @@ packages/
 
 ## Code conventions
 
-| What | Convention | Example |
-|---|---|---|
-| Test files | `solana-tdp.NNN.instruction.test.ts` | `solana-tdp.000.create-stream.test.ts` |
-| PDA seeds | Lowercase static strings | `"stream"`, not `"VestingSchedule"` |
-| Instruction files | Match instruction name exactly | `create_stream.rs` |
-| TypeScript hooks | Kebab-case | `use-vesting-schedule.ts` |
+| What              | Convention                           | Example                                |
+| ----------------- | ------------------------------------ | -------------------------------------- |
+| Test files        | `solana-tdp.NNN.instruction.test.ts` | `solana-tdp.000.create-stream.test.ts` |
+| PDA seeds         | Lowercase static strings             | `"stream"`, not `"VestingSchedule"`    |
+| Instruction files | Match instruction name exactly       | `create_stream.rs`                     |
+| TypeScript hooks  | Kebab-case                           | `use-vesting-schedule.ts`              |
 
 ### Test numbering
 

@@ -1,4 +1,5 @@
 import * as React from "react";
+
 import { cn } from "@/utils/cn";
 
 export function ThemeToggle({ className }: { className?: string }) {
@@ -28,8 +29,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       )}
       aria-label="Toggle theme"
     >
-      <span aria-hidden="true">{theme === "dark" ? "☀️" : "🌙"}</span>
-      {" "}
+      <span aria-hidden="true">{theme === "dark" ? "☀️" : "🌙"}</span>{" "}
       <span>{theme === "dark" ? "Light" : "Dark"}</span>
     </button>
   );

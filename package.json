@@ -1,34 +1,32 @@
 {
   "name": "solana-tdp-monorepo",
   "private": true,
-  "engines": {
-    "node": ">=18"
-  },
-  "packageManager": "pnpm@10.33.0",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@stellar/stellar-sdk",
-      "bigint-buffer",
-      "blake-hash",
-      "bufferutil",
-      "esbuild",
-      "protobufjs",
-      "sharp",
-      "tiny-secp256k1",
-      "usb",
-      "utf-8-validate",
-      "workerd"
-    ]
-  },
   "scripts": {
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "anchor:build": "cd apps/solana-tdp-anchor && anchor build",
     "sdk:sync": "pnpm --filter @solana-tdp/sdk sync",
     "sdk:build": "pnpm --filter @solana-tdp/sdk build",
-    "program:build": "pnpm anchor:build && pnpm sdk:sync && pnpm sdk:build"
+    "program:build": "pnpm anchor:build && pnpm sdk:sync && pnpm sdk:build",
+    "lint": "oxlint --fix .",
+    "format": "oxfmt .",
+    "prepare": "git config core.hooksPath .hooks"
   },
   "devDependencies": {
+    "nano-staged": "^1.0.2",
+    "oxfmt": "^0.51.0",
+    "oxlint": "^1.66.0",
     "wrangler": "^4.90.0"
-  }
+  },
+  "nano-staged": {
+    "*.{js,jsx,ts,tsx,mjs,cjs}": [
+      "oxlint --fix",
+      "oxfmt"
+    ],
+    "*.{css,md,json,yml,yaml,html,toml}": "oxfmt"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "packageManager": "pnpm@11.2.2"
 }

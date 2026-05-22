@@ -1,14 +1,21 @@
 import * as anchor from "@coral-xyz/anchor";
 import { BN } from "@coral-xyz/anchor";
-import { Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
 import {
   TOKEN_PROGRAM_ID,
   ASSOCIATED_TOKEN_PROGRAM_ID,
   getAssociatedTokenAddressSync,
   createAssociatedTokenAccountInstruction,
 } from "@solana/spl-token";
+import { Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
+
+import {
+  findStreamPDA,
+  findVaultPDA,
+  findCreatorConfigPDA,
+  parseEvents,
+  findEvent,
+} from "./helpers";
 import { setupTest, createMint, createTokenAccount, mintTo } from "./utils";
-import { findStreamPDA, findVaultPDA, findCreatorConfigPDA, parseEvents, findEvent } from "./helpers";
 
 describe("Feature 1: withdraw", () => {
   let program: any;
@@ -94,7 +101,19 @@ describe("Feature 1: withdraw", () => {
       .signers([sender])
       .rpc();
 
-    return { sender, recipient, mint, senderToken, recipientToken, streamPDA, vaultPDA, amount, start, cliff, end };
+    return {
+      sender,
+      recipient,
+      mint,
+      senderToken,
+      recipientToken,
+      streamPDA,
+      vaultPDA,
+      amount,
+      start,
+      cliff,
+      end,
+    };
   };
 
   // Shared account set for withdraw instructions
@@ -131,7 +150,16 @@ describe("Feature 1: withdraw", () => {
 
     await program.methods
       .withdraw({ amount: new BN(expectedVested) })
-      .accounts(withdrawAccounts(recipient.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+      .accounts(
+        withdrawAccounts(
+          recipient.publicKey,
+          streamPDA,
+          vaultPDA,
+          recipientToken,
+          sender.publicKey,
+          mint,
+        ),
+      )
       .signers([recipient])
       .rpc();
 
@@ -152,7 +180,16 @@ describe("Feature 1: withdraw", () => {
 
     await program.methods
       .withdraw({ amount: new BN(amount) })
-      .accounts(withdrawAccounts(recipient.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+      .accounts(
+        withdrawAccounts(
+          recipient.publicKey,
+          streamPDA,
+          vaultPDA,
+          recipientToken,
+          sender.publicKey,
+          mint,
+        ),
+      )
       .signers([recipient])
       .rpc();
 
@@ -177,7 +214,16 @@ describe("Feature 1: withdraw", () => {
 
     await program.methods
       .withdraw({ amount: new BN(withdraw1) })
-      .accounts(withdrawAccounts(recipient.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+      .accounts(
+        withdrawAccounts(
+          recipient.publicKey,
+          streamPDA,
+          vaultPDA,
+          recipientToken,
+          sender.publicKey,
+          mint,
+        ),
+      )
       .signers([recipient])
       .rpc();
 
@@ -187,8 +233,17 @@ describe("Feature 1: withdraw", () => {
     expect(withdraw1).toBeLessThan(amount);
 
     // Second fixture: different amounts to verify cumulative tracking
-    const { sender: s2, recipient: r2, mint: m2, recipientToken: rt2, vaultPDA: v2, streamPDA: s2p, amount: a2, cliff: cl2, end: en2 } =
-      await createStreamFixture(2_000_000, 10, 7200, 10);
+    const {
+      sender: s2,
+      recipient: r2,
+      mint: m2,
+      recipientToken: rt2,
+      vaultPDA: v2,
+      streamPDA: s2p,
+      amount: a2,
+      cliff: cl2,
+      end: en2,
+    } = await createStreamFixture(2_000_000, 10, 7200, 10);
     warp(3600);
 
     const elapsed2 = clockNow() - cl2;
@@ -213,7 +268,16 @@ describe("Feature 1: withdraw", () => {
     await expect(
       program.methods
         .withdraw({ amount: new BN(1) })
-        .accounts(withdrawAccounts(recipient.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+        .accounts(
+          withdrawAccounts(
+            recipient.publicKey,
+            streamPDA,
+            vaultPDA,
+            recipientToken,
+            sender.publicKey,
+            mint,
+          ),
+        )
         .signers([recipient])
         .rpc(),
     ).rejects.toThrow();
@@ -226,7 +290,16 @@ describe("Feature 1: withdraw", () => {
     await expect(
       program.methods
         .withdraw({ amount: new BN(1) })
-        .accounts(withdrawAccounts(recipient.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+        .accounts(
+          withdrawAccounts(
+            recipient.publicKey,
+            streamPDA,
+            vaultPDA,
+            recipientToken,
+            sender.publicKey,
+            mint,
+          ),
+        )
         .signers([recipient])
         .rpc(),
     ).rejects.toThrow();
@@ -241,7 +314,16 @@ describe("Feature 1: withdraw", () => {
     await expect(
       program.methods
         .withdraw({ amount: new BN(1) })
-        .accounts(withdrawAccounts(recipient.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+        .accounts(
+          withdrawAccounts(
+            recipient.publicKey,
+            streamPDA,
+            vaultPDA,
+            recipientToken,
+            sender.publicKey,
+            mint,
+          ),
+        )
         .signers([recipient])
         .rpc(),
     ).rejects.toThrow();
@@ -256,7 +338,16 @@ describe("Feature 1: withdraw", () => {
     await expect(
       program.methods
         .withdraw({ amount: new BN(1) })
-        .accounts(withdrawAccounts(recipient.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+        .accounts(
+          withdrawAccounts(
+            recipient.publicKey,
+            streamPDA,
+            vaultPDA,
+            recipientToken,
+            sender.publicKey,
+            mint,
+          ),
+        )
         .signers([recipient])
         .rpc(),
     ).rejects.toThrow();
@@ -299,7 +390,16 @@ describe("Feature 1: withdraw", () => {
     await expect(
       program.methods
         .withdraw({ amount: new BN(1) })
-        .accounts(withdrawAccounts(recipient.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+        .accounts(
+          withdrawAccounts(
+            recipient.publicKey,
+            streamPDA,
+            vaultPDA,
+            recipientToken,
+            sender.publicKey,
+            mint,
+          ),
+        )
         .signers([recipient])
         .rpc(),
     ).rejects.toThrow();
@@ -318,7 +418,16 @@ describe("Feature 1: withdraw", () => {
     await expect(
       program.methods
         .withdraw({ amount: new BN(claimable + 1) })
-        .accounts(withdrawAccounts(recipient.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+        .accounts(
+          withdrawAccounts(
+            recipient.publicKey,
+            streamPDA,
+            vaultPDA,
+            recipientToken,
+            sender.publicKey,
+            mint,
+          ),
+        )
         .signers([recipient])
         .rpc(),
     ).rejects.toThrow();
@@ -335,7 +444,16 @@ describe("Feature 1: withdraw", () => {
 
     const txSig = await program.methods
       .withdraw({ amount: new BN(expectedVested) })
-      .accounts(withdrawAccounts(recipient.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+      .accounts(
+        withdrawAccounts(
+          recipient.publicKey,
+          streamPDA,
+          vaultPDA,
+          recipientToken,
+          sender.publicKey,
+          mint,
+        ),
+      )
       .signers([recipient])
       .rpc();
 
@@ -357,7 +475,16 @@ describe("Feature 1: withdraw", () => {
 
     await program.methods
       .withdraw({ amount: new BN(amount) })
-      .accounts(withdrawAccounts(recipient.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+      .accounts(
+        withdrawAccounts(
+          recipient.publicKey,
+          streamPDA,
+          vaultPDA,
+          recipientToken,
+          sender.publicKey,
+          mint,
+        ),
+      )
       .signers([recipient])
       .rpc();
 
@@ -386,7 +513,16 @@ describe("Feature 1: withdraw", () => {
 
     await program.methods
       .withdraw({ amount: new BN(expected) })
-      .accounts(withdrawAccounts(recipient.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+      .accounts(
+        withdrawAccounts(
+          recipient.publicKey,
+          streamPDA,
+          vaultPDA,
+          recipientToken,
+          sender.publicKey,
+          mint,
+        ),
+      )
       .signers([recipient])
       .rpc();
 
@@ -403,7 +539,16 @@ describe("Feature 1: withdraw", () => {
     const half = Math.floor((amount * 200) / 400);
     await program.methods
       .withdraw({ amount: new BN(half) })
-      .accounts(withdrawAccounts(recipient.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+      .accounts(
+        withdrawAccounts(
+          recipient.publicKey,
+          streamPDA,
+          vaultPDA,
+          recipientToken,
+          sender.publicKey,
+          mint,
+        ),
+      )
       .signers([recipient])
       .rpc();
 
@@ -422,7 +567,16 @@ describe("Feature 1: withdraw", () => {
     await expect(
       program.methods
         .withdraw({ amount: new BN(100) })
-        .accounts(withdrawAccounts(thirdParty.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+        .accounts(
+          withdrawAccounts(
+            thirdParty.publicKey,
+            streamPDA,
+            vaultPDA,
+            recipientToken,
+            sender.publicKey,
+            mint,
+          ),
+        )
         .signers([thirdParty])
         .rpc(),
     ).rejects.toThrow();
@@ -436,7 +590,16 @@ describe("Feature 1: withdraw", () => {
     await expect(
       program.methods
         .withdraw({ amount: new BN(100) })
-        .accounts(withdrawAccounts(sender.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+        .accounts(
+          withdrawAccounts(
+            sender.publicKey,
+            streamPDA,
+            vaultPDA,
+            recipientToken,
+            sender.publicKey,
+            mint,
+          ),
+        )
         .signers([sender])
         .rpc(),
     ).rejects.toThrow();

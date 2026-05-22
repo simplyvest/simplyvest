@@ -1,4 +1,5 @@
 import * as React from "react";
+
 import { cn } from "@/utils/cn";
 
 export function GapCard({
@@ -19,13 +20,9 @@ export function GapCard({
         className,
       )}
     >
-      <div className="font-display text-4xl leading-none text-warn/40">
-        {number}
-      </div>
+      <div className="font-display text-4xl leading-none text-warn/40">{number}</div>
       <h4 className="mt-2 font-display text-lg tracking-wide">{title}</h4>
-      <p className="mt-2 text-[0.83rem] leading-relaxed text-muted">
-        {children}
-      </p>
+      <p className="mt-2 text-[0.83rem] leading-relaxed text-muted">{children}</p>
     </div>
   );
 }

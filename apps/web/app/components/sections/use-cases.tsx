@@ -1,6 +1,7 @@
 import * as React from "react";
-import { SectionHeader } from "@/components/ui/section-header";
+
 import { GapCard } from "@/components/ui/gap-card";
+import { SectionHeader } from "@/components/ui/section-header";
 
 const useCases = [
   {

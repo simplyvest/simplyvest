@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as readline from "readline";
+
 import { Keypair } from "@solana/web3.js";
 
 const KEYPAIR_PATH = path.resolve(__dirname, "../keypairs/devnet-wallet.json");

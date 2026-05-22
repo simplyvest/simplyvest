@@ -17,7 +17,7 @@ Building, testing, and deploying the Solana program and web frontend.
 ## Prerequisites
 
 - [Rust](https://rustup.rs/) — `rustup install stable`
-|- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v3.1.12
+  |- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v3.1.12
 - [Anchor CLI](https://www.anchor-lang.com/docs/installation) — v0.32.1
 - [Node.js](https://nodejs.org/) v18+ + [pnpm](https://pnpm.io/) (install: `corepack enable && corepack prepare pnpm@latest --activate`)
 
@@ -35,11 +35,11 @@ pnpm build
 
 ### Targeted scripts
 
-| Script | What it does |
-|---|---|
+| Script               | What it does                                                      |
+| -------------------- | ----------------------------------------------------------------- |
 | `pnpm program:build` | Builds the Anchor program, syncs the IDL into the SDK, builds SDK |
-| `pnpm sdk:sync` | Copies the latest IDL from the program build into the SDK package |
-| `pnpm sdk:build` | Builds only the SDK package |
+| `pnpm sdk:sync`      | Copies the latest IDL from the program build into the SDK package |
+| `pnpm sdk:build`     | Builds only the SDK package                                       |
 
 To get the program ID after building:
 
@@ -67,16 +67,17 @@ anchor test
 
 ### Test files
 
-| File | What it tests |
-|---|---|
-| `solana-tdp.000.create-stream.test.ts` | Stream creation with valid/invalid parameters |
-| `solana-tdp.001.withdraw.test.ts` | Claiming vested tokens, cliff checks, partial claims |
-| `solana-tdp.002.cancel.test.ts` | Mid-stream cancellation, vested/unvested split |
-| `solana-tdp.003.milestone.test.ts` | Milestone stream creation, trigger, withdraw, cancel |
+| File                                   | What it tests                                        |
+| -------------------------------------- | ---------------------------------------------------- |
+| `solana-tdp.000.create-stream.test.ts` | Stream creation with valid/invalid parameters        |
+| `solana-tdp.001.withdraw.test.ts`      | Claiming vested tokens, cliff checks, partial claims |
+| `solana-tdp.002.cancel.test.ts`        | Mid-stream cancellation, vested/unvested split       |
+| `solana-tdp.003.milestone.test.ts`     | Milestone stream creation, trigger, withdraw, cancel |
 
 ---
 
 ## Program deployment
+
 ```bash
 cd apps/solana-tdp-anchor
 
@@ -89,14 +90,13 @@ solana program show 6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk --url devnet
 
 Program ID: [`6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk`](https://explorer.solana.com/address/6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk?cluster=devnet)
 
-
 ### Deployment info
 
-| | |
-|---|---|
-| **Network** | Solana Devnet |
+|                |                                                                                                                                                   |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Network**    | Solana Devnet                                                                                                                                     |
 | **Program ID** | [`6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk`](https://explorer.solana.com/address/6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk?cluster=devnet) |
-| **Explorer** | [Solana Explorer (devnet)](https://explorer.solana.com/?cluster=devnet) |
+| **Explorer**   | [Solana Explorer (devnet)](https://explorer.solana.com/?cluster=devnet)                                                                           |
 
 ---
 
@@ -105,6 +105,7 @@ Program ID: [`6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk`](https://explorer.so
 The React frontend (`apps/web`) is deployed to Cloudflare Pages via GitHub Actions. A push to `main` that touches `apps/web/` or `packages/solana-tdp-sdk/` triggers an automatic build and deploy.
 
 Preview deploys are created for pull requests at `<branch>.solana-tdp-web.pages.dev`.
+
 ### One-time setup
 
 1. Create a Cloudflare API token: Dashboard > API Tokens > Create Token > Custom > `Account > Cloudflare Pages > Edit`
@@ -122,6 +123,7 @@ Preview deploys are created for pull requests at `<branch>.solana-tdp-web.pages.
    - **Environment level** — If scoped to an environment (e.g., `main`), the workflow job must declare `environment: main` or the secrets won't be visible. Our CI workflow's `deploy-web` job already includes this declaration.
 
 5. Ensure `wrangler` is listed as a root `devDependency` in `package.json`. The `cloudflare/wrangler-action@v3` action tries to install wrangler via `pnpm add wrangler`, but that fails in a pnpm workspace without the `-w` flag (`ERR_PNPM_ADDING_TO_ROOT`). Adding wrangler as a root devDependency pre-installs it so the action finds it ready to use.
+
 ### Local manual deploy
 
 ```bash
@@ -144,12 +146,12 @@ The CI pipeline (`.github/workflows/ci.yaml`) runs on:
 - Push to `main`
 - Pull requests targeting `main`
 
-| Job | What it does | Tooling needed |
-|---|---|---|
-| `lint` | TypeScript check on web | Node 24, pnpm (cached) |
-| `anchor` | Build Anchor program + run LiteSVM tests | Solana CLI + Anchor CLI (cached), Rust (cached via Swatinem/rust-cache), Node 24, pnpm |
-| `web` | Production build of React frontend | Node 24, pnpm (cached) |
-| `deploy-web` | Deploy to Cloudflare Pages (main only) | Node 24, pnpm + Cloudflare secrets |
+| Job          | What it does                             | Tooling needed                                                                         |
+| ------------ | ---------------------------------------- | -------------------------------------------------------------------------------------- |
+| `lint`       | TypeScript check on web                  | Node 24, pnpm (cached)                                                                 |
+| `anchor`     | Build Anchor program + run LiteSVM tests | Solana CLI + Anchor CLI (cached), Rust (cached via Swatinem/rust-cache), Node 24, pnpm |
+| `web`        | Production build of React frontend       | Node 24, pnpm (cached)                                                                 |
+| `deploy-web` | Deploy to Cloudflare Pages (main only)   | Node 24, pnpm + Cloudflare secrets                                                     |
 
 The `deploy-web` job uses `cloudflare/wrangler-action@v3` and runs only on
 push to `main`. Preview deploys for PRs are handled by Cloudflare's git integration.
@@ -178,9 +180,9 @@ define: {
 
 If a new dependency triggers a `crypto is not defined` or `stream is not defined` error at runtime, add the corresponding alias to `vite.config.ts`:
 
-| Missing module | Polyfill package | Vite alias |
-|---|---|---|
-| `crypto` | `crypto-browserify` | `resolve: { alias: { crypto: "crypto-browserify" } }` |
-| `stream` | `stream-browserify` | `resolve: { alias: { stream: "stream-browserify" } }` |
+| Missing module | Polyfill package    | Vite alias                                            |
+| -------------- | ------------------- | ----------------------------------------------------- |
+| `crypto`       | `crypto-browserify` | `resolve: { alias: { crypto: "crypto-browserify" } }` |
+| `stream`       | `stream-browserify` | `resolve: { alias: { stream: "stream-browserify" } }` |
 
 These are rarely needed — most Solana wallet adapters have browser-native fallbacks. Only add them if you hit actual runtime errors.

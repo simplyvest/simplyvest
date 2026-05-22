@@ -20,7 +20,6 @@ This document captures architectural decisions, market gaps, and feature request
 
 **Re-evaluate when:** Teams consistently need >50 streams per batch and the SDK chunking approach causes UX friction.
 
-
 ## Post-creation modification
 
 **What:** Ability to modify stream parameters (amount, duration, cliff, recipient) after creation without destroying and recreating the stream.

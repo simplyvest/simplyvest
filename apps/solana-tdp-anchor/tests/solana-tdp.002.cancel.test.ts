@@ -1,13 +1,20 @@
 import * as anchor from "@coral-xyz/anchor";
 import { BN } from "@coral-xyz/anchor";
-import { Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
 import {
   TOKEN_PROGRAM_ID,
   ASSOCIATED_TOKEN_PROGRAM_ID,
   getAssociatedTokenAddressSync,
 } from "@solana/spl-token";
+import { Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
+
+import {
+  findStreamPDA,
+  findVaultPDA,
+  findCreatorConfigPDA,
+  parseEvents,
+  findEvent,
+} from "./helpers";
 import { setupTest, createMint, createTokenAccount, mintTo } from "./utils";
-import { findStreamPDA, findVaultPDA, findCreatorConfigPDA, parseEvents, findEvent } from "./helpers";
 
 describe("Feature 2: cancel", () => {
   let program: any;
@@ -94,7 +101,19 @@ describe("Feature 2: cancel", () => {
       .signers([sender])
       .rpc();
 
-    return { sender, recipient, mint, senderToken, recipientToken, streamPDA, vaultPDA, amount, start, cliff, end };
+    return {
+      sender,
+      recipient,
+      mint,
+      senderToken,
+      recipientToken,
+      streamPDA,
+      vaultPDA,
+      amount,
+      start,
+      cliff,
+      end,
+    };
   };
 
   it("cancel between start_time and cliff_time returns all to sender", async () => {
@@ -108,7 +127,17 @@ describe("Feature 2: cancel", () => {
 
     await program.methods
       .cancel()
-      .accounts(cancelAccounts(sender.publicKey, recipient.publicKey, streamPDA, vaultPDA, senderToken, recipientToken, mint))
+      .accounts(
+        cancelAccounts(
+          sender.publicKey,
+          recipient.publicKey,
+          streamPDA,
+          vaultPDA,
+          senderToken,
+          recipientToken,
+          mint,
+        ),
+      )
       .signers([sender])
       .rpc();
 
@@ -129,7 +158,17 @@ describe("Feature 2: cancel", () => {
 
     await program.methods
       .cancel()
-      .accounts(cancelAccounts(sender.publicKey, recipient.publicKey, streamPDA, vaultPDA, senderToken, recipientToken, mint))
+      .accounts(
+        cancelAccounts(
+          sender.publicKey,
+          recipient.publicKey,
+          streamPDA,
+          vaultPDA,
+          senderToken,
+          recipientToken,
+          mint,
+        ),
+      )
       .signers([sender])
       .rpc();
 
@@ -157,7 +196,17 @@ describe("Feature 2: cancel", () => {
 
     await program.methods
       .cancel()
-      .accounts(cancelAccounts(sender.publicKey, recipient.publicKey, streamPDA, vaultPDA, senderToken, recipientToken, mint))
+      .accounts(
+        cancelAccounts(
+          sender.publicKey,
+          recipient.publicKey,
+          streamPDA,
+          vaultPDA,
+          senderToken,
+          recipientToken,
+          mint,
+        ),
+      )
       .signers([sender])
       .rpc();
 
@@ -179,7 +228,17 @@ describe("Feature 2: cancel", () => {
     await expect(
       program.methods
         .cancel()
-        .accounts(cancelAccounts(sender.publicKey, recipient.publicKey, streamPDA, vaultPDA, senderToken, recipientToken, mint))
+        .accounts(
+          cancelAccounts(
+            sender.publicKey,
+            recipient.publicKey,
+            streamPDA,
+            vaultPDA,
+            senderToken,
+            recipientToken,
+            mint,
+          ),
+        )
         .signers([sender])
         .rpc(),
     ).rejects.toThrow();
@@ -193,14 +252,34 @@ describe("Feature 2: cancel", () => {
     // First cancel
     await program.methods
       .cancel()
-      .accounts(cancelAccounts(sender.publicKey, recipient.publicKey, streamPDA, vaultPDA, senderToken, recipientToken, mint))
+      .accounts(
+        cancelAccounts(
+          sender.publicKey,
+          recipient.publicKey,
+          streamPDA,
+          vaultPDA,
+          senderToken,
+          recipientToken,
+          mint,
+        ),
+      )
       .signers([sender])
       .rpc();
 
     // Second cancel should fail (stream is closed)
     const promise = program.methods
       .cancel()
-      .accounts(cancelAccounts(sender.publicKey, recipient.publicKey, streamPDA, vaultPDA, senderToken, recipientToken, mint))
+      .accounts(
+        cancelAccounts(
+          sender.publicKey,
+          recipient.publicKey,
+          streamPDA,
+          vaultPDA,
+          senderToken,
+          recipientToken,
+          mint,
+        ),
+      )
       .signers([sender])
       .rpc();
 
@@ -214,7 +293,17 @@ describe("Feature 2: cancel", () => {
 
     const txSig = await program.methods
       .cancel()
-      .accounts(cancelAccounts(sender.publicKey, recipient.publicKey, streamPDA, vaultPDA, senderToken, recipientToken, mint))
+      .accounts(
+        cancelAccounts(
+          sender.publicKey,
+          recipient.publicKey,
+          streamPDA,
+          vaultPDA,
+          senderToken,
+          recipientToken,
+          mint,
+        ),
+      )
       .signers([sender])
       .rpc();
 
@@ -227,7 +316,9 @@ describe("Feature 2: cancel", () => {
     expect(event.data.vestedToRecipient.toNumber()).toBeGreaterThan(0);
     expect(event.data.returnedToCreator.toNumber()).toBeGreaterThan(0);
     // Full amount is distributed
-    expect(event.data.vestedToRecipient.toNumber() + event.data.returnedToCreator.toNumber()).toBe(1_000_000);
+    expect(event.data.vestedToRecipient.toNumber() + event.data.returnedToCreator.toNumber()).toBe(
+      1_000_000,
+    );
   });
 
   it("closes vault and stream on cancel", async () => {
@@ -238,7 +329,17 @@ describe("Feature 2: cancel", () => {
 
     await program.methods
       .cancel()
-      .accounts(cancelAccounts(sender.publicKey, recipient.publicKey, streamPDA, vaultPDA, senderToken, recipientToken, mint))
+      .accounts(
+        cancelAccounts(
+          sender.publicKey,
+          recipient.publicKey,
+          streamPDA,
+          vaultPDA,
+          senderToken,
+          recipientToken,
+          mint,
+        ),
+      )
       .signers([sender])
       .rpc();
 

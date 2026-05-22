@@ -1,5 +1,7 @@
+import * as fs from "fs";
+import * as path from "path";
+
 import * as anchor from "@coral-xyz/anchor";
-import { Connection, Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
 import {
   createMint,
   mintTo,
@@ -7,8 +9,7 @@ import {
   TOKEN_PROGRAM_ID,
   ASSOCIATED_TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
-import * as fs from "fs";
-import * as path from "path";
+import { Connection, Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
 
 import { findStreamPDA, findVaultPDA, findCreatorConfigPDA } from "../tests/helpers";
 
@@ -21,9 +22,7 @@ async function main() {
 
   // ── Load wallet ──────────────────────────────────────────────────────────
   const walletPath = path.resolve(__dirname, "../keypairs/devnet-wallet.json");
-  const secretKey: number[] = JSON.parse(
-    fs.readFileSync(walletPath, "utf-8"),
-  );
+  const secretKey: number[] = JSON.parse(fs.readFileSync(walletPath, "utf-8"));
   const wallet = Keypair.fromSecretKey(new Uint8Array(secretKey));
   console.log(`Wallet:   ${wallet.publicKey.toBase58()}`);
 
@@ -34,17 +33,13 @@ async function main() {
   console.log(`Network:  devnet\n`);
 
   // ── Anchor provider ──────────────────────────────────────────────────────
-  const provider = new anchor.AnchorProvider(
-    connection,
-    new anchor.Wallet(wallet),
-    { commitment: "confirmed", preflightCommitment: "confirmed" },
-  );
+  const provider = new anchor.AnchorProvider(connection, new anchor.Wallet(wallet), {
+    commitment: "confirmed",
+    preflightCommitment: "confirmed",
+  });
   anchor.setProvider(provider);
 
-  const program = new anchor.Program(
-    require("../target/idl/solana_tdp.json"),
-    provider,
-  );
+  const program = new anchor.Program(require("../target/idl/solana_tdp.json"), provider);
 
   // ──────────────────────────────────────────────────────────────────────────
   // Step 1 — Create a test token mint
@@ -80,7 +75,7 @@ async function main() {
   const nowSec = Math.floor(Date.now() / 1000);
   const start = nowSec + 10;
   const cliff = start;
-  const end   = start + 120;
+  const end = start + 120;
 
   // Fetch creator_config to get the actual vesting_count from chain.
   // If it doesn't exist yet (first run), vesting_count = 0.
@@ -95,12 +90,7 @@ async function main() {
     console.log(`  • creator config not found, using vesting_count = 0`);
   }
 
-  const [streamPDA] = await findStreamPDA(
-    wallet.publicKey,
-    wallet.publicKey,
-    mint,
-    vestingCount,
-  );
+  const [streamPDA] = await findStreamPDA(wallet.publicKey, wallet.publicKey, mint, vestingCount);
   const [vaultPDA] = await findVaultPDA(streamPDA);
 
   console.log(`  • stream PDA:     ${streamPDA.toBase58()}`);
@@ -135,9 +125,7 @@ async function main() {
     .signers([wallet])
     .rpc();
 
-  console.log(
-    `  ✔ Stream created! TX: https://explorer.solana.com/tx/${createTx}?cluster=devnet`,
-  );
+  console.log(`  ✔ Stream created! TX: https://explorer.solana.com/tx/${createTx}?cluster=devnet`);
   console.log(`  • Start:  +10s  (${new Date(start * 1000).toISOString()})`);
   console.log(`  • Cliff:  = start (no delay)`);
   console.log(`  • End:    +75s  (${new Date(end * 1000).toISOString()})`);
@@ -175,7 +163,9 @@ async function main() {
   const targetTime = start + 15;
   const now = Math.floor(Date.now() / 1000);
   const waitSec = Math.max(0, targetTime - now);
-  console.log(`── Step 6/7: Waiting ${waitSec}s for vesting (~${waitSec - 5}s past start), then withdrawing ──`);
+  console.log(
+    `── Step 6/7: Waiting ${waitSec}s for vesting (~${waitSec - 5}s past start), then withdrawing ──`,
+  );
   console.log("  ⏳ Waiting...");
   await sleep(waitSec * 1000);
   // ~15s elapsed: vested = 100 * 15 / 120 ≈ 12.5 tokens
@@ -234,18 +224,10 @@ async function main() {
   // Summary
   // ──────────────────────────────────────────────────────────────────────────
   console.log("═══ Summary ═══");
-  console.log(
-    `  create_stream:   https://explorer.solana.com/tx/${createTx}?cluster=devnet`,
-  );
-  console.log(
-    `  withdraw (fail):  before start — correctly rejected`,
-  );
-  console.log(
-    `  withdraw (pass): https://explorer.solana.com/tx/${withdrawTx}?cluster=devnet`,
-  );
-  console.log(
-    `  cancel:          https://explorer.solana.com/tx/${cancelTx}?cluster=devnet`,
-  );
+  console.log(`  create_stream:   https://explorer.solana.com/tx/${createTx}?cluster=devnet`);
+  console.log(`  withdraw (fail):  before start — correctly rejected`);
+  console.log(`  withdraw (pass): https://explorer.solana.com/tx/${withdrawTx}?cluster=devnet`);
+  console.log(`  cancel:          https://explorer.solana.com/tx/${cancelTx}?cluster=devnet`);
   console.log("  ✅ All operations completed successfully.");
 }
 

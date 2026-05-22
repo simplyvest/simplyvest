@@ -1,0 +1,62 @@
+name: Chore / Maintenance
+description: Repository upkeep — CI, tooling, linting, formatting, templates, config
+title: "[Chore]: "
+labels: ["chore"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use for non-feature work: CI improvements, linting, formatting, config changes, documentation infrastructure.
+
+        **Workflow**: Keep the description up to date as scope evolves — it's the source of truth. Add `## Update` sections or edit inline rather than deleting original context. Link the PR when ready.
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - CI / Actions
+        - Linting / Formatting
+        - Tooling / Config
+        - Templates (issues, PRs)
+        - Documentation structure
+        - Refactoring / Tech debt
+        - Security
+    validations:
+      required: true
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What needs to be done and why?
+    validations:
+      required: true
+
+  - type: textarea
+    id: tasks
+    attributes:
+      label: Tasks
+      placeholder: |
+        - [ ] Add root-level eslint config
+        - [ ] Add format script to package.json
+        - [ ] Run --fix across the codebase
+    validations:
+      required: true
+
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification
+      description: How to confirm this is done.
+      placeholder: "pnpm lint passes with zero errors"
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Related issues, prior attempts, concerns.
+    validations:
+      required: false

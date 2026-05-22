@@ -34,9 +34,9 @@ pnpm --filter @solana-tdp/web build
 
 Copy `.env.example` to `.env` and configure:
 
-| Variable            | Default                        | Description            |
-| ------------------- | ------------------------------ | ---------------------- |
-| `VITE_SOLANA_RPC_URL` | `https://api.devnet.solana.com` | Solana RPC endpoint    |
+| Variable              | Default                         | Description         |
+| --------------------- | ------------------------------- | ------------------- |
+| `VITE_SOLANA_RPC_URL` | `https://api.devnet.solana.com` | Solana RPC endpoint |
 
 ## Project Structure
 
@@ -66,9 +66,9 @@ apps/web/
 
 ## Scripts
 
-| Script      | Description                  |
-| ----------- | ---------------------------- |
-| `dev`       | Start Vite dev server        |
-| `build`     | Type-check + Vite production build |
-| `preview`   | Preview production build     |
-| `check:ts`  | Type-check without emitting  |
+| Script     | Description                        |
+| ---------- | ---------------------------------- |
+| `dev`      | Start Vite dev server              |
+| `build`    | Type-check + Vite production build |
+| `preview`  | Preview production build           |
+| `check:ts` | Type-check without emitting        |

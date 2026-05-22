@@ -1,20 +1,16 @@
-import * as React from "react";
-import {
-  Outlet,
-  createRootRoute,
-  Link,
-  useRouterState,
-} from "@tanstack/react-router";
-import { SolanaProvider } from "@/components/solana/solana-provider";
-import { Toaster } from "sonner";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TanStackDevtools } from "@tanstack/react-devtools";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
+import { Outlet, createRootRoute, Link, useRouterState } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import * as React from "react";
+import { Toaster } from "sonner";
+
+import { SolanaProvider } from "@/components/solana/solana-provider";
 
 const DEV = import.meta.env.DEV;
-import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { Header } from "@/components/layout/header";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -32,10 +28,7 @@ export const Route = createRootRoute({
       <div className="text-center">
         <h1 className="text-4xl font-semibold tracking-tight">404</h1>
         <p className="mt-2 text-muted">Page not found.</p>
-        <Link
-          to="/"
-          className="mt-6 inline-block text-sm font-medium text-sol hover:underline"
-        >
+        <Link to="/" className="mt-6 inline-block text-sm font-medium text-sol hover:underline">
           Go home
         </Link>
       </div>
@@ -61,11 +54,7 @@ function RootComponent() {
                   className="flex items-center gap-2.5 text-lg font-semibold tracking-tight no-underline hover:no-underline"
                 >
                   <div className="flex items-center gap-2.5 rounded-md bg-sol p-1.5 dark:bg-transparent">
-                    <img
-                      src="/simplyvest.png"
-                      alt="SimplyVest"
-                      className="h-6 w-auto"
-                    />
+                    <img src="/simplyvest.png" alt="SimplyVest" className="h-6 w-auto" />
                   </div>
                   SimplyVest
                 </Link>

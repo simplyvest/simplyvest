@@ -2,7 +2,7 @@
 
 This document describes the on-chain protocol architecture: account model, PDA seeds, program instructions, data flow, events, and error reference.
 
-*This document describes the planned protocol architecture. The implementation is in progress — details may change during development.*
+_This document describes the planned protocol architecture. The implementation is in progress — details may change during development._
 
 ## Contents
 
@@ -15,6 +15,7 @@ This document describes the on-chain protocol architecture: account model, PDA s
 7. [Error reference](#error-reference)
 
 8. [Design Decisions](#design-decisions)
+
 ---
 
 ## Account structure
@@ -29,6 +30,7 @@ The protocol uses four on-chain account types:
 The StreamAccount PDA is the authority over the vault. Only the program (signing with PDA seeds via `invoke_signed`) can move tokens out.
 
 ### Entity relationship
+
 ```mermaid
 erDiagram
     CREATOR ||--o{ STREAM_ACCOUNT : "creates"
@@ -81,21 +83,21 @@ erDiagram
 
 One per vesting stream. Created at `create_stream` time and closed when the stream completes (final `withdraw`) or is cancelled. Status is derived at read time — only `cancelled: bool` is stored.
 
-| Field | Type | Purpose |
-|---|---|---|
-| `creator` | `Pubkey` | Wallet that funded the stream. Only this wallet can cancel. |
-| `recipient` | `Pubkey` | Wallet that receives vested tokens. Immutable once created. |
-| `mint` | `Pubkey` | SPL Token or Token-2022 mint address. |
-| `vault` | `Pubkey` | Escrow token account address (cached for self-description). |
-| `amount` | `u64` | Total tokens locked in this stream. |
-| `amount_withdrawn` | `u64` | Tokens already claimed by the recipient. |
-| `start_time` | `i64` | Unix timestamp when vesting begins. |
-| `end_time` | `i64` | Unix timestamp when the full amount is vested. |
-| `cliff_time` | `i64` | Unix timestamp of cliff; 0 means no cliff. |
-|| `vesting_count` | `u64` | Nonce used in this stream's PDA seeds. |
-| `cancelled` | `bool` | True if the creator cancelled the stream. |
-| `bump` | `u8` | Stream PDA bump seed, stored to avoid re-derivation. |
-| `vault_bump` | `u8` | Vault PDA bump seed, stored to avoid re-derivation. |
+| Field              | Type            | Purpose                                                     |
+| ------------------ | --------------- | ----------------------------------------------------------- | -------------------------------------- |
+| `creator`          | `Pubkey`        | Wallet that funded the stream. Only this wallet can cancel. |
+| `recipient`        | `Pubkey`        | Wallet that receives vested tokens. Immutable once created. |
+| `mint`             | `Pubkey`        | SPL Token or Token-2022 mint address.                       |
+| `vault`            | `Pubkey`        | Escrow token account address (cached for self-description). |
+| `amount`           | `u64`           | Total tokens locked in this stream.                         |
+| `amount_withdrawn` | `u64`           | Tokens already claimed by the recipient.                    |
+| `start_time`       | `i64`           | Unix timestamp when vesting begins.                         |
+| `end_time`         | `i64`           | Unix timestamp when the full amount is vested.              |
+| `cliff_time`       | `i64`           | Unix timestamp of cliff; 0 means no cliff.                  |
+|                    | `vesting_count` | `u64`                                                       | Nonce used in this stream's PDA seeds. |
+| `cancelled`        | `bool`          | True if the creator cancelled the stream.                   |
+| `bump`             | `u8`            | Stream PDA bump seed, stored to avoid re-derivation.        |
+| `vault_bump`       | `u8`            | Vault PDA bump seed, stored to avoid re-derivation.         |
 
 **Account size:** 187 bytes (8 anchor discriminator + 128 pubkeys + 48 integers + 3 bool/u8).
 
@@ -111,44 +113,42 @@ Chosen over an ATA because a custom PDA can be fully closed on stream completion
 
 One per creator wallet. Created lazily on the first `create_stream` or `create_milestone_stream` call via Anchor's `init_if_needed`. Stores a sequential nonce that increments on each `create_stream` and `create_milestone_stream`, enabling multiple streams between the same creator and recipient for the same mint.
 
-| Field | Type | Purpose |
-|---|---|---|
-| `creator` | `Pubkey` | Creator wallet address. |
-|| `vesting_count` | `u64` | Next sequential nonce, starting at 0. |
+| Field     | Type            | Purpose                 |
+| --------- | --------------- | ----------------------- | ------------------------------------- |
+| `creator` | `Pubkey`        | Creator wallet address. |
+|           | `vesting_count` | `u64`                   | Next sequential nonce, starting at 0. |
 
 **Account size:** 48 bytes (8 discriminator + 32 pubkey + 8 u64).
-
 
 ### MilestoneStream PDA
 
 One per milestone-gated vesting stream. Created at `create_milestone_stream` time and closed when the stream completes (final `withdraw_milestone`) or is cancelled. Status is derived at read time — `milestone_reached` gates withdrawal, `cancelled` prevents further actions.
 
-| Field | Type | Purpose |
-|---|---|---|
-| `creator` | `Pubkey` | Wallet that funded the stream. Only this wallet can cancel. |
-| `recipient` | `Pubkey` | Wallet that receives vested tokens. Immutable once created. |
-| `mint` | `Pubkey` | SPL Token or Token-2022 mint address. |
-| `vault` | `Pubkey` | Escrow token account address (cached for self-description). |
-| `amount` | `u64` | Total tokens locked in this stream. |
-| `amount_withdrawn` | `u64` | Tokens already claimed by the recipient. |
-| `milestone_authority` | `Pubkey` | Wallet authorized to trigger `milestone_reached`. |
-| `milestone_reached` | `bool` | True once the milestone authority triggers the release. |
-| `cancelled` | `bool` | True if the creator cancelled the milestone stream. |
-| `vesting_count` | `u64` | Nonce used in this stream's PDA seeds. |
-| `bump` | `u8` | MilestoneStream PDA bump seed, stored to avoid re-derivation. |
-| `vault_bump` | `u8` | Vault PDA bump seed, stored to avoid re-derivation. |
+| Field                 | Type     | Purpose                                                       |
+| --------------------- | -------- | ------------------------------------------------------------- |
+| `creator`             | `Pubkey` | Wallet that funded the stream. Only this wallet can cancel.   |
+| `recipient`           | `Pubkey` | Wallet that receives vested tokens. Immutable once created.   |
+| `mint`                | `Pubkey` | SPL Token or Token-2022 mint address.                         |
+| `vault`               | `Pubkey` | Escrow token account address (cached for self-description).   |
+| `amount`              | `u64`    | Total tokens locked in this stream.                           |
+| `amount_withdrawn`    | `u64`    | Tokens already claimed by the recipient.                      |
+| `milestone_authority` | `Pubkey` | Wallet authorized to trigger `milestone_reached`.             |
+| `milestone_reached`   | `bool`   | True once the milestone authority triggers the release.       |
+| `cancelled`           | `bool`   | True if the creator cancelled the milestone stream.           |
+| `vesting_count`       | `u64`    | Nonce used in this stream's PDA seeds.                        |
+| `bump`                | `u8`     | MilestoneStream PDA bump seed, stored to avoid re-derivation. |
+| `vault_bump`          | `u8`     | Vault PDA bump seed, stored to avoid re-derivation.           |
 
-**Account size:** 196 bytes (8 anchor discriminator + 160 pubkeys + 24 integers + 4 bool/u8).
----
+## **Account size:** 196 bytes (8 anchor discriminator + 160 pubkeys + 24 integers + 4 bool/u8).
 
 ## PDA seeds
 
-| Account | Seeds | Notes |
-|---|---|---|
-| CreatorConfig | `["creator_config", creator]` | One per creator wallet |
-|| StreamAccount | `["stream", creator, recipient, mint, vesting_count]` | `vesting_count` from CreatorConfig |
-| Vault | `["vault", stream.key()]` | Escrow token account |
-|| MilestoneStream | `["milestone-stream", creator, recipient, mint, vesting_count]` | `vesting_count` from CreatorConfig |
+| Account       | Seeds                         | Notes                                                           |
+| ------------- | ----------------------------- | --------------------------------------------------------------- | ---------------------------------- |
+| CreatorConfig | `["creator_config", creator]` | One per creator wallet                                          |
+|               | StreamAccount                 | `["stream", creator, recipient, mint, vesting_count]`           | `vesting_count` from CreatorConfig |
+| Vault         | `["vault", stream.key()]`     | Escrow token account                                            |
+|               | MilestoneStream               | `["milestone-stream", creator, recipient, mint, vesting_count]` | `vesting_count` from CreatorConfig |
 
 The `vesting_count` is a sequential nonce that lets the same creator fund multiple streams and milestone streams for the same recipient and mint without address collisions. It increments on each `create_stream` and `create_milestone_stream` call.
 
@@ -157,15 +157,19 @@ The `vesting_count` is a sequential nonce that lets the same creator fund multip
 > **Why mint in the seed?** Prevents collisions between streams for different tokens to the same recipient.
 
 StreamAccount PDA derivation:
+
 ```
 seeds = [b"stream", creator.key(), recipient.key(), mint.key(), &vesting_count.to_le_bytes()]
 ```
+
 MilestoneStream PDA derivation:
+
 ```
 seeds = [b"milestone-stream", creator.key(), recipient.key(), mint.key(), &vesting_count.to_le_bytes()]
 ```
 
 Vault PDA derivation:
+
 ```
 seeds = [b"vault", stream.key()]
 ```
@@ -184,16 +188,16 @@ Initialize a new vesting stream. The creator specifies the amount, time paramete
 
 **Validations:**
 
-| Condition | Error |
-|---|---|
-| `amount == 0` | `ZeroAmount` |
-| `end_time <= start_time` | `InvalidTimeRange` |
-| `cliff_time != 0 && (cliff_time <= start_time \|\| cliff_time > end_time)` | `InvalidCliffTime` |
-| `end_time - start_time < 60` (seconds) | `DurationTooShort` |
-| Creator token balance < `amount` | `InsufficientBalance` |
-| `start_time <= clock` | `StartTimeInPast` |
-| Mint owner is neither SPL Token nor Token-2022 program | `UnsupportedTokenProgram` |
-| Token-2022 mint has transfer-hook extension | `TokenHasTransferHook` |
+| Condition                                                                  | Error                     |
+| -------------------------------------------------------------------------- | ------------------------- |
+| `amount == 0`                                                              | `ZeroAmount`              |
+| `end_time <= start_time`                                                   | `InvalidTimeRange`        |
+| `cliff_time != 0 && (cliff_time <= start_time \|\| cliff_time > end_time)` | `InvalidCliffTime`        |
+| `end_time - start_time < 60` (seconds)                                     | `DurationTooShort`        |
+| Creator token balance < `amount`                                           | `InsufficientBalance`     |
+| `start_time <= clock`                                                      | `StartTimeInPast`         |
+| Mint owner is neither SPL Token nor Token-2022 program                     | `UnsupportedTokenProgram` |
+| Token-2022 mint has transfer-hook extension                                | `TokenHasTransferHook`    |
 
 **Effects:**
 
@@ -217,12 +221,12 @@ Let the recipient claim a specific amount of vested tokens. Calculates the total
 
 **Validations:**
 
-| Condition | Error |
-|---|---|
-| Status is Cancelled | `AlreadyCancelled` |
-| Clock timestamp < `cliff_time` | `CliffNotReached` |
-| Calculated claimable == 0 | `NothingToWithdraw` |
-| `amount > claimable` | `ExceedsClaimable` |
+| Condition                      | Error               |
+| ------------------------------ | ------------------- |
+| Status is Cancelled            | `AlreadyCancelled`  |
+| Clock timestamp < `cliff_time` | `CliffNotReached`   |
+| Calculated claimable == 0      | `NothingToWithdraw` |
+| `amount > claimable`           | `ExceedsClaimable`  |
 
 **Claimable calculation:**
 
@@ -263,11 +267,11 @@ Let the creator cancel an active stream. Recipient receives whatever has vested 
 
 **Validations:**
 
-| Condition | Error |
-|---|---|
-| Caller is not `creator` | `Unauthorized` |
-| Status is Cancelled | `AlreadyCancelled` |
-| Clock timestamp >= `end_time` | `StreamExpired` |
+| Condition                     | Error              |
+| ----------------------------- | ------------------ |
+| Caller is not `creator`       | `Unauthorized`     |
+| Status is Cancelled           | `AlreadyCancelled` |
+| Clock timestamp >= `end_time` | `StreamExpired`    |
 
 **Effects:**
 
@@ -280,8 +284,7 @@ Let the creator cancel an active stream. Recipient receives whatever has vested 
 7. Emit `StreamCancelled` event.
 8. Close vault token account via CPI `close_account`: rent SOL to creator.
 9. Close StreamAccount: zero data and transfer rent SOL to creator.
-**Error codes:** `Unauthorized`, `AlreadyCancelled`, `StreamExpired`
-
+   **Error codes:** `Unauthorized`, `AlreadyCancelled`, `StreamExpired`
 
 ### create_milestone_stream
 
@@ -293,12 +296,12 @@ Initialize a new milestone-gated vesting stream. The creator specifies the recip
 
 **Validations:**
 
-| Condition | Error |
-|---|---|
-| `amount == 0` | `ZeroAmount` |
-| Creator token balance < `amount` | `InsufficientBalance` |
+| Condition                                              | Error                     |
+| ------------------------------------------------------ | ------------------------- |
+| `amount == 0`                                          | `ZeroAmount`              |
+| Creator token balance < `amount`                       | `InsufficientBalance`     |
 | Mint owner is neither SPL Token nor Token-2022 program | `UnsupportedTokenProgram` |
-| Token-2022 mint has transfer-hook extension | `TokenHasTransferHook` |
+| Token-2022 mint has transfer-hook extension            | `TokenHasTransferHook`    |
 
 **Effects:**
 
@@ -322,11 +325,11 @@ Let the milestone authority mark a milestone stream as reached. Once triggered, 
 
 **Validations:**
 
-| Condition | Error |
-|---|---|
-| Caller is not `milestone_authority` | `Unauthorized` |
-| Status is Cancelled | `AlreadyCancelled` |
-| `milestone_reached == true` | `FullyVested` |
+| Condition                           | Error              |
+| ----------------------------------- | ------------------ |
+| Caller is not `milestone_authority` | `Unauthorized`     |
+| Status is Cancelled                 | `AlreadyCancelled` |
+| `milestone_reached == true`         | `FullyVested`      |
 
 **Effects:**
 
@@ -345,11 +348,11 @@ Let the recipient withdraw the full stream amount after the milestone has been r
 
 **Validations:**
 
-| Condition | Error |
-|---|---|
-| Status is Cancelled | `AlreadyCancelled` |
+| Condition                    | Error               |
+| ---------------------------- | ------------------- |
+| Status is Cancelled          | `AlreadyCancelled`  |
 | `milestone_reached == false` | `NothingToWithdraw` |
-| `amount_withdrawn > 0` | `FullyVested` |
+| `amount_withdrawn > 0`       | `FullyVested`       |
 
 **Effects:**
 
@@ -372,11 +375,11 @@ Let the creator cancel an active milestone stream before the milestone is reache
 
 **Validations:**
 
-| Condition | Error |
-|---|---|
-| Caller is not `creator` | `Unauthorized` |
-| Status is Cancelled | `AlreadyCancelled` |
-| `milestone_reached == true` | `FullyVested` |
+| Condition                   | Error              |
+| --------------------------- | ------------------ |
+| Caller is not `creator`     | `Unauthorized`     |
+| Status is Cancelled         | `AlreadyCancelled` |
+| `milestone_reached == true` | `FullyVested`      |
 
 **Effects:**
 
@@ -385,8 +388,7 @@ Let the creator cancel an active milestone stream before the milestone is reache
 3. Close MilestoneStream: return rent SOL to creator.
 4. Close Vault: return rent SOL to creator.
 
-**Error codes:** `Unauthorized`, `AlreadyCancelled`, `FullyVested`
----
+## **Error codes:** `Unauthorized`, `AlreadyCancelled`, `FullyVested`
 
 ## Data flow
 
@@ -469,28 +471,28 @@ Standard SPL Token mints pass through without additional checks.
 
 ## Edge cases
 
-| # | Scenario | Input | Expected behavior | Error |
-|---|---|---|---|---|
-| 1 | Withdraw before cliff | `clock < cliff_time` | Reject claim | `CliffNotReached` |
-| 2 | Cancel mid-stream | 40% vested | 40% → recipient, 60% → creator, accounts closed | — |
-| 3 | Zero amount create | `amount = 0` | Reject creation | `ZeroAmount` |
-| 4 | Fully vested, unclaimed | `end_time` passed, `withdrawn = 0` | Cancel rejected → use withdraw | `StreamExpired` |
-| 5 | Self-vesting | `recipient == creator` | Allowed — trial or self-reward use case | — |
-| 6 | Multiple streams, same pair | Same creator/recipient/mint | Differentiated by `vesting_count` nonce | — |
-| 7 | No recipient ATA | Recipient has no token account | Created via CPI at withdraw/cancel time | — |
-| 8 | Cancel by non-creator | Caller is not `creator` | Reject | `Unauthorized` |
-| 9 | Withdraw after fully claimed | `withdrawn == amount` | Reject | `NothingToWithdraw` |
-| 10 | Cancel cancelled stream | Status is Cancelled | Reject | `AlreadyCancelled` |
-| 11 | Cancel after end_time | Clock >= `end_time` | Reject | `StreamExpired` |
-| 12 | Duration less than 60 seconds | `end - start < 60` | Reject creation | `DurationTooShort` |
-| 13 | Token-2022 with transfer hook | Mint has transfer-hook extension | Reject creation | `TokenHasTransferHook` |
-| 14 | Overflow handling | Large `amount` | Safe math via Rust checked arithmetic | — |
-| 15 | Integer rounding at final claim | Truncated fractional tokens | Remainder claimed on final `withdraw` | — |
-| 16 | Withdraw amount exceeds claimable | `amount > claimable` | Reject partial claim | `ExceedsClaimable` |
-| 17 | Create stream with past `start_time` | `start_time <= clock` | Reject creation | `StartTimeInPast` |
-| 18 | Trigger already-triggered milestone | `milestone_reached == true` | Reject trigger | `FullyVested` |
-| 19 | Withdraw milestone before trigger | `milestone_reached == false` | Reject withdraw | `NothingToWithdraw` |
-| 20 | Cancel milestone after triggered | `milestone_reached == true` | Reject cancel | `FullyVested` |
+| #   | Scenario                             | Input                              | Expected behavior                               | Error                  |
+| --- | ------------------------------------ | ---------------------------------- | ----------------------------------------------- | ---------------------- |
+| 1   | Withdraw before cliff                | `clock < cliff_time`               | Reject claim                                    | `CliffNotReached`      |
+| 2   | Cancel mid-stream                    | 40% vested                         | 40% → recipient, 60% → creator, accounts closed | —                      |
+| 3   | Zero amount create                   | `amount = 0`                       | Reject creation                                 | `ZeroAmount`           |
+| 4   | Fully vested, unclaimed              | `end_time` passed, `withdrawn = 0` | Cancel rejected → use withdraw                  | `StreamExpired`        |
+| 5   | Self-vesting                         | `recipient == creator`             | Allowed — trial or self-reward use case         | —                      |
+| 6   | Multiple streams, same pair          | Same creator/recipient/mint        | Differentiated by `vesting_count` nonce         | —                      |
+| 7   | No recipient ATA                     | Recipient has no token account     | Created via CPI at withdraw/cancel time         | —                      |
+| 8   | Cancel by non-creator                | Caller is not `creator`            | Reject                                          | `Unauthorized`         |
+| 9   | Withdraw after fully claimed         | `withdrawn == amount`              | Reject                                          | `NothingToWithdraw`    |
+| 10  | Cancel cancelled stream              | Status is Cancelled                | Reject                                          | `AlreadyCancelled`     |
+| 11  | Cancel after end_time                | Clock >= `end_time`                | Reject                                          | `StreamExpired`        |
+| 12  | Duration less than 60 seconds        | `end - start < 60`                 | Reject creation                                 | `DurationTooShort`     |
+| 13  | Token-2022 with transfer hook        | Mint has transfer-hook extension   | Reject creation                                 | `TokenHasTransferHook` |
+| 14  | Overflow handling                    | Large `amount`                     | Safe math via Rust checked arithmetic           | —                      |
+| 15  | Integer rounding at final claim      | Truncated fractional tokens        | Remainder claimed on final `withdraw`           | —                      |
+| 16  | Withdraw amount exceeds claimable    | `amount > claimable`               | Reject partial claim                            | `ExceedsClaimable`     |
+| 17  | Create stream with past `start_time` | `start_time <= clock`              | Reject creation                                 | `StartTimeInPast`      |
+| 18  | Trigger already-triggered milestone  | `milestone_reached == true`        | Reject trigger                                  | `FullyVested`          |
+| 19  | Withdraw milestone before trigger    | `milestone_reached == false`       | Reject withdraw                                 | `NothingToWithdraw`    |
+| 20  | Cancel milestone after triggered     | `milestone_reached == true`        | Reject cancel                                   | `FullyVested`          |
 
 ---
 
@@ -500,39 +502,38 @@ Events are emitted via Anchor's `emit!` macro and parsed from transaction logs b
 
 **SDK responsibility:** The TypeScript SDK provides event parsing, PDA derivation helpers, computed status/claimable getters, and instruction builders. Frontend code should never derive PDAs or calculate vesting amounts directly — all math lives in the SDK.
 
-| Event | Fields | When |
-|---|---|---|
-| `StreamCreated` | `stream`, `creator`, `recipient`, `mint`, `amount`, `start_time`, `cliff_time`, `end_time` | On successful `create_stream` |
-| `TokensClaimed` | `stream`, `recipient`, `amount`, `claimed`, `total_claimed` | On every `withdraw` (including final) |
-| `StreamCompleted` | `stream`, `recipient`, `total_amount` | On `withdraw` when fully vested — followed by account closure |
-| `StreamCancelled` | `stream`, `creator`, `recipient`, `vested_to_recipient`, `returned_to_creator` | On `cancel` — followed by account closure |
-| `MilestoneStreamCreated` | `stream`, `creator`, `recipient`, `mint`, `amount`, `milestone_authority` | On successful `create_milestone_stream` |
-| `MilestoneTriggered` | `stream`, `milestone_authority` | On successful `trigger_milestone` |
-| `MilestoneCompleted` | `stream`, `recipient`, `total_amount` | On `withdraw_milestone` — followed by account closure |
-| `MilestoneCancelled` | `stream`, `creator`, `recipient`, `returned_to_creator` | On `cancel_milestone` — followed by account closure |
+| Event                    | Fields                                                                                     | When                                                          |
+| ------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------- |
+| `StreamCreated`          | `stream`, `creator`, `recipient`, `mint`, `amount`, `start_time`, `cliff_time`, `end_time` | On successful `create_stream`                                 |
+| `TokensClaimed`          | `stream`, `recipient`, `amount`, `claimed`, `total_claimed`                                | On every `withdraw` (including final)                         |
+| `StreamCompleted`        | `stream`, `recipient`, `total_amount`                                                      | On `withdraw` when fully vested — followed by account closure |
+| `StreamCancelled`        | `stream`, `creator`, `recipient`, `vested_to_recipient`, `returned_to_creator`             | On `cancel` — followed by account closure                     |
+| `MilestoneStreamCreated` | `stream`, `creator`, `recipient`, `mint`, `amount`, `milestone_authority`                  | On successful `create_milestone_stream`                       |
+| `MilestoneTriggered`     | `stream`, `milestone_authority`                                                            | On successful `trigger_milestone`                             |
+| `MilestoneCompleted`     | `stream`, `recipient`, `total_amount`                                                      | On `withdraw_milestone` — followed by account closure         |
+| `MilestoneCancelled`     | `stream`, `creator`, `recipient`, `returned_to_creator`                                    | On `cancel_milestone` — followed by account closure           |
 
 ---
 
 ## Error reference
 
-| Error | Cause |
-|---|---|
-| `ZeroAmount` | `amount` is 0 |
-| `InvalidTimeRange` | `end_time <= start_time` |
-| `InvalidCliffTime` | `cliff_time` is before `start_time` or after `end_time` (or equal to `end_time` for pure cliff) |
-| `DurationTooShort` | `end_time - start_time < 60` seconds (anti-griefing minimum) |
-| `InsufficientBalance` | Sender does not have enough token balance |
-| `UnsupportedTokenProgram` | Mint owner is neither SPL Token nor Token-2022 |
-| `TokenHasTransferHook` | Token-2022 mint has a transfer-hook extension (would block CPI) |
-| `CliffNotReached` | Withdraw attempted before `cliff_time` |
-| `NothingToWithdraw` | No tokens available to withdraw, milestone not reached, or milestone already triggered |
-| `AlreadyCancelled` | Operation attempted on an already-cancelled stream |
-| `FullyVested` | Milestone already reached (trigger/cancel milestone) |
-| `StartTimeInPast` | `create_stream` called with a `start_time` in the past |
-| `StreamExpired` | Cancel attempted after `end_time` — use withdraw instead |
-| `ExceedsClaimable` | Withdraw amount exceeds the claimable total |
-| `Unauthorized` | Non-creator, non-recipient, or non-authority caller |
-
+| Error                     | Cause                                                                                           |
+| ------------------------- | ----------------------------------------------------------------------------------------------- |
+| `ZeroAmount`              | `amount` is 0                                                                                   |
+| `InvalidTimeRange`        | `end_time <= start_time`                                                                        |
+| `InvalidCliffTime`        | `cliff_time` is before `start_time` or after `end_time` (or equal to `end_time` for pure cliff) |
+| `DurationTooShort`        | `end_time - start_time < 60` seconds (anti-griefing minimum)                                    |
+| `InsufficientBalance`     | Sender does not have enough token balance                                                       |
+| `UnsupportedTokenProgram` | Mint owner is neither SPL Token nor Token-2022                                                  |
+| `TokenHasTransferHook`    | Token-2022 mint has a transfer-hook extension (would block CPI)                                 |
+| `CliffNotReached`         | Withdraw attempted before `cliff_time`                                                          |
+| `NothingToWithdraw`       | No tokens available to withdraw, milestone not reached, or milestone already triggered          |
+| `AlreadyCancelled`        | Operation attempted on an already-cancelled stream                                              |
+| `FullyVested`             | Milestone already reached (trigger/cancel milestone)                                            |
+| `StartTimeInPast`         | `create_stream` called with a `start_time` in the past                                          |
+| `StreamExpired`           | Cancel attempted after `end_time` — use withdraw instead                                        |
+| `ExceedsClaimable`        | Withdraw amount exceeds the claimable total                                                     |
+| `Unauthorized`            | Non-creator, non-recipient, or non-authority caller                                             |
 
 ---
 
@@ -551,6 +552,7 @@ Each decision documents the alternatives considered and why the chosen approach 
 ### PDA seeds: recipient and mint in the derivation path
 
 **Alternatives considered:**
+
 1. `["vesting", creator, mint, vesting_count]` (architecture documentation) — recipient is not in seeds, verified via `has_one` constraint.
 2. `["stream", sender, recipient]` (stub code) — one stream per (sender, recipient) pair max; no mint in seeds means cross-token collisions.
 3. `["stream", creator, recipient, mint, vesting_count]` (chosen).
@@ -562,6 +564,7 @@ Each decision documents the alternatives considered and why the chosen approach 
 ### Vault: custom PDA token account (vs Associated Token Account)
 
 **Alternatives considered:**
+
 1. ATA (architecture documentation) — wallet-compatible, auto-discovered by explorers.
 2. Custom PDA token account `["vault", stream.key()]` (chosen).
 
@@ -572,6 +575,7 @@ Each decision documents the alternatives considered and why the chosen approach 
 ### Token standard: SPL Token + Token-2022 (vs SPL-only)
 
 **Alternatives considered:**
+
 1. SPL-only — simpler program, fewer failure modes.
 2. Both SPL Token and Token-2022 with validation gate (chosen).
 
@@ -582,10 +586,12 @@ Each decision documents the alternatives considered and why the chosen approach 
 ### Vesting curve: timestamps define the curve (vs VestingType enum)
 
 **Alternatives considered:**
+
 1. `VestingType` enum: `Cliff` or `Linear` (architecture documentation) — explicit type tag per stream.
 2. No enum: `start_time`, `cliff_time`, `end_time` define the curve (chosen).
 
 **Rationale:** Three real-world vesting curves exist (pure linear, cliff-then-linear, pure cliff). All three are naturally expressed by three timestamps:
+
 - `cliff_time == 0` → pure linear from start to end
 - `cliff_time > start_time`, `end_time > cliff_time` → cliff-then-linear
 - `cliff_time > start_time`, `end_time == cliff_time` → pure cliff (100% at single point)
@@ -597,6 +603,7 @@ A single formula handles all three cases without branching on a type tag. This i
 ### Stream status: derived from data (vs stored VestingStatus enum)
 
 **Alternatives considered:**
+
 1. `VestingStatus` enum: `Active | Completed | Cancelled` (architecture documentation).
 2. Derived: `cancelled: bool` stored, completion derived from `amount_withdrawn == amount` (chosen).
 
@@ -607,6 +614,7 @@ A single formula handles all three cases without branching on a type tag. This i
 ### Account closure: close on completion or cancel (vs keep as tombstone)
 
 **Alternatives considered:**
+
 1. Keep accounts with status set to `Cancelled` or `Completed` — preserves on-chain history, but permanently locks rent.
 2. Close accounts — return rent to creator, rely on events for history (chosen).
 
@@ -617,6 +625,7 @@ A single formula handles all three cases without branching on a type tag. This i
 ### Withdraw: parameterized amount (vs claim-all)
 
 **Alternatives considered:**
+
 1. `withdraw(amount: u64)` — flexible, enables power-use patterns (claim-and-stake, claim-and-swap). (chosen)
 2. `withdraw()` — claims all currently vested tokens automatically.
 
@@ -627,6 +636,7 @@ A single formula handles all three cases without branching on a type tag. This i
 ### Batch creation: SDK-level multi-instruction (vs native create_batch instruction)
 
 **Alternatives considered:**
+
 1. On-chain `create_batch` instruction — packs multiple stream creations in one program invocation.
 2. SDK-level batch — packs multiple `create_stream` instructions into one transaction (chosen).
 
@@ -637,6 +647,7 @@ A single formula handles all three cases without branching on a type tag. This i
 ### Rent return: always to creator (vs to caller)
 
 **Alternatives considered:**
+
 1. Close to instruction caller — simpler (no extra account needed), recipient gets a small SOL bonus on completion.
 2. Close to creator (chosen) — requires `creator` unchecked account in `withdraw` instruction.
 
@@ -647,6 +658,7 @@ A single formula handles all three cases without branching on a type tag. This i
 ### Recipient ATA: create via CPI if missing (vs require pre-existing)
 
 **Alternatives considered:**
+
 1. Require pre-existing ATA — simpler program, but recipient gets a confusing "transaction failed" error.
 2. Create via CPI if missing (chosen) — seamless UX.
 
@@ -657,6 +669,7 @@ A single formula handles all three cases without branching on a type tag. This i
 ### Global protocol config: skipped for MVP
 
 **Alternatives considered:**
+
 1. `ProgramConfig` PDA storing protocol-level parameters (fee rate, fee recipient, pause flag, authority).
 2. No global config (chosen).
 
@@ -667,6 +680,7 @@ A single formula handles all three cases without branching on a type tag. This i
 ### StreamAccount: store vault address (vs derive on read)
 
 **Alternatives considered:**
+
 1. Derive `vault` from `stream.key()` on every usage — saves 32 bytes per account.
 2. Store `vault` as a field (chosen).
 
@@ -677,6 +691,7 @@ A single formula handles all three cases without branching on a type tag. This i
 ### Vault bump: store in StreamAccount (vs re-derive at runtime)
 
 **Alternatives considered:**
+
 1. Re-derive via `Pubkey::find_program_address(["vault", stream.key()])` — saves 1 byte per account, costs ~100 CUs per instruction.
 2. Store `vault_bump: u8` (chosen).
 
@@ -687,6 +702,7 @@ A single formula handles all three cases without branching on a type tag. This i
 ### CreatorConfig vesting_count: starts at 0 (vs 1)
 
 **Alternatives considered:**
+
 1. Start at 1 — common pattern where 0 means "not yet initialized."
 2. Start at 0 (chosen).
 
@@ -697,6 +713,7 @@ A single formula handles all three cases without branching on a type tag. This i
 ### Minimum duration: 60-second anti-griefing (vs no minimum)
 
 **Alternatives considered:**
+
 1. No minimum — trust the creator.
 2. 60-second minimum (chosen).
 
@@ -707,6 +724,7 @@ A single formula handles all three cases without branching on a type tag. This i
 ### Self-vesting: allowed (vs disallowed)
 
 **Alternatives considered:**
+
 1. Disallow — reject streams where `recipient == creator`.
 2. Allow (chosen).
 

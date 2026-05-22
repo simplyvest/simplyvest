@@ -1,6 +1,7 @@
 import * as React from "react";
-import { SectionHeader } from "@/components/ui/section-header";
+
 import { ConceptRow } from "@/components/ui/concept-row";
+import { SectionHeader } from "@/components/ui/section-header";
 
 const steps = [
   {
@@ -46,9 +47,7 @@ export function HowItWorks() {
             monoLabel={step.monoLabel}
             color={step.color}
           >
-            <p className="text-[0.9rem] leading-relaxed text-muted">
-              {step.content}
-            </p>
+            <p className="text-[0.9rem] leading-relaxed text-muted">{step.content}</p>
           </ConceptRow>
         ))}
       </div>

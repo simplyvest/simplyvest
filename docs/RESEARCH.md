@@ -73,38 +73,38 @@ Solana TDP relies on three Solana primitives: **Accounts** (everything on Solana
 
 ### Framework: Anchor vs Pinocchio
 
-| | Anchor | Pinocchio |
-|---|---|---|
-| **Approach** | Macro-based eDSL, automatic serialization, IDL generation | Lower-level, zero-copy deserialization, manual validation |
-| **DX** | High — `#[account]`, `#[derive(Accounts)]`, `anchor build` emits IDL | Low — manual account checking, discriminator handling |
-| **Program size** | Larger binaries | Significantly smaller |
-| **Client generation** | Automatic via IDL | Manual |
-| **Best for** | Teams building Solana familiarity, rapid development | Experienced teams optimizing for program size |
+|                       | Anchor                                                               | Pinocchio                                                 |
+| --------------------- | -------------------------------------------------------------------- | --------------------------------------------------------- |
+| **Approach**          | Macro-based eDSL, automatic serialization, IDL generation            | Lower-level, zero-copy deserialization, manual validation |
+| **DX**                | High — `#[account]`, `#[derive(Accounts)]`, `anchor build` emits IDL | Low — manual account checking, discriminator handling     |
+| **Program size**      | Larger binaries                                                      | Significantly smaller                                     |
+| **Client generation** | Automatic via IDL                                                    | Manual                                                    |
+| **Best for**          | Teams building Solana familiarity, rapid development                 | Experienced teams optimizing for program size             |
 
 **Decision: Anchor 0.32.1.** The team is building Solana familiarity and Anchor's guardrails (account validation, IDL generation, CPI macros) reduce the surface area for mistakes. If program size becomes a constraint later, Pinocchio is the path to evaluate.
 
 ### Testing tools
 
-| Tool | Status | Use case |
-|---|---|---|
-| **LiteSVM** | Active (recommended) | Fast, in-process testing — Rust, TS/JS, Python |
-| **anchor-litesvm** | Active | Anchor-compatible testing without a validator |
-| **solana-test-validator** | Active | When you need a real local RPC node |
-| **Bankrun** | Deprecated (Mar 2025) | Migrate to LiteSVM |
-| **solana-program-test** | Legacy | Existing projects OK; new projects → LiteSVM |
+| Tool                      | Status                | Use case                                       |
+| ------------------------- | --------------------- | ---------------------------------------------- |
+| **LiteSVM**               | Active (recommended)  | Fast, in-process testing — Rust, TS/JS, Python |
+| **anchor-litesvm**        | Active                | Anchor-compatible testing without a validator  |
+| **solana-test-validator** | Active                | When you need a real local RPC node            |
+| **Bankrun**               | Deprecated (Mar 2025) | Migrate to LiteSVM                             |
+| **solana-program-test**   | Legacy                | Existing projects OK; new projects → LiteSVM   |
 
-**Decision:** TypeScript tests with anchor-litesvm + jest. Tests use `fromWorkspace` to bootstrap the SVM and `LiteSVMProvider` for the Anchor provider. No local validator needed for most tests. Use solana-test-validator only when a real RPC node is required.
----
+## **Decision:** TypeScript tests with anchor-litesvm + jest. Tests use `fromWorkspace` to bootstrap the SVM and `LiteSVMProvider` for the Anchor provider. No local validator needed for most tests. Use solana-test-validator only when a real RPC node is required.
+
 ## Competitive landscape
 
 Four major vesting solutions exist on Solana:
 
-| Protocol | Cliff | Linear | Milestone | Multi-Recipient | Fee | Audited |
-|---|---|---|---|---|---|---|
-| **Streamflow** | Yes | Yes | No | Yes (60–300/batch) | % of tokens | Partial |
-| **Sablier (SolSab)** | Yes | Yes | No | No (1/stream) | Free | Cantina |
-| **Magna** | Yes | Yes | Yes (API) | Yes (API) | Enterprise | Unknown |
-| **Smithii** | Yes | Yes | No | No (1/contract) | ~0.1 SOL/tx | Halborn + CoinFabrik |
+| Protocol             | Cliff | Linear | Milestone | Multi-Recipient    | Fee         | Audited              |
+| -------------------- | ----- | ------ | --------- | ------------------ | ----------- | -------------------- |
+| **Streamflow**       | Yes   | Yes    | No        | Yes (60–300/batch) | % of tokens | Partial              |
+| **Sablier (SolSab)** | Yes   | Yes    | No        | No (1/stream)      | Free        | Cantina              |
+| **Magna**            | Yes   | Yes    | Yes (API) | Yes (API)          | Enterprise  | Unknown              |
+| **Smithii**          | Yes   | Yes    | No        | No (1/contract)    | ~0.1 SOL/tx | Halborn + CoinFabrik |
 
 ### Streamflow
 
@@ -141,17 +141,17 @@ Six gaps emerged from our analysis:
 
 ## User research
 
-We conducted 5 interviews with founders and builders on Solana. Every conversation confirmed the same core pattern: founders struggle with tokenomics planning *before* they even get to the engineering. Names have been changed for anonymity.
+We conducted 5 interviews with founders and builders on Solana. Every conversation confirmed the same core pattern: founders struggle with tokenomics planning _before_ they even get to the engineering. Names have been changed for anonymity.
 
 ### Who we talked to
 
-| Pseudonym | Role | Platform |
-|---|---|---|
-| Alex | Founder / Trader / Web3 Dev | Solana crowdfunding platform |
-| Jordan | Freelancer (Design & Illustration) | Runs F&B + freelancing |
-| Sam | Founder | VTuber launchpad |
-| Taylor | Founder | AI Agent Trading Intelligence |
-| Morgan | Incubator lead | Launchpad and incubator |
+| Pseudonym | Role                               | Platform                      |
+| --------- | ---------------------------------- | ----------------------------- |
+| Alex      | Founder / Trader / Web3 Dev        | Solana crowdfunding platform  |
+| Jordan    | Freelancer (Design & Illustration) | Runs F&B + freelancing        |
+| Sam       | Founder                            | VTuber launchpad              |
+| Taylor    | Founder                            | AI Agent Trading Intelligence |
+| Morgan    | Incubator lead                     | Launchpad and incubator       |
 
 ### Key findings
 
@@ -164,7 +164,6 @@ We conducted 5 interviews with founders and builders on Solana. Every conversati
 **Taylor:** "If we want to integrate custom smart contracts, that is where it gets difficult." Uses Streamflow for every product launch but hits limits when custom logic is needed.
 
 **Morgan:** "The UI/UX is not friendly for non-technical users." Every project in their incubator uses Streamflow but the learning curve is steep.
-
 
 ---
 
@@ -186,12 +185,12 @@ A platform that helps founders plan, simulate, and automate their token vesting 
 
 ### Go-to-market metrics (pre-launch)
 
-| Metric | Target |
-|---|---|
+| Metric                    | Target |
+| ------------------------- | ------ |
 | Impressions (X, LinkedIn) | 5,000+ |
-| Engagements | 500+ |
-| Click-through rate | 3–5% |
-| Waitlist signups | 50+ |
+| Engagements               | 500+   |
+| Click-through rate        | 3–5%   |
+| Waitlist signups          | 50+    |
 
 ---
 

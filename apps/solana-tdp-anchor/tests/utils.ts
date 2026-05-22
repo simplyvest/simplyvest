@@ -1,5 +1,4 @@
 import * as anchor from "@coral-xyz/anchor";
-import { PublicKey, Keypair, SystemProgram } from "@solana/web3.js";
 import {
   TOKEN_PROGRAM_ID,
   createInitializeMintInstruction,
@@ -8,6 +7,7 @@ import {
   AccountLayout,
   MintLayout,
 } from "@solana/spl-token";
+import { PublicKey, Keypair, SystemProgram } from "@solana/web3.js";
 import { fromWorkspace, LiteSVMProvider } from "anchor-litesvm";
 
 // Fresh SVM per call to prevent memory accumulation across tests
@@ -19,10 +19,7 @@ export const setupTest = () => {
 
   anchor.setProvider(provider as any);
 
-  const program: any = new anchor.Program(
-    require("../target/idl/solana_tdp.json"),
-    provider,
-  );
+  const program: any = new anchor.Program(require("../target/idl/solana_tdp.json"), provider);
 
   // --- SVM-based helpers ---
 
@@ -120,12 +117,7 @@ export const createTokenAccount = async (
       lamports,
       programId: TOKEN_PROGRAM_ID,
     }),
-    createInitializeAccountInstruction(
-      accountKp.publicKey,
-      mint,
-      owner,
-      TOKEN_PROGRAM_ID,
-    ),
+    createInitializeAccountInstruction(accountKp.publicKey, mint, owner, TOKEN_PROGRAM_ID),
   );
 
   await provider.sendAndConfirm(tx, [payer, accountKp]);
@@ -140,14 +132,7 @@ export const mintTo = async (
   amount: bigint,
 ): Promise<void> => {
   const tx = new anchor.web3.Transaction().add(
-    createMintToInstruction(
-      mint,
-      destination,
-      authority.publicKey,
-      amount,
-      [],
-      TOKEN_PROGRAM_ID,
-    ),
+    createMintToInstruction(mint, destination, authority.publicKey, amount, [], TOKEN_PROGRAM_ID),
   );
 
   await provider.sendAndConfirm(tx, [authority]);

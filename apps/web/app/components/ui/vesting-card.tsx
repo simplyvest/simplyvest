@@ -1,4 +1,5 @@
 import * as React from "react";
+
 import { cn } from "@/utils/cn";
 
 export function VestingCard({
@@ -20,22 +21,14 @@ export function VestingCard({
 }) {
   return (
     <div className={cn("border border-border bg-bg1", className)}>
-      <div
-        className="h-0.5 w-full"
-        style={{ background: color }}
-      />
+      <div className="h-0.5 w-full" style={{ background: color }} />
       <div className="px-6 py-5">
-        <div
-          className="font-mono text-[0.67rem] uppercase tracking-wide"
-          style={{ color }}
-        >
+        <div className="font-mono text-[0.67rem] uppercase tracking-wide" style={{ color }}>
           {label}
         </div>
         <h3 className="mt-2 font-display text-2xl tracking-wide">{title}</h3>
         {children}
-        <p className="mt-3 text-[0.88rem] leading-relaxed text-muted">
-          {description}
-        </p>
+        <p className="mt-3 text-[0.88rem] leading-relaxed text-muted">{description}</p>
         <ul className="mt-4 space-y-1">
           {examples.map((ex, i) => (
             <li

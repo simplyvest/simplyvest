@@ -1,3 +1,21 @@
 packages:
   - "apps/*"
   - "packages/*"
+allowBuilds:
+  bufferutil: true
+  esbuild: true
+  sharp: true
+  utf-8-validate: true
+  workerd: true
+onlyBuiltDependencies:
+  - "@stellar/stellar-sdk"
+  - bigint-buffer
+  - blake-hash
+  - bufferutil
+  - esbuild
+  - protobufjs
+  - sharp
+  - tiny-secp256k1
+  - usb
+  - utf-8-validate
+  - workerd

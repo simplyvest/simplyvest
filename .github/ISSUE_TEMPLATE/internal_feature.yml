@@ -1,0 +1,83 @@
+name: Internal Feature
+description: Track a planned feature or improvement (internal use)
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for planned development work. Be specific — this will guide implementation.
+
+        **Workflow**: Keep the description up to date as scope evolves — it's the source of truth. Add `## Update` sections or edit inline rather than deleting original context. Link the PR when ready.
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      multiple: true
+      options:
+        - On-chain program (Solana/Anchor)
+        - Frontend / Web
+        - API / Worker
+        - Documentation
+        - CI / Tooling
+        - Tests
+    validations:
+      required: true
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What should this deliver? One paragraph.
+    validations:
+      required: true
+
+  - type: textarea
+    id: approach
+    attributes:
+      label: Implementation approach
+      description: High-level technical approach.
+    validations:
+      required: true
+
+  - type: textarea
+    id: files
+    attributes:
+      label: Files likely affected
+      description: List files or areas expected to change.
+      placeholder: |
+        - apps/.../instructions/new_feature.rs
+        - apps/.../tests/new_feature.test.ts
+        - docs/ARCHITECTURE.md
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: What must be true for this to be done?
+      placeholder: |
+        - [ ] Instruction works end-to-end
+        - [ ] Tests cover all error cases
+        - [ ] anchor build passes
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies / blockers
+      description: Issues or PRs this depends on.
+      placeholder: "Blocked by #42"
+    validations:
+      required: false
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Implementation notes
+      description: Gotchas, prior art, related code patterns.
+    validations:
+      required: false
