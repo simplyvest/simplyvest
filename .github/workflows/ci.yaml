@@ -108,6 +108,7 @@ jobs:
         run: pnpm --filter @solana-tdp/web build
 
   anchor:
+    needs: typecheck-anchor
     runs-on: ubuntu-24.04
     defaults:
       run:
