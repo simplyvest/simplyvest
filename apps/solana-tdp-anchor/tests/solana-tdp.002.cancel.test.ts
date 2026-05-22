@@ -16,6 +16,28 @@ import {
 } from "./helpers";
 import { setupTest, createMint, createTokenAccount, mintTo } from "./utils";
 
+// Shared accounts for cancel instructions
+const cancelAccounts = (
+  sender: PublicKey,
+  recipient: PublicKey,
+  stream: PublicKey,
+  vault: PublicKey,
+  senderToken: PublicKey,
+  recipientToken: PublicKey,
+  mint: PublicKey,
+) => ({
+  sender,
+  recipient,
+  stream,
+  vault,
+  senderToken,
+  recipientToken,
+  mint,
+  tokenProgram: TOKEN_PROGRAM_ID,
+  associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+  systemProgram: SystemProgram.programId,
+});
+
 describe("Feature 2: cancel", () => {
   let program: any;
   let svm: any;
@@ -30,28 +52,6 @@ describe("Feature 2: cancel", () => {
 
   // Use SVM clock for time calculations (LiteSVM starts at epoch 0)
   const clockNow = () => Number(svm.getClock().unixTimestamp);
-
-  // Shared accounts for cancel instructions
-  const cancelAccounts = (
-    sender: PublicKey,
-    recipient: PublicKey,
-    stream: PublicKey,
-    vault: PublicKey,
-    senderToken: PublicKey,
-    recipientToken: PublicKey,
-    mint: PublicKey,
-  ) => ({
-    sender,
-    recipient,
-    stream,
-    vault,
-    senderToken,
-    recipientToken,
-    mint,
-    tokenProgram: TOKEN_PROGRAM_ID,
-    associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-    systemProgram: SystemProgram.programId,
-  });
 
   const setupStream = async (
     amount: number,

@@ -8,20 +8,16 @@
   },
   "categories": {
     "correctness": "error",
-    "suspicious": "warn",
-    "perf": "warn"
+    "suspicious": "error",
+    "perf": "error"
   },
   "rules": {
-    "no-debugger": "error",
     "no-console": "warn",
     "typescript/no-explicit-any": "warn",
-    "typescript/no-unused-vars": "error",
-    "react/jsx-key": "error",
-    "react/no-array-index-key": "warn",
     "react/self-closing-comp": "error",
     "react/react-in-jsx-scope": "off",
     "import/no-cycle": "error",
-    "import/no-unassigned-import": "off"
+    "import/no-unassigned-import": ["error", { "allow": ["**/*.css"] }]
   },
   "ignorePatterns": [
     "**/node_modules/**",

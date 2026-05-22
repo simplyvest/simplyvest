@@ -17,6 +17,26 @@ import {
 } from "./helpers";
 import { setupTest, createMint, createTokenAccount, mintTo } from "./utils";
 
+// Shared account set for withdraw instructions
+const withdrawAccounts = (
+  recipient: PublicKey,
+  stream: PublicKey,
+  vault: PublicKey,
+  recipientToken: PublicKey,
+  sender: PublicKey,
+  mint: PublicKey,
+) => ({
+  recipient,
+  stream,
+  vault,
+  recipientToken,
+  sender,
+  mint,
+  tokenProgram: TOKEN_PROGRAM_ID,
+  associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+  systemProgram: SystemProgram.programId,
+});
+
 describe("Feature 1: withdraw", () => {
   let program: any;
   let svm: any;
@@ -95,26 +115,6 @@ describe("Feature 1: withdraw", () => {
       end,
     };
   };
-
-  // Shared account set for withdraw instructions
-  const withdrawAccounts = (
-    recipient: PublicKey,
-    stream: PublicKey,
-    vault: PublicKey,
-    recipientToken: PublicKey,
-    sender: PublicKey,
-    mint: PublicKey,
-  ) => ({
-    recipient,
-    stream,
-    vault,
-    recipientToken,
-    sender,
-    mint,
-    tokenProgram: TOKEN_PROGRAM_ID,
-    associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-    systemProgram: SystemProgram.programId,
-  });
 
   it("withdraws vested amount after cliff (partial vesting)", async () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, cliff, end } =

@@ -16,6 +16,54 @@ import {
 } from "./helpers";
 import { setupTest, createMint, createTokenAccount, mintTo } from "./utils";
 
+// Shared accounts for trigger
+const triggerAccounts = (milestoneAuthority: PublicKey, stream: PublicKey) => ({
+  milestoneAuthority,
+  stream,
+});
+
+// Shared accounts for withdraw
+const withdrawMilestoneAccounts = (
+  recipient: PublicKey,
+  stream: PublicKey,
+  vault: PublicKey,
+  recipientToken: PublicKey,
+  sender: PublicKey,
+  mint: PublicKey,
+) => ({
+  recipient,
+  stream,
+  vault,
+  recipientToken,
+  sender,
+  mint,
+  tokenProgram: TOKEN_PROGRAM_ID,
+  associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+  systemProgram: SystemProgram.programId,
+});
+
+// Shared accounts for cancel
+const cancelMilestoneAccounts = (
+  sender: PublicKey,
+  stream: PublicKey,
+  vault: PublicKey,
+  senderToken: PublicKey,
+  mint: PublicKey,
+) => ({
+  sender,
+  stream,
+  vault,
+  senderToken,
+  mint,
+  tokenProgram: TOKEN_PROGRAM_ID,
+  associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+  systemProgram: SystemProgram.programId,
+});
+
+// Cancel milestone requires sender_token to be the ATA of sender
+const senderAta = (mint: PublicKey, sender: PublicKey) =>
+  getAssociatedTokenAddressSync(mint, sender, true);
+
 describe("Feature 3: milestone streams", () => {
   let program: any;
   let svm: any;
@@ -77,54 +125,6 @@ describe("Feature 3: milestone streams", () => {
       amount,
     };
   };
-
-  // Shared accounts for trigger
-  const triggerAccounts = (milestoneAuthority: PublicKey, stream: PublicKey) => ({
-    milestoneAuthority,
-    stream,
-  });
-
-  // Shared accounts for withdraw
-  const withdrawMilestoneAccounts = (
-    recipient: PublicKey,
-    stream: PublicKey,
-    vault: PublicKey,
-    recipientToken: PublicKey,
-    sender: PublicKey,
-    mint: PublicKey,
-  ) => ({
-    recipient,
-    stream,
-    vault,
-    recipientToken,
-    sender,
-    mint,
-    tokenProgram: TOKEN_PROGRAM_ID,
-    associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-    systemProgram: SystemProgram.programId,
-  });
-
-  // Shared accounts for cancel
-  const cancelMilestoneAccounts = (
-    sender: PublicKey,
-    stream: PublicKey,
-    vault: PublicKey,
-    senderToken: PublicKey,
-    mint: PublicKey,
-  ) => ({
-    sender,
-    stream,
-    vault,
-    senderToken,
-    mint,
-    tokenProgram: TOKEN_PROGRAM_ID,
-    associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-    systemProgram: SystemProgram.programId,
-  });
-
-  // Cancel milestone requires sender_token to be the ATA of sender
-  const senderAta = (mint: PublicKey, sender: PublicKey) =>
-    getAssociatedTokenAddressSync(mint, sender, true);
 
   // ── create_milestone_stream ─────────────────────────────────────
 

@@ -12,7 +12,7 @@ export function Hero() {
 
       <div className="relative mx-auto max-w-4xl px-6">
         <div className="flex items-center gap-2.5 font-mono text-[0.72rem] uppercase tracking-wide text-sol2">
-          <span className="text-dim">//</span>
+          <span className="text-dim">{"//"}</span>
           Solana Vesting Protocol
         </div>
 
