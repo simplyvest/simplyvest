@@ -1,3 +1,12 @@
 #!/bin/sh
 eval "$(mise activate bash)"
+
+# JS/TS linting and formatting via nano-staged
 pnpm exec nano-staged
+
+# Rust checks if .rs files are staged
+if git diff --cached --name-only --diff-filter=ACM | grep -q '\.rs$'; then
+  cd apps/solana-tdp-anchor/programs/solana-tdp
+  cargo fmt --check
+  cargo clippy --all-targets -- -D warnings
+fi

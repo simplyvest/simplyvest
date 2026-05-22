@@ -1,8 +1,8 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::Mint;
 use anchor_spl::associated_token::AssociatedToken;
-use anchor_spl::token::{Token, TokenAccount};
+use anchor_spl::token::Mint;
 use anchor_spl::token::{self, CloseAccount, Transfer};
+use anchor_spl::token::{Token, TokenAccount};
 
 use crate::errors::TdpError;
 use crate::events::{StreamCompleted, TokensClaimed};
@@ -66,7 +66,11 @@ pub fn withdraw_handler(ctx: Context<Withdraw>, params: WithdrawParams) -> Resul
     require!(params.amount > 0, TdpError::ZeroAmount);
 
     // 2. Calculate linear vesting from cliff_time (or start_time if no cliff) to end_time
-    let vest_start = if stream.cliff_time != 0 { stream.cliff_time } else { stream.start_time };
+    let vest_start = if stream.cliff_time != 0 {
+        stream.cliff_time
+    } else {
+        stream.start_time
+    };
     let total_vested = if now >= stream.end_time {
         stream.amount
     } else if now <= vest_start {
@@ -83,17 +87,12 @@ pub fn withdraw_handler(ctx: Context<Withdraw>, params: WithdrawParams) -> Resul
     };
 
     // 3. Determine claimable amount
-    let claimable = total_vested
-        .checked_sub(stream.amount_withdrawn)
-        .unwrap();
+    let claimable = total_vested.checked_sub(stream.amount_withdrawn).unwrap();
     require!(claimable > 0, TdpError::NothingToWithdraw);
     require!(params.amount <= claimable, TdpError::ExceedsClaimable);
 
     // 4. Update state
-    stream.amount_withdrawn = stream
-        .amount_withdrawn
-        .checked_add(params.amount)
-        .unwrap();
+    stream.amount_withdrawn = stream.amount_withdrawn.checked_add(params.amount).unwrap();
 
     // 5. CPI Transfer (Signed by Stream PDA)
     let seeds = &[
@@ -150,7 +149,11 @@ pub fn withdraw_handler(ctx: Context<Withdraw>, params: WithdrawParams) -> Resul
         let stream_info = stream.to_account_info();
         let rent = Rent::get()?;
         let rent_lamports = rent.minimum_balance(stream_info.data_len());
-        **ctx.accounts.sender.to_account_info().try_borrow_mut_lamports()? += rent_lamports;
+        **ctx
+            .accounts
+            .sender
+            .to_account_info()
+            .try_borrow_mut_lamports()? += rent_lamports;
         **stream_info.try_borrow_mut_lamports()? -= rent_lamports;
         stream_info.data.borrow_mut().fill(0);
 

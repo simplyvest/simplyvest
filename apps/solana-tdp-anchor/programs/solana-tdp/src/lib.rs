@@ -3,15 +3,15 @@
 
 #![allow(unexpected_cfgs)]
 
-pub mod state;
 pub mod errors;
 pub mod events;
 pub mod instructions;
+pub mod state;
 
-pub use state::*;
 pub use errors::*;
 pub use events::*;
 pub use instructions::*;
+pub use state::*;
 
 use anchor_lang::prelude::*;
 
@@ -28,12 +28,15 @@ pub mod solana_tdp {
     pub fn withdraw(ctx: Context<Withdraw>, params: WithdrawParams) -> Result<()> {
         instructions::withdraw::withdraw_handler(ctx, params)
     }
-    
+
     pub fn cancel(ctx: Context<Cancel>) -> Result<()> {
         instructions::cancel::cancel_handler(ctx)
     }
 
-    pub fn create_milestone_stream(ctx: Context<CreateMilestoneStream>, params: CreateMilestoneStreamParams) -> Result<()> {
+    pub fn create_milestone_stream(
+        ctx: Context<CreateMilestoneStream>,
+        params: CreateMilestoneStreamParams,
+    ) -> Result<()> {
         instructions::create_milestone_stream::create_milestone_stream_handler(ctx, params)
     }
 

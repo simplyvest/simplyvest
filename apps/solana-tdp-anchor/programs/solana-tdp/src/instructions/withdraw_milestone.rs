@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
-use anchor_spl::token::{Mint, Token, TokenAccount};
 use anchor_spl::token::{self, CloseAccount, Transfer};
+use anchor_spl::token::{Mint, Token, TokenAccount};
 
 use crate::errors::TdpError;
 use crate::events::MilestoneCompleted;
@@ -87,11 +87,7 @@ pub fn withdraw_milestone_handler(ctx: Context<WithdrawMilestone>) -> Result<()>
         amount: payout,
     });
 
-    require_keys_eq!(
-        ctx.accounts.sender.key(),
-        creator,
-        TdpError::Unauthorized
-    );
+    require_keys_eq!(ctx.accounts.sender.key(), creator, TdpError::Unauthorized);
 
     token::close_account(CpiContext::new_with_signer(
         ctx.accounts.token_program.to_account_info(),
@@ -106,7 +102,11 @@ pub fn withdraw_milestone_handler(ctx: Context<WithdrawMilestone>) -> Result<()>
     let stream_info = stream.to_account_info();
     let rent = Rent::get()?;
     let rent_lamports = rent.minimum_balance(stream_info.data_len());
-    **ctx.accounts.sender.to_account_info().try_borrow_mut_lamports()? += rent_lamports;
+    **ctx
+        .accounts
+        .sender
+        .to_account_info()
+        .try_borrow_mut_lamports()? += rent_lamports;
     **stream_info.try_borrow_mut_lamports()? -= rent_lamports;
     stream_info.data.borrow_mut().fill(0);
 
