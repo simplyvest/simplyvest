@@ -20,7 +20,7 @@
     "react/no-array-index-key": "warn",
     "react/self-closing-comp": "error",
     "react/react-in-jsx-scope": "off",
-    "import/no-cycle": "warn",
+    "import/no-cycle": "error",
     "import/no-unassigned-import": "off"
   },
   "ignorePatterns": [
