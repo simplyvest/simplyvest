@@ -1,0 +1,27 @@
+{
+  "name": "@solana-tdp/sdk",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "sync:idl": "cp ../../apps/solana-tdp-anchor/target/idl/solana_tdp.json src/idl/solana_tdp.json",
+    "sync:types": "cp ../../apps/solana-tdp-anchor/target/types/solana_tdp.ts src/types/solana_tdp.ts",
+    "sync": "pnpm sync:idl && pnpm sync:types"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.32.1",
+    "@solana/web3.js": "^1.98.4"
+  },
+  "devDependencies": {
+    "@types/bn.js": "^5.1.0",
+    "typescript": "^5.7.3"
+  }
+}
