@@ -15,13 +15,6 @@ env:
   CARGO_INCREMENTAL: "0"
   CARGO_PROFILE_TEST_DEBUG: "0"
 
-# Future jobs to add:
-#   lint       — eslint + prettier check across all JS/TS
-#   format     — prettier --check
-#   test-web   — vitest / jest
-#   test-sdk   — SDK tests
-#   publish-sdk — npm publish (main only)
-
 jobs:
   typecheck-web:
     runs-on: ubuntu-24.04
@@ -29,7 +22,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v6
         with:
-          version: 10.33.0
+          version: 11.2.2
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
@@ -44,7 +37,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v6
         with:
-          version: 10.33.0
+          version: 11.2.2
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
@@ -53,6 +46,51 @@ jobs:
       - name: TypeScript check (api)
         run: pnpm --filter @solana-tdp/api typecheck
 
+  typecheck-anchor:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.2.2
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: TypeScript check (anchor)
+        run: pnpm --filter @solana-tdp/anchor typecheck
+
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.2.2
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: oxlint .
+
+  format:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.2.2
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Format check
+        run: oxfmt --check .
+
   build-web:
     needs: typecheck-web
     runs-on: ubuntu-24.04
@@ -60,7 +98,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v6
         with:
-          version: 10.33.0
+          version: 11.2.2
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
@@ -78,7 +116,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v6
         with:
-          version: 10.33.0
+          version: 11.2.2
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
@@ -143,7 +181,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v6
         with:
-          version: 10.33.0
+          version: 11.2.2
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
@@ -165,7 +203,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v6
         with:
-          version: 10.33.0
+          version: 11.2.2
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
