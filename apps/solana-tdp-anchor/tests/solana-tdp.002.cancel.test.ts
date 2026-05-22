@@ -97,6 +97,28 @@ describe("Feature 2: cancel", () => {
     return { sender, recipient, mint, senderToken, recipientToken, streamPDA, vaultPDA, amount, start, cliff, end };
   };
 
+  it("cancel between start_time and cliff_time returns all to sender", async () => {
+    const { sender, recipient, mint, senderToken, recipientToken, vaultPDA, streamPDA, amount } =
+      await setupStream(1_000_000, 60, 3600, 120); // cliff = start + 120s
+    warp(90); // after start (60), before cliff (120)
+
+    const vaultBefore = svmTokenBalance(vaultPDA);
+    const senderBefore = svmTokenBalance(senderToken);
+    const recipientBefore = svmTokenBalance(recipientToken);
+
+    await program.methods
+      .cancel()
+      .accounts(cancelAccounts(sender.publicKey, recipient.publicKey, streamPDA, vaultPDA, senderToken, recipientToken, mint))
+      .signers([sender])
+      .rpc();
+
+    expect(svm.getAccount(vaultPDA)).toBeNull();
+
+    // Nothing vested before cliff — all tokens return to sender
+    expect(svmTokenBalance(senderToken)).toBe(senderBefore + vaultBefore);
+    expect(svmTokenBalance(recipientToken)).toBe(recipientBefore);
+  });
+
   it("cancel before start_time returns all to sender", async () => {
     const { sender, recipient, mint, senderToken, recipientToken, vaultPDA, streamPDA, amount } =
       await setupStream(1_000_000, 60, 3600, 60);

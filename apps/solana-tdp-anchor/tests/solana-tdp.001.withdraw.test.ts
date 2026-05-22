@@ -232,6 +232,36 @@ describe("Feature 1: withdraw", () => {
     ).rejects.toThrow();
   });
 
+  it("rejects withdraw 1 second before cliff_time", async () => {
+    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, start, cliff } =
+      await createStreamFixture(1_000_000, 60, 3600, 120);
+    // Warp to 1 second before cliff
+    warp(cliff - clockNow() - 1);
+
+    await expect(
+      program.methods
+        .withdraw({ amount: new BN(1) })
+        .accounts(withdrawAccounts(recipient.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+        .signers([recipient])
+        .rpc(),
+    ).rejects.toThrow();
+  });
+
+  it("withdraws at cliff_time boundary (elapsed = 0)", async () => {
+    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, cliff, end } =
+      await createStreamFixture(1_000_000, 60, 3600, 120);
+    warp(cliff - clockNow()); // exactly at cliff_time
+
+    // At the exact cliff boundary, elapsed = 0, so vested = 0
+    await expect(
+      program.methods
+        .withdraw({ amount: new BN(1) })
+        .accounts(withdrawAccounts(recipient.publicKey, streamPDA, vaultPDA, recipientToken, sender.publicKey, mint))
+        .signers([recipient])
+        .rpc(),
+    ).rejects.toThrow();
+  });
+
   it("rejects if stream already cancelled", async () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, senderToken } =
       await createStreamFixture(1_000_000, 10, 3600, 10);
