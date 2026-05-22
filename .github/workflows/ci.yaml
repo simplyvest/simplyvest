@@ -194,7 +194,7 @@ jobs:
 
   deploy-web:
     if: github.ref == 'refs/heads/main'
-    needs: typecheck-web
+    needs: build-web
     runs-on: ubuntu-24.04
     environment: main
     env:
