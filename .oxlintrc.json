@@ -19,7 +19,8 @@
     "react/self-closing-comp": "error",
     "react/react-in-jsx-scope": "off",
     "import/no-cycle": "error",
-    "import/no-unassigned-import": ["error", { "allow": ["**/*.css"] }]
+    "import/no-unassigned-import": ["error", { "allow": ["**/*.css"] }],
+    "typescript/no-non-null-assertion": "error"
   },
   "ignorePatterns": [
     "**/node_modules/**",

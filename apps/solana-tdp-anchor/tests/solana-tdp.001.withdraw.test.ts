@@ -348,7 +348,8 @@ describe("Feature 1: withdraw", () => {
         mint,
       ),
     );
-    await provider.sendAndConfirm!(ataTx, [recipient]);
+    if (!provider.sendAndConfirm) throw new Error("sendAndConfirm not available");
+    await provider.sendAndConfirm(ataTx, [recipient]);
 
     await program.methods
       .cancel()

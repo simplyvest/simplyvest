@@ -35,11 +35,7 @@ interface SvmGetTxResult {
 
 interface ProviderSend {
   connection: Connection;
-  sendAndConfirm?(
-    tx: Transaction | VersionedTransaction,
-    signers?: Signer[],
-    _opts?: ConfirmOptions,
-  ): Promise<string>;
+  sendAndConfirm?(tx: Transaction | VersionedTransaction, signers?: Signer[], _opts?: ConfirmOptions): Promise<string>;
 }
 
 // Fresh SVM per call to prevent memory accumulation across tests
@@ -59,11 +55,11 @@ export const setupTest = () => {
     const meta: unknown = svm.getTransaction(anchor.utils.bytes.bs58.decode(txSig));
     if (!meta) return null;
     const m = meta as SvmTxMeta;
-    const logs = "logs" in m ? m.logs!() : m.meta!().logs();
+    const logs = "logs" in m ? (m.logs as () => string[])() : (m.meta as () => { logs(): string[] })().logs();
     return {
       meta: {
         logMessages: logs,
-        err: "err" in m ? m.err!() : null,
+        err: "err" in m ? (m.err as () => null)() : null,
       },
     } satisfies SvmGetTxResult;
   };
@@ -135,7 +131,8 @@ export const createMint = async (
     ),
   );
 
-  await provider.sendAndConfirm!(tx, [payer, mintKp]);
+  if (!provider.sendAndConfirm) throw new Error("sendAndConfirm not available");
+  await provider.sendAndConfirm(tx, [payer, mintKp]);
   return mintKp.publicKey;
 };
 
@@ -159,7 +156,8 @@ export const createTokenAccount = async (
     createInitializeAccountInstruction(accountKp.publicKey, mint, owner, TOKEN_PROGRAM_ID),
   );
 
-  await provider.sendAndConfirm!(tx, [payer, accountKp]);
+  if (!provider.sendAndConfirm) throw new Error("sendAndConfirm not available");
+  await provider.sendAndConfirm(tx, [payer, accountKp]);
   return accountKp.publicKey;
 };
 
@@ -174,5 +172,6 @@ export const mintTo = async (
     createMintToInstruction(mint, destination, authority.publicKey, amount, [], TOKEN_PROGRAM_ID),
   );
 
-  await provider.sendAndConfirm!(tx, [authority]);
+  if (!provider.sendAndConfirm) throw new Error("sendAndConfirm not available");
+  await provider.sendAndConfirm(tx, [authority]);
 };
