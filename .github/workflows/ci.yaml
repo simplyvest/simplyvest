@@ -46,7 +46,7 @@ jobs:
       - name: TypeScript check (api)
         run: pnpm --filter @solana-tdp/api typecheck
 
-  typecheck-anchor:
+  typecheck-anchor-ts:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
@@ -112,7 +112,7 @@ jobs:
           VITE_GA_MEASUREMENT_ID: ${{ vars.VITE_GA_MEASUREMENT_ID }}
 
   anchor:
-    needs: typecheck-anchor
+    needs: typecheck-anchor-ts
     runs-on: ubuntu-24.04
     defaults:
       run:
