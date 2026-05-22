@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
-use anchor_spl::token::{Mint, Token, TokenAccount};
 use anchor_spl::token::{self, CloseAccount, Transfer};
+use anchor_spl::token::{Mint, Token, TokenAccount};
 
 use crate::errors::TdpError;
 use crate::events::MilestoneCancelled;
@@ -42,7 +42,11 @@ pub struct CancelMilestone<'info> {
 pub fn cancel_milestone_handler(ctx: Context<CancelMilestone>) -> Result<()> {
     let stream = &mut ctx.accounts.stream;
 
-    require_keys_eq!(ctx.accounts.sender.key(), stream.creator, TdpError::Unauthorized);
+    require_keys_eq!(
+        ctx.accounts.sender.key(),
+        stream.creator,
+        TdpError::Unauthorized
+    );
     require!(!stream.cancelled, TdpError::AlreadyCancelled);
     require!(!stream.milestone_reached, TdpError::FullyVested);
 
@@ -95,7 +99,11 @@ pub fn cancel_milestone_handler(ctx: Context<CancelMilestone>) -> Result<()> {
     let stream_info = stream.to_account_info();
     let rent = Rent::get()?;
     let rent_lamports = rent.minimum_balance(stream_info.data_len());
-    **ctx.accounts.sender.to_account_info().try_borrow_mut_lamports()? += rent_lamports;
+    **ctx
+        .accounts
+        .sender
+        .to_account_info()
+        .try_borrow_mut_lamports()? += rent_lamports;
     **stream_info.try_borrow_mut_lamports()? -= rent_lamports;
     stream_info.data.borrow_mut().fill(0);
 

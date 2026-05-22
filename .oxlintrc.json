@@ -1,0 +1,57 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "import", "unicorn", "oxc"],
+  "env": {
+    "node": true,
+    "browser": true,
+    "es2022": true
+  },
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error",
+    "style": "off",
+    "restriction": "off"
+  },
+  "rules": {
+    "no-console": "warn",
+    "typescript/no-explicit-any": "error",
+    "react/self-closing-comp": "error",
+    "react/react-in-jsx-scope": "off",
+    "import/no-cycle": "error",
+    "import/no-unassigned-import": ["error", { "allow": ["**/*.css"] }],
+    "typescript/no-non-null-assertion": "error"
+  },
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/target/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.anchor/**",
+    "**/test-ledger/**",
+    "**/keypairs/**"
+  ],
+  "overrides": [
+    {
+      "files": ["*.test.ts", "*.spec.ts"],
+      "plugins": ["jest"],
+      "env": { "jest": true },
+      "rules": {
+        "jest/require-to-throw-message": "off",
+        "jest/no-conditional-expect": "off"
+      }
+    },
+    {
+      "files": ["apps/api/**/*.ts"],
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
+      "files": ["apps/solana-tdp-anchor/scripts/**/*.ts"],
+      "rules": {
+        "no-console": "off"
+      }
+    }
+  ]
+}

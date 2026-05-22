@@ -3,17 +3,18 @@
   "version": "0.1.0",
   "description": "Solana TDP — Anchor program",
   "license": "MIT",
-  "packageManager": "pnpm@10.33.0",
   "scripts": {
     "build": "anchor build",
     "test": "anchor test",
     "deploy": "solana program deploy target/deploy/solana_tdp.so --program-id 6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk --keypair keypairs/devnet-wallet.json --url devnet",
     "setup-wallet": "ts-node scripts/setup-devnet-wallet.ts",
-    "devnet-test": "ts-node scripts/devnet-smoke-test.ts"
+    "devnet-test": "ts-node scripts/devnet-smoke-test.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",
-    "@solana/spl-token": "^0.4.14",
+    "@solana-tdp/sdk": "workspace:*",
+    "@solana/spl-token": "^0.4.12",
     "@solana/web3.js": "^1.98.4"
   },
   "devDependencies": {
@@ -25,5 +26,6 @@
     "ts-jest": "^29.0.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
-  }
+  },
+  "packageManager": "pnpm@10.33.0"
 }

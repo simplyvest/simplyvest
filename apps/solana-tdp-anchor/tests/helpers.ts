@@ -1,9 +1,7 @@
 import * as anchor from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 
-const PROGRAM_ID = new PublicKey(
-  "6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk",
-);
+const PROGRAM_ID = new PublicKey("6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk");
 
 export const findStreamPDA = (
   creator: PublicKey,
@@ -24,15 +22,10 @@ export const findStreamPDA = (
 };
 
 export const findVaultPDA = (stream: PublicKey): Promise<[PublicKey, number]> => {
-  return PublicKey.findProgramAddress(
-    [Buffer.from("vault"), stream.toBuffer()],
-    PROGRAM_ID,
-  );
+  return PublicKey.findProgramAddress([Buffer.from("vault"), stream.toBuffer()], PROGRAM_ID);
 };
 
-export const findCreatorConfigPDA = (
-  creator: PublicKey,
-): Promise<[PublicKey, number]> => {
+export const findCreatorConfigPDA = (creator: PublicKey): Promise<[PublicKey, number]> => {
   return PublicKey.findProgramAddress(
     [Buffer.from("creator_config"), creator.toBuffer()],
     PROGRAM_ID,
@@ -63,14 +56,14 @@ export const now = () => Math.floor(Date.now() / 1000);
 
 export const parseEvents = async (
   provider: anchor.Provider,
-  program: anchor.Program,
+  program: { programId: PublicKey; coder: anchor.Coder },
   txSig: string,
 ): Promise<anchor.Event[]> => {
   const tx = await provider.connection.getTransaction(txSig, {
     commitment: "confirmed",
     maxSupportedTransactionVersion: 0,
   });
-  const logs = (tx as any)?.meta?.logMessages ?? [];
+  const logs = tx?.meta?.logMessages ?? [];
   const parser = new anchor.EventParser(program.programId, program.coder);
   const events: anchor.Event[] = [];
   for (const event of parser.parseLogs(logs)) {

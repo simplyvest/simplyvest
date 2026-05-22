@@ -1,5 +1,6 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
+
 import { Button } from "@/components/ui/button";
 
 export function WalletButton() {
@@ -16,12 +17,7 @@ export function WalletButton() {
   }
 
   return (
-    <Button
-      variant="default"
-      size="sm"
-      onClick={() => setVisible(true)}
-      disabled={connecting}
-    >
+    <Button variant="default" size="sm" onClick={() => setVisible(true)} disabled={connecting}>
       {connecting ? "Connecting..." : "Connect Wallet"}
     </Button>
   );

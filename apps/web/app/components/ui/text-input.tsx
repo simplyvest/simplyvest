@@ -1,4 +1,5 @@
 import * as React from "react";
+
 import { cn } from "@/utils/cn";
 
 const base =
@@ -24,13 +25,7 @@ export function InputGroup({
           {prefix}
         </span>
       )}
-      <input
-        className={cn(
-          base,
-          prefix ? "rounded-l-none rounded-r-md" : undefined,
-        )}
-        {...props}
-      />
+      <input className={cn(base, prefix ? "rounded-l-none rounded-r-md" : undefined)} {...props} />
     </div>
   );
 }

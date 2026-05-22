@@ -1,5 +1,6 @@
-import { getAccessToken, appendToSheet } from "./google-auth";
 import type { Env } from "../env";
+
+import { getAccessToken, appendToSheet } from "./google-auth";
 
 interface WaitlistPayload {
   name: string;
@@ -45,33 +46,21 @@ export default {
     }
 
     if (!body.name || !body.email || !body.telegram) {
-      return json(
-        { error: "name, email, and telegram are required" },
-        400,
-        origin,
-      );
+      return json({ error: "name, email, and telegram are required" }, 400, origin);
     }
 
     try {
       const privateKey = env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n");
-      const token = await getAccessToken(
-        env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-        privateKey,
-      );
+      const token = await getAccessToken(env.GOOGLE_SERVICE_ACCOUNT_EMAIL, privateKey);
 
-      await appendToSheet(
-        token,
-        env.GOOGLE_SHEET_ID,
-        env.GOOGLE_SHEET_NAME ?? "Sheet1",
-        [
-          body.name,
-          body.email,
-          body.telegram,
-          body.following || "",
-          body.interview ? "Yes" : "No",
-          new Date().toISOString(),
-        ],
-      );
+      await appendToSheet(token, env.GOOGLE_SHEET_ID, env.GOOGLE_SHEET_NAME ?? "Sheet1", [
+        body.name,
+        body.email,
+        body.telegram,
+        body.following || "",
+        body.interview ? "Yes" : "No",
+        new Date().toISOString(),
+      ]);
 
       return json({ ok: true }, 200, origin);
     } catch (err) {

@@ -1,5 +1,20 @@
 # Contributing
 
+## Prerequisites
+
+- **Node.js** >= 24 (see `engines` in root `package.json`)
+  The pre-commit hook runs automatically via `nano-staged`. It:
+
+- Lints and formats staged JS/TS files (`oxlint --fix` + `oxfmt`)
+- Typechecks all workspaces when any `.ts` files are staged (`tsc --noEmit` across web, api, anchor)
+- Checks `.rs` files with `cargo fmt --check` + `cargo clippy`
+
+To skip the hook temporarily:
+
+```bash
+git commit --no-verify
+```
+
 To keep conflicts low and history clean, follow this flow for every change:
 
 ```

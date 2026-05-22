@@ -16,10 +16,7 @@ function base64url(input: Uint8Array): string {
   return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-async function signRS256(
-  data: Uint8Array,
-  privateKeyPem: string,
-): Promise<Uint8Array> {
+async function signRS256(data: Uint8Array, privateKeyPem: string): Promise<Uint8Array> {
   const keyData = pemToBinary(privateKeyPem);
   const privateKey = await crypto.subtle.importKey(
     "pkcs8",
@@ -28,11 +25,7 @@ async function signRS256(
     false,
     ["sign"],
   );
-  const sig = await crypto.subtle.sign(
-    { name: "RSASSA-PKCS1-v1_5" },
-    privateKey,
-    data,
-  );
+  const sig = await crypto.subtle.sign({ name: "RSASSA-PKCS1-v1_5" }, privateKey, data);
   return new Uint8Array(sig);
 }
 
@@ -46,10 +39,7 @@ function createJWT(
   return `${headerB64}.${payloadB64}`;
 }
 
-async function signJWT(
-  unsigned: string,
-  privateKeyPem: string,
-): Promise<string> {
+async function signJWT(unsigned: string, privateKeyPem: string): Promise<string> {
   const enc = new TextEncoder();
   const signature = await signRS256(enc.encode(unsigned), privateKeyPem);
   return `${unsigned}.${base64url(signature)}`;
@@ -57,10 +47,7 @@ async function signJWT(
 
 let cachedToken: { accessToken: string; expiresAt: number } | null = null;
 
-export async function getAccessToken(
-  clientEmail: string,
-  privateKey: string,
-): Promise<string> {
+export async function getAccessToken(clientEmail: string, privateKey: string): Promise<string> {
   if (cachedToken && Date.now() < cachedToken.expiresAt - 60000) {
     return cachedToken.accessToken;
   }

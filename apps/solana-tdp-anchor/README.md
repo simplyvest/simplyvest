@@ -36,6 +36,7 @@ pnpm run deploy
 ```
 
 If you prefer to work directly with the Anchor CLI:
+
 ```bash
 cd apps/solana-tdp-anchor
 anchor build
@@ -44,11 +45,11 @@ anchor test
 
 ## Program Instructions
 
-| Instruction | Description |
-|---|---|
-| `create_stream` | Lock tokens in a PDA vault, record vesting schedule |
-| `withdraw` | Recipient claims all vested tokens at any time |
-| `cancel` | Sender cancels; vested → recipient, unvested → sender |
+| Instruction     | Description                                           |
+| --------------- | ----------------------------------------------------- |
+| `create_stream` | Lock tokens in a PDA vault, record vesting schedule   |
+| `withdraw`      | Recipient claims all vested tokens at any time        |
+| `cancel`        | Sender cancels; vested → recipient, unvested → sender |
 
 ## Account Structure
 
@@ -70,17 +71,18 @@ StreamAccount (PDA)  [seeds: b"stream" + sender + recipient]
 
 ## Prerequisites
 
-| Tool | Version |
-|---|---|
-| Rust | stable ≥ 1.75 |
-| Solana CLI | ≥ 1.18 |
-|| Anchor CLI | 0.32.1 |
-| Node.js | ≥ 20 |
-| pnpm | **10.33.0** |
+| Tool       | Version       |
+| ---------- | ------------- | ------ |
+| Rust       | stable ≥ 1.75 |
+| Solana CLI | ≥ 1.18        |
+|            | Anchor CLI    | 0.32.1 |
+| Node.js    | ≥ 20          |
+| pnpm       | **10.33.0**   |
 
 ## Setup Steps
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/simplyvest/simplyvest
    cd apps/solana-tdp-anchor
@@ -94,10 +96,13 @@ StreamAccount (PDA)  [seeds: b"stream" + sender + recipient]
 ## How to Build
 
 Build the Anchor program from the root:
+
 ```bash
 pnpm build
 ```
+
 Or from the anchor app directory:
+
 ```bash
 cd apps/solana-tdp-anchor
 anchor build
@@ -113,6 +118,7 @@ anchor test
 ```
 
 This will:
+
 1. Build the program (BPF)
 2. Run all 16 TypeScript tests against LiteSVM using Jest
 
@@ -120,11 +126,11 @@ Tests use the `anchor-litesvm` provider (`fromWorkspace("./")` + `LiteSVMProvide
 
 ### Test files
 
-| File | Tests |
-|---|---|
-| `solana-tdp.000.create-stream.test.ts` | 6 — happy path, cliff variant, 4 validation rejections |
-| `solana-tdp.001.withdraw.test.ts` | 6 — partial/full vesting, cumulative tracking, cliff/start/cancelled rejections |
-| `solana-tdp.002.cancel.test.ts` | 4 — pre-start/partial/post-end splits, double-cancel rejection |
+| File                                   | Tests                                                                           |
+| -------------------------------------- | ------------------------------------------------------------------------------- |
+| `solana-tdp.000.create-stream.test.ts` | 6 — happy path, cliff variant, 4 validation rejections                          |
+| `solana-tdp.001.withdraw.test.ts`      | 6 — partial/full vesting, cumulative tracking, cliff/start/cancelled rejections |
+| `solana-tdp.002.cancel.test.ts`        | 4 — pre-start/partial/post-end splits, double-cancel rejection                  |
 
 ---
 
@@ -133,20 +139,25 @@ Tests use the `anchor-litesvm` provider (`fromWorkspace("./")` + `LiteSVMProvide
 > Program ID: [`6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk`](https://explorer.solana.com/address/6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk?cluster=devnet) — same for both localnet and devnet.
 
 1. **Fund the devnet wallet:**
+
    ```bash
    pnpm run setup-wallet
    # Paste your keypair JSON array when prompted
    ```
+
    Or generate a fresh keypair:
+
    ```bash
    solana-keygen new --outfile ./keypairs/devnet-wallet.json
    solana airdrop 2 ./keypairs/devnet-wallet.json
    ```
 
 2. **Deploy:**
+
    ```bash
    pnpm run deploy
    ```
+
    This executes `solana program deploy` directly (not `anchor deploy`) on [devnet](https://explorer.solana.com/?cluster=devnet). The devnet wallet must be the program's upgrade authority.
 
 3. **Verify:**
@@ -165,6 +176,7 @@ pnpm run devnet-test
 This executes all three instructions (`create_stream` → `withdraw` → `cancel`) using the devnet wallet as both sender and recipient. A fresh SPL token mint is created for each run. Every transaction links to Solana Explorer for inspection.
 
 **Prerequisites:** The devnet wallet must be funded and the program must be deployed (see above).
+
 ## Troubleshooting
 
 ### Anchor 0.30.1 → 0.32.1 Upgrade

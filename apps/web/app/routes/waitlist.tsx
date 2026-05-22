@@ -1,11 +1,13 @@
-import * as React from "react";
 import { createRoute } from "@tanstack/react-router";
-import { Route as RootRoute } from "./__root";
+import * as React from "react";
+
 import { Badge } from "@/components/ui/badge";
-import { FormField } from "@/components/ui/form-field";
-import { TextInput, InputGroup } from "@/components/ui/text-input";
-import { SelectInput } from "@/components/ui/select-input";
 import { CheckboxInput } from "@/components/ui/checkbox-input";
+import { FormField } from "@/components/ui/form-field";
+import { SelectInput } from "@/components/ui/select-input";
+import { TextInput, InputGroup } from "@/components/ui/text-input";
+
+import { Route as RootRoute } from "./__root";
 
 export const Route = createRoute({
   getParentRoute: () => RootRoute,
@@ -23,14 +25,11 @@ function WaitlistPage() {
     interview: false,
   });
 
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     const { name, value, type } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]:
-        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+      [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     }));
   }
 
@@ -43,8 +42,7 @@ function WaitlistPage() {
     setError("");
 
     try {
-      const apiUrl =
-        import.meta.env.VITE_API_URL ?? "http://localhost:8787";
+      const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:8787";
       const res = await fetch(`${apiUrl}/api/waitlist`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -68,12 +66,13 @@ function WaitlistPage() {
     <div className="mx-auto max-w-4xl px-6 pt-28">
       <Badge variant="sol">Waitlist</Badge>
       <h1 className="mt-4">
-        WAITLIST<br />
+        WAITLIST
+        <br />
         <em>SIMPLYVEST</em>
       </h1>
       <p className="max-w-[580px] text-lg leading-relaxed text-muted">
-        We help you transfer your money in a safer way &mdash; with commitment
-        from both the sender and the receiver.
+        We help you transfer your money in a safer way &mdash; with commitment from both the sender
+        and the receiver.
       </p>
 
       <div className="mt-12">
@@ -126,11 +125,7 @@ function WaitlistPage() {
               </FormField>
 
               <FormField label="Following @simplyvestsol on X?">
-                <SelectInput
-                  name="following"
-                  value={form.following}
-                  onChange={handleChange}
-                >
+                <SelectInput name="following" value={form.following} onChange={handleChange}>
                   <option value="">Select...</option>
                   <option value="yes">Yes</option>
                   <option value="no">No</option>
@@ -142,9 +137,7 @@ function WaitlistPage() {
               <CheckboxInput
                 name="interview"
                 checked={form.interview}
-                onChange={(checked) =>
-                  setForm((prev) => ({ ...prev, interview: checked }))
-                }
+                onChange={(checked) => setForm((prev) => ({ ...prev, interview: checked }))}
                 label="I'm willing to be contacted for a user interview."
               />
             </div>
@@ -165,9 +158,7 @@ function WaitlistPage() {
               </button>
             </div>
 
-            <p className="mt-4 text-xs text-muted">
-              * Required fields
-            </p>
+            <p className="mt-4 text-xs text-muted">* Required fields</p>
           </form>
         )}
       </div>

@@ -47,7 +47,10 @@ pub struct CreateMilestoneStream<'info> {
     pub rent: Sysvar<'info, Rent>,
 }
 
-pub fn create_milestone_stream_handler(ctx: Context<CreateMilestoneStream>, params: CreateMilestoneStreamParams) -> Result<()> {
+pub fn create_milestone_stream_handler(
+    ctx: Context<CreateMilestoneStream>,
+    params: CreateMilestoneStreamParams,
+) -> Result<()> {
     require!(params.amount > 0, TdpError::ZeroAmount);
     require!(
         ctx.accounts.sender_token.amount >= params.amount,

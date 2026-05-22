@@ -1,8 +1,16 @@
 import * as anchor from "@coral-xyz/anchor";
-import { Keypair, SystemProgram } from "@solana/web3.js";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { Keypair, SystemProgram } from "@solana/web3.js";
+
+import {
+  findStreamPDA,
+  findVaultPDA,
+  findCreatorConfigPDA,
+  now,
+  parseEvents,
+  findEvent,
+} from "./helpers";
 import { setupTest, createMint, createTokenAccount, mintTo } from "./utils";
-import { findStreamPDA, findVaultPDA, findCreatorConfigPDA, now, parseEvents, findEvent } from "./helpers";
 
 describe("Feature 0: create_stream", () => {
   it("creates stream and transfers tokens to vault", async () => {
@@ -21,7 +29,12 @@ describe("Feature 0: create_stream", () => {
     const end = start + 3600;
     const cliff = 0;
 
-    const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey, mint, new anchor.BN(0));
+    const [streamPDA] = await findStreamPDA(
+      sender.publicKey,
+      recipient.publicKey,
+      mint,
+      new anchor.BN(0),
+    );
     const [vaultPDA] = await findVaultPDA(streamPDA);
     const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
 
@@ -34,7 +47,7 @@ describe("Feature 0: create_stream", () => {
         endTime: new anchor.BN(end),
         cliffTime: new anchor.BN(cliff),
       })
-      .accounts({
+      .accountsPartial({
         sender: sender.publicKey,
         recipient: recipient.publicKey,
         stream: streamPDA,
@@ -69,7 +82,7 @@ describe("Feature 0: create_stream", () => {
   });
 
   it("creates stream with cliff_time in [start, end]", async () => {
-    const { provider, program, svmAirdrop, svmTokenBalance } = setupTest();
+    const { provider, program, svmAirdrop } = setupTest();
     const sender = Keypair.generate();
     const recipient = Keypair.generate();
     svmAirdrop([sender.publicKey]);
@@ -84,7 +97,12 @@ describe("Feature 0: create_stream", () => {
     const cliff = start + 1800;
     const end = cliff + 3600;
 
-    const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey, mint, new anchor.BN(0));
+    const [streamPDA] = await findStreamPDA(
+      sender.publicKey,
+      recipient.publicKey,
+      mint,
+      new anchor.BN(0),
+    );
     const [vaultPDA] = await findVaultPDA(streamPDA);
     const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
 
@@ -95,7 +113,7 @@ describe("Feature 0: create_stream", () => {
         endTime: new anchor.BN(end),
         cliffTime: new anchor.BN(cliff),
       })
-      .accounts({
+      .accountsPartial({
         sender: sender.publicKey,
         recipient: recipient.publicKey,
         stream: streamPDA,
@@ -128,7 +146,12 @@ describe("Feature 0: create_stream", () => {
 
       const start = now() + 60;
       const end = start - 10;
-      const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey, mint, new anchor.BN(0));
+      const [streamPDA] = await findStreamPDA(
+        sender.publicKey,
+        recipient.publicKey,
+        mint,
+        new anchor.BN(0),
+      );
       const [vaultPDA] = await findVaultPDA(streamPDA);
       const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
 
@@ -140,7 +163,7 @@ describe("Feature 0: create_stream", () => {
             endTime: new anchor.BN(end),
             cliffTime: new anchor.BN(0),
           })
-          .accounts({
+          .accountsPartial({
             sender: sender.publicKey,
             recipient: recipient.publicKey,
             stream: streamPDA,
@@ -170,7 +193,12 @@ describe("Feature 0: create_stream", () => {
       const start = now() + 60;
       const end = start + 3600;
       const cliff = end + 100;
-      const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey, mint, new anchor.BN(0));
+      const [streamPDA] = await findStreamPDA(
+        sender.publicKey,
+        recipient.publicKey,
+        mint,
+        new anchor.BN(0),
+      );
       const [vaultPDA] = await findVaultPDA(streamPDA);
       const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
 
@@ -182,7 +210,7 @@ describe("Feature 0: create_stream", () => {
             endTime: new anchor.BN(end),
             cliffTime: new anchor.BN(cliff),
           })
-          .accounts({
+          .accountsPartial({
             sender: sender.publicKey,
             recipient: recipient.publicKey,
             stream: streamPDA,
@@ -212,7 +240,12 @@ describe("Feature 0: create_stream", () => {
       const start = now() + 60;
       const cliff = start - 60;
       const end = start + 3600;
-      const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey, mint, new anchor.BN(0));
+      const [streamPDA] = await findStreamPDA(
+        sender.publicKey,
+        recipient.publicKey,
+        mint,
+        new anchor.BN(0),
+      );
       const [vaultPDA] = await findVaultPDA(streamPDA);
       const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
 
@@ -224,7 +257,7 @@ describe("Feature 0: create_stream", () => {
             endTime: new anchor.BN(end),
             cliffTime: new anchor.BN(cliff),
           })
-          .accounts({
+          .accountsPartial({
             sender: sender.publicKey,
             recipient: recipient.publicKey,
             stream: streamPDA,
@@ -253,7 +286,12 @@ describe("Feature 0: create_stream", () => {
 
       const start = now() + 60;
       const end = start + 3600;
-      const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey, mint, new anchor.BN(0));
+      const [streamPDA] = await findStreamPDA(
+        sender.publicKey,
+        recipient.publicKey,
+        mint,
+        new anchor.BN(0),
+      );
       const [vaultPDA] = await findVaultPDA(streamPDA);
       const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
 
@@ -265,7 +303,7 @@ describe("Feature 0: create_stream", () => {
             endTime: new anchor.BN(end),
             cliffTime: new anchor.BN(0),
           })
-          .accounts({
+          .accountsPartial({
             sender: sender.publicKey,
             recipient: recipient.publicKey,
             stream: streamPDA,
@@ -294,7 +332,12 @@ describe("Feature 0: create_stream", () => {
 
       const start = now() + 60;
       const end = start + 30; // only 30 seconds < 60 minimum
-      const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey, mint, new anchor.BN(0));
+      const [streamPDA] = await findStreamPDA(
+        sender.publicKey,
+        recipient.publicKey,
+        mint,
+        new anchor.BN(0),
+      );
       const [vaultPDA] = await findVaultPDA(streamPDA);
       const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
 
@@ -306,7 +349,7 @@ describe("Feature 0: create_stream", () => {
             endTime: new anchor.BN(end),
             cliffTime: new anchor.BN(0),
           })
-          .accounts({
+          .accountsPartial({
             sender: sender.publicKey,
             recipient: recipient.publicKey,
             stream: streamPDA,
@@ -335,7 +378,12 @@ describe("Feature 0: create_stream", () => {
 
       const start = now() + 60;
       const end = start + 3600;
-      const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey, mint, new anchor.BN(0));
+      const [streamPDA] = await findStreamPDA(
+        sender.publicKey,
+        recipient.publicKey,
+        mint,
+        new anchor.BN(0),
+      );
       const [vaultPDA] = await findVaultPDA(streamPDA);
       const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
 
@@ -347,7 +395,7 @@ describe("Feature 0: create_stream", () => {
             endTime: new anchor.BN(end),
             cliffTime: new anchor.BN(0),
           })
-          .accounts({
+          .accountsPartial({
             sender: sender.publicKey,
             recipient: recipient.publicKey,
             stream: streamPDA,
@@ -366,7 +414,7 @@ describe("Feature 0: create_stream", () => {
   });
 
   it("emits StreamCreated event with correct data", async () => {
-    const { provider, program, svmAirdrop, svmTokenBalance } = setupTest();
+    const { provider, program, svmAirdrop } = setupTest();
     const sender = Keypair.generate();
     const recipient = Keypair.generate();
     svmAirdrop([sender.publicKey]);
@@ -381,7 +429,12 @@ describe("Feature 0: create_stream", () => {
     const end = start + 3600;
     const cliff = start + 1800;
 
-    const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey, mint, new anchor.BN(0));
+    const [streamPDA] = await findStreamPDA(
+      sender.publicKey,
+      recipient.publicKey,
+      mint,
+      new anchor.BN(0),
+    );
     const [vaultPDA] = await findVaultPDA(streamPDA);
     const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
 
@@ -392,7 +445,7 @@ describe("Feature 0: create_stream", () => {
         endTime: new anchor.BN(end),
         cliffTime: new anchor.BN(cliff),
       })
-      .accounts({
+      .accountsPartial({
         sender: sender.publicKey,
         recipient: recipient.publicKey,
         stream: streamPDA,

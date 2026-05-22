@@ -1,13 +1,10 @@
-import * as React from "react";
 import { Link } from "@tanstack/react-router";
+import * as React from "react";
 
 export function Hero() {
   return (
     <section className="relative overflow-hidden border-b border-border pb-8 pt-28">
-      <div
-        className="pointer-events-none absolute inset-0 select-none"
-        aria-hidden
-      >
+      <div className="pointer-events-none absolute inset-0 select-none" aria-hidden>
         <span className="font-display absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[clamp(8rem,22vw,18rem)] text-border">
           SOLANA
         </span>
@@ -15,18 +12,19 @@ export function Hero() {
 
       <div className="relative mx-auto max-w-4xl px-6">
         <div className="flex items-center gap-2.5 font-mono text-[0.72rem] uppercase tracking-wide text-sol2">
-          <span className="text-dim">//</span>
+          <span className="text-dim">{"//"}</span>
           Solana Vesting Protocol
         </div>
 
         <h1 className="mt-5">
-          SIMPLY<br />
+          SIMPLY
+          <br />
           <em>VEST</em>
         </h1>
 
         <p className="max-w-[560px] text-lg leading-relaxed text-muted">
-          Non-custodial, programmable token vesting with time-based streams and
-          milestone-gated releases on Solana.
+          Non-custodial, programmable token vesting with time-based streams and milestone-gated
+          releases on Solana.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-4">

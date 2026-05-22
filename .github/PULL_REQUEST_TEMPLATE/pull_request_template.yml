@@ -1,0 +1,74 @@
+name: Pull Request
+description: Submit changes to the SimplyVest codebase
+title: "[PR]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for contributing!
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      description: What does this PR affect?
+      multiple: true
+      options:
+        - On-chain program (Solana/Anchor)
+        - Frontend / Web
+        - API / Worker
+        - Documentation only
+        - CI / Tooling
+        - Tests only
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What does this PR do and why? One paragraph.
+    validations:
+      required: true
+
+  - type: textarea
+    id: changes
+    attributes:
+      label: Changes
+      description: List specific changes with file paths.
+      placeholder: |
+        - apps/.../file.rs — what changed
+        - apps/.../file.ts — what changed
+    validations:
+      required: true
+
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification
+      description: |
+        How did you verify this works? Include commands run, test counts, edge cases checked.
+      placeholder: |
+        - anchor build passes
+        - 49 tests pass across 4 suites
+        - Edge case: cancel after end_time rejected
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submit checklist
+      options:
+        - label: "`anchor build` passes"
+        - label: All existing tests pass
+        - label: Added or updated tests for new behavior
+        - label: Lint / typecheck passes (if applicable)
+        - label: Docs updated (ARCHITECTURE.md, DEPLOYMENT.md, etc.)
+
+  - type: input
+    id: closes
+    attributes:
+      label: Closes
+      description: "Issue numbers. Keyword on same line. Examples: Closes #42 or Closes #42, #43, #44"
+      placeholder: "Closes #, #, #"
