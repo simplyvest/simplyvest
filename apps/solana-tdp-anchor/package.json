@@ -8,7 +8,8 @@
     "test": "anchor test",
     "deploy": "solana program deploy target/deploy/solana_tdp.so --program-id 6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk --keypair keypairs/devnet-wallet.json --url devnet",
     "setup-wallet": "ts-node scripts/setup-devnet-wallet.ts",
-    "devnet-test": "ts-node scripts/devnet-smoke-test.ts"
+    "devnet-test": "ts-node scripts/devnet-smoke-test.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",

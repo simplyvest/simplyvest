@@ -46,6 +46,21 @@ jobs:
       - name: TypeScript check (api)
         run: pnpm --filter @solana-tdp/api typecheck
 
+  typecheck-anchor:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.2.2
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: TypeScript check (anchor)
+        run: pnpm --filter @solana-tdp/anchor typecheck
+
   lint:
     runs-on: ubuntu-24.04
     steps:
