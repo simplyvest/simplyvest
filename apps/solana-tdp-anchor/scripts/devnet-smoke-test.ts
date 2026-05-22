@@ -10,6 +10,7 @@ import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { Connection, Keypair, SystemProgram } from "@solana/web3.js";
+import type { SolanaTdp } from "@solana-tdp/sdk";
 
 import { findStreamPDA, findVaultPDA, findCreatorConfigPDA } from "../tests/helpers";
 
@@ -39,7 +40,7 @@ async function main() {
   });
   anchor.setProvider(provider);
 
-  const program = new anchor.Program(require("../target/idl/solana_tdp.json"), provider);
+  const program = new anchor.Program<SolanaTdp>(require("../target/idl/solana_tdp.json"), provider);
 
   // ──────────────────────────────────────────────────────────────────────────
   // Step 1 — Create a test token mint
@@ -80,12 +81,9 @@ async function main() {
   // Fetch creator_config to get the actual vesting_count from chain.
   // If it doesn't exist yet (first run), vesting_count = 0.
   const [creatorConfigPDA] = await findCreatorConfigPDA(wallet.publicKey);
-  const creatorConfigAccount = program.account.creatorConfig as {
-    fetch(pda: PublicKey): Promise<{ vestingCount: anchor.BN }>;
-  };
   let vestingCount: anchor.BN;
   try {
-    const config = await creatorConfigAccount.fetch(creatorConfigPDA);
+    const config = await program.account.creatorConfig.fetch(creatorConfigPDA);
     vestingCount = config.vestingCount;
     console.log(`  • creator config exists, vesting_count = ${vestingCount.toString()}`);
   } catch {
@@ -113,7 +111,7 @@ async function main() {
       endTime: new anchor.BN(end),
       cliffTime: new anchor.BN(cliff),
     })
-    .accounts({
+    .accountsPartial({
       sender: wallet.publicKey,
       recipient: wallet.publicKey,
       stream: streamPDA,
@@ -142,7 +140,7 @@ async function main() {
   try {
     await program.methods
       .withdraw({ amount: new anchor.BN(1) })
-      .accounts({
+      .accountsPartial({
         recipient: wallet.publicKey,
         stream: streamPDA,
         vault: vaultPDA,
@@ -176,7 +174,7 @@ async function main() {
   const withdrawAmount = 5_000_000; // 5 tokens (safe — ~12.5 vested)
   const withdrawTx = await program.methods
     .withdraw({ amount: new anchor.BN(withdrawAmount) })
-    .accounts({
+    .accountsPartial({
       recipient: wallet.publicKey,
       stream: streamPDA,
       vault: vaultPDA,
@@ -203,7 +201,7 @@ async function main() {
 
   const cancelTx = await program.methods
     .cancel()
-    .accounts({
+    .accountsPartial({
       sender: wallet.publicKey,
       recipient: wallet.publicKey,
       stream: streamPDA,
