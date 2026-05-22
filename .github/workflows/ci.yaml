@@ -117,6 +117,8 @@ jobs:
     defaults:
       run:
         working-directory: apps/solana-tdp-anchor
+    env:
+      CARGO_TARGET_DIR: ${{ github.workspace }}/apps/solana-tdp-anchor/target
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v6
@@ -150,7 +152,7 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
         with:
-          workspaces: "apps/solana-tdp-anchor/programs/solana-tdp"
+          workspaces: "apps/solana-tdp-anchor/programs/solana-tdp -> ../../target"
           key: solana-${{ env.SOLANA_VERSION }}
           cache-on-failure: true
 
