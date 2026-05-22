@@ -30,9 +30,9 @@ export function VestingCard({
         {children}
         <p className="mt-3 text-[0.88rem] leading-relaxed text-muted">{description}</p>
         <ul className="mt-4 space-y-1">
-          {examples.map((ex, i) => (
+          {examples.map((ex) => (
             <li
-              key={i}
+              key={ex}
               className="flex items-start gap-2 border-b border-border py-1 text-[0.83rem] text-muted last:border-none"
             >
               <span

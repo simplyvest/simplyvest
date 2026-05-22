@@ -19,7 +19,7 @@ const features = [
       <div className="mb-3 flex h-10 items-end gap-0.5">
         {[20, 35, 45, 55, 65, 75, 85, 95, 100].map((h, i) => (
           <div
-            key={i}
+            key={h}
             className="flex-1 rounded-t-sm opacity-30 [&.active]:opacity-100"
             style={{
               height: `${h}%`,

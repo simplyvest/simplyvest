@@ -9,8 +9,8 @@ import { Route as RootRoute } from "./__root";
 function Accordion({ items }: { items: { q: string; a: string }[] }) {
   return (
     <div className="divide-y divide-border rounded-xl border border-border">
-      {items.map((item, i) => (
-        <details key={i} className="group open:bg-bg1">
+      {items.map((item) => (
+        <details key={item.q} className="group open:bg-bg1">
           <summary
             className={cn(
               "flex cursor-pointer items-center justify-between px-6 py-4 text-[0.95rem] font-medium transition-colors hover:bg-bg2",

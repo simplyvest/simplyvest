@@ -16,8 +16,8 @@ export function Timeline({ items, className }: { items: TimelineItem[]; classNam
           background: "linear-gradient(to bottom, var(--sol), var(--sol2))",
         }}
       />
-      {items.map((item, i) => (
-        <div key={i} className="relative mb-6 last:mb-0">
+      {items.map((item) => (
+        <div key={item.week} className="relative mb-6 last:mb-0">
           <div
             className="absolute -left-[1.44rem] top-[0.45rem] h-2.5 w-2.5 rounded-full border-2"
             style={{
