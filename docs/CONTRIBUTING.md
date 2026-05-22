@@ -9,11 +9,13 @@
 - All tools must be available in `PATH`
 
 The pre-commit hook runs automatically via `nano-staged`. It:
+
 - Lints and formats staged JS/TS files (`oxlint --fix` + `oxfmt`)
 - Typechecks staged TS files (`tsc --noEmit` across web, api, anchor)
 - Checks `.rs` files with `cargo fmt --check` + `cargo clippy`
 
 To skip the hook temporarily:
+
 ```bash
 git commit --no-verify
 ```
