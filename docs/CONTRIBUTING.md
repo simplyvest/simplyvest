@@ -2,16 +2,11 @@
 
 ## Prerequisites
 
-- **Node.js** >= 24 (required by oxlint)
-- **pnpm** — package manager (see `packageManager` field in root `package.json`)
-- **Rust** toolchain (for the Anchor program) — `cargo`, `rustc`
-- **Solana CLI** + **Anchor CLI** — see [DEPLOYMENT.md](./DEPLOYMENT.md)
-- All tools must be available in `PATH`
-
+- **Node.js** >= 24 (see `engines` in root `package.json`)
 The pre-commit hook runs automatically via `nano-staged`. It:
 
 - Lints and formats staged JS/TS files (`oxlint --fix` + `oxfmt`)
-- Typechecks staged TS files (`tsc --noEmit` across web, api, anchor)
+- Typechecks all workspaces when any `.ts` files are staged (`tsc --noEmit` across web, api, anchor)
 - Checks `.rs` files with `cargo fmt --check` + `cargo clippy`
 
 To skip the hook temporarily:
