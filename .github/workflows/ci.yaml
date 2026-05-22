@@ -74,7 +74,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Lint
-        run: oxlint .
+        run: pnpm exec oxlint .
 
   format:
     runs-on: ubuntu-24.04
@@ -89,7 +89,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Format check
-        run: oxfmt --check .
+        run: pnpm exec oxfmt --check .
 
   build-web:
     needs: typecheck-web
