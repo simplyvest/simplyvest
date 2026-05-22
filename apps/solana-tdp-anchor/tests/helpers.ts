@@ -39,6 +39,24 @@ export const findCreatorConfigPDA = (
   );
 };
 
+export const findMilestoneStreamPDA = (
+  creator: PublicKey,
+  recipient: PublicKey,
+  mint: PublicKey,
+  vestingCount: anchor.BN,
+): Promise<[PublicKey, number]> => {
+  return PublicKey.findProgramAddress(
+    [
+      Buffer.from("milestone-stream"),
+      creator.toBuffer(),
+      recipient.toBuffer(),
+      mint.toBuffer(),
+      vestingCount.toArrayLike(Buffer, "le", 8),
+    ],
+    PROGRAM_ID,
+  );
+};
+
 export const now = () => Math.floor(Date.now() / 1000);
 
 // ── Event Parsing ───────────────────────────────────────────────────────────
