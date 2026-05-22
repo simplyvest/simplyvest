@@ -9,7 +9,10 @@ use crate::state::MilestoneStreamAccount;
 
 #[derive(Accounts)]
 pub struct WithdrawMilestone<'info> {
-    #[account(mut)]
+    #[account(
+        mut,
+        constraint = recipient.key() == stream.recipient @ TdpError::Unauthorized
+    )]
     pub recipient: Signer<'info>,
     #[account(
         mut,
@@ -100,14 +103,13 @@ pub fn withdraw_milestone_handler(ctx: Context<WithdrawMilestone>) -> Result<()>
     ))?;
 
     let stream_info = stream.to_account_info();
-    let rent = Rent::get()?;
-    let rent_lamports = rent.minimum_balance(stream_info.data_len());
+    let lamports = stream_info.lamports();
     **ctx
         .accounts
         .sender
         .to_account_info()
-        .try_borrow_mut_lamports()? += rent_lamports;
-    **stream_info.try_borrow_mut_lamports()? -= rent_lamports;
+        .try_borrow_mut_lamports()? += lamports;
+    **stream_info.try_borrow_mut_lamports()? = 0;
     stream_info.data.borrow_mut().fill(0);
 
     Ok(())

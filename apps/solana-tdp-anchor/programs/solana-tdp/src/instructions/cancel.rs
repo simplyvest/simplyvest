@@ -71,17 +71,14 @@ pub fn cancel_handler(ctx: Context<Cancel>) -> Result<()> {
     // 3. Cannot cancel after end_time — use withdraw instead
     require!(now < stream.end_time, TdpError::StreamExpired);
 
-    // Calculate split at moment of cancellation (cliff-aware: vesting starts at cliff_time)
-    let vest_start = if stream.cliff_time != 0 {
-        stream.cliff_time
-    } else {
-        stream.start_time
-    };
-    let vested_at_cancel = if now <= vest_start {
+    // Calculate split at moment of cancellation (cliff-aware: vesting locked until cliff_time)
+    let vested_at_cancel = if now >= stream.end_time {
+        stream.amount
+    } else if now < stream.cliff_time {
         0
     } else {
-        let elapsed = (now - vest_start) as u64;
-        let duration = (stream.end_time - vest_start) as u64;
+        let elapsed = (now - stream.start_time) as u64;
+        let duration = (stream.end_time - stream.start_time) as u64;
         stream
             .amount
             .checked_mul(elapsed)
@@ -171,14 +168,13 @@ pub fn cancel_handler(ctx: Context<Cancel>) -> Result<()> {
 
     // Close stream account — zero data and transfer rent to sender
     let stream_info = stream.to_account_info();
-    let rent = Rent::get()?;
-    let rent_lamports = rent.minimum_balance(stream_info.data_len());
+    let lamports = stream_info.lamports();
     **ctx
         .accounts
         .sender
         .to_account_info()
-        .try_borrow_mut_lamports()? += rent_lamports;
-    **stream_info.try_borrow_mut_lamports()? -= rent_lamports;
+        .try_borrow_mut_lamports()? += lamports;
+    **stream_info.try_borrow_mut_lamports()? = 0;
     stream_info.data.borrow_mut().fill(0);
 
     Ok(())

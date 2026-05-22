@@ -434,8 +434,8 @@ describe("Feature 3: milestone streams", () => {
     ).rejects.toThrow();
   });
 
-  it("allows any signer to withdraw after milestone (no recipient constraint)", async () => {
-    const { sender, milestoneAuthority, mint, streamPDA, vaultPDA, amount } =
+  it("rejects unauthorized withdraw after milestone by non-recipient", async () => {
+    const { sender, milestoneAuthority, mint, streamPDA, vaultPDA } =
       await createMilestoneStreamFixture(500_000_000);
 
     await program.methods
@@ -448,24 +448,23 @@ describe("Feature 3: milestone streams", () => {
     svmAirdrop([thirdParty.publicKey]);
     const thirdPartyToken = getAssociatedTokenAddressSync(mint, thirdParty.publicKey, true);
 
-    // Program doesn't constrain who signs — any signer can trigger payout
-    // (tokens go to the signer's ATA via init_if_needed)
-    await program.methods
-      .withdrawMilestone()
-      .accountsPartial(
-        withdrawMilestoneAccounts(
-          thirdParty.publicKey,
-          streamPDA,
-          vaultPDA,
-          thirdPartyToken,
-          sender.publicKey,
-          mint,
-        ),
-      )
-      .signers([thirdParty])
-      .rpc();
-
-    expect(svmTokenBalance(thirdPartyToken)).toBe(BigInt(amount));
+    // Withdrawing with a third-party signer should fail due to the recipient constraint
+    await expect(
+      program.methods
+        .withdrawMilestone()
+        .accountsPartial(
+          withdrawMilestoneAccounts(
+            thirdParty.publicKey,
+            streamPDA,
+            vaultPDA,
+            thirdPartyToken,
+            sender.publicKey,
+            mint,
+          ),
+        )
+        .signers([thirdParty])
+        .rpc(),
+    ).rejects.toThrow();
   });
 
   // ── cancel_milestone ─────────────────────────────────────────────

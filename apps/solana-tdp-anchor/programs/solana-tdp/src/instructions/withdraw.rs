@@ -65,19 +65,14 @@ pub fn withdraw_handler(ctx: Context<Withdraw>, params: WithdrawParams) -> Resul
     require!(now >= stream.cliff_time, TdpError::CliffNotReached);
     require!(params.amount > 0, TdpError::ZeroAmount);
 
-    // 2. Calculate linear vesting from cliff_time (or start_time if no cliff) to end_time
-    let vest_start = if stream.cliff_time != 0 {
-        stream.cliff_time
-    } else {
-        stream.start_time
-    };
+    // 2. Calculate linear vesting from start_time to end_time (locked until cliff_time)
     let total_vested = if now >= stream.end_time {
         stream.amount
-    } else if now <= vest_start {
+    } else if now < stream.cliff_time {
         0
     } else {
-        let elapsed = (now - vest_start) as u64;
-        let duration = (stream.end_time - vest_start) as u64;
+        let elapsed = (now - stream.start_time) as u64;
+        let duration = (stream.end_time - stream.start_time) as u64;
         stream
             .amount
             .checked_mul(elapsed)
@@ -147,14 +142,13 @@ pub fn withdraw_handler(ctx: Context<Withdraw>, params: WithdrawParams) -> Resul
         // Close stream account — zero data and transfer rent to sender
         let total_amount = stream.amount;
         let stream_info = stream.to_account_info();
-        let rent = Rent::get()?;
-        let rent_lamports = rent.minimum_balance(stream_info.data_len());
+        let lamports = stream_info.lamports();
         **ctx
             .accounts
             .sender
             .to_account_info()
-            .try_borrow_mut_lamports()? += rent_lamports;
-        **stream_info.try_borrow_mut_lamports()? -= rent_lamports;
+            .try_borrow_mut_lamports()? += lamports;
+        **stream_info.try_borrow_mut_lamports()? = 0;
         stream_info.data.borrow_mut().fill(0);
 
         // Emit StreamCompleted
