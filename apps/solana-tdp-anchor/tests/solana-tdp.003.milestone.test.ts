@@ -27,7 +27,7 @@ describe("Feature 3: milestone streams", () => {
     ({ program, provider, svm, svmAirdrop, svmTokenBalance } = setupTest());
   });
 
-  const clockNow = () => Number(svm.getClock().unixTimestamp);
+
 
   const createMilestoneStreamFixture = async (amount: number) => {
     const sender = Keypair.generate();
@@ -156,16 +156,7 @@ describe("Feature 3: milestone streams", () => {
   });
 
   it("emits MilestoneStreamCreated event", async () => {
-    const {
-      sender,
-      recipient,
-      milestoneAuthority,
-      mint,
-      senderToken,
-      streamPDA,
-      vaultPDA,
-      amount,
-    } = await createMilestoneStreamFixture(100_000_000);
+    const { amount } = await createMilestoneStreamFixture(100_000_000);
 
     // Re-create to capture the event
     const { provider: p2, program: prog2, svmAirdrop: a2 } = setupTest();
@@ -301,7 +292,7 @@ describe("Feature 3: milestone streams", () => {
   // ── withdraw_milestone ───────────────────────────────────────────
 
   it("withdraw_milestone sends full amount to recipient", async () => {
-    const { sender, recipient, milestoneAuthority, mint, streamPDA, vaultPDA, amount } =
+    const { sender, recipient, milestoneAuthority, mint, streamPDA, vaultPDA } =
       await createMilestoneStreamFixture(500_000_000);
 
     // Trigger milestone
@@ -397,7 +388,7 @@ describe("Feature 3: milestone streams", () => {
   });
 
   it("rejects withdraw after already withdrawn", async () => {
-    const { sender, recipient, milestoneAuthority, mint, streamPDA, vaultPDA, amount } =
+    const { sender, recipient, milestoneAuthority, mint, streamPDA, vaultPDA } =
       await createMilestoneStreamFixture(500_000_000);
 
     await program.methods
@@ -444,7 +435,7 @@ describe("Feature 3: milestone streams", () => {
   });
 
   it("allows any signer to withdraw after milestone (no recipient constraint)", async () => {
-    const { sender, recipient, milestoneAuthority, mint, streamPDA, vaultPDA, amount } =
+    const { sender, milestoneAuthority, mint, streamPDA, vaultPDA, amount } =
       await createMilestoneStreamFixture(500_000_000);
 
     await program.methods
@@ -480,7 +471,7 @@ describe("Feature 3: milestone streams", () => {
   // ── cancel_milestone ─────────────────────────────────────────────
 
   it("cancel_milestone before trigger returns all to creator", async () => {
-    const { sender, mint, streamPDA, vaultPDA, amount } =
+    const { sender, mint, streamPDA, vaultPDA } =
       await createMilestoneStreamFixture(100_000_000);
 
     const senderAtaAddr = senderAta(mint, sender.publicKey);

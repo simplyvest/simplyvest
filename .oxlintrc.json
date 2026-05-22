@@ -15,7 +15,7 @@
     "no-debugger": "error",
     "no-console": "warn",
     "typescript/no-explicit-any": "warn",
-    "typescript/no-unused-vars": "warn",
+    "typescript/no-unused-vars": "error",
     "react/jsx-key": "error",
     "react/no-array-index-key": "warn",
     "react/self-closing-comp": "error",

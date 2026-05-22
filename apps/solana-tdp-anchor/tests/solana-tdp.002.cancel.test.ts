@@ -117,7 +117,7 @@ describe("Feature 2: cancel", () => {
   };
 
   it("cancel between start_time and cliff_time returns all to sender", async () => {
-    const { sender, recipient, mint, senderToken, recipientToken, vaultPDA, streamPDA, amount } =
+    const { sender, recipient, mint, senderToken, recipientToken, vaultPDA, streamPDA } =
       await setupStream(1_000_000, 60, 3600, 120); // cliff = start + 120s
     warp(90); // after start (60), before cliff (120)
 
@@ -149,7 +149,7 @@ describe("Feature 2: cancel", () => {
   });
 
   it("cancel before start_time returns all to sender", async () => {
-    const { sender, recipient, mint, senderToken, recipientToken, vaultPDA, streamPDA, amount } =
+    const { sender, recipient, mint, senderToken, recipientToken, vaultPDA, streamPDA } =
       await setupStream(1_000_000, 60, 3600, 60);
 
     const vaultBefore = svmTokenBalance(vaultPDA);

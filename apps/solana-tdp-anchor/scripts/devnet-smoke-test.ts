@@ -9,7 +9,7 @@ import {
   TOKEN_PROGRAM_ID,
   ASSOCIATED_TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
-import { Connection, Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
+import { Connection, Keypair, SystemProgram } from "@solana/web3.js";
 
 import { findStreamPDA, findVaultPDA, findCreatorConfigPDA } from "../tests/helpers";
 

@@ -14,7 +14,7 @@ import { setupTest, createMint, createTokenAccount, mintTo } from "./utils";
 
 describe("Feature 0: create_stream", () => {
   it("creates stream and transfers tokens to vault", async () => {
-    const { provider, program, svmAirdrop, svmTokenBalance } = setupTest();
+    const { provider, program, svmAirdrop } = setupTest();
     const sender = Keypair.generate();
     const recipient = Keypair.generate();
     svmAirdrop([sender.publicKey]);
@@ -82,7 +82,7 @@ describe("Feature 0: create_stream", () => {
   });
 
   it("creates stream with cliff_time in [start, end]", async () => {
-    const { provider, program, svmAirdrop, svmTokenBalance } = setupTest();
+    const { provider, program, svmAirdrop } = setupTest();
     const sender = Keypair.generate();
     const recipient = Keypair.generate();
     svmAirdrop([sender.publicKey]);
@@ -414,7 +414,7 @@ describe("Feature 0: create_stream", () => {
   });
 
   it("emits StreamCreated event with correct data", async () => {
-    const { provider, program, svmAirdrop, svmTokenBalance } = setupTest();
+    const { provider, program, svmAirdrop } = setupTest();
     const sender = Keypair.generate();
     const recipient = Keypair.generate();
     svmAirdrop([sender.publicKey]);

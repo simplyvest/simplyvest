@@ -31,26 +31,6 @@ describe("Feature 1: withdraw", () => {
 
   const clockNow = () => Number(svm.getClock().unixTimestamp);
 
-  // Create an associated token account for a given mint + owner.
-  // Transparently returns the ATA address (creates it if needed).
-  const createAta = async (mint: PublicKey, owner: PublicKey) => {
-    const ata = getAssociatedTokenAddressSync(mint, owner, true);
-    const existing = svm.getAccount(ata);
-    if (existing) return ata; // already exists
-    const tx = new anchor.web3.Transaction().add(
-      createAssociatedTokenAccountInstruction(
-        owner, // payer — the owner has SOL from svmAirdrop
-        ata,
-        owner,
-        mint,
-      ),
-    );
-    // We need a signer for the owner. In the fixture context we use the generated keypair.
-    // This helper is called from test bodies where the keypair is in scope.
-    // We overload by accepting an optional payer keypair.
-    return ata;
-  };
-
   // Create a fully set-up stream, returning keys and PDAs.
   // `recipientToken` is the ATA address — the withdraw handler creates it on demand.
   const createStreamFixture = async (
@@ -306,7 +286,7 @@ describe("Feature 1: withdraw", () => {
   });
 
   it("rejects withdraw 1 second before cliff_time", async () => {
-    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, start, cliff } =
+    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, cliff } =
       await createStreamFixture(1_000_000, 60, 3600, 120);
     // Warp to 1 second before cliff
     warp(cliff - clockNow() - 1);
@@ -330,7 +310,7 @@ describe("Feature 1: withdraw", () => {
   });
 
   it("withdraws at cliff_time boundary (elapsed = 0)", async () => {
-    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, cliff, end } =
+    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, cliff } =
       await createStreamFixture(1_000_000, 60, 3600, 120);
     warp(cliff - clockNow()); // exactly at cliff_time
 
@@ -506,7 +486,7 @@ describe("Feature 1: withdraw", () => {
   // ── Vesting percentages, partial claims, and authorization ──────────────
 
   it("withdraws 25% at quarter vesting", async () => {
-    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, start, end } =
+    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount } =
       await createStreamFixture(1_000_000, 10, 400, 0);
     warp(110); // 25% elapsed (100 / 400)
     const expected = Math.floor((amount * 100) / 400);
@@ -531,7 +511,7 @@ describe("Feature 1: withdraw", () => {
   });
 
   it("withdraws 50% then remaining 50% on same stream", async () => {
-    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, start, end } =
+    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount } =
       await createStreamFixture(1_000_000, 10, 400, 0);
 
     // First withdrawal at 50% elapsed
@@ -558,7 +538,7 @@ describe("Feature 1: withdraw", () => {
   });
 
   it("rejects withdraw by third party", async () => {
-    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, start, end } =
+    const { sender, mint, recipientToken, vaultPDA, streamPDA } =
       await createStreamFixture(1_000_000, 10, 400, 0);
     warp(210);
     const thirdParty = Keypair.generate();
@@ -583,7 +563,7 @@ describe("Feature 1: withdraw", () => {
   });
 
   it("rejects withdraw by creator (not recipient)", async () => {
-    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, start, end } =
+    const { sender, mint, recipientToken, vaultPDA, streamPDA } =
       await createStreamFixture(1_000_000, 10, 400, 0);
     warp(210);
 
