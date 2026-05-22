@@ -1,12 +1,6 @@
 packages:
   - "apps/*"
   - "packages/*"
-allowBuilds:
-  bufferutil: true
-  esbuild: true
-  sharp: true
-  utf-8-validate: true
-  workerd: true
 onlyBuiltDependencies:
   - "@stellar/stellar-sdk"
   - bigint-buffer
