@@ -51,7 +51,7 @@ export function CreateStreamForm() {
   const errors = useMemo(() => {
     const e: string[] = [];
     try {
-      if (form.recipient && !new PublicKey(form.recipient)) e.push("Invalid recipient address");
+      if (form.recipient) { new PublicKey(form.recipient); }
     } catch {
       e.push("Invalid recipient address");
     }
@@ -214,8 +214,8 @@ export function CreateStreamForm() {
       {errors.length > 0 && (
         <div className="rounded-md border border-warn/30 bg-warn/5 px-4 py-3">
           <ul className="list-inside list-disc space-y-1 text-sm text-warn">
-            {errors.map((err, i) => (
-              <li key={i}>{err}</li>
+            {errors.map((err) => (
+              <li key={err}>{err}</li>
             ))}
           </ul>
         </div>

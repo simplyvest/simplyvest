@@ -1,19 +1,14 @@
-import { useMemo } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 
 import {
-  getVaultPda,
   getClaimable,
   getStatus,
-  PROGRAM_ID,
 } from "@solana-tdp/sdk";
 import type { StreamAccount } from "@solana-tdp/sdk";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatAddress, formatSol, formatDate, formatDuration } from "@/utils/format";
-
-const CLOCK_RPC = "recent";
 
 export function StreamCard({
   stream,
@@ -28,11 +23,6 @@ export function StreamCard({
   const isSender = publicKey?.equals(stream.sender);
   const isRecipient = publicKey?.equals(stream.recipient);
   const counterparty = isSender ? stream.recipient : stream.sender;
-
-  const vaultPda = useMemo(
-    () => getVaultPda(pda, PROGRAM_ID)[0],
-    [pda],
-  );
 
   const clockTime = Math.floor(Date.now() / 1000);
   const status = getStatus(stream);

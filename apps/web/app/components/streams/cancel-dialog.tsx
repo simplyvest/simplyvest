@@ -6,7 +6,6 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import {
   getVaultPda,
   PROGRAM_ID,
-  getCancelAccounts,
 } from "@solana-tdp/sdk";
 import type { StreamAccount } from "@solana-tdp/sdk";
 import { useCancel } from "@/hooks/use-transactions";

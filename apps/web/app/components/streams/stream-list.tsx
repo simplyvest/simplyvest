@@ -4,7 +4,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { useStreams, useMilestoneStreams } from "@/hooks/use-stream";
 import { StreamCard } from "./stream-card";
 import { CancelDialog } from "./cancel-dialog";
-import type { StreamAccount, MilestoneStreamAccount } from "@solana-tdp/sdk";
+import type { StreamAccount } from "@solana-tdp/sdk";
 import type { PublicKey } from "@solana/web3.js";
 
 interface SelectedStream {

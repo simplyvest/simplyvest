@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
@@ -25,6 +25,10 @@ export function TokenSelector({
   const [tokens, setTokens] = useState<TokenInfo[]>([]);
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<"owned" | "custom">("owned");
+  const onChangeRef = useRef(onChange);
+  const valueRef = useRef(value);
+  onChangeRef.current = onChange;
+  valueRef.current = value;
 
   useEffect(() => {
     if (!publicKey) return;
@@ -40,8 +44,8 @@ export function TokenSelector({
         }).filter((t) => t.balance > 0);
         list.sort((a, b) => Number(b.balance - a.balance));
         setTokens(list);
-        if (list.length > 0 && !value) {
-          onChange(mintToAddress(list[0].mint));
+        if (list.length > 0 && !valueRef.current) {
+          onChangeRef.current(mintToAddress(list[0].mint));
         }
       })
       .catch(() => {})
