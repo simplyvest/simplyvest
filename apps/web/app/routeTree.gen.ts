@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from "./routes/__root";
+import { Route as AppCreateStreamRouteImport } from "./routes/app.create-stream";
 import { Route as DocsRouteImport } from "./routes/docs";
 import { Route as FaqRouteImport } from "./routes/faq";
 import { Route as IndexRouteImport } from "./routes/index";
 import { Route as WaitlistRouteImport } from "./routes/waitlist";
 
+const AppCreateStreamRoute = AppCreateStreamRouteImport.update({
+  id: "/app/create-stream",
+  path: "/app/create-stream",
+  getParentRoute: () => rootRouteImport,
+} as any);
 const WaitlistRoute = WaitlistRouteImport.update({
   id: "/waitlist",
   path: "/waitlist",
@@ -37,12 +43,14 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute;
+  "/app/create-stream": typeof AppCreateStreamRoute;
   "/docs": typeof DocsRoute;
   "/faq": typeof FaqRoute;
   "/waitlist": typeof WaitlistRoute;
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute;
+  "/app/create-stream": typeof AppCreateStreamRoute;
   "/docs": typeof DocsRoute;
   "/faq": typeof FaqRoute;
   "/waitlist": typeof WaitlistRoute;
@@ -50,20 +58,22 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
   "/": typeof IndexRoute;
+  "/app/create-stream": typeof AppCreateStreamRoute;
   "/docs": typeof DocsRoute;
   "/faq": typeof FaqRoute;
   "/waitlist": typeof WaitlistRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/docs" | "/faq" | "/waitlist";
+  fullPaths: "/" | "/app/create-stream" | "/docs" | "/faq" | "/waitlist";
   fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/docs" | "/faq" | "/waitlist";
-  id: "__root__" | "/" | "/docs" | "/faq" | "/waitlist";
+  to: "/" | "/app/create-stream" | "/docs" | "/faq" | "/waitlist";
+  id: "__root__" | "/" | "/app/create-stream" | "/docs" | "/faq" | "/waitlist";
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute;
+  AppCreateStreamRoute: typeof AppCreateStreamRoute;
   DocsRoute: typeof DocsRoute;
   FaqRoute: typeof FaqRoute;
   WaitlistRoute: typeof WaitlistRoute;
@@ -71,6 +81,13 @@ export interface RootRouteChildren {
 
 declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
+    "/app/create-stream": {
+      id: "/app/create-stream";
+      path: "/app/create-stream";
+      fullPath: "/app/create-stream";
+      preLoaderRoute: typeof AppCreateStreamRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     "/waitlist": {
       id: "/waitlist";
       path: "/waitlist";
@@ -104,6 +121,7 @@ declare module "@tanstack/react-router" {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppCreateStreamRoute: AppCreateStreamRoute,
   DocsRoute: DocsRoute,
   FaqRoute: FaqRoute,
   WaitlistRoute: WaitlistRoute,
