@@ -3,15 +3,18 @@ import * as path from "path";
 
 import * as anchor from "@coral-xyz/anchor";
 import type { SolanaTdp } from "@solana-tdp/sdk";
-import { getStreamPda, getVaultPda, getCreatorConfigPda, PROGRAM_ID } from "@solana-tdp/sdk";
 import {
-  createMint,
-  mintTo,
-  getOrCreateAssociatedTokenAccount,
-  TOKEN_PROGRAM_ID,
-  ASSOCIATED_TOKEN_PROGRAM_ID,
-} from "@solana/spl-token";
-import { Connection, Keypair, SystemProgram } from "@solana/web3.js";
+  getStreamPda,
+  getVaultPda,
+  getCreatorConfigPda,
+  getCreateStreamAccounts,
+  getWithdrawAccounts,
+  getCancelAccounts,
+  SolanaTdpIdl,
+  PROGRAM_ID,
+} from "@solana-tdp/sdk";
+import { createMint, mintTo, getOrCreateAssociatedTokenAccount } from "@solana/spl-token";
+import { Connection, Keypair } from "@solana/web3.js";
 
 const DEVNET_URL = "https://api.devnet.solana.com";
 
@@ -39,7 +42,7 @@ async function main() {
   });
   anchor.setProvider(provider);
 
-  const program = new anchor.Program<SolanaTdp>(require("../target/idl/solana_tdp.json"), provider);
+  const program = new anchor.Program<SolanaTdp>(SolanaTdpIdl as SolanaTdp, provider);
 
   // ──────────────────────────────────────────────────────────────────────────
   // Step 1 — Create a test token mint
@@ -109,18 +112,17 @@ async function main() {
       endTime: new anchor.BN(end),
       cliffTime: new anchor.BN(cliff),
     })
-    .accountsPartial({
-      sender: wallet.publicKey,
-      recipient: wallet.publicKey,
-      stream: streamPDA,
-      vault: vaultPDA,
-      senderToken,
-      mint,
-      creatorConfig: creatorConfigPDA,
-      tokenProgram: TOKEN_PROGRAM_ID,
-      systemProgram: SystemProgram.programId,
-      rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-    })
+    .accountsPartial(
+      getCreateStreamAccounts(
+        wallet.publicKey,
+        wallet.publicKey,
+        mint,
+        streamPDA,
+        vaultPDA,
+        senderToken,
+        creatorConfigPDA,
+      ),
+    )
     .signers([wallet])
     .rpc();
 
@@ -138,17 +140,16 @@ async function main() {
   try {
     await program.methods
       .withdraw({ amount: new anchor.BN(1) })
-      .accountsPartial({
-        recipient: wallet.publicKey,
-        stream: streamPDA,
-        vault: vaultPDA,
-        recipientToken: senderToken,
-        sender: wallet.publicKey,
-        mint,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-      })
+      .accountsPartial(
+        getWithdrawAccounts(
+          wallet.publicKey,
+          streamPDA,
+          vaultPDA,
+          senderToken,
+          wallet.publicKey,
+          mint,
+        ),
+      )
       .signers([wallet])
       .rpc();
     console.log("  ✗ Unexpected — withdraw should have been rejected\n");
@@ -172,17 +173,16 @@ async function main() {
   const withdrawAmount = 5_000_000; // 5 tokens (safe — ~12.5 vested)
   const withdrawTx = await program.methods
     .withdraw({ amount: new anchor.BN(withdrawAmount) })
-    .accountsPartial({
-      recipient: wallet.publicKey,
-      stream: streamPDA,
-      vault: vaultPDA,
-      recipientToken: senderToken,
-      sender: wallet.publicKey,
-      mint,
-      tokenProgram: TOKEN_PROGRAM_ID,
-      associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-      systemProgram: SystemProgram.programId,
-    })
+    .accountsPartial(
+      getWithdrawAccounts(
+        wallet.publicKey,
+        streamPDA,
+        vaultPDA,
+        senderToken,
+        wallet.publicKey,
+        mint,
+      ),
+    )
     .signers([wallet])
     .rpc();
 
@@ -199,18 +199,17 @@ async function main() {
 
   const cancelTx = await program.methods
     .cancel()
-    .accountsPartial({
-      sender: wallet.publicKey,
-      recipient: wallet.publicKey,
-      stream: streamPDA,
-      vault: vaultPDA,
-      senderToken,
-      recipientToken: senderToken,
-      mint,
-      tokenProgram: TOKEN_PROGRAM_ID,
-      associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-      systemProgram: SystemProgram.programId,
-    })
+    .accountsPartial(
+      getCancelAccounts(
+        wallet.publicKey,
+        wallet.publicKey,
+        streamPDA,
+        vaultPDA,
+        senderToken,
+        senderToken,
+        mint,
+      ),
+    )
     .signers([wallet])
     .rpc();
 
