@@ -6,6 +6,7 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import * as React from "react";
 import { Toaster } from "sonner";
 
+import { WalletButton } from "@/components/solana/wallet-button";
 import { SolanaProvider } from "@/components/solana/solana-provider";
 import { trackPageView } from "@/utils/analytics";
 
@@ -63,6 +64,7 @@ function RootComponent() {
                   </div>
                   SimplyVest
                 </Link>
+                <WalletButton />
               </div>
             </header>
           ) : (
