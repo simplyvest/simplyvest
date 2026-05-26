@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import * as React from "react";
 
+import { WalletButton } from "@/components/solana/wallet-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const navLinks = [
@@ -8,6 +9,7 @@ const navLinks = [
   { to: "/docs", label: "Docs" },
   { to: "/faq", label: "FAQ" },
   { to: "/waitlist", label: "Waitlist" },
+  { to: "/app/create-stream", label: "App" },
 ];
 
 export function Header() {
@@ -32,6 +34,7 @@ export function Header() {
               {link.label}
             </Link>
           ))}
+          <WalletButton />
           <ThemeToggle className="ml-2" />
         </nav>
       </div>
