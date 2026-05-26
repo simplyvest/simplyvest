@@ -1,5 +1,6 @@
 import * as anchor from "@coral-xyz/anchor";
 import type { SolanaTdp } from "@solana-tdp/sdk";
+import { SolanaTdpIdl } from "@solana-tdp/sdk";
 import {
   TOKEN_PROGRAM_ID,
   createInitializeMintInstruction,
@@ -51,7 +52,7 @@ export const setupTest = () => {
 
   anchor.setProvider(provider);
 
-  const program = new anchor.Program<SolanaTdp>(require("../target/idl/solana_tdp.json"), provider);
+  const program = new anchor.Program<SolanaTdp>(SolanaTdpIdl as SolanaTdp, provider);
 
   // --- SVM-based helpers ---
 

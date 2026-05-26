@@ -1,23 +1,25 @@
 import * as anchor from "@coral-xyz/anchor";
 import { BN } from "@coral-xyz/anchor";
 import {
-  TOKEN_PROGRAM_ID,
-  ASSOCIATED_TOKEN_PROGRAM_ID,
+  getStreamPda,
+  getVaultPda,
+  getCreatorConfigPda,
+  getCreateStreamAccounts,
+  getWithdrawAccounts,
+  getCancelAccounts,
+  parseEvents,
+  findEvent,
+  PROGRAM_ID,
+} from "@solana-tdp/sdk";
+import {
   getAssociatedTokenAddressSync,
   createAssociatedTokenAccountInstruction,
 } from "@solana/spl-token";
-import { Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
+import { Keypair, PublicKey } from "@solana/web3.js";
 
-import {
-  findStreamPDA,
-  findVaultPDA,
-  findCreatorConfigPDA,
-  parseEvents,
-  findEvent,
-} from "./helpers";
 import { setupTest, SetupTest, createMint, createTokenAccount, mintTo } from "./utils";
 
-// Shared account set for withdraw instructions
+// Shared account set for withdraw instructions — using SDK helpers
 const withdrawAccounts = (
   recipient: PublicKey,
   stream: PublicKey,
@@ -25,17 +27,7 @@ const withdrawAccounts = (
   recipientToken: PublicKey,
   sender: PublicKey,
   mint: PublicKey,
-) => ({
-  recipient,
-  stream,
-  vault,
-  recipientToken,
-  sender,
-  mint,
-  tokenProgram: TOKEN_PROGRAM_ID,
-  associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-  systemProgram: SystemProgram.programId,
-});
+) => getWithdrawAccounts(recipient, stream, vault, recipientToken, sender, mint);
 
 describe("Feature 1: withdraw", () => {
   let program: SetupTest["program"];
@@ -75,9 +67,15 @@ describe("Feature 1: withdraw", () => {
     const cliff = start + cliffOffset;
     const end = start + endOffset;
 
-    const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey, mint, new BN(0));
-    const [vaultPDA] = await findVaultPDA(streamPDA);
-    const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
+    const [streamPDA] = getStreamPda(
+      sender.publicKey,
+      recipient.publicKey,
+      mint,
+      new BN(0),
+      PROGRAM_ID,
+    );
+    const [vaultPDA] = getVaultPda(streamPDA, PROGRAM_ID);
+    const [creatorConfigPDA] = getCreatorConfigPda(sender.publicKey, PROGRAM_ID);
 
     await program.methods
       .createStream({
@@ -86,18 +84,17 @@ describe("Feature 1: withdraw", () => {
         endTime: new BN(end),
         cliffTime: new BN(cliff),
       })
-      .accountsPartial({
-        sender: sender.publicKey,
-        recipient: recipient.publicKey,
-        stream: streamPDA,
-        vault: vaultPDA,
-        senderToken,
-        mint,
-        creatorConfig: creatorConfigPDA,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-        rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-      })
+      .accountsPartial(
+        getCreateStreamAccounts(
+          sender.publicKey,
+          recipient.publicKey,
+          mint,
+          streamPDA,
+          vaultPDA,
+          senderToken,
+          creatorConfigPDA,
+        ),
+      )
       .signers([sender])
       .rpc();
 
@@ -368,18 +365,17 @@ describe("Feature 1: withdraw", () => {
 
     await program.methods
       .cancel()
-      .accountsPartial({
-        sender: sender.publicKey,
-        recipient: recipient.publicKey,
-        stream: streamPDA,
-        vault: vaultPDA,
-        senderToken,
-        mint,
-        recipientToken,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-      })
+      .accountsPartial(
+        getCancelAccounts(
+          sender.publicKey,
+          recipient.publicKey,
+          streamPDA,
+          vaultPDA,
+          senderToken,
+          recipientToken,
+          mint,
+        ),
+      )
       .signers([sender])
       .rpc();
 

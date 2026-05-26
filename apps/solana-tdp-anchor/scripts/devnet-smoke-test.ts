@@ -3,6 +3,7 @@ import * as path from "path";
 
 import * as anchor from "@coral-xyz/anchor";
 import type { SolanaTdp } from "@solana-tdp/sdk";
+import { getStreamPda, getVaultPda, getCreatorConfigPda, PROGRAM_ID } from "@solana-tdp/sdk";
 import {
   createMint,
   mintTo,
@@ -11,8 +12,6 @@ import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { Connection, Keypair, SystemProgram } from "@solana/web3.js";
-
-import { findStreamPDA, findVaultPDA, findCreatorConfigPDA } from "../tests/helpers";
 
 const DEVNET_URL = "https://api.devnet.solana.com";
 
@@ -80,19 +79,18 @@ async function main() {
 
   // Fetch creator_config to get the actual vesting_count from chain.
   // If it doesn't exist yet (first run), vesting_count = 0.
-  const [creatorConfigPDA] = await findCreatorConfigPDA(wallet.publicKey);
-  let vestingCount: anchor.BN;
-  try {
-    const config = await program.account.creatorConfig.fetch(creatorConfigPDA);
-    vestingCount = config.vestingCount;
-    console.log(`  • creator config exists, vesting_count = ${vestingCount.toString()}`);
-  } catch {
-    vestingCount = new anchor.BN(0);
-    console.log(`  • creator config not found, using vesting_count = 0`);
-  }
+  const [creatorConfigPDA] = getCreatorConfigPda(wallet.publicKey, PROGRAM_ID);
+  const configAccount = await program.account.creatorConfig.fetchNullable(creatorConfigPDA);
+  const vestingCount = configAccount?.vestingCount ?? new anchor.BN(0);
 
-  const [streamPDA] = await findStreamPDA(wallet.publicKey, wallet.publicKey, mint, vestingCount);
-  const [vaultPDA] = await findVaultPDA(streamPDA);
+  const [streamPDA] = getStreamPda(
+    wallet.publicKey,
+    wallet.publicKey,
+    mint,
+    vestingCount,
+    PROGRAM_ID,
+  );
+  const [vaultPDA] = getVaultPda(streamPDA, PROGRAM_ID);
 
   console.log(`  • stream PDA:     ${streamPDA.toBase58()}`);
   console.log(`  • vault PDA:      ${vaultPDA.toBase58()}`);

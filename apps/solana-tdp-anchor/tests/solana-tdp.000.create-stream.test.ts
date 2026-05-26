@@ -1,15 +1,16 @@
 import * as anchor from "@coral-xyz/anchor";
-import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { Keypair, SystemProgram } from "@solana/web3.js";
-
 import {
-  findStreamPDA,
-  findVaultPDA,
-  findCreatorConfigPDA,
-  now,
+  getStreamPda,
+  getVaultPda,
+  getCreatorConfigPda,
+  getCreateStreamAccounts,
   parseEvents,
   findEvent,
-} from "./helpers";
+  PROGRAM_ID,
+} from "@solana-tdp/sdk";
+import { Keypair } from "@solana/web3.js";
+
+import { now } from "./helpers";
 import { setupTest, createMint, createTokenAccount, mintTo } from "./utils";
 
 describe("Feature 0: create_stream", () => {
@@ -29,14 +30,15 @@ describe("Feature 0: create_stream", () => {
     const end = start + 3600;
     const cliff = 0;
 
-    const [streamPDA] = await findStreamPDA(
+    const [streamPDA] = getStreamPda(
       sender.publicKey,
       recipient.publicKey,
       mint,
       new anchor.BN(0),
+      PROGRAM_ID,
     );
-    const [vaultPDA] = await findVaultPDA(streamPDA);
-    const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
+    const [vaultPDA] = getVaultPda(streamPDA, PROGRAM_ID);
+    const [creatorConfigPDA] = getCreatorConfigPda(sender.publicKey, PROGRAM_ID);
 
     const senderBalanceBefore = svmTokenBalance(senderTokenAccount);
 
@@ -47,18 +49,17 @@ describe("Feature 0: create_stream", () => {
         endTime: new anchor.BN(end),
         cliffTime: new anchor.BN(cliff),
       })
-      .accountsPartial({
-        sender: sender.publicKey,
-        recipient: recipient.publicKey,
-        stream: streamPDA,
-        vault: vaultPDA,
-        senderToken: senderTokenAccount,
-        mint,
-        creatorConfig: creatorConfigPDA,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-        rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-      })
+      .accountsPartial(
+        getCreateStreamAccounts(
+          sender.publicKey,
+          recipient.publicKey,
+          mint,
+          streamPDA,
+          vaultPDA,
+          senderTokenAccount,
+          creatorConfigPDA,
+        ),
+      )
       .signers([sender])
       .rpc();
 
@@ -97,14 +98,15 @@ describe("Feature 0: create_stream", () => {
     const cliff = start + 1800;
     const end = cliff + 3600;
 
-    const [streamPDA] = await findStreamPDA(
+    const [streamPDA] = getStreamPda(
       sender.publicKey,
       recipient.publicKey,
       mint,
       new anchor.BN(0),
+      PROGRAM_ID,
     );
-    const [vaultPDA] = await findVaultPDA(streamPDA);
-    const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
+    const [vaultPDA] = getVaultPda(streamPDA, PROGRAM_ID);
+    const [creatorConfigPDA] = getCreatorConfigPda(sender.publicKey, PROGRAM_ID);
 
     await program.methods
       .createStream({
@@ -113,18 +115,17 @@ describe("Feature 0: create_stream", () => {
         endTime: new anchor.BN(end),
         cliffTime: new anchor.BN(cliff),
       })
-      .accountsPartial({
-        sender: sender.publicKey,
-        recipient: recipient.publicKey,
-        stream: streamPDA,
-        vault: vaultPDA,
-        senderToken: senderTokenAccount,
-        mint,
-        creatorConfig: creatorConfigPDA,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-        rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-      })
+      .accountsPartial(
+        getCreateStreamAccounts(
+          sender.publicKey,
+          recipient.publicKey,
+          mint,
+          streamPDA,
+          vaultPDA,
+          senderTokenAccount,
+          creatorConfigPDA,
+        ),
+      )
       .signers([sender])
       .rpc();
 
@@ -146,14 +147,15 @@ describe("Feature 0: create_stream", () => {
 
       const start = now() + 60;
       const end = start - 10;
-      const [streamPDA] = await findStreamPDA(
+      const [streamPDA] = getStreamPda(
         sender.publicKey,
         recipient.publicKey,
         mint,
         new anchor.BN(0),
+        PROGRAM_ID,
       );
-      const [vaultPDA] = await findVaultPDA(streamPDA);
-      const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
+      const [vaultPDA] = getVaultPda(streamPDA, PROGRAM_ID);
+      const [creatorConfigPDA] = getCreatorConfigPda(sender.publicKey, PROGRAM_ID);
 
       await expect(
         program.methods
@@ -163,18 +165,17 @@ describe("Feature 0: create_stream", () => {
             endTime: new anchor.BN(end),
             cliffTime: new anchor.BN(0),
           })
-          .accountsPartial({
-            sender: sender.publicKey,
-            recipient: recipient.publicKey,
-            stream: streamPDA,
-            vault: vaultPDA,
-            senderToken: senderTokenAccount,
-            mint,
-            creatorConfig: creatorConfigPDA,
-            tokenProgram: TOKEN_PROGRAM_ID,
-            systemProgram: SystemProgram.programId,
-            rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-          })
+          .accountsPartial(
+            getCreateStreamAccounts(
+              sender.publicKey,
+              recipient.publicKey,
+              mint,
+              streamPDA,
+              vaultPDA,
+              senderTokenAccount,
+              creatorConfigPDA,
+            ),
+          )
           .signers([sender])
           .rpc(),
       ).rejects.toThrow(/start_time must be before end_time/);
@@ -193,14 +194,15 @@ describe("Feature 0: create_stream", () => {
       const start = now() + 60;
       const end = start + 3600;
       const cliff = end + 100;
-      const [streamPDA] = await findStreamPDA(
+      const [streamPDA] = getStreamPda(
         sender.publicKey,
         recipient.publicKey,
         mint,
         new anchor.BN(0),
+        PROGRAM_ID,
       );
-      const [vaultPDA] = await findVaultPDA(streamPDA);
-      const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
+      const [vaultPDA] = getVaultPda(streamPDA, PROGRAM_ID);
+      const [creatorConfigPDA] = getCreatorConfigPda(sender.publicKey, PROGRAM_ID);
 
       await expect(
         program.methods
@@ -210,18 +212,17 @@ describe("Feature 0: create_stream", () => {
             endTime: new anchor.BN(end),
             cliffTime: new anchor.BN(cliff),
           })
-          .accountsPartial({
-            sender: sender.publicKey,
-            recipient: recipient.publicKey,
-            stream: streamPDA,
-            vault: vaultPDA,
-            senderToken: senderTokenAccount,
-            mint,
-            creatorConfig: creatorConfigPDA,
-            tokenProgram: TOKEN_PROGRAM_ID,
-            systemProgram: SystemProgram.programId,
-            rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-          })
+          .accountsPartial(
+            getCreateStreamAccounts(
+              sender.publicKey,
+              recipient.publicKey,
+              mint,
+              streamPDA,
+              vaultPDA,
+              senderTokenAccount,
+              creatorConfigPDA,
+            ),
+          )
           .signers([sender])
           .rpc(),
       ).rejects.toThrow(/cliff_time must be between start_time and end_time/);
@@ -240,14 +241,15 @@ describe("Feature 0: create_stream", () => {
       const start = now() + 60;
       const cliff = start - 60;
       const end = start + 3600;
-      const [streamPDA] = await findStreamPDA(
+      const [streamPDA] = getStreamPda(
         sender.publicKey,
         recipient.publicKey,
         mint,
         new anchor.BN(0),
+        PROGRAM_ID,
       );
-      const [vaultPDA] = await findVaultPDA(streamPDA);
-      const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
+      const [vaultPDA] = getVaultPda(streamPDA, PROGRAM_ID);
+      const [creatorConfigPDA] = getCreatorConfigPda(sender.publicKey, PROGRAM_ID);
 
       await expect(
         program.methods
@@ -257,18 +259,17 @@ describe("Feature 0: create_stream", () => {
             endTime: new anchor.BN(end),
             cliffTime: new anchor.BN(cliff),
           })
-          .accountsPartial({
-            sender: sender.publicKey,
-            recipient: recipient.publicKey,
-            stream: streamPDA,
-            vault: vaultPDA,
-            senderToken: senderTokenAccount,
-            mint,
-            creatorConfig: creatorConfigPDA,
-            tokenProgram: TOKEN_PROGRAM_ID,
-            systemProgram: SystemProgram.programId,
-            rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-          })
+          .accountsPartial(
+            getCreateStreamAccounts(
+              sender.publicKey,
+              recipient.publicKey,
+              mint,
+              streamPDA,
+              vaultPDA,
+              senderTokenAccount,
+              creatorConfigPDA,
+            ),
+          )
           .signers([sender])
           .rpc(),
       ).rejects.toThrow(/cliff_time must be between start_time and end_time/);
@@ -286,14 +287,15 @@ describe("Feature 0: create_stream", () => {
 
       const start = now() + 60;
       const end = start + 3600;
-      const [streamPDA] = await findStreamPDA(
+      const [streamPDA] = getStreamPda(
         sender.publicKey,
         recipient.publicKey,
         mint,
         new anchor.BN(0),
+        PROGRAM_ID,
       );
-      const [vaultPDA] = await findVaultPDA(streamPDA);
-      const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
+      const [vaultPDA] = getVaultPda(streamPDA, PROGRAM_ID);
+      const [creatorConfigPDA] = getCreatorConfigPda(sender.publicKey, PROGRAM_ID);
 
       await expect(
         program.methods
@@ -303,18 +305,17 @@ describe("Feature 0: create_stream", () => {
             endTime: new anchor.BN(end),
             cliffTime: new anchor.BN(0),
           })
-          .accountsPartial({
-            sender: sender.publicKey,
-            recipient: recipient.publicKey,
-            stream: streamPDA,
-            vault: vaultPDA,
-            senderToken: senderTokenAccount,
-            mint,
-            creatorConfig: creatorConfigPDA,
-            tokenProgram: TOKEN_PROGRAM_ID,
-            systemProgram: SystemProgram.programId,
-            rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-          })
+          .accountsPartial(
+            getCreateStreamAccounts(
+              sender.publicKey,
+              recipient.publicKey,
+              mint,
+              streamPDA,
+              vaultPDA,
+              senderTokenAccount,
+              creatorConfigPDA,
+            ),
+          )
           .signers([sender])
           .rpc(),
       ).rejects.toThrow(/Amount must be greater than zero/);
@@ -332,14 +333,15 @@ describe("Feature 0: create_stream", () => {
 
       const start = now() + 60;
       const end = start + 30; // only 30 seconds < 60 minimum
-      const [streamPDA] = await findStreamPDA(
+      const [streamPDA] = getStreamPda(
         sender.publicKey,
         recipient.publicKey,
         mint,
         new anchor.BN(0),
+        PROGRAM_ID,
       );
-      const [vaultPDA] = await findVaultPDA(streamPDA);
-      const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
+      const [vaultPDA] = getVaultPda(streamPDA, PROGRAM_ID);
+      const [creatorConfigPDA] = getCreatorConfigPda(sender.publicKey, PROGRAM_ID);
 
       await expect(
         program.methods
@@ -349,18 +351,17 @@ describe("Feature 0: create_stream", () => {
             endTime: new anchor.BN(end),
             cliffTime: new anchor.BN(0),
           })
-          .accountsPartial({
-            sender: sender.publicKey,
-            recipient: recipient.publicKey,
-            stream: streamPDA,
-            vault: vaultPDA,
-            senderToken: senderTokenAccount,
-            mint,
-            creatorConfig: creatorConfigPDA,
-            tokenProgram: TOKEN_PROGRAM_ID,
-            systemProgram: SystemProgram.programId,
-            rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-          })
+          .accountsPartial(
+            getCreateStreamAccounts(
+              sender.publicKey,
+              recipient.publicKey,
+              mint,
+              streamPDA,
+              vaultPDA,
+              senderTokenAccount,
+              creatorConfigPDA,
+            ),
+          )
           .signers([sender])
           .rpc(),
       ).rejects.toThrow(/Stream duration must be at least 60 seconds/);
@@ -378,14 +379,15 @@ describe("Feature 0: create_stream", () => {
 
       const start = now() + 60;
       const end = start + 3600;
-      const [streamPDA] = await findStreamPDA(
+      const [streamPDA] = getStreamPda(
         sender.publicKey,
         recipient.publicKey,
         mint,
         new anchor.BN(0),
+        PROGRAM_ID,
       );
-      const [vaultPDA] = await findVaultPDA(streamPDA);
-      const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
+      const [vaultPDA] = getVaultPda(streamPDA, PROGRAM_ID);
+      const [creatorConfigPDA] = getCreatorConfigPda(sender.publicKey, PROGRAM_ID);
 
       await expect(
         program.methods
@@ -395,18 +397,17 @@ describe("Feature 0: create_stream", () => {
             endTime: new anchor.BN(end),
             cliffTime: new anchor.BN(0),
           })
-          .accountsPartial({
-            sender: sender.publicKey,
-            recipient: recipient.publicKey,
-            stream: streamPDA,
-            vault: vaultPDA,
-            senderToken: senderTokenAccount,
-            mint,
-            creatorConfig: creatorConfigPDA,
-            tokenProgram: TOKEN_PROGRAM_ID,
-            systemProgram: SystemProgram.programId,
-            rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-          })
+          .accountsPartial(
+            getCreateStreamAccounts(
+              sender.publicKey,
+              recipient.publicKey,
+              mint,
+              streamPDA,
+              vaultPDA,
+              senderTokenAccount,
+              creatorConfigPDA,
+            ),
+          )
           .signers([sender])
           .rpc(),
       ).rejects.toThrow(/Sender does not have enough token balance/);
@@ -429,14 +430,15 @@ describe("Feature 0: create_stream", () => {
     const end = start + 3600;
     const cliff = start + 1800;
 
-    const [streamPDA] = await findStreamPDA(
+    const [streamPDA] = getStreamPda(
       sender.publicKey,
       recipient.publicKey,
       mint,
       new anchor.BN(0),
+      PROGRAM_ID,
     );
-    const [vaultPDA] = await findVaultPDA(streamPDA);
-    const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
+    const [vaultPDA] = getVaultPda(streamPDA, PROGRAM_ID);
+    const [creatorConfigPDA] = getCreatorConfigPda(sender.publicKey, PROGRAM_ID);
 
     const txSig = await program.methods
       .createStream({
@@ -445,18 +447,17 @@ describe("Feature 0: create_stream", () => {
         endTime: new anchor.BN(end),
         cliffTime: new anchor.BN(cliff),
       })
-      .accountsPartial({
-        sender: sender.publicKey,
-        recipient: recipient.publicKey,
-        stream: streamPDA,
-        vault: vaultPDA,
-        senderToken: senderTokenAccount,
-        mint,
-        creatorConfig: creatorConfigPDA,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-        rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-      })
+      .accountsPartial(
+        getCreateStreamAccounts(
+          sender.publicKey,
+          recipient.publicKey,
+          mint,
+          streamPDA,
+          vaultPDA,
+          senderTokenAccount,
+          creatorConfigPDA,
+        ),
+      )
       .signers([sender])
       .rpc();
 

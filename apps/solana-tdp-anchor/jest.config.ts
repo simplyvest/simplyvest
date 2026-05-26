@@ -5,6 +5,9 @@ const config: Config.InitialOptions = {
   testEnvironment: "node",
   testMatch: ["**/tests/**/*.test.ts"],
   testSequencer: "<rootDir>/tests/jest-sequencer.js",
+  moduleNameMapper: {
+    "^@solana-tdp/sdk$": "<rootDir>/../../packages/solana-tdp-sdk/src",
+  },
 };
 
 export default config;
