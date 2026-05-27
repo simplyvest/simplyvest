@@ -21,10 +21,7 @@ export const findStreamPDA = (
 };
 
 export const findVaultPDA = (stream: PublicKey): [PublicKey, number] => {
-  return PublicKey.findProgramAddressSync(
-    [Buffer.from("vault"), stream.toBuffer()],
-    PROGRAM_ID,
-  );
+  return PublicKey.findProgramAddressSync([Buffer.from("vault"), stream.toBuffer()], PROGRAM_ID);
 };
 
 export const findCreatorConfigPDA = (creator: PublicKey): [PublicKey, number] => {
