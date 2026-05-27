@@ -12,6 +12,7 @@
     "format": "oxfmt .",
     "typecheck": "pnpm -r --if-present typecheck",
     "check:ts": "pnpm --filter @solana-tdp/web check:ts",
+    "dev:web": "pnpm sdk:build && pnpm --filter @solana-tdp/web dev",
     "lint:rust": "cd apps/solana-tdp-anchor/programs/solana-tdp && cargo clippy --all-targets -- -D warnings",
     "format:rust": "cd apps/solana-tdp-anchor/programs/solana-tdp && cargo fmt",
     "format:rust:check": "cd apps/solana-tdp-anchor/programs/solana-tdp && cargo fmt --check",
