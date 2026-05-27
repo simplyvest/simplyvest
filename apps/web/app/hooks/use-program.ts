@@ -1,5 +1,5 @@
-import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import * as anchor from "@coral-xyz/anchor";
+import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { useMemo } from "react";
 
 import idl from "@/idl/solana_tdp.json";
