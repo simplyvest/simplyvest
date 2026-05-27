@@ -6,8 +6,8 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import * as React from "react";
 import { Toaster } from "sonner";
 
-import { WalletButton } from "@/components/solana/wallet-button";
 import { SolanaProvider } from "@/components/solana/solana-provider";
+import { WalletButton } from "@/components/solana/wallet-button";
 import { trackPageView } from "@/utils/analytics";
 
 const DEV = import.meta.env.DEV;
