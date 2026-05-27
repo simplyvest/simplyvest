@@ -1,9 +1,9 @@
 function notNull<T>(x: T | null | undefined): x is T {
   return x != null;
 }
+import { utils } from "@coral-xyz/anchor";
 import type { PublicKey } from "@solana/web3.js";
 import { useQuery } from "@tanstack/react-query";
-import { utils } from "@coral-xyz/anchor";
 
 import { useProgram } from "./use-program";
 
@@ -31,23 +31,18 @@ export function useStreams(sender?: PublicKey | null) {
     queryFn: async () => {
       const { connection } = program.provider;
 
-      const rawAccounts = await connection.getProgramAccounts(
-        program.programId,
-        {
-          commitment: "confirmed",
-          filters: [
-            {
-              memcmp: {
-                offset: 0,
-                bytes: utils.bytes.bs58.encode(
-                  Buffer.from(STREAM_DISCRIMINATOR),
-                ),
-              },
+      const rawAccounts = await connection.getProgramAccounts(program.programId, {
+        commitment: "confirmed",
+        filters: [
+          {
+            memcmp: {
+              offset: 0,
+              bytes: utils.bytes.bs58.encode(Buffer.from(STREAM_DISCRIMINATOR)),
             },
-            { dataSize: 187 },
-          ],
-        },
-      );
+          },
+          { dataSize: 187 },
+        ],
+      });
 
       const streams = rawAccounts
         .map(({ pubkey, account }) => {
@@ -57,15 +52,14 @@ export function useStreams(sender?: PublicKey | null) {
               Buffer.from(account.data),
             );
             return { publicKey: pubkey, account: decoded };
-          } catch (e) {
-            console.warn("[useStreams] Skipping unparseable account:", pubkey.toBase58(), e);
+          } catch {
             return null;
           }
         })
         .filter(notNull);
 
       if (sender) {
-        return streams.filter((s) => s!.account.sender.equals(sender));
+        return streams.filter((s): s is NonNullable<typeof s> => s.account.sender.equals(sender));
       }
       return streams;
     },
@@ -82,23 +76,18 @@ export function useMilestoneStreams(creator?: PublicKey | null) {
     queryFn: async () => {
       const { connection } = program.provider;
 
-      const rawAccounts = await connection.getProgramAccounts(
-        program.programId,
-        {
-          commitment: "confirmed",
-          filters: [
-            {
-              memcmp: {
-                offset: 0,
-                bytes: utils.bytes.bs58.encode(
-                  Buffer.from(MILESTONE_DISCRIMINATOR),
-                ),
-              },
+      const rawAccounts = await connection.getProgramAccounts(program.programId, {
+        commitment: "confirmed",
+        filters: [
+          {
+            memcmp: {
+              offset: 0,
+              bytes: utils.bytes.bs58.encode(Buffer.from(MILESTONE_DISCRIMINATOR)),
             },
-            { dataSize: 196 },
-          ],
-        },
-      );
+          },
+          { dataSize: 196 },
+        ],
+      });
 
       const streams = rawAccounts
         .map(({ pubkey, account }) => {
@@ -108,15 +97,14 @@ export function useMilestoneStreams(creator?: PublicKey | null) {
               Buffer.from(account.data),
             );
             return { publicKey: pubkey, account: decoded };
-          } catch (e) {
-            console.warn("[useMilestoneStreams] Skipping unparseable account:", pubkey.toBase58(), e);
+          } catch {
             return null;
           }
         })
         .filter(notNull);
 
       if (creator) {
-        return streams.filter((s) => s!.account.creator.equals(creator));
+        return streams.filter((s): s is NonNullable<typeof s> => s.account.creator.equals(creator));
       }
       return streams;
     },
