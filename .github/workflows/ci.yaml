@@ -46,7 +46,7 @@ jobs:
       - name: TypeScript check (api)
         run: pnpm --filter @solana-tdp/api typecheck
 
-  typecheck-anchor:
+  typecheck-anchor-ts:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
@@ -94,7 +94,6 @@ jobs:
         run: pnpm exec oxfmt --check .
 
   build-web:
-    needs: typecheck-web
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
@@ -108,13 +107,16 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Build web app
         run: pnpm --filter @solana-tdp/web build
+        env:
+          VITE_GA_MEASUREMENT_ID: ${{ vars.VITE_GA_MEASUREMENT_ID }}
 
   anchor:
-    needs: typecheck-anchor
     runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: apps/solana-tdp-anchor
+    env:
+      CARGO_TARGET_DIR: ${{ github.workspace }}/apps/solana-tdp-anchor/target
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v6
@@ -148,7 +150,7 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
         with:
-          workspaces: "apps/solana-tdp-anchor/programs/solana-tdp"
+          workspaces: "apps/solana-tdp-anchor/programs/solana-tdp -> ../../target"
           key: solana-${{ env.SOLANA_VERSION }}
           cache-on-failure: true
 
@@ -175,7 +177,11 @@ jobs:
         run: anchor build
 
       - name: Stage program binary
-        run: mkdir -p target/deploy && cp programs/solana-tdp/target/deploy/solana_tdp.so target/deploy/
+        run: |
+          if [ ! -f target/deploy/solana_tdp.so ] && [ -f programs/solana-tdp/target/deploy/solana_tdp.so ]; then
+            mkdir -p target/deploy && cp programs/solana-tdp/target/deploy/solana_tdp.so target/deploy/
+          fi
+          ls -la target/deploy/solana_tdp.so
 
       - name: Build SDK
         run: |
@@ -188,11 +194,12 @@ jobs:
 
   deploy-web:
     if: github.ref == 'refs/heads/main'
-    needs: typecheck-web
+    needs: build-web
     runs-on: ubuntu-24.04
     environment: main
     env:
       VITE_API_URL: ${{ vars.VITE_API_URL }}
+      VITE_GA_MEASUREMENT_ID: ${{ vars.VITE_GA_MEASUREMENT_ID }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
       - uses: actions/checkout@v6

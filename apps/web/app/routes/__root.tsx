@@ -7,6 +7,7 @@ import * as React from "react";
 import { Toaster } from "sonner";
 
 import { SolanaProvider } from "@/components/solana/solana-provider";
+import { trackPageView } from "@/utils/analytics";
 
 const DEV = import.meta.env.DEV;
 import { Footer } from "@/components/layout/footer";
@@ -41,6 +42,10 @@ function RootComponent() {
   const location = routerState.location;
   const isAppRoute = location.pathname.startsWith("/app");
   const isLoading = routerState.status === "pending";
+
+  React.useEffect(() => {
+    trackPageView(location.pathname);
+  }, [location.pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>

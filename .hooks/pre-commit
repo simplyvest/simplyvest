@@ -1,19 +1,22 @@
 #!/bin/sh
+set -e
 
 # JS/TS linting and formatting via nano-staged
-pnpm exec nano-staged
+if git diff --cached --name-only --diff-filter=ACM | grep -E -q '\.(js|jsx|ts|tsx|mjs|cjs|css|md|json|yml|yaml|html|toml)$'; then
+  pnpm exec nano-staged
+fi
 
 # Typecheck staged TS files (with some buffer for imports)
-staged_ts=$(git diff --cached --name-only --diff-filter=ACM | grep -c '\.tsx\?$')
-if [ "$staged_ts" -gt 0 ]; then
+if git diff --cached --name-only --diff-filter=ACM | grep -E -q '\.tsx?$'; then
   pnpm --filter @solana-tdp/web check:ts
   pnpm --filter @solana-tdp/api typecheck
   pnpm --filter @solana-tdp/anchor typecheck
 fi
 
 # Rust checks if .rs files are staged
-if git diff --cached --name-only --diff-filter=ACM | grep -q '\.rs$'; then
+if git diff --cached --name-only --diff-filter=ACM | grep -E -q '\.rs$'; then
   cd apps/solana-tdp-anchor/programs/solana-tdp || exit 1
   cargo fmt --check
   cargo clippy --all-targets -- -D warnings
 fi
+

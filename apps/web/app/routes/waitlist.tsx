@@ -6,6 +6,7 @@ import { CheckboxInput } from "@/components/ui/checkbox-input";
 import { FormField } from "@/components/ui/form-field";
 import { SelectInput } from "@/components/ui/select-input";
 import { TextInput, InputGroup } from "@/components/ui/text-input";
+import { trackEvent } from "@/utils/analytics";
 
 import { Route as RootRoute } from "./__root";
 
@@ -55,6 +56,12 @@ function WaitlistPage() {
       }
 
       setSubmitted(true);
+      trackEvent("waitlist_signup", "engagement", form.email, undefined, {
+        name: form.name,
+        telegram: form.telegram,
+        following_x: form.following || "no",
+        interview_willing: form.interview ? "yes" : "no",
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
