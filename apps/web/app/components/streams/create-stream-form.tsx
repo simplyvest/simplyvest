@@ -6,7 +6,6 @@ import { useState, useMemo } from "react";
 import { TokenSelector } from "@/components/tokens/token-selector";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
-import { SelectInput } from "@/components/ui/select-input";
 import { TextInput } from "@/components/ui/text-input";
 import { useCreateStream, useCreateMilestoneStream } from "@/hooks/use-transactions";
 
@@ -20,7 +19,6 @@ interface FormState {
   startTime: string;
   endTime: string;
   cliffTime: string;
-  milestoneAuthority: string;
 }
 
 const initialForm: FormState = {
@@ -31,7 +29,6 @@ const initialForm: FormState = {
   startTime: "",
   endTime: "",
   cliffTime: "",
-  milestoneAuthority: "",
 };
 
 function toUnixSec(datetimeLocal: string): number {
@@ -68,13 +65,6 @@ export function CreateStreamForm() {
         e.push("Start time must be in the future");
       if (end && start && end - start < 60) e.push("Duration must be at least 60 seconds");
     }
-    if (
-      form.streamType === "milestone" &&
-      form.milestoneAuthority &&
-      !isValidPubkey(form.milestoneAuthority)
-    ) {
-      e.push("Invalid milestone authority address");
-    }
     return e;
   }, [form]);
 
@@ -86,7 +76,7 @@ export function CreateStreamForm() {
     Number(form.amount) > 0 &&
     errors.length === 0 &&
     !isPending &&
-    (form.streamType === "milestone" ? form.milestoneAuthority : form.startTime && form.endTime);
+    (form.streamType === "milestone" || (form.startTime && form.endTime));
 
   const handleSubmit = async () => {
     if (!publicKey) return;
@@ -98,7 +88,7 @@ export function CreateStreamForm() {
     if (form.streamType === "milestone") {
       createMilestoneStream.mutate({
         recipient,
-        milestoneAuthority: new PublicKey(form.milestoneAuthority),
+        milestoneAuthority: publicKey,
         mint,
         amount: Math.round(Number(form.amount) * 10 ** 6),
         senderToken,
@@ -145,10 +135,22 @@ export function CreateStreamForm() {
   return (
     <div className="space-y-5">
       <FormField label="Stream Type" required>
-        <SelectInput value={form.streamType} onChange={(e) => update("streamType", e.target.value)}>
-          <option value="time">Time-based Vesting</option>
-          <option value="milestone">Milestone-gated</option>
-        </SelectInput>
+        <div className="flex rounded-lg border border-border bg-bg1 p-0.5">
+          {(["time", "milestone"] as const).map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => update("streamType", t)}
+              className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all ${
+                form.streamType === t
+                  ? "bg-sol text-white shadow-sm"
+                  : "text-muted hover:text-text"
+              }`}
+            >
+              {t === "time" ? "Time-based Vesting" : "Milestone-gated"}
+            </button>
+          ))}
+        </div>
       </FormField>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -202,15 +204,7 @@ export function CreateStreamForm() {
             </FormField>
           </div>
         </>
-      ) : (
-        <FormField label="Milestone Authority Wallet" required>
-          <TextInput
-            placeholder="Wallet address that can trigger the milestone"
-            value={form.milestoneAuthority}
-            onChange={(e) => update("milestoneAuthority", e.target.value)}
-          />
-        </FormField>
-      )}
+      ) : null}
 
       {errors.length > 0 && (
         <div className="rounded-md border border-warn/30 bg-warn/5 px-4 py-3">

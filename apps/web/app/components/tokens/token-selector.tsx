@@ -6,11 +6,14 @@ import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { SelectInput } from "@/components/ui/select-input";
 import { TextInput } from "@/components/ui/text-input";
 import { FormField } from "@/components/ui/form-field";
+import { fetchTokenMetadata, formatTokenLabel } from "@solana-tdp/sdk";
+import type { TokenMetadata } from "@solana-tdp/sdk";
 
 interface TokenInfo {
   mint: PublicKey;
   balance: bigint;
   address: PublicKey;
+  meta: TokenMetadata | null;
 }
 
 export function TokenSelector({
@@ -32,24 +35,47 @@ export function TokenSelector({
 
   useEffect(() => {
     if (!publicKey) return;
+    let cancelled = false;
     setLoading(true);
-    connection
-      .getTokenAccountsByOwner(publicKey, { programId: TOKEN_PROGRAM_ID })
-      .then(({ value: accounts }) => {
-        const list: TokenInfo[] = accounts.map((acc) => {
-          const data = Buffer.from(acc.account.data);
-          const mint = new PublicKey(data.slice(0, 32));
-          const balance = data.readBigUInt64LE(64);
-          return { mint, balance, address: acc.pubkey };
-        }).filter((t) => t.balance > 0);
-        list.sort((a, b) => Number(b.balance - a.balance));
+    (async () => {
+      try {
+        const { value: accounts } = await connection.getTokenAccountsByOwner(publicKey, {
+          programId: TOKEN_PROGRAM_ID,
+        });
+        const mints = accounts
+          .map((acc) => {
+            const data = Buffer.from(acc.account.data);
+            const mint = new PublicKey(data.slice(0, 32));
+            const balance = data.readBigUInt64LE(64);
+            return { mint, balance, address: acc.pubkey };
+          })
+          .filter((t) => t.balance > 0);
+        mints.sort((a, b) => Number(b.balance - a.balance));
+
+        const metaMap = new Map<string, TokenMetadata | null>();
+        await Promise.all(
+          mints.map(async (t) => {
+            const key = t.mint.toBase58();
+            if (!metaMap.has(key)) {
+              const meta = await fetchTokenMetadata(connection, t.mint);
+              metaMap.set(key, meta);
+            }
+          }),
+        );
+
+        if (cancelled) return;
+        const list = mints.map((t) => ({
+          ...t,
+          meta: metaMap.get(t.mint.toBase58()) ?? null,
+        }));
         setTokens(list);
         if (list.length > 0 && !valueRef.current) {
           onChangeRef.current(mintToAddress(list[0].mint));
         }
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      } catch {}
+      if (!cancelled) setLoading(false);
+    })();
+    return () => { cancelled = true; };
   }, [publicKey, connection]);
 
   if (mode === "custom") {
@@ -90,7 +116,7 @@ export function TokenSelector({
           ) : (
             tokens.map((t) => (
               <option key={mintToAddress(t.mint)} value={mintToAddress(t.mint)}>
-                {mintToAddress(t.mint)} ({Number(t.balance) / 10 ** 6})
+                {formatTokenLabel(t.meta, t.mint)} — {Number(t.balance) / 10 ** 6}
               </option>
             ))
           )}
