@@ -1,15 +1,12 @@
-import { useMemo } from "react";
-import type { PublicKey } from "@solana/web3.js";
+import { getVaultPda, PROGRAM_ID } from "@solana-tdp/sdk";
+import type { StreamAccount } from "@solana-tdp/sdk";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { useWallet } from "@solana/wallet-adapter-react";
+import type { PublicKey } from "@solana/web3.js";
+import { useMemo } from "react";
 
-import {
-  getVaultPda,
-  PROGRAM_ID,
-} from "@solana-tdp/sdk";
-import type { StreamAccount } from "@solana-tdp/sdk";
-import { useCancel } from "@/hooks/use-transactions";
 import { Button } from "@/components/ui/button";
+import { useCancel } from "@/hooks/use-transactions";
 import { formatSol, formatAddress } from "@/utils/format";
 
 export function CancelDialog({
@@ -24,21 +21,15 @@ export function CancelDialog({
   const cancel = useCancel();
   const { publicKey } = useWallet();
 
-  const vaultPda = useMemo(
-    () => getVaultPda(pda, PROGRAM_ID)[0],
-    [pda],
-  );
+  const vaultPda = useMemo(() => getVaultPda(pda, PROGRAM_ID)[0], [pda]);
 
   const senderAta = useMemo(
-    () => publicKey
-      ? getAssociatedTokenAddressSync(stream.mint, stream.sender, true)
-      : null,
+    () => (publicKey ? getAssociatedTokenAddressSync(stream.mint, stream.sender, true) : null),
     [stream.mint, stream.sender, publicKey],
   );
 
   const recipientAta = useMemo(
-    () =>
-      getAssociatedTokenAddressSync(stream.mint, stream.recipient, true),
+    () => getAssociatedTokenAddressSync(stream.mint, stream.recipient, true),
     [stream.mint, stream.recipient],
   );
 
@@ -64,8 +55,8 @@ export function CancelDialog({
       <div className="w-full max-w-md rounded-xl border border-border bg-bg1 p-6 shadow-xl">
         <h3 className="text-lg font-semibold text-text">Cancel Stream</h3>
         <p className="mt-1 text-sm text-muted">
-          This will send the vested tokens to the recipient and return the unvested
-          portion to you. The stream will be closed permanently.
+          This will send the vested tokens to the recipient and return the unvested portion to you.
+          The stream will be closed permanently.
         </p>
 
         <div className="mt-4 space-y-2 rounded-lg bg-bg2 p-3 text-sm">
@@ -114,9 +105,7 @@ export function CancelDialog({
 
         {cancel.isError && (
           <p className="mt-2 text-center text-xs text-warn">
-            {cancel.error instanceof Error
-              ? cancel.error.message
-              : "Transaction failed"}
+            {cancel.error instanceof Error ? cancel.error.message : "Transaction failed"}
           </p>
         )}
       </div>

@@ -1,8 +1,9 @@
-import { createRoute } from "@tanstack/react-router";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { createRoute } from "@tanstack/react-router";
+
+import { CreateStreamForm } from "@/components/streams/create-stream-form";
 
 import { Route as AppRoute } from "./app";
-import { CreateStreamForm } from "@/components/streams/create-stream-form";
 
 export const Route = createRoute({
   getParentRoute: () => AppRoute,
@@ -25,9 +26,7 @@ function CreatePage() {
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight text-text">Create Stream</h1>
-        <p className="mt-1 text-sm text-muted">
-          Lock tokens in a vesting stream for a recipient
-        </p>
+        <p className="mt-1 text-sm text-muted">Lock tokens in a vesting stream for a recipient</p>
       </div>
       <div>
         <CreateStreamForm />

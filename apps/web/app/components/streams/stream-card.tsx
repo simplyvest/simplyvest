@@ -1,11 +1,8 @@
+import { getClaimable, getStatus } from "@solana-tdp/sdk";
+import type { StreamAccount } from "@solana-tdp/sdk";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 
-import {
-  getClaimable,
-  getStatus,
-} from "@solana-tdp/sdk";
-import type { StreamAccount } from "@solana-tdp/sdk";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatAddress, formatSol, formatDate, formatDuration } from "@/utils/format";
@@ -36,9 +33,11 @@ export function StreamCard({
   const progress = totalSec > 0 ? Math.min(100, (elapsedSec / totalSec) * 100) : 0;
 
   const statusColor =
-    status === "cancelled" ? "warn" as const
-    : status === "completed" ? "sol2" as const
-    : "sol" as const;
+    status === "cancelled"
+      ? ("warn" as const)
+      : status === "completed"
+        ? ("sol2" as const)
+        : ("sol" as const);
 
   return (
     <div className="rounded-xl border border-border bg-bg1 px-5 py-4 transition-colors hover:border-border2">
@@ -46,9 +45,7 @@ export function StreamCard({
         <div className="min-w-0 flex-1 space-y-2">
           <div className="flex items-center gap-2">
             <Badge variant={statusColor}>{status}</Badge>
-            <span className="font-mono text-xs text-dim">
-              {formatAddress(pda)}
-            </span>
+            <span className="font-mono text-xs text-dim">{formatAddress(pda)}</span>
           </div>
 
           <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-sm">
@@ -103,11 +100,7 @@ export function StreamCard({
 
         <div className="flex shrink-0 flex-col gap-2">
           {role !== "received" && isSender && status === "active" && (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => onCancel(stream, pda)}
-            >
+            <Button variant="destructive" size="sm" onClick={() => onCancel(stream, pda)}>
               Cancel
             </Button>
           )}

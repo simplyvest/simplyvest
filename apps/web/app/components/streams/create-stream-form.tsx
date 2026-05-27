@@ -142,9 +142,7 @@ export function CreateStreamForm() {
               type="button"
               onClick={() => update("streamType", t)}
               className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all ${
-                form.streamType === t
-                  ? "bg-sol text-white shadow-sm"
-                  : "text-muted hover:text-text"
+                form.streamType === t ? "bg-sol text-white shadow-sm" : "text-muted hover:text-text"
               }`}
             >
               {t === "time" ? "Time-based Vesting" : "Milestone-gated"}

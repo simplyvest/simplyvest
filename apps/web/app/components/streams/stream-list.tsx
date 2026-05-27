@@ -1,4 +1,4 @@
-import type { StreamAccount } from "@solana-tdp/sdk";
+import type { StreamAccount, MilestoneStreamAccount } from "@solana-tdp/sdk";
 import { useWallet } from "@solana/wallet-adapter-react";
 import type { PublicKey } from "@solana/web3.js";
 import { useState } from "react";
@@ -11,6 +11,16 @@ import { formatAddress } from "@/utils/format";
 
 import { CancelDialog } from "./cancel-dialog";
 import { StreamCard } from "./stream-card";
+
+interface StreamItem {
+  publicKey: PublicKey;
+  account: StreamAccount;
+}
+
+interface MilestoneStreamItem {
+  publicKey: PublicKey;
+  account: MilestoneStreamAccount;
+}
 
 interface SelectedStream {
   stream: StreamAccount;
@@ -27,13 +37,17 @@ export function StreamList({ role }: { role: "created" | "received" }) {
 
   const isLoading = streamsLoading || milestoneLoading;
 
-  const createdStreams = (streams ?? []).filter((s) => publicKey?.equals(s.account.sender));
-  const receivedStreams = (streams ?? []).filter((s) => publicKey?.equals(s.account.recipient));
+  const createdStreams = (streams ?? []).filter((s: StreamItem) =>
+    publicKey?.equals(s.account.sender),
+  );
+  const receivedStreams = (streams ?? []).filter((s: StreamItem) =>
+    publicKey?.equals(s.account.recipient),
+  );
 
-  const createdMilestoneStreams = (milestoneStreams ?? []).filter((s) =>
+  const createdMilestoneStreams = (milestoneStreams ?? []).filter((s: MilestoneStreamItem) =>
     publicKey?.equals(s.account.creator),
   );
-  const receivedMilestoneStreams = (milestoneStreams ?? []).filter((s) =>
+  const receivedMilestoneStreams = (milestoneStreams ?? []).filter((s: MilestoneStreamItem) =>
     publicKey?.equals(s.account.recipient),
   );
 

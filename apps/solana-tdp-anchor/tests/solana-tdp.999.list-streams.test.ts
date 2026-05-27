@@ -1,7 +1,5 @@
 import * as anchor from "@coral-xyz/anchor";
 import { BN } from "@coral-xyz/anchor";
-import { Keypair } from "@solana/web3.js";
-
 import {
   getStreamPda,
   getVaultPda,
@@ -9,6 +7,8 @@ import {
   getCreateStreamAccounts,
   PROGRAM_ID,
 } from "@solana-tdp/sdk";
+import { Keypair } from "@solana/web3.js";
+
 import { setupTest, createMint, createTokenAccount, mintTo } from "./utils";
 
 describe("Feature 9: listing streams", () => {
@@ -29,12 +29,7 @@ describe("Feature 9: listing streams", () => {
       svmAirdrop([sender.publicKey, recipient.publicKey]);
 
       const mint = await createMint(provider, sender, sender.publicKey, 6);
-      const senderToken = await createTokenAccount(
-        provider,
-        sender,
-        mint,
-        sender.publicKey,
-      );
+      const senderToken = await createTokenAccount(provider, sender, mint, sender.publicKey);
 
       const amount = (i + 1) * 10_000_000;
       await mintTo(provider, mint, senderToken, sender, BigInt(amount));
@@ -50,10 +45,7 @@ describe("Feature 9: listing streams", () => {
         PROGRAM_ID,
       );
       const [vaultPDA] = getVaultPda(streamPDA, PROGRAM_ID);
-      const [creatorConfigPDA] = getCreatorConfigPda(
-        sender.publicKey,
-        PROGRAM_ID,
-      );
+      const [creatorConfigPDA] = getCreatorConfigPda(sender.publicKey, PROGRAM_ID);
 
       await program.methods
         .createStream({
@@ -101,12 +93,7 @@ describe("Feature 9: listing streams", () => {
     svmAirdrop([sender.publicKey, recipient.publicKey]);
 
     const mint = await createMint(provider, sender, sender.publicKey, 6);
-    const senderToken = await createTokenAccount(
-      provider,
-      sender,
-      mint,
-      sender.publicKey,
-    );
+    const senderToken = await createTokenAccount(provider, sender, mint, sender.publicKey);
     await mintTo(provider, mint, senderToken, sender, BigInt(200_000_000));
 
     const start = Math.floor(Date.now() / 1000) + 60;
@@ -124,10 +111,7 @@ describe("Feature 9: listing streams", () => {
         PROGRAM_ID,
       );
       const [vaultPDA] = getVaultPda(streamPDA, PROGRAM_ID);
-      const [creatorConfigPDA] = getCreatorConfigPda(
-        sender.publicKey,
-        PROGRAM_ID,
-      );
+      const [creatorConfigPDA] = getCreatorConfigPda(sender.publicKey, PROGRAM_ID);
 
       await program.methods
         .createStream({

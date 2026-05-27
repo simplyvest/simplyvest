@@ -1,4 +1,5 @@
 import { fetchStreams, fetchMilestoneStreams } from "@solana-tdp/sdk";
+import type { StreamAccount, MilestoneStreamAccount } from "@solana-tdp/sdk";
 import type { PublicKey } from "@solana/web3.js";
 import { useQuery } from "@tanstack/react-query";
 
@@ -13,7 +14,9 @@ export function useStreams(sender?: PublicKey | null) {
       const { connection } = program.provider;
       const streams = await fetchStreams(connection, program.programId);
       if (sender) {
-        return streams.filter((s) => s.account.sender.equals(sender));
+        return streams.filter((s: { publicKey: PublicKey; account: StreamAccount }) =>
+          s.account.sender.equals(sender),
+        );
       }
       return streams;
     },
@@ -31,7 +34,9 @@ export function useMilestoneStreams(creator?: PublicKey | null) {
       const { connection } = program.provider;
       const streams = await fetchMilestoneStreams(connection, program.programId);
       if (creator) {
-        return streams.filter((s) => s.account.creator.equals(creator));
+        return streams.filter((s: { publicKey: PublicKey; account: MilestoneStreamAccount }) =>
+          s.account.creator.equals(creator),
+        );
       }
       return streams;
     },

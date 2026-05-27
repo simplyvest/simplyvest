@@ -2,11 +2,16 @@ import * as fs from "fs";
 import * as path from "path";
 
 import * as anchor from "@coral-xyz/anchor";
-import { Connection, Keypair, PublicKey } from "@solana/web3.js";
-import { getAssociatedTokenAddressSync } from "@solana/spl-token";
-
-import { SolanaTdpIdl, getStreamPda, getVaultPda, getCreatorConfigPda, PROGRAM_ID } from "@solana-tdp/sdk";
+import {
+  SolanaTdpIdl,
+  getStreamPda,
+  getVaultPda,
+  getCreatorConfigPda,
+  PROGRAM_ID,
+} from "@solana-tdp/sdk";
 import type { SolanaTdp } from "@solana-tdp/sdk";
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 
 // Stale account from a previous program deployment — 178 bytes instead of 187.
 const STALE_STREAM = new PublicKey("Au3RYWpESySc5ZyzWEUjd6csmdcrkXSCeCPAxJvozjVj");
@@ -51,7 +56,9 @@ async function main() {
   //
   // For devnet cleanup, we'll use the admin cli:
   console.log("\nTo close the stale account, run:");
-  console.log(`solana close --address ${STALE_STREAM.toBase58()} --keypair keypairs/devnet-wallet.json --url devnet`);
+  console.log(
+    `solana close --address ${STALE_STREAM.toBase58()} --keypair keypairs/devnet-wallet.json --url devnet`,
+  );
   console.log("\nOr if you want the program to handle it via cancel:");
   console.log("The account is too short to decode, so cancel won't work either.");
 }

@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef } from "react";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey } from "@solana/web3.js";
-import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
-
-import { SelectInput } from "@/components/ui/select-input";
-import { TextInput } from "@/components/ui/text-input";
-import { FormField } from "@/components/ui/form-field";
 import { fetchTokenMetadata, formatTokenLabel } from "@solana-tdp/sdk";
 import type { TokenMetadata } from "@solana-tdp/sdk";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
+import { useState, useEffect, useRef } from "react";
+
+import { FormField } from "@/components/ui/form-field";
+import { SelectInput } from "@/components/ui/select-input";
+import { TextInput } from "@/components/ui/text-input";
 
 interface TokenInfo {
   mint: PublicKey;
@@ -75,7 +75,9 @@ export function TokenSelector({
       } catch {}
       if (!cancelled) setLoading(false);
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [publicKey, connection]);
 
   if (mode === "custom") {
