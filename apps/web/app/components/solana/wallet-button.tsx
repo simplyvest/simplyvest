@@ -1,18 +1,11 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 
 export function WalletButton() {
-  const { publicKey, disconnect, connected, connecting, wallet, connect } = useWallet();
+  const { publicKey, disconnect, connected, connecting } = useWallet();
   const { setVisible } = useWalletModal();
-
-  useEffect(() => {
-    if (wallet && !connected && !connecting) {
-      connect().catch(() => {});
-    }
-  }, [wallet, connected, connecting, connect]);
 
   if (connected && publicKey) {
     const short = `${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}`;
