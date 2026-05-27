@@ -64,10 +64,10 @@ export function TokenSelector({
         );
 
         if (cancelled) return;
-        const list = mints.map((t) => ({
-          ...t,
-          meta: metaMap.get(t.mint.toBase58()) ?? null,
-        }));
+        const list = mints.map((t) => {
+          const meta = metaMap.get(t.mint.toBase58()) ?? null;
+          return Object.assign(t, { meta });
+        });
         setTokens(list);
         if (list.length > 0 && !valueRef.current) {
           onChangeRef.current(mintToAddress(list[0].mint));

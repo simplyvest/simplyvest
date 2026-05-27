@@ -14,10 +14,12 @@ export function StreamCard({
   stream,
   pda,
   onCancel,
+  role,
 }: {
   stream: StreamAccount;
   pda: PublicKey;
   onCancel: (stream: StreamAccount, pda: PublicKey) => void;
+  role?: "created" | "received";
 }) {
   const { publicKey } = useWallet();
   const isSender = publicKey?.equals(stream.sender);
@@ -100,7 +102,7 @@ export function StreamCard({
         </div>
 
         <div className="flex shrink-0 flex-col gap-2">
-          {isSender && status === "active" && (
+          {role !== "received" && isSender && status === "active" && (
             <Button
               variant="destructive"
               size="sm"

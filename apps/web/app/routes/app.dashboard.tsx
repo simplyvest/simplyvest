@@ -1,17 +1,29 @@
-import { createRoute } from "@tanstack/react-router";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { createRoute } from "@tanstack/react-router";
+import { Link, useSearch } from "@tanstack/react-router";
+
+import { StreamList } from "@/components/streams/stream-list";
+import { cn } from "@/utils/cn";
 
 import { Route as AppRoute } from "./app";
-import { StreamList } from "@/components/streams/stream-list";
 
 export const Route = createRoute({
   getParentRoute: () => AppRoute,
   path: "/dashboard",
   component: DashboardPage,
+  validateSearch: (search: Record<string, unknown>) => ({
+    tab: (search.tab as string) || "created",
+  }),
 });
+
+const tabs = [
+  { key: "created", label: "Created" },
+  { key: "received", label: "Received" },
+] as const;
 
 function DashboardPage() {
   const { connected } = useWallet();
+  const { tab } = useSearch({ from: Route.id });
 
   return (
     <div>
@@ -23,7 +35,24 @@ function DashboardPage() {
             : "Connect your wallet to view streams"}
         </p>
       </div>
-      <StreamList />
+
+      <div className="mb-6 flex gap-1 rounded-lg border border-border bg-bg1 p-0.5">
+        {tabs.map((t) => (
+          <Link
+            key={t.key}
+            to="/app/dashboard"
+            search={{ tab: t.key }}
+            className={cn(
+              "flex-1 rounded-md px-4 py-2 text-center text-sm font-medium transition-all no-underline hover:no-underline",
+              tab === t.key ? "bg-sol text-white shadow-sm" : "text-muted hover:text-text",
+            )}
+          >
+            {t.label}
+          </Link>
+        ))}
+      </div>
+
+      <StreamList role={tab as "created" | "received"} />
     </div>
   );
 }

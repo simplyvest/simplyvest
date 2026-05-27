@@ -3,7 +3,11 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import type { PublicKey } from "@solana/web3.js";
 import { useState } from "react";
 
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useStreams, useMilestoneStreams } from "@/hooks/use-stream";
+import { useTriggerMilestone } from "@/hooks/use-transactions";
+import { formatAddress } from "@/utils/format";
 
 import { CancelDialog } from "./cancel-dialog";
 import { StreamCard } from "./stream-card";
@@ -13,24 +17,29 @@ interface SelectedStream {
   pda: PublicKey;
 }
 
-export function StreamList() {
+export function StreamList({ role }: { role: "created" | "received" }) {
   const { publicKey } = useWallet();
   const [selected, setSelected] = useState<SelectedStream | null>(null);
+  const triggerMilestone = useTriggerMilestone();
 
   const { data: streams, isLoading: streamsLoading } = useStreams();
   const { data: milestoneStreams, isLoading: milestoneLoading } = useMilestoneStreams();
 
   const isLoading = streamsLoading || milestoneLoading;
 
-  const relevantStreams = (streams ?? []).filter((s) => {
-    if (!publicKey) return true;
-    return s.account.sender.equals(publicKey) || s.account.recipient.equals(publicKey);
-  });
+  const createdStreams = (streams ?? []).filter((s) => publicKey?.equals(s.account.sender));
+  const receivedStreams = (streams ?? []).filter((s) => publicKey?.equals(s.account.recipient));
 
-  const relevantMilestoneStreams = (milestoneStreams ?? []).filter((s) => {
-    if (!publicKey) return true;
-    return s.account.creator.equals(publicKey) || s.account.recipient.equals(publicKey);
-  });
+  const createdMilestoneStreams = (milestoneStreams ?? []).filter((s) =>
+    publicKey?.equals(s.account.creator),
+  );
+  const receivedMilestoneStreams = (milestoneStreams ?? []).filter((s) =>
+    publicKey?.equals(s.account.recipient),
+  );
+
+  const relevantStreams = role === "created" ? createdStreams : receivedStreams;
+  const relevantMilestoneStreams =
+    role === "created" ? createdMilestoneStreams : receivedMilestoneStreams;
 
   if (!publicKey) {
     return (
@@ -50,6 +59,19 @@ export function StreamList() {
     );
   }
 
+  if (relevantStreams.length === 0 && relevantMilestoneStreams.length === 0) {
+    return (
+      <div className="flex h-40 items-center justify-center rounded-xl border border-border bg-bg1">
+        <div className="text-center">
+          <p className="text-sm text-muted">
+            {role === "created" ? "No streams created yet" : "No streams received yet"}
+          </p>
+          <p className="mt-1 text-xs text-dim">Create a stream to get started</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       {selected && (
@@ -60,54 +82,55 @@ export function StreamList() {
         />
       )}
 
-      {relevantStreams.length === 0 && relevantMilestoneStreams.length === 0 ? (
-        <div className="flex h-40 items-center justify-center rounded-xl border border-border bg-bg1">
-          <div className="text-center">
-            <p className="text-sm text-muted">No streams found</p>
-            <p className="mt-1 text-xs text-dim">Create a stream to get started</p>
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {relevantStreams.length > 0 && (
-            <div>
-              <h3 className="mb-3 text-sm font-medium text-dim uppercase tracking-wide">
-                Time-based Streams
-              </h3>
-              <div className="space-y-3">
-                {relevantStreams.map((s) => (
-                  <StreamCard
-                    key={s.publicKey.toBase58()}
-                    stream={s.account}
-                    pda={s.publicKey}
-                    onCancel={(stream, pda) => setSelected({ stream, pda })}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
+      <div className="space-y-3">
+        {relevantStreams.map((s) => (
+          <StreamCard
+            key={s.publicKey.toBase58()}
+            stream={s.account}
+            pda={s.publicKey}
+            role={role}
+            onCancel={(stream, pda) => setSelected({ stream, pda })}
+          />
+        ))}
 
-          {relevantMilestoneStreams.length > 0 && (
-            <div>
-              <h3 className="mb-3 text-sm font-medium text-dim uppercase tracking-wide">
-                Milestone Streams
-              </h3>
-              <div className="space-y-3">
-                {relevantMilestoneStreams.map((s) => (
-                  <div
-                    key={s.publicKey.toBase58()}
-                    className="rounded-xl border border-border bg-bg1 px-5 py-4"
-                  >
-                    <p className="text-sm text-muted">
-                      Milestone stream — {s.account.milestoneReached ? "reached" : "pending"}
-                    </p>
+        {relevantMilestoneStreams.map((s) => {
+          const canTrigger = role === "created" && !s.account.milestoneReached;
+          return (
+            <div
+              key={s.publicKey.toBase58()}
+              className="rounded-xl border border-border bg-bg1 px-5 py-4"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0 flex-1 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Badge variant={s.account.milestoneReached ? "sol2" : "sol"}>
+                      {s.account.milestoneReached ? "completed" : "active"}
+                    </Badge>
+                    <span className="font-mono text-xs text-dim">Milestone stream</span>
                   </div>
-                ))}
+                  <p className="text-sm text-text">
+                    {formatAddress(s.account.recipient)} — {s.account.amount.toString()} tokens
+                  </p>
+                </div>
+                <div className="flex shrink-0 flex-col gap-2">
+                  {canTrigger && (
+                    <Button
+                      size="sm"
+                      onClick={() => triggerMilestone.mutate(s.publicKey)}
+                      disabled={triggerMilestone.isPending}
+                    >
+                      {triggerMilestone.isPending ? "Completing..." : "Complete Milestone"}
+                    </Button>
+                  )}
+                  {s.account.milestoneReached && (
+                    <span className="text-xs text-dim">Milestone reached</span>
+                  )}
+                </div>
               </div>
             </div>
-          )}
-        </div>
-      )}
+          );
+        })}
+      </div>
     </>
   );
 }

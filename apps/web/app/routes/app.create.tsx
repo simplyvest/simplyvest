@@ -29,7 +29,7 @@ function CreatePage() {
           Lock tokens in a vesting stream for a recipient
         </p>
       </div>
-      <div className="max-w-xl">
+      <div>
         <CreateStreamForm />
       </div>
     </div>
