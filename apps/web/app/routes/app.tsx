@@ -57,10 +57,10 @@ function AppHeader() {
 }
 
 function AppLayout() {
-  const { publicKey, connecting } = useWallet();
+  const { connected, publicKey, connecting } = useWallet();
   const { setVisible } = useWalletModal();
 
-  const showContent = publicKey && !connecting;
+  const showContent = connected && !!publicKey;
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col px-6 pt-20">
