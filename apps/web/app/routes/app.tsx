@@ -4,6 +4,7 @@ import { Outlet, createRoute, Link, useRouterState } from "@tanstack/react-route
 
 import { WalletButton } from "@/components/solana/wallet-button";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/utils/cn";
 
 import { Route as RootRoute } from "./__root";
 
@@ -13,65 +14,68 @@ export const Route = createRoute({
   component: AppLayout,
 });
 
-function AppNav() {
+const tabs = [
+  { path: "/app/dashboard", label: "Dashboard" },
+  { path: "/app/create", label: "Create Stream" },
+];
+
+function AppHeader() {
   const routerState = useRouterState();
   const location = routerState.location;
 
-  const tabs = [
-    { path: "/app/dashboard", label: "Dashboard" },
-    { path: "/app/create", label: "Create Stream" },
-  ];
-
   return (
-    <nav className="mb-8 flex items-center justify-between border-b border-border pb-4">
-      <div className="flex items-center gap-6">
-        <Link
-          to="/"
-          className="flex items-center gap-2 text-lg font-semibold tracking-tight no-underline hover:no-underline"
-        >
-          <img src="/simplyvest.png" alt="SimplyVest" className="h-6 w-auto" />
-          SimplyVest
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
+      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
+        <Link to="/" className="flex items-center gap-2.5 no-underline hover:no-underline">
+          <div className="flex items-center gap-2.5 rounded-md bg-sol p-1.5 dark:bg-transparent">
+            <img src="/simplyvest.png" alt="SimplyVest" className="h-7 w-auto" />
+          </div>
+          <span className="text-lg font-semibold tracking-tight text-text">SimplyVest</span>
         </Link>
-        <div className="flex gap-1">
+
+        <nav className="flex items-center gap-1">
           {tabs.map((tab) => {
             const isActive = location.pathname === tab.path;
             return (
               <Link
                 key={tab.path}
                 to={tab.path}
-                className={`rounded-md px-3 py-1.5 text-sm font-medium no-underline transition-colors hover:no-underline ${
-                  isActive ? "bg-sol/15 text-sol" : "text-muted hover:text-text"
-                }`}
+                className={cn(
+                  "rounded px-3 py-1.5 font-mono text-[0.67rem] tracking-wide transition-colors hover:bg-bg2 hover:text-text hover:no-underline focus-visible:ring-2 focus-visible:ring-sol focus-visible:outline-none",
+                  isActive ? "text-text" : "text-muted",
+                )}
               >
                 {tab.label}
               </Link>
             );
           })}
-        </div>
+          <WalletButton />
+        </nav>
       </div>
-      <WalletButton />
-    </nav>
+    </header>
   );
 }
 
 function AppLayout() {
-  const { publicKey, connected } = useWallet();
+  const { publicKey, connecting } = useWallet();
   const { setVisible } = useWalletModal();
 
-  return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col px-6">
-      <AppNav />
+  const showContent = publicKey && !connecting;
 
-      {connected && publicKey ? (
+  return (
+    <div className="mx-auto flex w-full max-w-5xl flex-col px-6 pt-20">
+      <AppHeader />
+
+      {showContent ? (
         <div className="pb-12">
           <Outlet />
         </div>
       ) : (
-        <div className="flex flex-1 items-center justify-center py-24">
-          <div className="flex flex-col items-center gap-6 text-center">
-            <div className="rounded-full bg-sol/10 p-4">
+        <div className="flex flex-1 items-center justify-center py-32">
+          <div className="flex flex-col items-center gap-8 text-center">
+            <div className="rounded-2xl border border-sol/20 bg-sol/5 p-6">
               <svg
-                className="h-8 w-8 text-sol"
+                className="h-12 w-12 text-sol"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -85,14 +89,20 @@ function AppLayout() {
               </svg>
             </div>
             <div>
-              <h2 className="text-xl font-bold text-text">Connect Your Wallet</h2>
-              <p className="mt-2 text-sm text-muted max-w-sm">
-                To use the SimplyVest app, connect your Phantom or Solflare wallet. Make sure you're
-                on Solana devnet.
+              <h2 className="text-2xl font-bold tracking-tight text-text">Connect Your Wallet</h2>
+              <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted">
+                To use the SimplyVest app, connect your Phantom or Solflare wallet and make sure
+                you're on <span className="font-mono text-sol">Solana devnet</span>.
               </p>
             </div>
-            <Button variant="default" size="lg" onClick={() => setVisible(true)}>
-              Connect Wallet
+            <Button
+              variant="default"
+              size="lg"
+              className="min-w-[200px]"
+              onClick={() => setVisible(true)}
+              disabled={connecting}
+            >
+              {connecting ? "Connecting..." : "Connect Wallet"}
             </Button>
           </div>
         </div>
