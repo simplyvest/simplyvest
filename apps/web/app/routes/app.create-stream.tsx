@@ -1,6 +1,6 @@
+import * as anchor from "@coral-xyz/anchor";
 import { useAnchorWallet, useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
-import * as anchor from "@coral-xyz/anchor";
 import { createRoute } from "@tanstack/react-router";
 import * as React from "react";
 import { toast } from "sonner";
@@ -24,9 +24,7 @@ export const Route = createRoute({
 });
 
 const TOKEN_PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
-const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
-  "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL",
-);
+const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
 
 function findAssociatedTokenAddress(owner: PublicKey, mint: PublicKey): PublicKey {
   return PublicKey.findProgramAddressSync(
@@ -78,21 +76,13 @@ function CreateStreamPage() {
     const errs: Record<string, string> = {};
 
     if (!form.mint) errs.mint = "Token is required";
-    else {
-      try {
-        new PublicKey(form.mint);
-      } catch {
-        errs.mint = "Invalid token mint address";
-      }
+    else if (!PublicKey.isOnCurve(form.mint)) {
+      errs.mint = "Invalid token mint address";
     }
 
     if (!form.recipient) errs.recipient = "Recipient wallet is required";
-    else {
-      try {
-        new PublicKey(form.recipient);
-      } catch {
-        errs.recipient = "Invalid Solana address";
-      }
+    else if (!PublicKey.isOnCurve(form.recipient)) {
+      errs.recipient = "Invalid Solana address";
     }
 
     if (!form.amount || Number(form.amount) <= 0) errs.amount = "Amount must be greater than 0";
@@ -185,7 +175,7 @@ function CreateStreamPage() {
           tokenProgram: TOKEN_PROGRAM_ID,
           systemProgram: SystemProgram.programId,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-        } as any)
+        })
         .rpc();
 
       toast.success("Stream created successfully!", {
@@ -200,8 +190,8 @@ function CreateStreamPage() {
         endDate: "",
         cliffDate: "",
       });
-    } catch (err: any) {
-      const msg = err?.message || "Transaction failed";
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Transaction failed";
       toast.error("Failed to create stream", { description: msg });
     } finally {
       setSending(false);
@@ -219,7 +209,10 @@ function CreateStreamPage() {
         to the recipient over the specified period.
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-10 rounded-xl border border-border bg-bg1 px-8 py-8">
+      <form
+        onSubmit={handleSubmit}
+        className="mt-10 rounded-xl border border-border bg-bg1 px-8 py-8"
+      >
         <div className="grid gap-6">
           <FormField label="Token" required>
             <TokenSelector
@@ -283,16 +276,18 @@ function CreateStreamPage() {
               min={form.startDate || todayStr()}
               max={form.endDate || undefined}
             />
-            <p className="text-xs text-dim">
-              If set, no tokens are withdrawable until this date.
-            </p>
+            <p className="text-xs text-dim">If set, no tokens are withdrawable until this date.</p>
             {errors.cliffDate && <p className="text-xs text-warn">{errors.cliffDate}</p>}
           </FormField>
         </div>
 
         <div className="mt-8">
           <Button type="submit" disabled={sending || !wallet} size="lg" className="w-full">
-            {sending ? "Creating Stream..." : !wallet ? "Connect Wallet to Create" : "Create Stream"}
+            {sending
+              ? "Creating Stream..."
+              : !wallet
+                ? "Connect Wallet to Create"
+                : "Create Stream"}
           </Button>
         </div>
 
