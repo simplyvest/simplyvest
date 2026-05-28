@@ -1,11 +1,24 @@
-import { getClaimable, getStatus } from "@solana-tdp/sdk";
+import { getClaimable, getStatus, getVaultPda, PROGRAM_ID } from "@solana-tdp/sdk";
 import type { StreamAccount } from "@solana-tdp/sdk";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useWithdraw } from "@/hooks/use-transactions";
 import { formatAddress, formatSol, formatDate, formatDuration } from "@/utils/format";
+
+const TOKEN_PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
+  "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL",
+);
+
+function getAssociatedTokenAddress(mint: PublicKey, owner: PublicKey): PublicKey {
+  return PublicKey.findProgramAddressSync(
+    [owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()],
+    ASSOCIATED_TOKEN_PROGRAM_ID,
+  )[0];
+}
 
 export function StreamCard({
   stream,
@@ -19,6 +32,7 @@ export function StreamCard({
   role?: "created" | "received";
 }) {
   const { publicKey } = useWallet();
+  const withdraw = useWithdraw();
   const isSender = publicKey?.equals(stream.sender);
   const isRecipient = publicKey?.equals(stream.recipient);
   const counterparty = isSender ? stream.recipient : stream.sender;
@@ -26,6 +40,9 @@ export function StreamCard({
   const clockTime = Math.floor(Date.now() / 1000);
   const status = getStatus(stream);
   const claimable = getClaimable(stream, clockTime);
+
+  const [vaultPda] = getVaultPda(pda, PROGRAM_ID);
+  const recipientToken = publicKey ? getAssociatedTokenAddress(stream.mint, publicKey) : pda;
 
   const totalSec = stream.endTime.sub(stream.startTime).toNumber();
   const elapsedSec = Math.max(0, clockTime - stream.startTime.toNumber());
@@ -102,6 +119,24 @@ export function StreamCard({
           {role !== "received" && isSender && status === "active" && (
             <Button variant="destructive" size="sm" onClick={() => onCancel(stream, pda)}>
               Cancel
+            </Button>
+          )}
+          {role === "received" && isRecipient && status === "active" && claimable.toNumber() > 0 && (
+            <Button
+              size="sm"
+              onClick={() =>
+                withdraw.mutate({
+                  stream: pda,
+                  vault: vaultPda,
+                  sender: stream.sender,
+                  mint: stream.mint,
+                  recipientToken,
+                  amount: claimable.toNumber(),
+                })
+              }
+              disabled={withdraw.isPending}
+            >
+              {withdraw.isPending ? "Claiming..." : "Claim"}
             </Button>
           )}
         </div>
