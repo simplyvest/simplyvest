@@ -9,6 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from "./routes/__root";
+import { Route as AppRouteImport } from "./routes/app";
+import { Route as AppCreateRouteImport } from "./routes/app.create";
+import { Route as AppDashboardRouteImport } from "./routes/app.dashboard";
 import { Route as DocsRouteImport } from "./routes/docs";
 import { Route as FaqRouteImport } from "./routes/faq";
 import { Route as IndexRouteImport } from "./routes/index";
@@ -29,41 +32,66 @@ const DocsRoute = DocsRouteImport.update({
   path: "/docs",
   getParentRoute: () => rootRouteImport,
 } as any);
+const AppRoute = AppRouteImport.update({
+  id: "/app",
+  path: "/app",
+  getParentRoute: () => rootRouteImport,
+} as any);
 const IndexRoute = IndexRouteImport.update({
   id: "/",
   path: "/",
   getParentRoute: () => rootRouteImport,
 } as any);
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: "/dashboard",
+  path: "/dashboard",
+  getParentRoute: () => AppRoute,
+} as any);
+const AppCreateRoute = AppCreateRouteImport.update({
+  id: "/create",
+  path: "/create",
+  getParentRoute: () => AppRoute,
+} as any);
 
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute;
+  "/app": typeof AppRouteWithChildren;
   "/docs": typeof DocsRoute;
   "/faq": typeof FaqRoute;
   "/waitlist": typeof WaitlistRoute;
+  "/app/create": typeof AppCreateRoute;
+  "/app/dashboard": typeof AppDashboardRoute;
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute;
+  "/app": typeof AppRouteWithChildren;
   "/docs": typeof DocsRoute;
   "/faq": typeof FaqRoute;
   "/waitlist": typeof WaitlistRoute;
+  "/app/create": typeof AppCreateRoute;
+  "/app/dashboard": typeof AppDashboardRoute;
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
   "/": typeof IndexRoute;
+  "/app": typeof AppRouteWithChildren;
   "/docs": typeof DocsRoute;
   "/faq": typeof FaqRoute;
   "/waitlist": typeof WaitlistRoute;
+  "/app/create": typeof AppCreateRoute;
+  "/app/dashboard": typeof AppDashboardRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/docs" | "/faq" | "/waitlist";
+  fullPaths: "/" | "/app" | "/docs" | "/faq" | "/waitlist" | "/app/create" | "/app/dashboard";
   fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/docs" | "/faq" | "/waitlist";
-  id: "__root__" | "/" | "/docs" | "/faq" | "/waitlist";
+  to: "/" | "/app" | "/docs" | "/faq" | "/waitlist" | "/app/create" | "/app/dashboard";
+  id: "__root__" | "/" | "/app" | "/docs" | "/faq" | "/waitlist" | "/app/create" | "/app/dashboard";
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute;
+  AppRoute: typeof AppRouteWithChildren;
   DocsRoute: typeof DocsRoute;
   FaqRoute: typeof FaqRoute;
   WaitlistRoute: typeof WaitlistRoute;
@@ -92,6 +120,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof DocsRouteImport;
       parentRoute: typeof rootRouteImport;
     };
+    "/app": {
+      id: "/app";
+      path: "/app";
+      fullPath: "/app";
+      preLoaderRoute: typeof AppRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     "/": {
       id: "/";
       path: "/";
@@ -99,11 +134,38 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof IndexRouteImport;
       parentRoute: typeof rootRouteImport;
     };
+    "/app/dashboard": {
+      id: "/app/dashboard";
+      path: "/dashboard";
+      fullPath: "/app/dashboard";
+      preLoaderRoute: typeof AppDashboardRouteImport;
+      parentRoute: typeof AppRoute;
+    };
+    "/app/create": {
+      id: "/app/create";
+      path: "/create";
+      fullPath: "/app/create";
+      preLoaderRoute: typeof AppCreateRouteImport;
+      parentRoute: typeof AppRoute;
+    };
   }
 }
 
+interface AppRouteChildren {
+  AppCreateRoute: typeof AppCreateRoute;
+  AppDashboardRoute: typeof AppDashboardRoute;
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppCreateRoute: AppCreateRoute,
+  AppDashboardRoute: AppDashboardRoute,
+};
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren);
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
   DocsRoute: DocsRoute,
   FaqRoute: FaqRoute,
   WaitlistRoute: WaitlistRoute,

@@ -8,6 +8,7 @@ const navLinks = [
   { to: "/docs", label: "Docs" },
   { to: "/faq", label: "FAQ" },
   { to: "/waitlist", label: "Waitlist" },
+  { to: "/app/dashboard", label: "App" },
 ];
 
 export function Header() {

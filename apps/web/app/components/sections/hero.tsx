@@ -29,8 +29,15 @@ export function Hero() {
 
         <div className="mt-8 flex flex-wrap gap-4">
           <Link
-            to="/waitlist"
+            to="/app/dashboard"
+            search={{ tab: "created" }}
             className="rounded-md bg-[#7c3aed] px-6 py-2.5 text-sm font-semibold text-white no-underline transition-all hover:bg-[#6d28d9] hover:no-underline focus-visible:ring-2 focus-visible:ring-sol focus-visible:outline-none"
+          >
+            Try Beta App
+          </Link>
+          <Link
+            to="/waitlist"
+            className="rounded-md border border-border2 bg-bg2 px-6 py-2.5 font-mono text-xs uppercase tracking-wide text-muted no-underline transition-colors hover:border-sol hover:text-text hover:no-underline focus-visible:ring-2 focus-visible:ring-sol focus-visible:outline-none"
           >
             Join Waitlist
           </Link>

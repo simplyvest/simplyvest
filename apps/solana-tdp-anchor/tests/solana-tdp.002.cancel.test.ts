@@ -1,22 +1,20 @@
-import * as anchor from "@coral-xyz/anchor";
 import { BN } from "@coral-xyz/anchor";
 import {
-  TOKEN_PROGRAM_ID,
-  ASSOCIATED_TOKEN_PROGRAM_ID,
-  getAssociatedTokenAddressSync,
-} from "@solana/spl-token";
-import { Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
-
-import {
-  findStreamPDA,
-  findVaultPDA,
-  findCreatorConfigPDA,
+  getStreamPda,
+  getVaultPda,
+  getCreatorConfigPda,
+  getCreateStreamAccounts,
+  getCancelAccounts,
   parseEvents,
   findEvent,
-} from "./helpers";
+  PROGRAM_ID,
+} from "@solana-tdp/sdk";
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+import { Keypair, PublicKey } from "@solana/web3.js";
+
 import { setupTest, SetupTest, createMint, createTokenAccount, mintTo } from "./utils";
 
-// Shared accounts for cancel instructions
+// Shared accounts for cancel instructions — uses SDK
 const cancelAccounts = (
   sender: PublicKey,
   recipient: PublicKey,
@@ -25,18 +23,7 @@ const cancelAccounts = (
   senderToken: PublicKey,
   recipientToken: PublicKey,
   mint: PublicKey,
-) => ({
-  sender,
-  recipient,
-  stream,
-  vault,
-  senderToken,
-  recipientToken,
-  mint,
-  tokenProgram: TOKEN_PROGRAM_ID,
-  associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-  systemProgram: SystemProgram.programId,
-});
+) => getCancelAccounts(sender, recipient, stream, vault, senderToken, recipientToken, mint);
 
 describe("Feature 2: cancel", () => {
   let program: SetupTest["program"];
@@ -75,9 +62,15 @@ describe("Feature 2: cancel", () => {
     const cliff = start + cliffOffset;
     const end = start + endOffset;
 
-    const [streamPDA] = await findStreamPDA(sender.publicKey, recipient.publicKey, mint, new BN(0));
-    const [vaultPDA] = await findVaultPDA(streamPDA);
-    const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
+    const [streamPDA] = getStreamPda(
+      sender.publicKey,
+      recipient.publicKey,
+      mint,
+      new BN(0),
+      PROGRAM_ID,
+    );
+    const [vaultPDA] = getVaultPda(streamPDA, PROGRAM_ID);
+    const [creatorConfigPDA] = getCreatorConfigPda(sender.publicKey, PROGRAM_ID);
 
     await program.methods
       .createStream({
@@ -86,18 +79,17 @@ describe("Feature 2: cancel", () => {
         endTime: new BN(end),
         cliffTime: new BN(cliff),
       })
-      .accountsPartial({
-        sender: sender.publicKey,
-        recipient: recipient.publicKey,
-        stream: streamPDA,
-        vault: vaultPDA,
-        senderToken,
-        mint,
-        creatorConfig: creatorConfigPDA,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-        rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-      })
+      .accountsPartial(
+        getCreateStreamAccounts(
+          sender.publicKey,
+          recipient.publicKey,
+          mint,
+          streamPDA,
+          vaultPDA,
+          senderToken,
+          creatorConfigPDA,
+        ),
+      )
       .signers([sender])
       .rpc();
 

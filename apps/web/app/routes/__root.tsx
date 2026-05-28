@@ -51,23 +51,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <SolanaProvider>
         <div className="flex min-h-screen flex-col bg-bg text-text">
-          {isAppRoute ? (
-            <header className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur">
-              <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
-                <Link
-                  to="/"
-                  className="flex items-center gap-2.5 text-lg font-semibold tracking-tight no-underline hover:no-underline"
-                >
-                  <div className="flex items-center gap-2.5 rounded-md bg-sol p-1.5 dark:bg-transparent">
-                    <img src="/simplyvest.png" alt="SimplyVest" className="h-6 w-auto" />
-                  </div>
-                  SimplyVest
-                </Link>
-              </div>
-            </header>
-          ) : (
-            <Header />
-          )}
+          {!isAppRoute && <Header />}
 
           <a
             href="#main-content"

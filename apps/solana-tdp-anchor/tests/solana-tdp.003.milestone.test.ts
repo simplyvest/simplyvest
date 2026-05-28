@@ -1,26 +1,24 @@
-import * as anchor from "@coral-xyz/anchor";
 import { BN } from "@coral-xyz/anchor";
 import {
-  TOKEN_PROGRAM_ID,
-  ASSOCIATED_TOKEN_PROGRAM_ID,
-  getAssociatedTokenAddressSync,
-} from "@solana/spl-token";
-import { Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
-
-import {
-  findMilestoneStreamPDA,
-  findVaultPDA,
-  findCreatorConfigPDA,
+  getMilestoneStreamPda,
+  getVaultPda,
+  getCreatorConfigPda,
+  getCreateMilestoneStreamAccounts,
+  getTriggerMilestoneAccounts,
+  getWithdrawMilestoneAccounts,
+  getCancelMilestoneAccounts,
   parseEvents,
   findEvent,
-} from "./helpers";
+  PROGRAM_ID,
+} from "@solana-tdp/sdk";
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+import { Keypair, PublicKey } from "@solana/web3.js";
+
 import { setupTest, SetupTest, createMint, createTokenAccount, mintTo } from "./utils";
 
 // Shared accounts for trigger
-const triggerAccounts = (milestoneAuthority: PublicKey, stream: PublicKey) => ({
-  milestoneAuthority,
-  stream,
-});
+const triggerAccounts = (milestoneAuthority: PublicKey, stream: PublicKey) =>
+  getTriggerMilestoneAccounts(milestoneAuthority, stream);
 
 // Shared accounts for withdraw
 const withdrawMilestoneAccounts = (
@@ -30,17 +28,7 @@ const withdrawMilestoneAccounts = (
   recipientToken: PublicKey,
   sender: PublicKey,
   mint: PublicKey,
-) => ({
-  recipient,
-  stream,
-  vault,
-  recipientToken,
-  sender,
-  mint,
-  tokenProgram: TOKEN_PROGRAM_ID,
-  associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-  systemProgram: SystemProgram.programId,
-});
+) => getWithdrawMilestoneAccounts(recipient, stream, vault, recipientToken, sender, mint);
 
 // Shared accounts for cancel
 const cancelMilestoneAccounts = (
@@ -49,16 +37,7 @@ const cancelMilestoneAccounts = (
   vault: PublicKey,
   senderToken: PublicKey,
   mint: PublicKey,
-) => ({
-  sender,
-  stream,
-  vault,
-  senderToken,
-  mint,
-  tokenProgram: TOKEN_PROGRAM_ID,
-  associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-  systemProgram: SystemProgram.programId,
-});
+) => getCancelMilestoneAccounts(sender, stream, vault, senderToken, mint);
 
 // Cancel milestone requires sender_token to be the ATA of sender
 const senderAta = (mint: PublicKey, sender: PublicKey) =>
@@ -85,30 +64,30 @@ describe("Feature 3: milestone streams", () => {
     const senderToken = await createTokenAccount(provider, sender, mint, sender.publicKey);
     await mintTo(provider, mint, senderToken, sender, BigInt(amount));
 
-    const [creatorConfigPDA] = await findCreatorConfigPDA(sender.publicKey);
-    const [streamPDA] = await findMilestoneStreamPDA(
+    const [creatorConfigPDA] = getCreatorConfigPda(sender.publicKey, PROGRAM_ID);
+    const [streamPDA] = getMilestoneStreamPda(
       sender.publicKey,
       recipient.publicKey,
       mint,
       new BN(0),
+      PROGRAM_ID,
     );
-    const [vaultPDA] = await findVaultPDA(streamPDA);
+    const [vaultPDA] = getVaultPda(streamPDA, PROGRAM_ID);
 
     await program.methods
       .createMilestoneStream({ amount: new BN(amount) })
-      .accountsPartial({
-        sender: sender.publicKey,
-        recipient: recipient.publicKey,
-        milestoneAuthority: milestoneAuthority.publicKey,
-        creatorConfig: creatorConfigPDA,
-        stream: streamPDA,
-        vault: vaultPDA,
-        senderToken,
-        mint,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-        rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-      })
+      .accountsPartial(
+        getCreateMilestoneStreamAccounts(
+          sender.publicKey,
+          recipient.publicKey,
+          milestoneAuthority.publicKey,
+          creatorConfigPDA,
+          streamPDA,
+          vaultPDA,
+          senderToken,
+          mint,
+        ),
+      )
       .signers([sender])
       .rpc();
 
@@ -167,25 +146,24 @@ describe("Feature 3: milestone streams", () => {
     const st2 = await createTokenAccount(p2, s2, mint2, s2.publicKey);
     await mintTo(p2, mint2, st2, s2, BigInt(amount));
 
-    const [cc2] = await findCreatorConfigPDA(s2.publicKey);
-    const [sp2] = await findMilestoneStreamPDA(s2.publicKey, r2.publicKey, mint2, new BN(0));
-    const [vp2] = await findVaultPDA(sp2);
+    const [cc2] = getCreatorConfigPda(s2.publicKey, PROGRAM_ID);
+    const [sp2] = getMilestoneStreamPda(s2.publicKey, r2.publicKey, mint2, new BN(0), PROGRAM_ID);
+    const [vp2] = getVaultPda(sp2, PROGRAM_ID);
 
     const txSig = await prog2.methods
       .createMilestoneStream({ amount: new BN(amount) })
-      .accountsPartial({
-        sender: s2.publicKey,
-        recipient: r2.publicKey,
-        milestoneAuthority: ma2.publicKey,
-        creatorConfig: cc2,
-        stream: sp2,
-        vault: vp2,
-        senderToken: st2,
-        mint: mint2,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-        rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-      })
+      .accountsPartial(
+        getCreateMilestoneStreamAccounts(
+          s2.publicKey,
+          r2.publicKey,
+          ma2.publicKey,
+          cc2,
+          sp2,
+          vp2,
+          st2,
+          mint2,
+        ),
+      )
       .signers([s2])
       .rpc();
 
