@@ -164,7 +164,7 @@ function CreateStreamPage() {
           endTime: new anchor.BN(endTime),
           cliffTime: new anchor.BN(cliffTime),
         })
-        .accounts({
+        .accountsPartial({
           sender: publicKey,
           recipient,
           creatorConfig: creatorConfigPDA,
