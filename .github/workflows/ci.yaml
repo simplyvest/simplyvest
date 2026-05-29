@@ -215,6 +215,8 @@ jobs:
           node-version: "24"
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Build SDK
+        run: pnpm --filter @solana-tdp/sdk build
       - name: Build web app
         run: pnpm --filter @solana-tdp/web build
       - name: Deploy to Cloudflare Pages
