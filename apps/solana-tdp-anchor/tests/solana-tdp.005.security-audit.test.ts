@@ -336,8 +336,8 @@ describe("Feature 5: security audit", () => {
 
       const mint = await createMint(prov, sender, sender.publicKey, 6);
       const senderToken = await createTokenAccount(prov, sender, mint, sender.publicKey);
-      const largeAmount = 10_000_000_000_000_000;
-      await mintTo(prov, mint, senderToken, sender, BigInt(largeAmount * 2));
+      const largeAmount = "10000000000000000";
+      await mintTo(prov, mint, senderToken, sender, BigInt("20000000000000000"));
 
       const now = Number(prov.connection.getSlot) || 1_000_000;
       const start = now + 60;
