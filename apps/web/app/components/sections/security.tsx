@@ -1,6 +1,7 @@
 import * as React from "react";
 import { LuBrackets, LuCheck, LuDollarSign, LuLock, LuShield, LuZap } from "react-icons/lu";
 
+import { SectionDecorations, BlobBlob } from "@/components/ui/section-decorations";
 import { cn } from "@/utils/cn";
 
 const features = [
@@ -123,11 +124,11 @@ export function Security() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-white via-purple-50/30 to-white py-24 dark:from-slate-950 dark:via-purple-950/30 dark:to-slate-950">
       {/* Decorative blurred circles */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden>
-        <div className="absolute -left-32 top-1/4 h-64 w-64 rounded-full bg-purple-200/30 blur-3xl dark:bg-purple-800/30" />
-        <div className="absolute -right-32 top-1/3 h-64 w-64 rounded-full bg-purple-300/20 blur-3xl dark:bg-purple-700/20" />
-        <div className="absolute bottom-1/4 left-1/3 h-48 w-48 rounded-full bg-purple-100/40 blur-3xl dark:bg-purple-900/40" />
-      </div>
+      <SectionDecorations>
+        <BlobBlob className="absolute -left-32 top-1/4 h-64 w-64 bg-purple-200/30 dark:bg-purple-800/30" />
+        <BlobBlob className="absolute -right-32 top-1/3 h-64 w-64 bg-purple-300/20 dark:bg-purple-700/20" />
+        <BlobBlob className="absolute bottom-1/4 left-1/3 h-48 w-48 bg-purple-100/40 dark:bg-purple-900/40" />
+      </SectionDecorations>
 
       {/* Security grid pattern */}
       <div

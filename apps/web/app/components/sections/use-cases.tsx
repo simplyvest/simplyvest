@@ -1,6 +1,7 @@
 import * as React from "react";
 import { LuUsers, LuTarget, LuUser } from "react-icons/lu";
 
+import { SectionDecorations, BlobBlob } from "@/components/ui/section-decorations";
 import { cn } from "@/utils/cn";
 
 const useCases = [
@@ -159,9 +160,11 @@ export function UseCases() {
   return (
     <section className="relative overflow-hidden bg-white dark:bg-slate-900 py-24">
       {/* Decorative blurred circles */}
-      <div className="pointer-events-none absolute -left-32 top-1/4 h-64 w-64 rounded-full bg-purple-200/30 dark:bg-purple-800/30 blur-3xl" />
-      <div className="pointer-events-none absolute -right-32 top-1/3 h-72 w-72 rounded-full bg-violet-200/25 dark:bg-violet-800/25 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-0 left-1/3 h-48 w-48 rounded-full bg-purple-100/40 dark:bg-purple-900/40 blur-3xl" />
+      <SectionDecorations>
+        <BlobBlob className="pointer-events-none absolute -left-32 top-1/4 h-64 w-64 bg-purple-200/30 dark:bg-purple-800/30" />
+        <BlobBlob className="pointer-events-none absolute -right-32 top-1/3 h-72 w-72 bg-violet-200/25 dark:bg-violet-800/25" />
+        <BlobBlob className="pointer-events-none absolute bottom-0 left-1/3 h-48 w-48 bg-purple-100/40 dark:bg-purple-900/40" />
+      </SectionDecorations>
 
       <div className="relative mx-auto max-w-6xl px-6">
         {/* Section header */}

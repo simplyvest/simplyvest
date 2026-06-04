@@ -12,6 +12,8 @@ import {
   LuSettings,
 } from "react-icons/lu";
 
+import { SectionDecorations, BlobBlob } from "@/components/ui/section-decorations";
+
 import { Route as RootRoute } from "./__root";
 
 export const Route = createRoute({
@@ -222,10 +224,10 @@ function DocsPage() {
       {/* ── Hero ────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-white via-purple-50/30 to-white dark:from-slate-950 dark:via-purple-950/30 dark:to-slate-950 pt-14 pb-20">
         {/* Decorative blurred circles */}
-        <div className="pointer-events-none absolute inset-0" aria-hidden>
-          <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-purple-300/20 blur-3xl" />
-          <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-purple-400/15 blur-3xl" />
-          <div className="absolute left-1/2 top-1/3 h-64 w-64 -translate-x-1/2 rounded-full bg-purple-200/10 blur-3xl" />
+        <SectionDecorations>
+          <BlobBlob className="absolute -left-32 -top-32 h-96 w-96 bg-purple-300/20" />
+          <BlobBlob className="absolute -bottom-32 -right-32 h-96 w-96 bg-purple-400/15" />
+          <BlobBlob className="absolute left-1/2 top-1/3 h-64 w-64 -translate-x-1/2 bg-purple-200/10" />
           {/* Dot grid */}
           <svg className="absolute inset-0 h-full w-full opacity-[0.035]">
             <defs>
@@ -242,7 +244,7 @@ function DocsPage() {
             </defs>
             <rect width="100%" height="100%" fill="url(#docs-dots)" />
           </svg>
-        </div>
+        </SectionDecorations>
 
         <div className="relative z-10 mx-auto max-w-7xl px-6 lg:grid lg:grid-cols-2 lg:gap-12">
           {/* Left column — copy */}

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { LuDownload, LuLock, LuRadio } from "react-icons/lu";
 
+import { SectionDecorations, BlobBlob } from "@/components/ui/section-decorations";
 import { cn } from "@/utils/cn";
 
 /* -------------------------------------------------------------------------- */
@@ -61,11 +62,11 @@ export function HowItWorks() {
     <section className="relative overflow-hidden bg-gradient-to-b from-white via-purple-50/20 to-white dark:from-slate-950 dark:via-purple-950/20 dark:to-slate-950 py-24 sm:py-32">
       {/*  Background decoration                                             */}
       {/* ------------------------------------------------------------------ */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden>
+      <SectionDecorations>
         {/* Blurred circles */}
-        <div className="absolute -left-32 top-1/4 h-96 w-96 rounded-full bg-purple-200/30 dark:bg-purple-800/30 blur-3xl" />
-        <div className="absolute -right-24 top-2/3 h-80 w-80 rounded-full bg-purple-300/20 blur-3xl" />
-        <div className="absolute left-1/2 top-10 h-64 w-64 -translate-x-1/2 rounded-full bg-purple-100/40 dark:bg-purple-900/40 blur-3xl" />
+        <BlobBlob className="absolute -left-32 top-1/4 h-96 w-96 bg-purple-200/30 dark:bg-purple-800/30" />
+        <BlobBlob className="absolute -right-24 top-2/3 h-80 w-80 bg-purple-300/20" />
+        <BlobBlob className="absolute left-1/2 top-10 h-64 w-64 -translate-x-1/2 bg-purple-100/40 dark:bg-purple-900/40" />
 
         {/* Dot grid */}
         <div
@@ -75,7 +76,7 @@ export function HowItWorks() {
             backgroundSize: "60px 60px",
           }}
         />
-      </div>
+      </SectionDecorations>
 
       {/* ------------------------------------------------------------------ */}
       {/*  Content                                                           */}

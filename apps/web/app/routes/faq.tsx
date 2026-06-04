@@ -1,6 +1,8 @@
 import { createRoute, Link } from "@tanstack/react-router";
 import { SiGithub } from "react-icons/si";
 
+import { SectionDecorations, BlobBlob } from "@/components/ui/section-decorations";
+
 import { Route as RootRoute } from "./__root";
 
 const faqData = [
@@ -49,9 +51,10 @@ function FAQPage() {
     <div className="min-h-screen">
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-white dark:from-slate-950 via-purple-50/20 dark:via-purple-950 to-white dark:to-slate-950 pt-16 pb-20">
-        {/* Decorative blurred circles */}
-        <div className="pointer-events-none absolute top-10 left-1/4 h-72 w-72 rounded-full bg-purple-200/30 dark:bg-purple-800/30 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-10 right-1/4 h-64 w-64 rounded-full bg-violet-200/20 blur-3xl" />
+        <SectionDecorations>
+          <BlobBlob className="absolute top-10 left-1/4 h-72 w-72 bg-purple-200/30 dark:bg-purple-800/30" />
+          <BlobBlob className="absolute bottom-10 right-1/4 h-64 w-64 bg-violet-200/20" />
+        </SectionDecorations>
 
         <div className="relative mx-auto max-w-3xl px-6 text-center">
           <span className="inline-block rounded-full bg-purple-100 dark:bg-purple-900 px-4 py-1.5 text-sm font-medium text-purple-700 dark:text-purple-300">

@@ -8,17 +8,19 @@ import {
   LuLock,
 } from "react-icons/lu";
 
+import { SectionDecorations, BlobBlob } from "@/components/ui/section-decorations";
+
 const barValues = [30, 45, 60, 75, 85, 95];
 
 export function Hero() {
   return (
     <section className="relative min-h-screen overflow-hidden bg-gradient-to-b from-white dark:from-slate-950 via-purple-50/20 dark:via-purple-950 to-white dark:to-slate-950">
       {/* ---- Decorative background ---- */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden>
+      <SectionDecorations>
         {/* Blurred blobs */}
-        <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-purple-300/20 dark:bg-purple-900/20 blur-3xl" />
-        <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-purple-400/15 dark:bg-purple-800/15 blur-3xl" />
-        <div className="absolute left-1/2 top-1/3 h-64 w-64 -translate-x-1/2 rounded-full bg-purple-200/10 dark:bg-purple-800/10 blur-3xl" />
+        <BlobBlob className="absolute -left-32 -top-32 h-96 w-96 bg-purple-300/20 dark:bg-purple-900/20" />
+        <BlobBlob className="absolute -bottom-32 -right-32 h-96 w-96 bg-purple-400/15 dark:bg-purple-800/15" />
+        <BlobBlob className="absolute left-1/2 top-1/3 h-64 w-64 -translate-x-1/2 bg-purple-200/10 dark:bg-purple-800/10" />
 
         {/* Dot grid */}
         <svg className="absolute inset-0 h-full w-full opacity-[0.035]">
@@ -31,7 +33,7 @@ export function Hero() {
         {/* Orbital rings */}
         <div className="absolute left-1/2 top-[40%] h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-purple-200/30 dark:border-purple-800/30" />
         <div className="absolute left-1/2 top-[40%] h-[760px] w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-purple-100/20 dark:border-purple-900/50" />
-      </div>
+      </SectionDecorations>
 
       {/* ---- Main content ---- */}
       <div className="relative z-10 mx-auto max-w-7xl px-6 pt-8 lg:grid lg:grid-cols-2 lg:gap-12 lg:pt-12">

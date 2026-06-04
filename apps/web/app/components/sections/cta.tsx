@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { LuArrowRight, LuSparkles } from "react-icons/lu";
 
+import { SectionDecorations, BlobBlob } from "@/components/ui/section-decorations";
+
 export function CTA() {
   return (
     <section className="bg-gradient-to-b from-white dark:from-slate-950 to-gray-50 dark:to-slate-950 py-24">
@@ -11,8 +13,10 @@ export function CTA() {
         {/* Main card */}
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-600 via-purple-500 to-violet-400 px-8 py-20 text-center">
           {/* Decorative floating orbs */}
-          <div className="pointer-events-none absolute -left-20 -top-20 h-64 w-64 rounded-full bg-violet-400/30 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-16 -right-16 h-56 w-56 rounded-full bg-purple-300/25 blur-3xl" />
+          <SectionDecorations>
+            <BlobBlob className="absolute -left-20 -top-20 h-64 w-64 bg-violet-400/30" />
+            <BlobBlob className="absolute -bottom-16 -right-16 h-56 w-56 bg-purple-300/25" />
+          </SectionDecorations>
 
           {/* Wave pattern SVG */}
           <svg

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import * as React from "react";
 import { LuArrowRight, LuChevronDown, LuCircleAlert } from "react-icons/lu";
 
+import { SectionDecorations, BlobBlob } from "@/components/ui/section-decorations";
 import { cn } from "@/utils/cn";
 
 const faqs = [
@@ -41,11 +42,11 @@ export function HomeFAQ() {
   return (
     <section className="relative overflow-hidden bg-white dark:bg-slate-900 pb-24 pt-20">
       {/* Decorative blurred circles */}
-      <div className="pointer-events-none absolute inset-0 select-none" aria-hidden>
-        <div className="absolute -left-32 top-1/4 h-64 w-64 rounded-full bg-sol/5 blur-3xl" />
-        <div className="absolute -right-32 top-1/3 h-72 w-72 rounded-full bg-sol2/5 blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 h-48 w-48 rounded-full bg-sol3/5 blur-3xl" />
-      </div>
+      <SectionDecorations className="select-none">
+        <BlobBlob className="absolute -left-32 top-1/4 h-64 w-64 bg-sol/5" />
+        <BlobBlob className="absolute -right-32 top-1/3 h-72 w-72 bg-sol2/5" />
+        <BlobBlob className="absolute bottom-0 left-1/3 h-48 w-48 bg-sol3/5" />
+      </SectionDecorations>
 
       <div className="relative mx-auto max-w-4xl px-6">
         {/* Section header — centered */}
