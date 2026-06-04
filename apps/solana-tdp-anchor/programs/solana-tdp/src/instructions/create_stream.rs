@@ -91,7 +91,7 @@ pub fn create_stream_handler(ctx: Context<CreateStream>, params: CreateStreamPar
 
     // 3. Initialize State
     let stream = &mut ctx.accounts.stream;
-    stream.sender = ctx.accounts.sender.key();
+    stream.creator = ctx.accounts.sender.key();
     stream.recipient = ctx.accounts.recipient.key();
     stream.mint = ctx.accounts.mint.key();
     stream.vault = ctx.accounts.vault.key();

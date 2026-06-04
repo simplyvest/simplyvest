@@ -24,7 +24,7 @@ pub struct CreatorConfig {
 #[account]
 #[derive(InitSpace, Debug)]
 pub struct StreamAccount {
-    pub sender: Pubkey,
+    pub creator: Pubkey,
     pub recipient: Pubkey,
     pub mint: Pubkey,
     pub vault: Pubkey,

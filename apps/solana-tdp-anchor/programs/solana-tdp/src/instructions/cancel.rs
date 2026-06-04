@@ -61,7 +61,7 @@ pub fn cancel_handler(ctx: Context<Cancel>) -> Result<()> {
     // 1. Only the stream creator can cancel
     require_keys_eq!(
         ctx.accounts.sender.key(),
-        stream.sender,
+        stream.creator,
         TdpError::Unauthorized
     );
 
@@ -97,7 +97,7 @@ pub fn cancel_handler(ctx: Context<Cancel>) -> Result<()> {
     stream.amount_withdrawn = stream.amount;
 
     // Copy seed fields to local vars to avoid overlapping borrows
-    let sender = stream.sender;
+    let creator = stream.creator;
     let recipient = stream.recipient;
     let mint = stream.mint;
     let vesting_count = stream.vesting_count;
@@ -105,7 +105,7 @@ pub fn cancel_handler(ctx: Context<Cancel>) -> Result<()> {
 
     let seeds = &[
         b"stream",
-        sender.as_ref(),
+        creator.as_ref(),
         recipient.as_ref(),
         mint.as_ref(),
         &vesting_count.to_le_bytes(),
