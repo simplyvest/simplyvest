@@ -73,7 +73,6 @@ export const setupTest = () => {
       },
     } satisfies SvmGetTxResult;
   };
-
   // TODO: look into proper typing — SVM connection monkey-patch for test harness
   // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   (

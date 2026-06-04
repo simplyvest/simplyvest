@@ -6,6 +6,11 @@ import { describe, it, expect } from "vitest";
 vi.mock("@/routes/__root", () => ({
   Route: { id: "__root", options: {} },
 }));
+// Mock fetch for waitlist API submission — return success by default
+global.fetch = vi.fn().mockResolvedValue({
+  ok: true,
+  json: () => Promise.resolve({ ok: true }),
+});
 
 import { renderWithRouter } from "@/__tests__/test-utils";
 import { Route as WaitlistRoute } from "@/routes/waitlist";
