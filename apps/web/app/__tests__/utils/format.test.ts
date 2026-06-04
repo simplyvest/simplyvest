@@ -2,7 +2,8 @@ import { PublicKey } from "@solana/web3.js";
 import BN from "bn.js";
 import { describe, it, expect } from "vitest";
 
-import { formatAddress, formatSol, formatDate, formatDuration, clamp } from "@/utils/format";
+import { formatAddress } from "@solana-tdp/sdk";
+import { formatSol, formatDate, formatDuration, clamp } from "@/utils/format";
 
 describe("formatAddress", () => {
   it("truncates a PublicKey with default chars", () => {

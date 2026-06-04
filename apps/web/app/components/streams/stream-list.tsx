@@ -2,6 +2,7 @@ import { getVaultPda, PROGRAM_ID } from "@solana-tdp/sdk";
 import type { StreamAccount, MilestoneStreamAccount } from "@solana-tdp/sdk";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -12,20 +13,12 @@ import {
   useWithdrawMilestone,
   useCancelMilestone,
 } from "@/hooks/use-transactions";
-import { formatAddress, formatSol } from "@/utils/format";
+import { formatAddress } from "@solana-tdp/sdk";
+import { formatSol } from "@/utils/format";
 
 import { CancelDialog } from "./cancel-dialog";
 import { StreamCard } from "./stream-card";
 
-const TOKEN_PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
-const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
-
-function getAssociatedTokenAddress(mint: PublicKey, owner: PublicKey): PublicKey {
-  return PublicKey.findProgramAddressSync(
-    [owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()],
-    ASSOCIATED_TOKEN_PROGRAM_ID,
-  )[0];
-}
 
 interface StreamItem {
   publicKey: PublicKey;
@@ -127,7 +120,7 @@ export function StreamList({ role }: { role: "created" | "received" }) {
         {relevantMilestoneStreams.map((s) => {
           const canTrigger = role === "created" && !s.account.milestoneReached;
           const [vaultPda] = getVaultPda(s.publicKey, PROGRAM_ID);
-          const recipientToken = getAssociatedTokenAddress(s.account.mint, s.account.recipient);
+          const recipientToken = getAssociatedTokenAddressSync(s.account.mint, s.account.recipient);
           const isRecipient = publicKey?.equals(s.account.recipient);
           return (
             <div
@@ -165,7 +158,7 @@ export function StreamList({ role }: { role: "created" | "received" }) {
                       size="sm"
                       onClick={() => {
                         if (window.confirm("Cancel this milestone stream?")) {
-                          const senderToken = getAssociatedTokenAddress(
+                          const senderToken = getAssociatedTokenAddressSync(
                             s.account.mint,
                             s.account.creator,
                           );

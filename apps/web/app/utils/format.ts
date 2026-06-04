@@ -1,11 +1,4 @@
-import type { PublicKey } from "@solana/web3.js";
 import BN from "bn.js";
-
-export const formatAddress = (pubkey: PublicKey | string, chars = 4): string => {
-  const s = typeof pubkey === "string" ? pubkey : pubkey.toBase58();
-  return `${s.slice(0, chars)}...${s.slice(-chars)}`;
-};
-
 export const formatSol = (lamports: BN | number | bigint, decimals = 9): string => {
   const n = typeof lamports === "number" ? lamports : Number(lamports);
   return (n / 10 ** decimals).toLocaleString(undefined, {

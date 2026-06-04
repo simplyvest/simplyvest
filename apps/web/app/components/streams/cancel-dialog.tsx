@@ -7,7 +7,8 @@ import { useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useCancel } from "@/hooks/use-transactions";
-import { formatSol, formatAddress } from "@/utils/format";
+import { formatAddress } from "@solana-tdp/sdk";
+import { formatSol } from "@/utils/format";
 
 export function CancelDialog({
   stream,
