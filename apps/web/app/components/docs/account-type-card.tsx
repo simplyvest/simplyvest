@@ -23,7 +23,7 @@ export function AccountTypeCard({
         <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${iconBg[c]}`}>
           <Icon className={`h-6 w-6 ${iconText[c]}`} />
         </div>
-        <span className="mt-5 block font-mono text-[0.68rem] font-semibold uppercase tracking-widest text-gray-400 dark:text-slate-500">
+        <span className="mt-5 block font-mono text-[0.68rem] font-semibold uppercase tracking-widest text-gray-600 dark:text-slate-400">
           {label}
         </span>
         <h3 className="mt-1 font-mono text-lg font-bold text-gray-900 dark:text-slate-100">

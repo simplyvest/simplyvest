@@ -9,7 +9,7 @@ export function Features() {
       <div className="mx-auto max-w-6xl px-6">
         {/* Section header */}
         <div className="mb-16 max-w-2xl space-y-4">
-          <span className="inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold tracking-widest text-gray-500 dark:text-slate-400">
+          <span className="inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold tracking-widest text-gray-800 dark:bg-slate-800 dark:text-slate-300">
             01
           </span>
           <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-slate-100 sm:text-5xl">

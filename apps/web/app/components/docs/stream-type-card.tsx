@@ -27,7 +27,7 @@ export function StreamTypeCard({
             <Icon className={`h-5 w-5 ${iconText[c]}`} />
           </div>
           <span
-            className={`font-mono text-[0.68rem] font-semibold uppercase tracking-widest ${c === "purple" ? "text-purple-600 dark:text-purple-400" : "text-emerald-600"}`}
+            className={`font-mono text-[0.68rem] font-semibold uppercase tracking-widest ${c === "purple" ? "text-purple-600 dark:text-purple-400" : "text-emerald-700 dark:text-emerald-400"}`}
           >
             {label}
           </span>

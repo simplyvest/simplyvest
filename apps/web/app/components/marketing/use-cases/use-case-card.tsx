@@ -67,7 +67,7 @@ function UseCaseCard({ item }: { item: UseCaseItem }) {
       </h3>
 
       {/* Description */}
-      <p className="mb-5 text-sm leading-relaxed text-gray-500 dark:text-slate-400">
+      <p className="mb-5 text-sm leading-relaxed text-gray-600 dark:text-slate-400">
         {item.description}
       </p>
 
@@ -76,7 +76,7 @@ function UseCaseCard({ item }: { item: UseCaseItem }) {
         {item.features.map((feature) => (
           <li
             key={feature}
-            className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-slate-300"
+            className="flex items-start gap-2.5 text-sm text-gray-700 dark:text-slate-300"
           >
             <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-400" />
             {feature}

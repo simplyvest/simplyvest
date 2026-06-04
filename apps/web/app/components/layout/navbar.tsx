@@ -59,7 +59,7 @@ export function Navbar() {
                     "text-sm font-medium transition-colors no-underline hover:no-underline",
                     isActive
                       ? "text-purple-600 dark:text-purple-400"
-                      : "text-gray-600 hover:text-purple-600 dark:text-slate-300 dark:hover:text-purple-400",
+                      : "text-gray-700 hover:text-purple-600 dark:text-slate-300 dark:hover:text-purple-400",
                   )}
                 >
                   {link.label}

@@ -117,7 +117,7 @@ function FAQPage() {
                 to="/waitlist"
                 className="inline-flex items-center gap-2 rounded-xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-6 py-3 text-sm font-semibold text-gray-900 dark:text-slate-100 shadow-sm transition-colors hover:bg-gray-50 no-underline hover:no-underline"
               >
-                <SiGithub className="h-4 w-4" />
+                <SiGithub className="h-4 w-4" aria-hidden="true" focusable="false" />
                 Join Community
               </Link>
             </div>

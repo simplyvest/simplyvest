@@ -51,7 +51,9 @@ export function HomeFAQ() {
       <div className="relative mx-auto max-w-4xl px-6">
         {/* Section header — centered */}
         <div className="border-t border-border pt-14 text-center">
-          <div className="font-mono text-[0.68rem] uppercase tracking-wide text-dim">05</div>
+          <div className="font-mono text-[0.68rem] uppercase tracking-wide text-gray-600 dark:text-slate-400">
+            05
+          </div>
           <h2 className="mt-2">Frequently Asked Questions</h2>
         </div>
 
@@ -71,9 +73,11 @@ export function HomeFAQ() {
                   <span className="pr-4 text-[0.95rem] font-medium text-text">{faq.q}</span>
                   <LuChevronDown
                     className={cn(
-                      "h-4 w-4 shrink-0 text-dim transition-transform duration-200",
+                      "h-4 w-4 shrink-0 transition-transform duration-200 text-gray-600 dark:text-slate-400",
                       isOpen && "rotate-180",
                     )}
+                    aria-hidden="true"
+                    focusable="false"
                   />
                 </div>
 
@@ -91,7 +95,7 @@ export function HomeFAQ() {
         {/* Bottom CTA */}
         <div className="mt-12 text-center">
           <div className="flex items-center justify-center gap-2 text-muted">
-            <LuCircleAlert className="h-4 w-4" />
+            <LuCircleAlert className="h-4 w-4" aria-hidden="true" focusable="false" />
             <span className="text-sm">Still have questions?</span>
           </div>
           <Link
