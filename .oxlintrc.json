@@ -33,10 +33,11 @@
   ],
   "overrides": [
     {
-      "files": ["*.test.ts", "*.spec.ts"],
+      "files": ["*.test.ts", "*.spec.ts", "**/__tests__/setup.ts"],
       "plugins": ["jest"],
       "env": { "jest": true },
       "rules": {
+        "import/no-unassigned-import": "off",
         "jest/require-to-throw-message": "off",
         "jest/no-conditional-expect": "off"
       }
