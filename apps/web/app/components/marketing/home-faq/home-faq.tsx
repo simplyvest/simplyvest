@@ -1,55 +1,23 @@
 import { Link } from "@tanstack/react-router";
 import * as React from "react";
-import { LuArrowRight, LuChevronDown, LuCircleAlert } from "react-icons/lu";
+import { LuArrowRight, LuCircleAlert } from "react-icons/lu";
 
 import { SectionDecorations, BlobBlob } from "@/components/ui/section-decorations";
-import { cn } from "@/utils/cn";
 
-const faqs = [
-  {
-    q: "What is SimplyVest?",
-    a: "SimplyVest is a non-custodial token vesting protocol on Solana. It lets you lock SPL tokens in a program-owned vault and release them to a recipient on a schedule — either time-based (linear vesting) or milestone-gated (triggered by a third party).",
-  },
-  {
-    q: "What's the difference between time-based and milestone vesting?",
-    a: "Time-based streams unlock tokens continuously from start to end, with an optional cliff before the first release. Milestone vesting holds all tokens until a designated authority triggers the release — then the full amount becomes claimable.",
-  },
-  {
-    q: "Is SimplyVest custodial?",
-    a: "No. SimplyVest is fully non-custodial. Tokens are held in a program-derived vault PDA. Only the Solana program can authorize transfers — not even the creator can move tokens outside the vesting schedule.",
-  },
-  {
-    q: "Can I cancel a stream?",
-    a: "Yes, stream creators can cancel at any time. The recipient keeps everything that has already vested, and the unvested portion returns to the creator. Both accounts are closed to recover rent.",
-  },
-  {
-    q: "What happens when a stream completes?",
-    a: "When a stream completes, the recipient withdraws the last vested tokens and the stream and vault accounts are automatically closed. The rent-exempt SOL is returned to the creator.",
-  },
-  {
-    q: "Does SimplyVest charge fees?",
-    a: "SimplyVest charges zero protocol fees. You only pay standard Solana network transaction fees, typically less than $0.01 per transaction.",
-  },
-  {
-    q: "How do I get started?",
-    a: "SimplyVest is currently in development. Join the waitlist to be notified when the beta launches, or read the documentation to learn how the protocol works under the hood.",
-  },
-];
+import { FaqAccordionItem } from "./faq-accordion-item";
+import { faqs } from "./faq-data";
 
 export function HomeFAQ() {
   const [openIndex, setOpenIndex] = React.useState<number | null>(null);
 
   return (
     <section className="relative overflow-hidden bg-white dark:bg-slate-900 pb-24 pt-20">
-      {/* Decorative blurred circles */}
       <SectionDecorations className="select-none">
-        <BlobBlob className="absolute -left-32 top-1/4 h-64 w-64 bg-sol/5" />
-        <BlobBlob className="absolute -right-32 top-1/3 h-72 w-72 bg-sol2/5" />
-        <BlobBlob className="absolute bottom-0 left-1/3 h-48 w-48 bg-sol3/5" />
+        <BlobBlob className="absolute -left-20 -top-20 h-64 w-64 bg-purple-200/30 dark:bg-purple-800/30" />
+        <BlobBlob className="absolute -bottom-16 -right-16 h-56 w-56 bg-violet-200/20 dark:bg-violet-900/20" />
       </SectionDecorations>
 
       <div className="relative mx-auto max-w-4xl px-6">
-        {/* Section header — centered */}
         <div className="border-t border-border pt-14 text-center">
           <div className="font-mono text-[0.68rem] uppercase tracking-wide text-gray-600 dark:text-slate-400">
             05
@@ -57,42 +25,18 @@ export function HomeFAQ() {
           <h2 className="mt-2">Frequently Asked Questions</h2>
         </div>
 
-        {/* FAQ accordion */}
         <div className="mt-10">
-          {faqs.map((faq, i) => {
-            const isOpen = openIndex === i;
-
-            return (
-              <div
-                key={faq.q}
-                className="cursor-pointer border-b border-border"
-                onClick={() => setOpenIndex(isOpen ? null : i)}
-              >
-                {/* Question row */}
-                <div className="flex items-center justify-between py-5">
-                  <span className="pr-4 text-[0.95rem] font-medium text-text">{faq.q}</span>
-                  <LuChevronDown
-                    className={cn(
-                      "h-4 w-4 shrink-0 transition-transform duration-200 text-gray-600 dark:text-slate-400",
-                      isOpen && "rotate-180",
-                    )}
-                    aria-hidden="true"
-                    focusable="false"
-                  />
-                </div>
-
-                {/* Answer */}
-                {isOpen && (
-                  <div className="pb-5 pr-8">
-                    <p className="text-[0.9rem] leading-relaxed text-muted">{faq.a}</p>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {faqs.map((faq, i) => (
+            <FaqAccordionItem
+              key={faq.q}
+              question={faq.q}
+              answer={faq.a}
+              isOpen={openIndex === i}
+              onClick={() => setOpenIndex(openIndex === i ? null : i)}
+            />
+          ))}
         </div>
 
-        {/* Bottom CTA */}
         <div className="mt-12 text-center">
           <div className="flex items-center justify-center gap-2 text-muted">
             <LuCircleAlert className="h-4 w-4" aria-hidden="true" focusable="false" />

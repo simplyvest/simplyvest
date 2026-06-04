@@ -1,8 +1,7 @@
 import * as React from "react";
-import { LuBrackets, LuDollarSign, LuLock, LuShield, LuZap } from "react-icons/lu";
+import { LuBrackets, LuDollarSign, LuLock, LuZap } from "react-icons/lu";
 
-import { SectionDecorations, BlobBlob } from "@/components/ui/section-decorations";
-
+import { SecurityDecorations } from "./security-decorations";
 import { FeatureCard } from "./security-feature-card";
 
 const features = [
@@ -41,31 +40,7 @@ const metrics = ["Audited Smart Contracts", "Non-Custodial Architecture", "Commu
 export function Security() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-white via-purple-50/30 to-white py-24 dark:from-slate-950 dark:via-purple-950/30 dark:to-slate-950">
-      {/* Decorative blurred circles */}
-      <SectionDecorations>
-        <BlobBlob className="absolute -left-32 top-1/4 h-64 w-64 bg-purple-200/30 dark:bg-purple-800/30" />
-        <BlobBlob className="absolute -right-32 top-1/3 h-64 w-64 bg-purple-300/20 dark:bg-purple-700/20" />
-        <BlobBlob className="absolute bottom-1/4 left-1/3 h-48 w-48 bg-purple-100/40 dark:bg-purple-900/40" />
-      </SectionDecorations>
-
-      {/* Security grid pattern */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.03]"
-        aria-hidden
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(147,51,234,1) 1px, transparent 1px), linear-gradient(90deg, rgba(147,51,234,1) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      />
-
-      {/* Large decorative shield */}
-      <div
-        className="pointer-events-none absolute inset-0 flex items-center justify-center"
-        aria-hidden
-      >
-        <LuShield className="h-[600px] w-[600px] text-purple-600 opacity-[0.05] dark:text-purple-400" />
-      </div>
+      <SecurityDecorations />
 
       <div className="relative mx-auto max-w-4xl px-6">
         {/* Section header */}

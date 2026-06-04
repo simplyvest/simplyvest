@@ -1,7 +1,8 @@
-import { createRoute, Link } from "@tanstack/react-router";
-import { SiGithub } from "react-icons/si";
+import { createRoute } from "@tanstack/react-router";
 
-import { SectionDecorations, BlobBlob } from "@/components/ui/section-decorations";
+import { FaqCta } from "@/components/marketing/faq/faq-cta";
+import { FaqHero } from "@/components/marketing/faq/faq-hero";
+import { FaqItem } from "@/components/marketing/faq/faq-item";
 
 import { Route as RootRoute } from "./__root";
 
@@ -49,81 +50,17 @@ export const Route = createRoute({
 function FAQPage() {
   return (
     <div className="min-h-screen">
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-white dark:from-slate-950 via-purple-50/20 dark:via-purple-950 to-white dark:to-slate-950 pt-16 pb-20">
-        <SectionDecorations>
-          <BlobBlob className="absolute top-10 left-1/4 h-72 w-72 bg-purple-200/30 dark:bg-purple-800/30" />
-          <BlobBlob className="absolute bottom-10 right-1/4 h-64 w-64 bg-violet-200/20" />
-        </SectionDecorations>
-
-        <div className="relative mx-auto max-w-3xl px-6 text-center">
-          <span className="inline-block rounded-full bg-purple-100 dark:bg-purple-900 px-4 py-1.5 text-sm font-medium text-purple-700 dark:text-purple-300">
-            FAQ
-          </span>
-          <h1 className="mt-6 text-4xl font-bold tracking-tight text-gray-900 dark:text-slate-100 sm:text-5xl">
-            Frequently Asked Questions
-          </h1>
-          <p className="mt-4 text-lg text-gray-600 dark:text-slate-300">
-            Common questions about SimplyVest, token vesting, and the protocol.
-          </p>
-        </div>
-      </section>
-
-      {/* FAQ List */}
+      <FaqHero />
       <section className="bg-white dark:bg-slate-900 py-20">
         <div className="mx-auto max-w-3xl px-6">
           <div className="flex flex-col gap-10">
             {faqData.map((item, index) => (
-              <div key={item.q}>
-                {index > 0 && (
-                  <div className="mb-10 h-px bg-gradient-to-r from-transparent via-purple-200 dark:via-purple-800 to-transparent" />
-                )}
-                <div className="flex items-start gap-4">
-                  <span className="mt-2.5 h-2.5 w-2.5 shrink-0 rounded-full bg-purple-500" />
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-slate-100 md:text-2xl">
-                      {item.q}
-                    </h3>
-                    <p className="mt-3 text-lg leading-relaxed text-gray-600 dark:text-slate-300">
-                      {item.a}
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <FaqItem key={item.q} question={item.q} answer={item.a} index={index} />
             ))}
           </div>
         </div>
       </section>
-
-      {/* CTA */}
-      <section className="pb-24">
-        <div className="mx-auto max-w-3xl px-6">
-          <div className="rounded-3xl border border-purple-100 dark:border-purple-900/50 bg-gradient-to-br from-purple-50 dark:from-purple-950 to-violet-50 px-8 py-16 text-center sm:px-12">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100 sm:text-3xl">
-              Still have questions?
-            </h2>
-            <p className="mt-3 text-gray-600 dark:text-slate-300">
-              We're here to help. Reach out through our community channels or check the
-              documentation.
-            </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link
-                to="/docs"
-                className="inline-flex items-center gap-2 rounded-xl bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-600/25 dark:shadow-purple-400/25 transition-colors hover:bg-purple-700 no-underline hover:no-underline"
-              >
-                View Documentation
-              </Link>
-              <Link
-                to="/waitlist"
-                className="inline-flex items-center gap-2 rounded-xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-6 py-3 text-sm font-semibold text-gray-900 dark:text-slate-100 shadow-sm transition-colors hover:bg-gray-50 no-underline hover:no-underline"
-              >
-                <SiGithub className="h-4 w-4" aria-hidden="true" focusable="false" />
-                Join Community
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      <FaqCta />
     </div>
   );
 }
