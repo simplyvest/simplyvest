@@ -16,7 +16,10 @@ importers:
         version: 0.51.0
       oxlint:
         specifier: ^1.66.0
-        version: 1.66.0
+        version: 1.66.0(oxlint-tsgolint@0.23.0)
+      oxlint-tsgolint:
+        specifier: ^0.23.0
+        version: 0.23.0
       wrangler:
         specifier: ^4.90.0
         version: 4.90.0(@cloudflare/workers-types@4.20260519.1)(bufferutil@4.1.0)(utf-8-validate@6.0.6)
@@ -120,9 +123,6 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
-      lucide-react:
-        specifier: ^0.487.0
-        version: 0.487.0(react@19.2.6)
       process:
         specifier: ^0.11.10
         version: 0.11.10
@@ -132,6 +132,9 @@ importers:
       react-dom:
         specifier: ^19.2.5
         version: 19.2.6(react@19.2.6)
+      react-icons:
+        specifier: ^5.6.0
+        version: 5.6.0(react@19.2.6)
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -1405,6 +1408,36 @@ packages:
   '@oxfmt/binding-win32-x64-msvc@0.51.0':
     resolution: {integrity: sha512-73RqdAuVKQTkjZIDw08JaDHUM4lav5Qu+CaPwg4QbbA7k8o7LEW0p3UsfZ/F8dsO/pwVYh3RzFcanwLRTTahbQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [x64]
+    os: [win32]
+
+  '@oxlint-tsgolint/darwin-arm64@0.23.0':
+    resolution: {integrity: sha512-gOs9PVr2wEg4ox9z0aJo+RKhhImW86YL5N6yav8BK/rgPsIrwN/igSZ+pbRr723NFvUNKde9fgMhRA6JrXAOZw==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@oxlint-tsgolint/darwin-x64@0.23.0':
+    resolution: {integrity: sha512-kjJ8B+7n4tB9VJdxS5A9GdJt6/bYpzbu4lXp2uO1S3sRmCB5gDEABlGoiePNApRWaW+xqL4b4xgiE727jSLhuA==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@oxlint-tsgolint/linux-arm64@0.23.0':
+    resolution: {integrity: sha512-6dCZuKNu135seMXilkRk9SpCx6i1XgmiipYGalLij5WVRX6ZYS8c4xI7preN/zv9fCXhsQclTIMDu2Y/cytTjw==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@oxlint-tsgolint/linux-x64@0.23.0':
+    resolution: {integrity: sha512-3bdilnyA7kmSTjK27rvjIjSxL5SIg3wt7vwNiRkouWB83ytssyKnuGvxSYJxgMEmFpSutzaBzcCUM2jDtPGcgA==}
+    cpu: [x64]
+    os: [linux]
+
+  '@oxlint-tsgolint/win32-arm64@0.23.0':
+    resolution: {integrity: sha512-j+OEp44SVYiQ+ZD+uttsX7u6L9SvmbbQ77SO1pSFCcJlsVMeCk8qZsjhKfGKuT/jIA+ipOJMVs/+pqUfObBWNw==}
+    cpu: [arm64]
+    os: [win32]
+
+  '@oxlint-tsgolint/win32-x64@0.23.0':
+    resolution: {integrity: sha512-5MyjFuqf+g8OUPJBSGWHJtmoWnzFJYyOg4To9WMQshZYEWig/vtu7JtJ03VWnzHv9LJkAUeApY0gVCOywFR/iQ==}
     cpu: [x64]
     os: [win32]
 
@@ -4883,11 +4916,6 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
-  lucide-react@0.487.0:
-    resolution: {integrity: sha512-aKqhOQ+YmFnwq8dWgGjOuLc8V1R9/c/yOd+zDY4+ohsR2Jo05lSGc3WsstYPIzcTpeosN7LoCkLReUUITvaIvw==}
-    peerDependencies:
-      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-
   lz-string@1.5.0:
     resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
     hasBin: true
@@ -5202,6 +5230,10 @@ packages:
       svelte:
         optional: true
 
+  oxlint-tsgolint@0.23.0:
+    resolution: {integrity: sha512-3mBv3CoPbh8dFbzfDGIWa2ytZjn2v+3EX4aKRXjIhsoGFzG8GCjfRirz3rwZf1wYbZzsNLTSgpw8VjQuWdp/jA==}
+    hasBin: true
+
   oxlint@1.66.0:
     resolution: {integrity: sha512-N4LLxYLd94KEBqXDMDM5f+2PUpItTjDLreXe2Gn5KhjhCK4Qp2YUXaBi8Yu325ryOgKwt22m45fpD7nPOn69Yw==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -5424,6 +5456,11 @@ packages:
     resolution: {integrity: sha512-0prMI+hvBbPjsWnxDLxlCGyM8PN6UuWjEUCYmZhO67xIV9Xasa/r/vDnq+Xyq4Lo27g8QSbO5YzARu0D1Sps3g==}
     peerDependencies:
       react: ^19.2.6
+
+  react-icons@5.6.0:
+    resolution: {integrity: sha512-RH93p5ki6LfOiIt0UtDyNg/cee+HLVR6cHHtW3wALfo+eOHTp8RnU2kRkI6E+H19zMIs03DyxUG/GfZMOGvmiA==}
+    peerDependencies:
+      react: '*'
 
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
@@ -7623,6 +7660,24 @@ snapshots:
     optional: true
 
   '@oxfmt/binding-win32-x64-msvc@0.51.0':
+    optional: true
+
+  '@oxlint-tsgolint/darwin-arm64@0.23.0':
+    optional: true
+
+  '@oxlint-tsgolint/darwin-x64@0.23.0':
+    optional: true
+
+  '@oxlint-tsgolint/linux-arm64@0.23.0':
+    optional: true
+
+  '@oxlint-tsgolint/linux-x64@0.23.0':
+    optional: true
+
+  '@oxlint-tsgolint/win32-arm64@0.23.0':
+    optional: true
+
+  '@oxlint-tsgolint/win32-x64@0.23.0':
     optional: true
 
   '@oxlint/binding-android-arm-eabi@1.66.0':
@@ -12534,10 +12589,6 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
-  lucide-react@0.487.0(react@19.2.6):
-    dependencies:
-      react: 19.2.6
-
   lz-string@1.5.0: {}
 
   magic-string@0.30.21:
@@ -12970,7 +13021,16 @@ snapshots:
       '@oxfmt/binding-win32-ia32-msvc': 0.51.0
       '@oxfmt/binding-win32-x64-msvc': 0.51.0
 
-  oxlint@1.66.0:
+  oxlint-tsgolint@0.23.0:
+    optionalDependencies:
+      '@oxlint-tsgolint/darwin-arm64': 0.23.0
+      '@oxlint-tsgolint/darwin-x64': 0.23.0
+      '@oxlint-tsgolint/linux-arm64': 0.23.0
+      '@oxlint-tsgolint/linux-x64': 0.23.0
+      '@oxlint-tsgolint/win32-arm64': 0.23.0
+      '@oxlint-tsgolint/win32-x64': 0.23.0
+
+  oxlint@1.66.0(oxlint-tsgolint@0.23.0):
     optionalDependencies:
       '@oxlint/binding-android-arm-eabi': 1.66.0
       '@oxlint/binding-android-arm64': 1.66.0
@@ -12991,6 +13051,7 @@ snapshots:
       '@oxlint/binding-win32-arm64-msvc': 1.66.0
       '@oxlint/binding-win32-ia32-msvc': 1.66.0
       '@oxlint/binding-win32-x64-msvc': 1.66.0
+      oxlint-tsgolint: 0.23.0
 
   p-limit@2.3.0:
     dependencies:
@@ -13244,6 +13305,10 @@ snapshots:
     dependencies:
       react: 19.2.6
       scheduler: 0.27.0
+
+  react-icons@5.6.0(react@19.2.6):
+    dependencies:
+      react: 19.2.6
 
   react-is@16.13.1: {}
 
