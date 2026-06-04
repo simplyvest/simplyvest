@@ -10,6 +10,10 @@ Object.defineProperty(window, "matchMedia", {
   })),
 });
 
+// Mock window.scrollTo (not implemented in jsdom)
+// oxlint-disable-next-line typescript/no-unsafe-type-assertion
+window.scrollTo = vi.fn() as unknown as typeof window.scrollTo;
+
 // Mock @ledgerhq/errors which has a module resolution issue
 // when transitively loaded through Solana wallet adapter in jsdom.
 vi.mock("@ledgerhq/errors", () => ({

@@ -16,5 +16,6 @@ export default defineConfig({
       inline: ["@ledgerhq/errors"],
     },
     css: true,
+    execArgv: ["--localstorage-file", "/dev/null"],
   },
 });
