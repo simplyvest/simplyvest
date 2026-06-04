@@ -193,8 +193,7 @@ describe("Feature 5: security audit", () => {
     });
 
     it("rejects cancel_milestone with non-creator signer", async () => {
-      const { sender, mint, streamPDA, vaultPDA } = await createMilestoneFixture(100_000_000);
-      const senderAta = getAssociatedTokenAddressSync(mint, sender.publicKey, true);
+      const { senderToken, mint, streamPDA, vaultPDA } = await createMilestoneFixture(100_000_000);
       const imposter = Keypair.generate();
       svmAirdrop([imposter.publicKey]);
 
@@ -202,7 +201,7 @@ describe("Feature 5: security audit", () => {
         program.methods
           .cancelMilestone()
           .accountsPartial(
-            getCancelMilestoneAccounts(imposter.publicKey, streamPDA, vaultPDA, senderAta, mint),
+            getCancelMilestoneAccounts(imposter.publicKey, streamPDA, vaultPDA, senderToken, mint),
           )
           .signers([imposter])
           .rpc(),
@@ -508,8 +507,8 @@ describe("Feature 5: security audit", () => {
     });
 
     it("cancel_milestone sets cancelled before CPI", async () => {
-      const { sender, mint, streamPDA, vaultPDA } = await createMilestoneFixture(100_000_000);
-      const ata = getAssociatedTokenAddressSync(mint, sender.publicKey, true);
+      const { sender, senderToken, mint, streamPDA, vaultPDA } =
+        await createMilestoneFixture(100_000_000);
 
       const before = await program.account.milestoneStreamAccount.fetch(streamPDA);
       expect(before.cancelled).toBe(false);
@@ -517,7 +516,7 @@ describe("Feature 5: security audit", () => {
       await program.methods
         .cancelMilestone()
         .accountsPartial(
-          getCancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, ata, mint),
+          getCancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderToken, mint),
         )
         .signers([sender])
         .rpc();
@@ -582,15 +581,14 @@ describe("Feature 5: security audit", () => {
     });
 
     it("rejects cancel_milestone with wrong vault PDA", async () => {
-      const { sender, mint, streamPDA } = await createMilestoneFixture(100_000_000);
-      const ata = getAssociatedTokenAddressSync(mint, sender.publicKey, true);
+      const { sender, senderToken, mint, streamPDA } = await createMilestoneFixture(100_000_000);
       const [wrongVault] = getVaultPda(Keypair.generate().publicKey, PROGRAM_ID);
 
       await expect(
         program.methods
           .cancelMilestone()
           .accountsPartial(
-            getCancelMilestoneAccounts(sender.publicKey, streamPDA, wrongVault, ata, mint),
+            getCancelMilestoneAccounts(sender.publicKey, streamPDA, wrongVault, senderToken, mint),
           )
           .signers([sender])
           .rpc(),

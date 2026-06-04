@@ -39,10 +39,6 @@ const cancelMilestoneAccounts = (
   mint: PublicKey,
 ) => getCancelMilestoneAccounts(sender, stream, vault, senderToken, mint);
 
-// Cancel milestone requires sender_token to be the ATA of sender
-const senderAta = (mint: PublicKey, sender: PublicKey) =>
-  getAssociatedTokenAddressSync(mint, sender, true);
-
 describe("Feature 3: milestone streams", () => {
   let program: SetupTest["program"];
   let svm: SetupTest["svm"];
@@ -224,16 +220,14 @@ describe("Feature 3: milestone streams", () => {
   });
 
   it("rejects trigger if already cancelled", async () => {
-    const { sender, milestoneAuthority, mint, streamPDA, vaultPDA } =
+    const { sender, senderToken, milestoneAuthority, mint, streamPDA, vaultPDA } =
       await createMilestoneStreamFixture(100_000_000);
-
-    const senderAtaAddr = senderAta(mint, sender.publicKey);
 
     // Cancel first
     await program.methods
       .cancelMilestone()
       .accountsPartial(
-        cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint),
+        cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderToken, mint),
       )
       .signers([sender])
       .rpc();
@@ -448,15 +442,15 @@ describe("Feature 3: milestone streams", () => {
   // ── cancel_milestone ─────────────────────────────────────────────
 
   it("cancel_milestone before trigger returns all to creator", async () => {
-    const { sender, mint, streamPDA, vaultPDA } = await createMilestoneStreamFixture(100_000_000);
+    const { sender, senderToken, mint, streamPDA, vaultPDA } =
+      await createMilestoneStreamFixture(100_000_000);
 
-    const senderAtaAddr = senderAta(mint, sender.publicKey);
     const vaultBefore = svmTokenBalance(vaultPDA);
 
     await program.methods
       .cancelMilestone()
       .accountsPartial(
-        cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint),
+        cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderToken, mint),
       )
       .signers([sender])
       .rpc();
@@ -464,19 +458,17 @@ describe("Feature 3: milestone streams", () => {
     expect(svm.getAccount(vaultPDA)).toBeNull();
 
     // All tokens returned to creator (via ATA which init_if_needed creates)
-    expect(svmTokenBalance(senderAtaAddr)).toBe(vaultBefore);
+    expect(svmTokenBalance(senderToken)).toBe(vaultBefore);
   });
 
   it("emits MilestoneCancelled event on cancel", async () => {
-    const { sender, mint, streamPDA, vaultPDA, amount } =
+    const { sender, senderToken, mint, streamPDA, vaultPDA, amount } =
       await createMilestoneStreamFixture(100_000_000);
-
-    const senderAtaAddr = senderAta(mint, sender.publicKey);
 
     const txSig = await program.methods
       .cancelMilestone()
       .accountsPartial(
-        cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint),
+        cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderToken, mint),
       )
       .signers([sender])
       .rpc();
@@ -490,9 +482,9 @@ describe("Feature 3: milestone streams", () => {
   });
 
   it("rejects cancel_milestone by non-creator", async () => {
-    const { sender, mint, streamPDA, vaultPDA } = await createMilestoneStreamFixture(100_000_000);
+    const { senderToken, mint, streamPDA, vaultPDA } =
+      await createMilestoneStreamFixture(100_000_000);
 
-    const senderAtaAddr = senderAta(mint, sender.publicKey);
     const imposter = Keypair.generate();
     svmAirdrop([imposter.publicKey]);
 
@@ -500,7 +492,7 @@ describe("Feature 3: milestone streams", () => {
       program.methods
         .cancelMilestone()
         .accountsPartial(
-          cancelMilestoneAccounts(imposter.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint),
+          cancelMilestoneAccounts(imposter.publicKey, streamPDA, vaultPDA, senderToken, mint),
         )
         .signers([imposter])
         .rpc(),
@@ -508,15 +500,14 @@ describe("Feature 3: milestone streams", () => {
   });
 
   it("rejects cancel_milestone if already cancelled", async () => {
-    const { sender, mint, streamPDA, vaultPDA } = await createMilestoneStreamFixture(100_000_000);
-
-    const senderAtaAddr = senderAta(mint, sender.publicKey);
+    const { sender, senderToken, mint, streamPDA, vaultPDA } =
+      await createMilestoneStreamFixture(100_000_000);
 
     // First cancel succeeds
     await program.methods
       .cancelMilestone()
       .accountsPartial(
-        cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint),
+        cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderToken, mint),
       )
       .signers([sender])
       .rpc();
@@ -526,7 +517,7 @@ describe("Feature 3: milestone streams", () => {
       program.methods
         .cancelMilestone()
         .accountsPartial(
-          cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint),
+          cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderToken, mint),
         )
         .signers([sender])
         .rpc(),
@@ -534,10 +525,8 @@ describe("Feature 3: milestone streams", () => {
   });
 
   it("rejects cancel_milestone after milestone reached", async () => {
-    const { sender, milestoneAuthority, mint, streamPDA, vaultPDA } =
+    const { sender, senderToken, milestoneAuthority, mint, streamPDA, vaultPDA } =
       await createMilestoneStreamFixture(100_000_000);
-
-    const senderAtaAddr = senderAta(mint, sender.publicKey);
 
     // Trigger milestone
     await program.methods
@@ -551,7 +540,7 @@ describe("Feature 3: milestone streams", () => {
       program.methods
         .cancelMilestone()
         .accountsPartial(
-          cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint),
+          cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderToken, mint),
         )
         .signers([sender])
         .rpc(),
@@ -559,15 +548,15 @@ describe("Feature 3: milestone streams", () => {
   });
 
   it("closes vault and stream on cancel", async () => {
-    const { sender, mint, streamPDA, vaultPDA } = await createMilestoneStreamFixture(100_000_000);
+    const { sender, senderToken, mint, streamPDA, vaultPDA } =
+      await createMilestoneStreamFixture(100_000_000);
 
-    const senderAtaAddr = senderAta(mint, sender.publicKey);
     const senderBefore = svm.getBalance(sender.publicKey) ?? BigInt(0);
 
     await program.methods
       .cancelMilestone()
       .accountsPartial(
-        cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderAtaAddr, mint),
+        cancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderToken, mint),
       )
       .signers([sender])
       .rpc();
