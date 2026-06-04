@@ -80,6 +80,28 @@ pub fn create_stream_handler(ctx: Context<CreateStream>, params: CreateStreamPar
         TdpError::StartTimeInPast
     );
 
+    // Mint owner must be SPL Token or Token-2022
+    let mint_owner = ctx.accounts.mint.to_account_info().owner;
+    require!(
+        mint_owner == &anchor_spl::token::ID || mint_owner == &spl_token_2022::ID,
+        TdpError::UnsupportedTokenProgram
+    );
+
+    // Reject Token-2022 mints with transfer-hook extension
+    if mint_owner == &spl_token_2022::ID {
+        use spl_token_2022::extension::transfer_hook::TransferHook;
+        use spl_token_2022::extension::BaseStateWithExtensions;
+        use spl_token_2022::extension::StateWithExtensions;
+        use spl_token_2022::state::Mint;
+        let mint_info = ctx.accounts.mint.to_account_info();
+        let mint_data = mint_info.try_borrow_data()?;
+        if let Ok(extensions) = StateWithExtensions::<Mint>::unpack(&mint_data) {
+            if extensions.get_extension::<TransferHook>().is_ok() {
+                return err!(TdpError::TokenHasTransferHook);
+            }
+        }
+    }
+
     // 2. Transfer tokens to Vault PDA
     let cpi_accounts = Transfer {
         from: ctx.accounts.sender_token.to_account_info(),
