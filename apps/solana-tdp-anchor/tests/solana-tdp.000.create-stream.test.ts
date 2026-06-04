@@ -64,7 +64,7 @@ describe("Feature 0: create_stream", () => {
       .rpc();
 
     const stream = await program.account.streamAccount.fetch(streamPDA);
-    expect(stream.sender.toString()).toBe(sender.publicKey.toString());
+    expect(stream.creator.toString()).toBe(sender.publicKey.toString());
     expect(stream.recipient.toString()).toBe(recipient.publicKey.toString());
     expect(stream.mint.toString()).toBe(mint.toString());
     expect(stream.vault.toString()).toBe(vaultPDA.toString());
