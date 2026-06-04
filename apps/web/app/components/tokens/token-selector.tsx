@@ -34,47 +34,46 @@ export function TokenSelector({
   valueRef.current = value;
 
   useEffect(() => {
-    if (!publicKey) return;
     let cancelled = false;
-    setLoading(true);
-    (async () => {
-      try {
-        const { value: accounts } = await connection.getTokenAccountsByOwner(publicKey, {
-          programId: TOKEN_PROGRAM_ID,
-        });
-        const mints = accounts
-          .map((acc) => {
-            const data = Buffer.from(acc.account.data);
-            const mint = new PublicKey(data.slice(0, 32));
-            const balance = data.readBigUInt64LE(64);
-            return { mint, balance, address: acc.pubkey };
-          })
-          .filter((t) => t.balance > 0);
-        mints.sort((a, b) => Number(b.balance - a.balance));
-
-        const metaMap = new Map<string, TokenMetadata | null>();
-        await Promise.all(
-          mints.map(async (t) => {
-            const key = t.mint.toBase58();
-            if (!metaMap.has(key)) {
-              const meta = await fetchTokenMetadata(connection, t.mint);
-              metaMap.set(key, meta);
-            }
-          }),
-        );
-
-        if (cancelled) return;
-        const list = mints.map((t) => {
-          const meta = metaMap.get(t.mint.toBase58()) ?? null;
-          return Object.assign(t, { meta });
-        });
-        setTokens(list);
-        if (list.length > 0 && !valueRef.current) {
-          onChangeRef.current(mintToAddress(list[0].mint));
-        }
-      } catch {}
-      if (!cancelled) setLoading(false);
-    })();
+    if (publicKey) {
+      setLoading(true);
+      void (async () => {
+        try {
+          const { value: accounts } = await connection.getTokenAccountsByOwner(publicKey, {
+            programId: TOKEN_PROGRAM_ID,
+          });
+          const mints = accounts
+            .map((acc) => {
+              const data = Buffer.from(acc.account.data);
+              const mint = new PublicKey(data.subarray(0, 32));
+              const balance = data.readBigUInt64LE(64);
+              return { mint, balance, address: acc.pubkey };
+            })
+            .filter((t) => t.balance > 0);
+          mints.sort((a, b) => Number(b.balance - a.balance));
+          const metaMap = new Map<string, TokenMetadata | null>();
+          await Promise.all(
+            mints.map(async (t) => {
+              const key = t.mint.toBase58();
+              if (!metaMap.has(key)) {
+                const meta = await fetchTokenMetadata(connection, t.mint);
+                metaMap.set(key, meta);
+              }
+            }),
+          );
+          if (cancelled) return;
+          const list = mints.map((t) => {
+            const meta = metaMap.get(t.mint.toBase58()) ?? null;
+            return Object.assign(t, { meta });
+          });
+          setTokens(list);
+          if (list.length > 0 && !valueRef.current) {
+            onChangeRef.current(mintToAddress(list[0].mint));
+          }
+        } catch {}
+        if (!cancelled) setLoading(false);
+      })();
+    }
     return () => {
       cancelled = true;
     };
