@@ -31,9 +31,9 @@ export function StreamCard({
 }) {
   const { publicKey } = useWallet();
   const withdraw = useWithdraw();
-  const isSender = publicKey?.equals(stream.sender);
+  const isSender = publicKey?.equals(stream.creator);
   const isRecipient = publicKey?.equals(stream.recipient);
-  const counterparty = isSender ? stream.recipient : stream.sender;
+  const counterparty = isSender ? stream.recipient : stream.creator;
 
   const clockTime = Math.floor(Date.now() / 1000);
   const status = getStatus(stream);
@@ -129,7 +129,7 @@ export function StreamCard({
                   withdraw.mutate({
                     stream: pda,
                     vault: vaultPda,
-                    sender: stream.sender,
+                    sender: stream.creator,
                     mint: stream.mint,
                     recipientToken,
                     amount: claimable.toNumber(),

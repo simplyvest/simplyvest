@@ -24,8 +24,8 @@ export function CancelDialog({
   const vaultPda = useMemo(() => getVaultPda(pda, PROGRAM_ID)[0], [pda]);
 
   const senderAta = useMemo(
-    () => (publicKey ? getAssociatedTokenAddressSync(stream.mint, stream.sender, true) : null),
-    [stream.mint, stream.sender, publicKey],
+    () => (publicKey ? getAssociatedTokenAddressSync(stream.mint, stream.creator, true) : null),
+    [stream.mint, stream.creator, publicKey],
   );
 
   const recipientAta = useMemo(

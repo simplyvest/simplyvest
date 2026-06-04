@@ -15,7 +15,7 @@ export function useStreams(sender?: PublicKey | null) {
       const streams = await fetchStreams(connection, program.programId);
       if (sender) {
         return streams.filter((s: { publicKey: PublicKey; account: StreamAccount }) =>
-          s.account.sender.equals(sender),
+          s.account.creator.equals(sender),
         );
       }
       return streams;

@@ -55,7 +55,7 @@ export function StreamList({ role }: { role: "created" | "received" }) {
   const isLoading = streamsLoading || milestoneLoading;
 
   const createdStreams = (streams ?? []).filter((s: StreamItem) =>
-    publicKey?.equals(s.account.sender),
+    publicKey?.equals(s.account.creator),
   );
   const receivedStreams = (streams ?? []).filter((s: StreamItem) =>
     publicKey?.equals(s.account.recipient),
