@@ -21,19 +21,6 @@ import {
 } from "@solana/web3.js";
 import { fromWorkspace, LiteSVMProvider } from "anchor-litesvm";
 
-interface SvmTxMeta {
-  logs?(): string[];
-  meta?(): { logs(): string[] };
-  err?(): null;
-}
-
-interface SvmGetTxResult {
-  meta: {
-    logMessages: string[];
-    err: null;
-  };
-}
-
 interface ProviderSend {
   connection: Connection;
   sendAndConfirm?(
@@ -53,33 +40,6 @@ export const setupTest = () => {
   anchor.setProvider(provider);
 
   const program = new anchor.Program<SolanaTdp>(SOLANA_TDP_PROGRAM_IDL, provider);
-
-  // --- SVM-based helpers ---
-
-  const svmGetTransaction = (txSig: string) => {
-    const meta: unknown = svm.getTransaction(anchor.utils.bytes.bs58.decode(txSig));
-    if (!meta) return null;
-    const m = meta as SvmTxMeta;
-    const logs =
-      // TODO: look into proper typing — SVM monkey-patch meta type varies by runtime context
-      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-      "logs" in m ? (m.logs as () => string[])() : (m.meta as () => { logs(): string[] })().logs();
-    return {
-      meta: {
-        logMessages: logs,
-        // TODO: look into proper typing — SVM monkey-patch meta type varies by runtime context
-        // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-        err: "err" in m ? (m.err as () => null)() : null,
-      },
-    } satisfies SvmGetTxResult;
-  };
-  // TODO: look into proper typing — SVM connection monkey-patch for test harness
-  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-  (
-    provider.connection as Omit<Connection, "getTransaction"> & {
-      getTransaction(sig: string): Promise<SvmGetTxResult | null>;
-    }
-  ).getTransaction = async (sig: string) => svmGetTransaction(sig);
 
   const svmAirdrop = (addresses: PublicKey[]) => {
     for (const address of addresses) {

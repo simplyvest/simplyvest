@@ -1,6 +1,7 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { Outlet, createRoute, Link, useRouterState } from "@tanstack/react-router";
+import { Outlet, createRoute, Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import * as React from "react";
 
 import { WalletButton } from "@/components/solana/wallet-button";
 import { Button } from "@/components/ui/button";
@@ -59,8 +60,17 @@ function AppHeader() {
 function AppLayout() {
   const { publicKey, connecting } = useWallet();
   const { setVisible } = useWalletModal();
+  const navigate = useNavigate();
+  const location = useRouterState().location;
 
   const showContent = publicKey && !connecting;
+
+  // Redirect /app to /app/dashboard when wallet is connected
+  React.useEffect(() => {
+    if (showContent && location.pathname === "/app") {
+      void navigate({ to: "/app/dashboard", search: { tab: "created" }, replace: true });
+    }
+  }, [showContent, location.pathname, navigate]);
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col px-6 pt-20">
