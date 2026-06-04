@@ -10,8 +10,6 @@ import { SolanaProvider } from "@/components/solana/solana-provider";
 import { trackPageView } from "@/utils/analytics";
 
 const DEV = import.meta.env.DEV;
-import { Footer } from "@/components/layout/footer";
-import { Header } from "@/components/layout/header";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,7 +38,6 @@ export const Route = createRootRoute({
 function RootComponent() {
   const routerState = useRouterState();
   const location = routerState.location;
-  const isAppRoute = location.pathname.startsWith("/app");
   const isLoading = routerState.status === "pending";
 
   React.useEffect(() => {
@@ -50,9 +47,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <SolanaProvider>
-        <div className="flex min-h-screen flex-col bg-bg text-text">
-          {!isAppRoute && <Header />}
-
+        <div className="flex min-h-screen flex-col bg-white text-text">
           <a
             href="#main-content"
             className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-sol focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:no-underline"
@@ -69,8 +64,6 @@ function RootComponent() {
               <Outlet />
             )}
           </main>
-
-          {!isAppRoute && <Footer />}
 
           {DEV && (
             <TanStackDevtools

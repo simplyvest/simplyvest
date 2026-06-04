@@ -1,43 +1,192 @@
 import * as React from "react";
+import { Users, Target, User } from "lucide-react";
 
-import { GapCard } from "@/components/ui/gap-card";
-import { SectionHeader } from "@/components/ui/section-header";
+import { cn } from "@/utils/cn";
 
 const useCases = [
   {
+    icon: Users,
     number: "01",
-    title: "Team Vesting",
+    title: "TEAM VESTING",
     description:
-      "Grant tokens to team members with custom cliff and vesting schedules. Align long-term incentives with time-locked distributions that auto-release on schedule.",
+      "Distribute tokens to team members with structured vesting schedules. Align long-term incentives with time-locked distributions that auto-release on schedule.",
+    features: [
+      "Employee token grants",
+      "Advisor compensation",
+      "Investor allocations",
+      "Automated distribution",
+    ],
+    highlighted: false,
   },
   {
+    icon: Target,
     number: "02",
-    title: "Milestone Payments",
+    title: "MILESTONE PAYMENTS",
     description:
-      "Pay freelancers and contractors upon verified completion. A designated milestone authority triggers the release — no more chasing invoices or holding deposits.",
+      "Release tokens based on verified milestone completion. A designated authority triggers the release — tie unlocks to real-world achievements and on-chain proof.",
+    features: [
+      "Condition-based releases",
+      "Custom milestone criteria",
+      "Manual or automated triggers",
+      "Flexible unlock logic",
+    ],
+    highlighted: true,
   },
   {
+    icon: User,
     number: "03",
-    title: "Self-Vesting",
+    title: "SELF-VESTING",
     description:
-      "Lock your own tokens to prevent impulsive sales. Create a stream to yourself with a vesting schedule that forces discipline on your future self.",
+      "Lock your own tokens to prevent impulsive sales. Create a commitment display that builds community trust through transparent personal vesting.",
+    features: [
+      "Personal token locks",
+      "Commitment displays",
+      "Community trust building",
+      "Disciplined vesting",
+    ],
+    highlighted: false,
   },
 ];
 
+function DecorativeDots() {
+  return (
+    <svg
+      className="absolute right-5 top-5 h-4 w-4 text-purple-300/60"
+      viewBox="0 0 16 16"
+      fill="currentColor"
+    >
+      <circle cx="2" cy="2" r="1.5" />
+      <circle cx="8" cy="2" r="1.5" />
+      <circle cx="14" cy="2" r="1.5" />
+    </svg>
+  );
+}
+
+function BottomCircles() {
+  return (
+    <svg
+      className="absolute bottom-4 left-1/2 h-6 w-16 -translate-x-1/2 text-purple-200/40"
+      viewBox="0 0 64 24"
+      fill="currentColor"
+    >
+      <circle cx="8" cy="12" r="3" />
+      <circle cx="20" cy="12" r="3" />
+      <circle cx="32" cy="12" r="3" />
+      <circle cx="44" cy="12" r="3" />
+      <circle cx="56" cy="12" r="3" />
+    </svg>
+  );
+}
+
+function UseCaseCard({
+  item,
+  index,
+}: {
+  item: (typeof useCases)[number];
+  index: number;
+}) {
+  const Icon = item.icon;
+
+  return (
+    <div
+      className={cn(
+        "group relative rounded-[28px] border bg-white p-8 transition-all duration-300",
+        item.highlighted
+          ? "border-purple-300 shadow-lg md:-mt-4 md:mb-4"
+          : "border-gray-200 shadow-sm hover:border-purple-200 hover:shadow-md",
+      )}
+    >
+      {/* Glow effect behind card */}
+      <div
+        className={cn(
+          "pointer-events-none absolute inset-0 -z-10 rounded-[28px] opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100",
+          item.highlighted
+            ? "bg-gradient-to-br from-purple-200/60 to-violet-300/40 opacity-60"
+            : "bg-gradient-to-br from-purple-100/50 to-violet-100/30",
+        )}
+      />
+
+      {/* Hover gradient overlay */}
+      <div className="pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-br from-purple-50/0 to-violet-50/0 opacity-0 transition-opacity duration-300 group-hover:from-purple-50/40 group-hover:to-violet-50/20 group-hover:opacity-100" />
+
+      {/* Large background number */}
+      <div className="pointer-events-none absolute right-4 top-4 font-display text-8xl font-bold leading-none text-purple-50/80">
+        {item.number}
+      </div>
+
+      {/* Corner dots */}
+      <DecorativeDots />
+
+      {/* Icon badge */}
+      <div
+        className={cn(
+          "mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl",
+          item.highlighted
+            ? "bg-gradient-to-br from-purple-500 to-violet-600 text-white shadow-md shadow-purple-500/25"
+            : "bg-purple-50 text-purple-600",
+        )}
+      >
+        <Icon className="h-6 w-6" />
+      </div>
+
+      {/* Decorative line */}
+      <div className="mb-4 h-0.5 w-12 bg-gradient-to-r from-purple-400 to-violet-400" />
+
+      {/* Title */}
+      <h3 className="mb-3 font-display text-lg font-semibold tracking-wide text-gray-900">
+        {item.title}
+      </h3>
+
+      {/* Description */}
+      <p className="mb-5 text-sm leading-relaxed text-gray-500">
+        {item.description}
+      </p>
+
+      {/* Features list */}
+      <ul className="space-y-2.5">
+        {item.features.map((feature) => (
+          <li key={feature} className="flex items-start gap-2.5 text-sm text-gray-600">
+            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-400" />
+            {feature}
+          </li>
+        ))}
+      </ul>
+
+      {/* Bottom decorative pattern */}
+      <BottomCircles />
+    </div>
+  );
+}
+
 export function UseCases() {
   return (
-    <section className="mx-auto max-w-4xl px-6">
-      <SectionHeader
-        num="03"
-        title="Use Cases"
-        sub="From team compensation to milestone-based payments — SimplyVest handles the distribution so you can focus on building."
-      />
-      <div className="mt-8 grid gap-4 sm:grid-cols-3">
-        {useCases.map((uc) => (
-          <GapCard key={uc.number} number={uc.number} title={uc.title}>
-            {uc.description}
-          </GapCard>
-        ))}
+    <section className="relative overflow-hidden bg-white py-24">
+      {/* Decorative blurred circles */}
+      <div className="pointer-events-none absolute -left-32 top-1/4 h-64 w-64 rounded-full bg-purple-200/30 blur-3xl" />
+      <div className="pointer-events-none absolute -right-32 top-1/3 h-72 w-72 rounded-full bg-violet-200/25 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-0 left-1/3 h-48 w-48 rounded-full bg-purple-100/40 blur-3xl" />
+
+      <div className="relative mx-auto max-w-6xl px-6">
+        {/* Section header */}
+        <div className="mb-16 text-center">
+          <span className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-purple-200 bg-purple-50 px-4 py-1.5 font-mono text-xs font-medium uppercase tracking-wider text-purple-600">
+            03
+          </span>
+          <h2 className="mt-4 font-display text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+            Use Cases
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-500">
+            From team compensation to milestone-based payments — SimplyVest handles the distribution so
+            you can focus on building.
+          </p>
+        </div>
+
+        {/* Cards grid */}
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+          {useCases.map((item, i) => (
+            <UseCaseCard key={item.number} item={item} index={i} />
+          ))}
+        </div>
       </div>
     </section>
   );

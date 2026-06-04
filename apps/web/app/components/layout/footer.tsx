@@ -1,29 +1,108 @@
-import * as React from "react";
+import { Link } from "@tanstack/react-router";
+import { Github, Twitter, Mail } from "lucide-react";
+
+const footerLinks = {
+  product: [
+    { name: "Features", href: "/#features" },
+    { name: "Documentation", href: "/docs" },
+    { name: "Waitlist", href: "/waitlist" },
+  ],
+  resources: [
+    { name: "Docs", href: "/docs" },
+    { name: "FAQ", href: "/faq" },
+    { name: "Support", href: "/waitlist" },
+  ],
+  company: [
+    { name: "About", href: "/" },
+    { name: "GitHub", href: "https://github.com/simplyvest/simplyvest" },
+    { name: "App", href: "/app" },
+  ],
+};
 
 export function Footer() {
   return (
-    <footer className="mt-16 border-t border-border px-6 py-6">
-      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2 font-mono text-[0.68rem] text-muted">
-        <span>SimplyVest &mdash; Solana Vesting Protocol</span>
-        <div className="flex gap-4">
-          <a
-            href="https://github.com/simplyvest/simplyvest"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted transition-colors hover:text-text"
-            aria-label="SimplyVest on GitHub (opens in new tab)"
-          >
-            GitHub
-          </a>
-          <a
-            href="https://x.com/simplyvestsol"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted transition-colors hover:text-text"
-            aria-label="SimplyVest on X (opens in new tab)"
-          >
-            X
-          </a>
+    <footer className="relative bg-white border-t border-purple-100">
+      <div className="mx-auto max-w-7xl px-6 py-16">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-12">
+          {/* Logo & Description */}
+          <div className="col-span-2">
+            <Link to="/" className="flex items-center gap-2 mb-4 no-underline hover:no-underline">
+              <img src="/simplyvest.png" alt="SimplyVest" className="h-8 w-auto" />
+              <span className="text-lg font-semibold text-gray-900">SimplyVest</span>
+            </Link>
+            <p className="text-sm text-gray-500 leading-relaxed max-w-xs">
+              Non-custodial, programmable token vesting on Solana. Time-based streams and milestone
+              releases, secured by math.
+            </p>
+          </div>
+
+          {/* Link Columns */}
+          {Object.entries(footerLinks).map(([title, links]) => (
+            <div key={title}>
+              <h4 className="text-xs font-bold tracking-wider text-gray-900 uppercase mb-4">
+                {title}
+              </h4>
+              <ul className="space-y-3">
+                {links.map((link) => (
+                  <li key={link.name}>
+                    {link.href.startsWith("http") ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-gray-500 hover:text-purple-600 transition-colors"
+                      >
+                        {link.name}
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.href}
+                        className="text-sm text-gray-500 hover:text-purple-600 transition-colors no-underline hover:no-underline"
+                      >
+                        {link.name}
+                      </Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="pt-8 border-t border-gray-100">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-gray-400">
+              &copy; {new Date().getFullYear()} SimplyVest. All rights reserved.
+            </p>
+            <div className="flex items-center gap-6">
+              <a
+                href="https://github.com/simplyvest/simplyvest"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-purple-600 transition-colors"
+                aria-label="GitHub"
+              >
+                <Github className="w-5 h-5" strokeWidth={1.5} />
+              </a>
+              <a
+                href="https://x.com/simplyvestsol"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-purple-600 transition-colors"
+                aria-label="Twitter"
+              >
+                <Twitter className="w-5 h-5" strokeWidth={1.5} />
+              </a>
+              <a
+                href="mailto:hello@simplyvest.com"
+                className="text-gray-400 hover:text-purple-600 transition-colors"
+                aria-label="Email"
+              >
+                <Mail className="w-5 h-5" strokeWidth={1.5} />
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

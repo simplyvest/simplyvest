@@ -1,57 +1,32 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap");
 
-@variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
-
-:root,
-:root[data-theme="dark"] {
-  --bg: #0a0b0f;
-  --bg1: #111318;
-  --bg2: #181b22;
-  --border: #22262f;
-  --border2: #2e3340;
-  --text: #dde1ec;
-  --muted: #8b93a5;
-  --dim: #4d5565;
-  --sol: #9945ff;
-  --sol2: #14f195;
-  --sol3: #00c2ff;
-  --warn: #f7931a;
-  --code-bg: #0f1117;
-  --code-bdr: #1e2330;
-  --tag1: #1d1030;
-  --tag1t: #c084fc;
-  --tag2: #0a2018;
-  --tag2t: #34d399;
-  --tag3: #001a2e;
-  --tag3t: #38bdf8;
-  --glow: 0 0 60px rgba(153, 69, 255, 0.12);
-}
-
-:root[data-theme="light"] {
-  --bg: #f5f4f0;
+/* ---- Theme Variables (Redesign light palette) ---- */
+:root {
+  --bg: #ffffff;
   --bg1: #ffffff;
-  --bg2: #f0eeea;
-  --border: #e2ddd6;
-  --border2: #cbc5bc;
-  --text: #1c1a17;
-  --muted: #6b6359;
-  --dim: #b5afa6;
-  --sol: #6d28d9;
-  --sol2: #047857;
-  --sol3: #0369a1;
-  --warn: #c2410c;
-  --code-bg: #1c1a17;
-  --code-bdr: #2e2a24;
+  --bg2: #f7f7fb;
+  --border: #e5e7eb;
+  --border2: #d1d5db;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --dim: #9ca3af;
+  --sol: #433ae6;
+  --sol2: #059669;
+  --sol3: #0284c7;
+  --warn: #dc2626;
+  --code-bg: #f3f4f6;
+  --code-bdr: #e5e7eb;
   --tag1: #ede9fe;
   --tag1t: #5b21b6;
   --tag2: #d1fae5;
   --tag2t: #065f46;
   --tag3: #e0f2fe;
   --tag3t: #0c4a6e;
-  --glow: 0 0 40px rgba(109, 40, 217, 0.06);
+  --glow: 0 0 40px rgba(67, 58, 230, 0.08);
 }
 
-@theme {
+@theme inline {
   --color-bg: var(--bg);
   --color-bg1: var(--bg1);
   --color-bg2: var(--bg2);
@@ -72,11 +47,12 @@
   --color-tag2t: var(--tag2t);
   --color-tag3: var(--tag3);
   --color-tag3t: var(--tag3t);
-  --font-display: "Bebas Neue", sans-serif;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
   --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 }
 
+/* ---- Base ---- */
 *,
 *::before,
 *::after {
@@ -88,99 +64,26 @@ html {
 }
 
 body {
+  font-family: "Inter", system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font-sans);
-  line-height: 1.75;
-  transition:
-    background 0.3s,
-    color 0.3s;
+  line-height: 1.6;
 }
 
-h1 {
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 8vw, 6rem);
-  line-height: 0.95;
-  letter-spacing: 0.02em;
-  margin-bottom: 1.5rem;
-}
-
-h1 em {
-  font-style: normal;
-  color: var(--sol);
-}
-
-h2 {
-  font-weight: 700;
-  font-size: clamp(1.6rem, 4vw, 2.4rem);
-  letter-spacing: -0.01em;
-  line-height: 1.15;
-  margin-bottom: 0.5rem;
-}
-
-h3 {
-  font-weight: 600;
-  font-size: 1.15rem;
-  margin-bottom: 0.4rem;
-}
-
-h4 {
-  font-weight: 600;
-  font-size: 1rem;
-  margin-bottom: 0.3rem;
-}
-
-p {
-  font-size: 1.05rem;
-  line-height: 1.75;
-}
-
-p + p {
-  margin-top: 0.7rem;
-}
-
-strong {
-  font-weight: 600;
-}
-
-a:where(:not([class])) {
-  color: var(--sol);
-  text-decoration: none;
-}
-
-a:where(:not([class])):hover {
-  text-decoration: underline;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Space Grotesk", system-ui, sans-serif;
 }
 
 code {
-  font-family: var(--font-mono);
-  font-size: 0.82em;
-  background: var(--bg2);
-  border: 1px solid var(--border2);
-  padding: 0.1em 0.35em;
-  border-radius: 3px;
-  color: var(--sol3);
+  font-family: "JetBrains Mono", monospace;
 }
 
-pre {
-  background: var(--code-bg);
-  border: 1px solid var(--code-bdr);
-  border-radius: 8px;
-  padding: 1.2rem 1.4rem;
-  margin: 1.2rem 0;
-  overflow-x: auto;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  line-height: 1.7;
-}
-
-pre code {
-  background: transparent;
-  border: none;
-  padding: 0;
-  color: inherit;
-}
-
+/* ---- Animations ---- */
 @keyframes fadeUp {
   from {
     opacity: 0;

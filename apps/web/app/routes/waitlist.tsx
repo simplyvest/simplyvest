@@ -1,12 +1,9 @@
 import { createRoute } from "@tanstack/react-router";
+import { Send, CheckCircle } from "lucide-react";
 import * as React from "react";
 
-import { Badge } from "@/components/ui/badge";
-import { CheckboxInput } from "@/components/ui/checkbox-input";
-import { FormField } from "@/components/ui/form-field";
-import { SelectInput } from "@/components/ui/select-input";
-import { TextInput, InputGroup } from "@/components/ui/text-input";
-import { trackEvent } from "@/utils/analytics";
+import { Footer } from "@/components/layout/footer";
+import { Navbar } from "@/components/layout/navbar";
 
 import { Route as RootRoute } from "./__root";
 
@@ -16,161 +13,219 @@ export const Route = createRoute({
   component: WaitlistPage,
 });
 
+interface FormData {
+  name: string;
+  email: string;
+  telegramId: string;
+  followingOnX: string;
+  willingToInterview: boolean;
+}
+
 function WaitlistPage() {
-  const [submitted, setSubmitted] = React.useState(false);
-  const [form, setForm] = React.useState({
+  const [formData, setFormData] = React.useState<FormData>({
     name: "",
     email: "",
-    telegram: "",
-    following: "",
-    interview: false,
+    telegramId: "",
+    followingOnX: "",
+    willingToInterview: false,
   });
+  const [submitted, setSubmitted] = React.useState(false);
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+  function handleChange(
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) {
     const { name, value, type } = e.target;
-    setForm((prev) => ({
+    const checked =
+      e.target instanceof HTMLInputElement ? e.target.checked : false;
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   }
 
-  const [error, setError] = React.useState("");
-  const [sending, setSending] = React.useState(false);
-
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSending(true);
-    setError("");
-
-    try {
-      const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:8787";
-      const res = await fetch(`${apiUrl}/api/waitlist`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-
-      if (!res.ok) {
-        const data = (await res.json()) as { error?: string };
-        throw new Error(data.error ?? "Submission failed");
-      }
-
-      setSubmitted(true);
-      trackEvent("waitlist_signup", "engagement", form.email, undefined, {
-        name: form.name,
-        telegram: form.telegram,
-        following_x: form.following || "no",
-        interview_willing: form.interview ? "yes" : "no",
-      });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-    } finally {
-      setSending(false);
-    }
+    setSubmitted(true);
+    setTimeout(() => setSubmitted(false), 3000);
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-6 pt-28">
-      <Badge variant="sol">Waitlist</Badge>
-      <h1 className="mt-4">
-        WAITLIST
-        <br />
-        <em>SIMPLYVEST</em>
-      </h1>
-      <p className="max-w-[580px] text-lg leading-relaxed text-muted">
-        We help you transfer your money in a safer way &mdash; with commitment from both the sender
-        and the receiver.
-      </p>
+    <div className="min-h-screen bg-gradient-to-br from-white via-purple-50/20 to-white">
+      <Navbar />
 
-      <div className="mt-12">
-        {submitted ? (
-          <div className="rounded-xl border border-sol2 bg-gradient-to-br from-sol2/5 to-sol3/5 px-8 py-12 text-center">
-            <div className="font-display text-5xl text-sol2">✓</div>
-            <h2 className="mt-4 text-2xl font-semibold">You're on the list!</h2>
-            <p className="mx-auto mt-2 max-w-md text-muted">
-              We'll notify you when SimplyVest launches. Stay tuned for updates.
+      <section className="relative overflow-hidden px-6 py-32">
+        {/* Decorative background */}
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          <div className="absolute -left-32 top-20 h-96 w-96 rounded-full bg-purple-300 opacity-5 blur-3xl" />
+          <div className="absolute -right-24 top-1/2 h-80 w-80 rounded-full bg-purple-400 opacity-5 blur-3xl" />
+          <div className="absolute bottom-10 left-1/3 h-64 w-64 rounded-full bg-purple-200 opacity-5 blur-3xl" />
+          <div className="absolute left-10 top-1/3 h-48 w-48 rotate-45 rounded-3xl border border-purple-300 opacity-5" />
+          <div className="absolute bottom-1/4 right-1/4 h-32 w-32 rotate-12 rounded-2xl border border-purple-400 opacity-5" />
+        </div>
+
+        <div className="relative mx-auto max-w-2xl">
+          {/* Header */}
+          <div className="mb-12 text-center">
+            <span className="inline-block rounded-full bg-purple-100 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-purple-700">
+              Waitlist
+            </span>
+            <h1 className="mt-6 text-4xl font-bold tracking-tight text-gray-900 md:text-5xl">
+              Waitlist SimplyVest
+            </h1>
+            <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-gray-500">
+              We help you transfer your money in a safer way — with commitment
+              from both the sender and the receiver.
             </p>
           </div>
-        ) : (
-          <form
-            onSubmit={handleSubmit}
-            className="rounded-xl border border-border bg-bg1 px-8 py-8"
-          >
-            <div className="grid gap-6 sm:grid-cols-2">
-              <FormField label="Your Name" required>
-                <TextInput
-                  type="text"
-                  name="name"
-                  value={form.name}
-                  onChange={handleChange}
-                  required
-                  placeholder="Enter your name"
-                />
-              </FormField>
 
-              <FormField label="Email" required>
-                <TextInput
-                  type="email"
-                  name="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  required
-                  placeholder="you@example.com"
-                />
-              </FormField>
+          {/* Form card */}
+          <div className="relative">
+            <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-purple-400 to-purple-600 opacity-20 blur-lg" />
+            <div className="relative rounded-3xl border border-gray-100 bg-white p-10 shadow-lg md:p-12">
+              {submitted ? (
+                <div className="py-8 text-center">
+                  <CheckCircle className="mx-auto h-16 w-16 text-green-500" />
+                  <h2 className="mt-4 text-2xl font-bold text-gray-900">
+                    You&apos;re on the list!
+                  </h2>
+                  <p className="mt-2 text-gray-500">
+                    Thank you for signing up. We&apos;ll reach out to you soon.
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Name */}
+                  <div>
+                    <label
+                      htmlFor="name"
+                      className="mb-2 block text-sm font-medium text-gray-700"
+                    >
+                      Your Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="name"
+                      name="name"
+                      type="text"
+                      required
+                      placeholder="Enter your full name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      className="w-full rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm transition-all placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    />
+                  </div>
 
-              <FormField label="Telegram ID" required>
-                <InputGroup
-                  prefix="@"
-                  type="text"
-                  name="telegram"
-                  value={form.telegram}
-                  onChange={handleChange}
-                  required
-                  placeholder="username"
-                />
-              </FormField>
+                  {/* Email */}
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="mb-2 block text-sm font-medium text-gray-700"
+                    >
+                      Email <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      required
+                      placeholder="your.email@example.com"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-full rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm transition-all placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    />
+                  </div>
 
-              <FormField label="Following @simplyvestsol on X?">
-                <SelectInput name="following" value={form.following} onChange={handleChange}>
-                  <option value="">Select...</option>
-                  <option value="yes">Yes</option>
-                  <option value="no">No</option>
-                </SelectInput>
-              </FormField>
+                  {/* Telegram ID */}
+                  <div>
+                    <label
+                      htmlFor="telegramId"
+                      className="mb-2 block text-sm font-medium text-gray-700"
+                    >
+                      Telegram ID <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="telegramId"
+                      name="telegramId"
+                      type="text"
+                      required
+                      placeholder="@yourtelegramid"
+                      value={formData.telegramId}
+                      onChange={handleChange}
+                      className="w-full rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm transition-all placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    />
+                  </div>
+
+                  {/* Following on X */}
+                  <div>
+                    <label
+                      htmlFor="followingOnX"
+                      className="mb-2 block text-sm font-medium text-gray-700"
+                    >
+                      Following @simplyvestsol on X?
+                    </label>
+                    <div className="relative">
+                      <select
+                        id="followingOnX"
+                        name="followingOnX"
+                        value={formData.followingOnX}
+                        onChange={handleChange}
+                        className="w-full appearance-none rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600"
+                        style={{
+                          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%237c3aed' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
+                          backgroundRepeat: "no-repeat",
+                          backgroundPosition: "right 1rem center",
+                          backgroundSize: "1.25rem",
+                        }}
+                      >
+                        <option value="">Select an option</option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                        <option value="will-follow">I will follow now</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Willing to interview */}
+                  <div className="rounded-xl border border-purple-100 bg-purple-50 p-4">
+                    <label className="flex cursor-pointer items-start gap-3">
+                      <input
+                        name="willingToInterview"
+                        type="checkbox"
+                        checked={formData.willingToInterview}
+                        onChange={handleChange}
+                        className="mt-0.5 h-5 w-5 shrink-0 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                      />
+                      <span className="text-sm text-gray-700">
+                        I&apos;m willing to be contacted for a user interview.
+                      </span>
+                    </label>
+                  </div>
+
+                  <p className="text-xs text-gray-400">
+                    <span className="text-red-500">*</span> Required fields
+                  </p>
+
+                  <button
+                    type="submit"
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-4 text-sm font-semibold text-white shadow-lg shadow-purple-200 transition-all hover:from-purple-700 hover:to-purple-800 hover:shadow-xl hover:shadow-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2"
+                  >
+                    Join Waitlist
+                    <Send className="h-4 w-4" />
+                  </button>
+                </form>
+              )}
             </div>
+          </div>
 
-            <div className="mt-6">
-              <CheckboxInput
-                name="interview"
-                checked={form.interview}
-                onChange={(checked) => setForm((prev) => ({ ...prev, interview: checked }))}
-                label="I'm willing to be contacted for a user interview."
-              />
-            </div>
+          {/* Privacy note */}
+          <p className="mt-8 text-center text-sm leading-relaxed text-gray-400">
+            We respect your privacy. Your information will only be used to
+            contact you about SimplyVest. We will never share your data with
+            third parties.
+          </p>
+        </div>
+      </section>
 
-            {error && (
-              <div className="mt-6 rounded-lg border border-warn/30 bg-warn/5 px-4 py-3 text-sm text-warn">
-                {error}
-              </div>
-            )}
-
-            <div className="mt-8">
-              <button
-                type="submit"
-                disabled={sending}
-                className="rounded-md bg-[#7c3aed] px-8 py-3 text-sm font-semibold text-white transition-all hover:bg-[#6d28d9] focus-visible:ring-2 focus-visible:ring-sol focus-visible:outline-none disabled:opacity-50"
-              >
-                {sending ? "Submitting..." : "Join Waitlist"}
-              </button>
-            </div>
-
-            <p className="mt-4 text-xs text-muted">* Required fields</p>
-          </form>
-        )}
-      </div>
-
-      <div className="h-16" />
+      <Footer />
     </div>
   );
 }

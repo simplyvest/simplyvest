@@ -1,24 +1,79 @@
 import { Link } from "@tanstack/react-router";
-import * as React from "react";
 
-import { cn } from "@/utils/cn";
+import { ArrowRight, Sparkles } from "lucide-react";
 
-export function CTA({ className }: { className?: string }) {
+export function CTA() {
   return (
-    <section className={cn("mx-auto max-w-4xl px-6 pt-16", className)}>
-      <div className="rounded-xl border border-sol bg-gradient-to-br from-sol/5 to-sol2/5 px-8 py-14 text-center">
-        <h2 className="text-3xl font-bold tracking-tight">Start Vesting Today</h2>
-        <p className="mx-auto mt-3 max-w-lg text-muted">
-          Join the waitlist to be the first to know when SimplyVest launches.
-        </p>
-        <div className="mt-8">
-          <Link
-            to="/waitlist"
-            className="inline-block rounded-md bg-[#7c3aed] px-8 py-3 text-sm font-semibold text-white no-underline transition-all hover:bg-[#6d28d9] hover:no-underline focus-visible:ring-2 focus-visible:ring-sol focus-visible:outline-none"
+    <section className="bg-gradient-to-b from-white to-gray-50 py-24">
+      <div className="relative mx-auto max-w-4xl px-6">
+        {/* Glow effect behind card */}
+        <div className="absolute inset-0 -z-10 rounded-3xl bg-purple-500/20 blur-3xl" />
+
+        {/* Main card */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-600 via-purple-500 to-violet-400 px-8 py-20 text-center">
+          {/* Decorative floating orbs */}
+          <div className="pointer-events-none absolute -left-20 -top-20 h-64 w-64 rounded-full bg-violet-400/30 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-16 -right-16 h-56 w-56 rounded-full bg-purple-300/25 blur-3xl" />
+
+          {/* Wave pattern SVG */}
+          <svg
+            aria-hidden
+            className="pointer-events-none absolute bottom-0 left-0 w-full opacity-10"
+            viewBox="0 0 1440 120"
+            fill="none"
+            preserveAspectRatio="none"
           >
-            Join Waitlist
-          </Link>
+            <path
+              d="M0 60C240 120 480 0 720 60C960 120 1200 0 1440 60V120H0V60Z"
+              fill="white"
+            />
+          </svg>
+
+          {/* Floating dots */}
+          <div className="pointer-events-none absolute left-12 top-8 h-2 w-2 rounded-full bg-white/40 animate-pulse" />
+          <div className="pointer-events-none absolute right-16 top-14 h-1.5 w-1.5 rounded-full bg-white/30 animate-pulse [animation-delay:200ms]" />
+          <div className="pointer-events-none absolute bottom-12 left-20 h-1.5 w-1.5 rounded-full bg-white/25 animate-pulse [animation-delay:400ms]" />
+          <div className="pointer-events-none absolute bottom-20 right-12 h-2 w-2 rounded-full bg-white/35 animate-pulse [animation-delay:600ms]" />
+
+          {/* Glass highlight on top */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-8 top-0 h-24 bg-gradient-to-b from-white/10 to-transparent" />
+
+          {/* Content */}
+          <div className="relative z-10">
+            <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/20 bg-white/15 backdrop-blur-sm">
+              <Sparkles className="h-7 w-7 text-white" />
+            </div>
+
+            <h2 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
+              Start Vesting Today
+            </h2>
+
+            <p className="mx-auto mt-4 max-w-md text-lg text-purple-50">
+              Join the waitlist to be the first to know when SimplyVest launches.
+            </p>
+
+            <div className="mt-10">
+              <Link
+                to="/waitlist"
+                className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3.5 text-base font-semibold text-purple-600 shadow-lg transition-all hover:scale-105 hover:shadow-xl focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
+              >
+                Join Waitlist
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+            </div>
+
+            {/* Trust indicators */}
+            <div className="mt-8 flex items-center justify-center gap-3 text-sm text-purple-50">
+              <span>No credit card required</span>
+              <span className="h-1 w-1 rounded-full bg-white/60" />
+              <span>Launch in Q2 2026</span>
+            </div>
+          </div>
         </div>
+
+        {/* Bottom gradient fade */}
+        <div className="pointer-events-none absolute -bottom-8 inset-x-8 h-16 rounded-3xl bg-purple-400/10 blur-2xl" />
       </div>
     </section>
   );
