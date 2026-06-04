@@ -2,6 +2,9 @@ import { createRoute } from "@tanstack/react-router";
 import * as React from "react";
 import { LuSend, LuCircleCheck } from "react-icons/lu";
 
+import { Field } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { trackEvent } from "@/utils/analytics";
 
 import { Route as RootRoute } from "./__root";
@@ -117,94 +120,50 @@ function WaitlistPage() {
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Name */}
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="mb-2 block text-sm font-medium text-gray-700 dark:text-slate-200"
-                    >
-                      Your Name <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      id="name"
+                  <Field label="Your Name" required>
+                    <Input
                       name="name"
                       type="text"
                       required
                       placeholder="Enter your full name"
                       value={formData.name}
                       onChange={handleChange}
-                      className="w-full rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm transition-all placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 dark:border-slate-600 dark:bg-slate-900 dark:placeholder:text-slate-500 dark:focus:ring-purple-400"
                     />
-                  </div>
+                  </Field>
 
                   {/* Email */}
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="mb-2 block text-sm font-medium text-gray-700 dark:text-slate-200"
-                    >
-                      Email <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      id="email"
+                  <Field label="Email" required>
+                    <Input
                       name="email"
                       type="email"
                       required
                       placeholder="your.email@example.com"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm transition-all placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 dark:border-slate-600 dark:bg-slate-900 dark:placeholder:text-slate-500 dark:focus:ring-purple-400"
                     />
-                  </div>
+                  </Field>
 
                   {/* Telegram ID */}
-                  <div>
-                    <label
-                      htmlFor="telegram"
-                      className="mb-2 block text-sm font-medium text-gray-700 dark:text-slate-200"
-                    >
-                      Telegram ID <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      id="telegram"
+                  <Field label="Telegram ID" required>
+                    <Input
                       name="telegram"
                       type="text"
                       required
                       placeholder="@yourtelegramid"
                       value={formData.telegram}
                       onChange={handleChange}
-                      className="w-full rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm transition-all placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 dark:border-slate-600 dark:bg-slate-900 dark:placeholder:text-slate-500 dark:focus:ring-purple-400"
                     />
-                  </div>
+                  </Field>
 
                   {/* Following on X */}
-                  <div>
-                    <label
-                      htmlFor="following"
-                      className="mb-2 block text-sm font-medium text-gray-700 dark:text-slate-200"
-                    >
-                      Following @simplyvestsol on X?
-                    </label>
-                    <div className="relative">
-                      <select
-                        id="following"
-                        name="following"
-                        value={formData.following}
-                        onChange={handleChange}
-                        className="w-full appearance-none rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 dark:border-slate-600 dark:bg-slate-900 dark:focus:ring-purple-400"
-                        style={{
-                          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%237c3aed' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
-                          backgroundRepeat: "no-repeat",
-                          backgroundPosition: "right 1rem center",
-                          backgroundSize: "1.25rem",
-                        }}
-                      >
-                        <option value="">Select an option</option>
-                        <option value="yes">Yes</option>
-                        <option value="no">No</option>
-                        <option value="will-follow">I will follow now</option>
-                      </select>
-                    </div>
-                  </div>
+                  <Field label="Following @simplyvestsol on X?">
+                    <Select name="following" value={formData.following} onChange={handleChange}>
+                      <option value="">Select an option</option>
+                      <option value="yes">Yes</option>
+                      <option value="no">No</option>
+                      <option value="will-follow">I will follow now</option>
+                    </Select>
+                  </Field>
 
                   {/* Willing to interview */}
                   <div className="rounded-xl border border-purple-100 bg-purple-50 p-4 dark:border-purple-900/50 dark:bg-purple-950">

@@ -5,9 +5,9 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { useState, useEffect, useRef } from "react";
 
-import { FormField } from "@/components/ui/form-field";
-import { SelectInput } from "@/components/ui/select-input";
-import { TextInput } from "@/components/ui/text-input";
+import { Field } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 
 interface TokenInfo {
   mint: PublicKey;
@@ -81,9 +81,9 @@ export function TokenSelector({
 
   if (mode === "custom") {
     return (
-      <FormField label="Token Mint Address" required>
+      <Field label="Token Mint Address" required>
         <div className="flex gap-2">
-          <TextInput
+          <Input
             placeholder="Enter SPL token mint address"
             value={value}
             onChange={(e) => onChange(e.target.value)}
@@ -97,14 +97,14 @@ export function TokenSelector({
             Owned
           </button>
         </div>
-      </FormField>
+      </Field>
     );
   }
 
   return (
-    <FormField label="Token" required>
+    <Field label="Token" required>
       <div className="flex gap-2">
-        <SelectInput
+        <Select
           value={mintToAddress(tokens.find((t) => mintToAddress(t.mint) === value)?.mint ?? null)}
           onChange={(e) => onChange(e.target.value)}
           className="flex-1"
@@ -121,7 +121,7 @@ export function TokenSelector({
               </option>
             ))
           )}
-        </SelectInput>
+        </Select>
         <button
           type="button"
           onClick={() => setMode("custom")}
@@ -130,7 +130,7 @@ export function TokenSelector({
           Custom
         </button>
       </div>
-    </FormField>
+    </Field>
   );
 }
 

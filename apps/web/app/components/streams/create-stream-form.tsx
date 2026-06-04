@@ -5,8 +5,8 @@ import { useState, useMemo } from "react";
 
 import { TokenSelector } from "@/components/tokens/token-selector";
 import { Button } from "@/components/ui/button";
-import { FormField } from "@/components/ui/form-field";
-import { TextInput } from "@/components/ui/text-input";
+import { Field } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { useCreateStream, useCreateMilestoneStream } from "@/hooks/use-transactions";
 
 type StreamType = "time" | "milestone";
@@ -134,7 +134,7 @@ export function CreateStreamForm() {
 
   return (
     <div className="space-y-5">
-      <FormField label="Stream Type" required>
+      <Field label="Stream Type" required>
         <div className="flex rounded-lg border border-border bg-bg1 p-0.5">
           {(["time", "milestone"] as const).map((t) => (
             <button
@@ -149,22 +149,22 @@ export function CreateStreamForm() {
             </button>
           ))}
         </div>
-      </FormField>
+      </Field>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-        <FormField label="Recipient Wallet" required>
-          <TextInput
+        <Field label="Recipient Wallet" required>
+          <Input
             placeholder="Wallet address"
             value={form.recipient}
             onChange={(e) => update("recipient", e.target.value)}
           />
-        </FormField>
+        </Field>
 
         <TokenSelector value={form.mint} onChange={(v) => update("mint", v)} />
       </div>
 
-      <FormField label="Amount (tokens)" required>
-        <TextInput
+      <Field label="Amount (tokens)" required>
+        <Input
           type="number"
           step="any"
           min="0"
@@ -172,34 +172,34 @@ export function CreateStreamForm() {
           value={form.amount}
           onChange={(e) => update("amount", e.target.value)}
         />
-      </FormField>
+      </Field>
 
       {form.streamType === "time" ? (
         <>
           <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-            <FormField label="Start Date/Time" required>
-              <TextInput
+            <Field label="Start Date/Time" required>
+              <Input
                 type="datetime-local"
                 value={form.startTime}
                 onChange={(e) => update("startTime", e.target.value)}
               />
-            </FormField>
+            </Field>
 
-            <FormField label="End Date/Time" required>
-              <TextInput
+            <Field label="End Date/Time" required>
+              <Input
                 type="datetime-local"
                 value={form.endTime}
                 onChange={(e) => update("endTime", e.target.value)}
               />
-            </FormField>
+            </Field>
 
-            <FormField label="Cliff Date/Time (optional)">
-              <TextInput
+            <Field label="Cliff Date/Time (optional)">
+              <Input
                 type="datetime-local"
                 value={form.cliffTime}
                 onChange={(e) => update("cliffTime", e.target.value)}
               />
-            </FormField>
+            </Field>
           </div>
         </>
       ) : null}
