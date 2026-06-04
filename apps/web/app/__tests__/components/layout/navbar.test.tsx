@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
 
-import { Navbar } from "@/components/layout/navbar";
 import { renderWithRouter } from "@/__tests__/test-utils";
+import { Navbar } from "@/components/layout/navbar";
 
 describe("Navbar", () => {
   it("renders the SimplyVest logo and brand name", async () => {
@@ -27,10 +27,12 @@ describe("Navbar", () => {
       { label: "App", href: "/app" },
     ];
 
-    for (const { label, href } of expectedLinks) {
-      const link = await screen.findByText(label);
-      expect(link).toBeInTheDocument();
-      expect(link.closest("a")).toHaveAttribute("href", href);
-    }
+    await Promise.all(
+      expectedLinks.map(async ({ label, href }) => {
+        const link = await screen.findByText(label);
+        expect(link).toBeInTheDocument();
+        expect(link.closest("a")).toHaveAttribute("href", href);
+      }),
+    );
   });
 });

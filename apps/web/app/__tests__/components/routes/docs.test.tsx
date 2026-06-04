@@ -1,15 +1,17 @@
-import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
 
 // Mock the root route to avoid pulling in SolanaProvider → LedgerHQ chain
 vi.mock("@/routes/__root", () => ({
   Route: { id: "__root", options: {} },
 }));
 
-import { Route as DocsRoute } from "@/routes/docs";
 import { renderWithRouter } from "@/__tests__/test-utils";
+import { Route as DocsRoute } from "@/routes/docs";
 
-const DocsPage = DocsRoute.options.component!;
+const component = DocsRoute.options.component;
+if (!component) throw new Error("Docs route missing component");
+const DocsPage = component;
 
 describe("DocsPage", () => {
   it("renders the hero heading and tagline", async () => {
@@ -27,9 +29,7 @@ describe("DocsPage", () => {
 
     expect(await screen.findByText("Stream Types")).toBeInTheDocument();
     expect(
-      await screen.findByText(
-        "Two types of vesting streams for different distribution models.",
-      ),
+      await screen.findByText("Two types of vesting streams for different distribution models."),
     ).toBeInTheDocument();
 
     // Stream type cards
@@ -43,9 +43,7 @@ describe("DocsPage", () => {
     const accountModelTexts = await screen.findAllByText("Account Model");
     expect(accountModelTexts.length).toBeGreaterThanOrEqual(1);
     expect(
-      await screen.findByText(
-        "Three on-chain account types power the protocol.",
-      ),
+      await screen.findByText("Three on-chain account types power the protocol."),
     ).toBeInTheDocument();
 
     // Account cards
@@ -58,9 +56,7 @@ describe("DocsPage", () => {
     renderWithRouter(<DocsPage />);
 
     expect(await screen.findByText("Security Model")).toBeInTheDocument();
-    expect(
-      await screen.findByText("Key security properties of the protocol."),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Key security properties of the protocol.")).toBeInTheDocument();
 
     // Security features
     expect(await screen.findByText("PDA Vaults")).toBeInTheDocument();

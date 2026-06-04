@@ -61,15 +61,13 @@ export function HomeFAQ() {
 
             return (
               <div
-                key={i}
+                key={faq.q}
                 className="cursor-pointer border-b border-border"
                 onClick={() => setOpenIndex(isOpen ? null : i)}
               >
                 {/* Question row */}
                 <div className="flex items-center justify-between py-5">
-                  <span className="pr-4 text-[0.95rem] font-medium text-text">
-                    {faq.q}
-                  </span>
+                  <span className="pr-4 text-[0.95rem] font-medium text-text">{faq.q}</span>
                   <ChevronDown
                     className={cn(
                       "h-4 w-4 shrink-0 text-dim transition-transform duration-200",
@@ -81,9 +79,7 @@ export function HomeFAQ() {
                 {/* Answer */}
                 {isOpen && (
                   <div className="pb-5 pr-8">
-                    <p className="text-[0.9rem] leading-relaxed text-muted">
-                      {faq.a}
-                    </p>
+                    <p className="text-[0.9rem] leading-relaxed text-muted">{faq.a}</p>
                   </div>
                 )}
               </div>

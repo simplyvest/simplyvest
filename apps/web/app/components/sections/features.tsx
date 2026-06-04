@@ -16,14 +16,11 @@ function LinearVestingCard() {
               TIME-BASED
             </div>
 
-            <h3 className="text-2xl font-bold text-gray-900">
-              Linear Vesting
-            </h3>
+            <h3 className="text-2xl font-bold text-gray-900">Linear Vesting</h3>
 
             <p className="text-gray-500">
-              Tokens unlock continuously over a predefined schedule. Set it once
-              and watch allocations grow block by block with full on-chain
-              enforcement.
+              Tokens unlock continuously over a predefined schedule. Set it once and watch
+              allocations grow block by block with full on-chain enforcement.
             </p>
 
             <ul className="space-y-2">
@@ -43,9 +40,9 @@ function LinearVestingCard() {
 
           {/* Bar chart visual */}
           <div className="hidden flex-shrink-0 items-end gap-1.5 self-end pb-2 sm:flex">
-            {barValues.map((value, i) => (
+            {barValues.map((value) => (
               <div
-                key={i}
+                key={value}
                 className="w-6 rounded-t-sm bg-gradient-to-t from-purple-500 to-purple-400 transition-all duration-500 group-hover:from-purple-600 group-hover:to-purple-500"
                 style={{ height: `${value * 0.64}px` }}
               />
@@ -68,13 +65,11 @@ function MilestonePaymentsCard() {
           MILESTONE
         </div>
 
-        <h3 className="text-2xl font-bold text-gray-900">
-          Milestone Payments
-        </h3>
+        <h3 className="text-2xl font-bold text-gray-900">Milestone Payments</h3>
 
         <p className="text-gray-500">
-          Release funds only when verifiable conditions are met. Perfect for
-          contractor agreements, grants, and performance-based compensation.
+          Release funds only when verifiable conditions are met. Perfect for contractor agreements,
+          grants, and performance-based compensation.
         </p>
 
         <ul className="space-y-2">
@@ -98,11 +93,13 @@ function MilestonePaymentsCard() {
               {i > 0 && (
                 <div className="h-0.5 w-10 bg-gradient-to-r from-emerald-300 to-emerald-500" />
               )}
-              <div className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                i === 2
-                  ? "bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-md shadow-emerald-200"
-                  : "border-2 border-emerald-300 bg-white"
-              }`}>
+              <div
+                className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                  i === 2
+                    ? "bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-md shadow-emerald-200"
+                    : "border-2 border-emerald-300 bg-white"
+                }`}
+              >
                 <Flag className={`h-3.5 w-3.5 ${i === 2 ? "text-white" : "text-emerald-500"}`} />
               </div>
             </div>
@@ -142,8 +139,8 @@ function PdaVaultsCard() {
         <h3 className="text-2xl font-bold text-gray-900">PDA Vaults</h3>
 
         <p className="text-gray-500">
-          Every vesting schedule lives inside a Program Derived Address — a
-          trustless vault that no single party can drain or tamper with.
+          Every vesting schedule lives inside a Program Derived Address — a trustless vault that no
+          single party can drain or tamper with.
         </p>
 
         <ul className="space-y-2">
@@ -185,9 +182,8 @@ function CancelAnytimeCard() {
           <h3 className="text-2xl font-bold text-gray-900">Cancel Anytime</h3>
 
           <p className="text-gray-500">
-            Grant issuer retains the authority to halt vesting and reclaim
-            unvested tokens at any point — full administrative control without
-            compromising user-vested balances.
+            Grant issuer retains the authority to halt vesting and reclaim unvested tokens at any
+            point — full administrative control without compromising user-vested balances.
           </p>
 
           <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -218,13 +214,10 @@ export function Features() {
           <span className="inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold tracking-widest text-gray-500">
             01
           </span>
-          <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-            Features
-          </h2>
+          <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">Features</h2>
           <p className="text-lg text-gray-500">
-            Everything you need to build trustless vesting schedules on Solana —
-            from linear unlocks to milestone-based releases, all secured by
-            program-derived vaults.
+            Everything you need to build trustless vesting schedules on Solana — from linear unlocks
+            to milestone-based releases, all secured by program-derived vaults.
           </p>
         </div>
 

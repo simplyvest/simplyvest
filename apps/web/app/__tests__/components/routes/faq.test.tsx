@@ -1,23 +1,23 @@
-import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
 
 // Mock the root route to avoid pulling in SolanaProvider → LedgerHQ chain
 vi.mock("@/routes/__root", () => ({
   Route: { id: "__root", options: {} },
 }));
 
-import { Route as FaqRoute } from "@/routes/faq";
 import { renderWithRouter } from "@/__tests__/test-utils";
+import { Route as FaqRoute } from "@/routes/faq";
 
-const FAQPage = FaqRoute.options.component!;
+const component = FaqRoute.options.component;
+if (!component) throw new Error("FAQ route missing component");
+const FAQPage = component;
 
 describe("FAQPage", () => {
   it("renders the page heading and description", async () => {
     renderWithRouter(<FAQPage />);
 
-    expect(
-      await screen.findByText("Frequently Asked Questions"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Frequently Asked Questions")).toBeInTheDocument();
     expect(
       await screen.findByText(
         "Common questions about SimplyVest, token vesting, and the protocol.",
@@ -39,9 +39,11 @@ describe("FAQPage", () => {
       "How do I get started?",
     ];
 
-    for (const q of questions) {
-      expect(await screen.findByText(q)).toBeInTheDocument();
-    }
+    await Promise.all(
+      questions.map(async (q) => {
+        expect(await screen.findByText(q)).toBeInTheDocument();
+      }),
+    );
   });
 
   it("renders the CTA section with action links", async () => {

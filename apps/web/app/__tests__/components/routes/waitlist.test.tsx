@@ -1,16 +1,18 @@
-import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, it, expect } from "vitest";
 
 // Mock the root route to avoid pulling in SolanaProvider → LedgerHQ chain
 vi.mock("@/routes/__root", () => ({
   Route: { id: "__root", options: {} },
 }));
 
-import { Route as WaitlistRoute } from "@/routes/waitlist";
 import { renderWithRouter } from "@/__tests__/test-utils";
+import { Route as WaitlistRoute } from "@/routes/waitlist";
 
-const WaitlistPage = WaitlistRoute.options.component!;
+const component = WaitlistRoute.options.component;
+if (!component) throw new Error("Waitlist route missing component");
+const WaitlistPage = component;
 
 describe("WaitlistPage", () => {
   it("renders the page heading and description", async () => {
@@ -51,17 +53,13 @@ describe("WaitlistPage", () => {
   it("renders the submit button", async () => {
     renderWithRouter(<WaitlistPage />);
 
-    expect(
-      await screen.findByRole("button", { name: /Join Waitlist/ }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: /Join Waitlist/ })).toBeInTheDocument();
   });
 
   it("renders privacy notice", async () => {
     renderWithRouter(<WaitlistPage />);
 
-    expect(
-      await screen.findByText(/We respect your privacy/),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/We respect your privacy/)).toBeInTheDocument();
   });
 
   it("shows success state after form submission", async () => {
@@ -69,26 +67,16 @@ describe("WaitlistPage", () => {
     renderWithRouter(<WaitlistPage />);
 
     // Fill required fields
-    await user.type(
-      await screen.findByRole("textbox", { name: /Your Name/ }),
-      "Test User",
-    );
-    await user.type(
-      await screen.findByRole("textbox", { name: /Email/ }),
-      "test@example.com",
-    );
+    await user.type(await screen.findByRole("textbox", { name: /Your Name/ }), "Test User");
+    await user.type(await screen.findByRole("textbox", { name: /Email/ }), "test@example.com");
     await user.type(await screen.findByLabelText(/Telegram ID/), "@testuser");
 
     // Submit
-    await user.click(
-      await screen.findByRole("button", { name: /Join Waitlist/ }),
-    );
+    await user.click(await screen.findByRole("button", { name: /Join Waitlist/ }));
 
     // Success state
     expect(await screen.findByText("You're on the list!")).toBeInTheDocument();
-    expect(
-      await screen.findByText(/Thank you for signing up/),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/Thank you for signing up/)).toBeInTheDocument();
   });
 
   it("renders Navbar and Footer", async () => {

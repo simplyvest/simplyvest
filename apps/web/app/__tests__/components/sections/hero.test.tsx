@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
 
-import { Hero } from "@/components/sections/hero";
 import { renderWithRouter } from "@/__tests__/test-utils";
+import { Hero } from "@/components/sections/hero";
 
 describe("Hero", () => {
   it("renders the badge and main heading", async () => {
@@ -17,7 +17,9 @@ describe("Hero", () => {
     renderWithRouter(<Hero />);
 
     expect(
-      await screen.findByText("Non-custodial, programmable token vesting with time-based streams and milestone-gated releases on Solana."),
+      await screen.findByText(
+        "Non-custodial, programmable token vesting with time-based streams and milestone-gated releases on Solana.",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -32,10 +34,12 @@ describe("Hero", () => {
       { label: "App", href: "/app" },
     ];
 
-    for (const { label, href } of expectedLinks) {
-      const link = await screen.findByText(label);
-      expect(link.closest("a")).toHaveAttribute("href", href);
-    }
+    await Promise.all(
+      expectedLinks.map(async ({ label, href }) => {
+        const link = await screen.findByText(label);
+        expect(link.closest("a")).toHaveAttribute("href", href);
+      }),
+    );
   });
 
   it("renders CTA buttons with correct paths", async () => {

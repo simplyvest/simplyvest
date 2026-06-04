@@ -1,5 +1,5 @@
-import * as React from "react";
 import { Users, Target, User } from "lucide-react";
+import * as React from "react";
 
 import { cn } from "@/utils/cn";
 
@@ -78,13 +78,7 @@ function BottomCircles() {
   );
 }
 
-function UseCaseCard({
-  item,
-  index,
-}: {
-  item: (typeof useCases)[number];
-  index: number;
-}) {
+function UseCaseCard({ item }: { item: (typeof useCases)[number] }) {
   const Icon = item.icon;
 
   return (
@@ -138,9 +132,7 @@ function UseCaseCard({
       </h3>
 
       {/* Description */}
-      <p className="mb-5 text-sm leading-relaxed text-gray-500">
-        {item.description}
-      </p>
+      <p className="mb-5 text-sm leading-relaxed text-gray-500">{item.description}</p>
 
       {/* Features list */}
       <ul className="space-y-2.5">
@@ -176,15 +168,15 @@ export function UseCases() {
             Use Cases
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-500">
-            From team compensation to milestone-based payments — SimplyVest handles the distribution so
-            you can focus on building.
+            From team compensation to milestone-based payments — SimplyVest handles the distribution
+            so you can focus on building.
           </p>
         </div>
 
         {/* Cards grid */}
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          {useCases.map((item, i) => (
-            <UseCaseCard key={item.number} item={item} index={i} />
+          {useCases.map((item) => (
+            <UseCaseCard key={item.number} item={item} />
           ))}
         </div>
       </div>

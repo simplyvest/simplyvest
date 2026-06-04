@@ -1,8 +1,8 @@
 import { createRoute, Link } from "@tanstack/react-router";
-import { Github, Twitter } from "lucide-react";
+import { Github } from "lucide-react";
 
-import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { Navbar } from "@/components/layout/navbar";
 
 import { Route as RootRoute } from "./__root";
 
@@ -83,12 +83,8 @@ function FAQPage() {
                 <div className="flex items-start gap-4">
                   <span className="mt-2.5 h-2.5 w-2.5 shrink-0 rounded-full bg-purple-500" />
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 md:text-2xl">
-                      {item.q}
-                    </h3>
-                    <p className="mt-3 text-lg leading-relaxed text-gray-600">
-                      {item.a}
-                    </p>
+                    <h3 className="text-xl font-bold text-gray-900 md:text-2xl">{item.q}</h3>
+                    <p className="mt-3 text-lg leading-relaxed text-gray-600">{item.a}</p>
                   </div>
                 </div>
               </div>
@@ -101,12 +97,10 @@ function FAQPage() {
       <section className="pb-24">
         <div className="mx-auto max-w-3xl px-6">
           <div className="rounded-3xl border border-purple-100 bg-gradient-to-br from-purple-50 to-violet-50 px-8 py-16 text-center sm:px-12">
-            <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">
-              Still have questions?
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">Still have questions?</h2>
             <p className="mt-3 text-gray-600">
-              We're here to help. Reach out through our community channels or check
-              the documentation.
+              We're here to help. Reach out through our community channels or check the
+              documentation.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link

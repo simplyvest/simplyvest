@@ -1,17 +1,15 @@
-import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, it, expect } from "vitest";
 
-import { HomeFAQ } from "@/components/sections/home-faq";
 import { renderWithRouter } from "@/__tests__/test-utils";
+import { HomeFAQ } from "@/components/sections/home-faq";
 
 describe("HomeFAQ", () => {
   it("renders section heading", async () => {
     renderWithRouter(<HomeFAQ />);
 
-    expect(
-      await screen.findByText("Frequently Asked Questions"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Frequently Asked Questions")).toBeInTheDocument();
   });
 
   it("renders all seven questions", async () => {
@@ -27,9 +25,11 @@ describe("HomeFAQ", () => {
       "How do I get started?",
     ];
 
-    for (const q of questions) {
-      expect(await screen.findByText(q)).toBeInTheDocument();
-    }
+    await Promise.all(
+      questions.map(async (q) => {
+        expect(await screen.findByText(q)).toBeInTheDocument();
+      }),
+    );
   });
 
   it("opens an answer when clicking a question", async () => {
@@ -39,9 +39,7 @@ describe("HomeFAQ", () => {
     await screen.findByText("What is SimplyVest?");
     // Initially no answer is visible
     expect(
-      screen.queryByText(
-        /SimplyVest is a non-custodial token vesting protocol on Solana/,
-      ),
+      screen.queryByText(/SimplyVest is a non-custodial token vesting protocol on Solana/),
     ).not.toBeInTheDocument();
 
     // Click the first question
@@ -49,9 +47,7 @@ describe("HomeFAQ", () => {
 
     // Answer should now be visible
     expect(
-      await screen.findByText(
-        /SimplyVest is a non-custodial token vesting protocol on Solana/,
-      ),
+      await screen.findByText(/SimplyVest is a non-custodial token vesting protocol on Solana/),
     ).toBeInTheDocument();
   });
 
@@ -62,17 +58,13 @@ describe("HomeFAQ", () => {
     // Open
     await user.click(await screen.findByText("What is SimplyVest?"));
     expect(
-      await screen.findByText(
-        /SimplyVest is a non-custodial token vesting protocol on Solana/,
-      ),
+      await screen.findByText(/SimplyVest is a non-custodial token vesting protocol on Solana/),
     ).toBeInTheDocument();
 
     // Close by clicking again
     await user.click(await screen.findByText("What is SimplyVest?"));
     expect(
-      screen.queryByText(
-        /SimplyVest is a non-custodial token vesting protocol on Solana/,
-      ),
+      screen.queryByText(/SimplyVest is a non-custodial token vesting protocol on Solana/),
     ).not.toBeInTheDocument();
   });
 

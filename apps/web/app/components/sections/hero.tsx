@@ -1,12 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  BookOpen,
-  Users,
-  Calendar,
-  TrendingUp,
-  Lock,
-} from "lucide-react";
+import { ArrowRight, BookOpen, Users, Calendar, TrendingUp, Lock } from "lucide-react";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -32,14 +25,7 @@ export function Hero() {
 
         {/* Dot grid */}
         <svg className="absolute inset-0 h-full w-full opacity-[0.035]">
-          <pattern
-            id="hero-dots"
-            x="0"
-            y="0"
-            width="32"
-            height="32"
-            patternUnits="userSpaceOnUse"
-          >
+          <pattern id="hero-dots" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
             <circle cx="1" cy="1" r="1" fill="currentColor" />
           </pattern>
           <rect width="100%" height="100%" fill="url(#hero-dots)" />
@@ -54,18 +40,9 @@ export function Hero() {
       <nav className="relative z-50 mx-auto max-w-7xl px-6 pt-6">
         <div className="rounded-2xl border border-white/60 bg-white/70 px-6 py-4 shadow-lg shadow-purple-600/5 backdrop-blur-xl">
           <div className="flex items-center justify-between">
-            <Link
-              to="/"
-              className="flex items-center gap-2 no-underline hover:no-underline"
-            >
-              <img
-                src="/simplyvest.png"
-                alt="SimplyVest"
-                className="h-8 w-auto"
-              />
-              <span className="text-lg font-semibold text-gray-900">
-                SimplyVest
-              </span>
+            <Link to="/" className="flex items-center gap-2 no-underline hover:no-underline">
+              <img src="/simplyvest.png" alt="SimplyVest" className="h-8 w-auto" />
+              <span className="text-lg font-semibold text-gray-900">SimplyVest</span>
             </Link>
 
             <div className="hidden items-center gap-8 md:flex">
@@ -108,8 +85,8 @@ export function Hero() {
 
           {/* Description */}
           <p className="mt-6 max-w-[520px] text-lg leading-relaxed text-gray-500">
-            Non-custodial, programmable token vesting with time-based streams
-            and milestone-gated releases on Solana.
+            Non-custodial, programmable token vesting with time-based streams and milestone-gated
+            releases on Solana.
           </p>
 
           {/* CTA buttons */}
@@ -178,9 +155,7 @@ export function Hero() {
                   <Calendar className="h-5 w-5 text-purple-600" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900">
-                    Vesting Schedule
-                  </h3>
+                  <h3 className="text-sm font-semibold text-gray-900">Vesting Schedule</h3>
                   <p className="text-xs text-gray-500">Team Token Grant</p>
                 </div>
               </div>
@@ -193,9 +168,7 @@ export function Hero() {
                 <div className="mt-2 h-2 overflow-hidden rounded-full bg-gray-100">
                   <div className="h-full w-[67%] rounded-full bg-gradient-to-r from-purple-500 to-purple-400" />
                 </div>
-                <p className="mt-2 text-xs text-gray-400">
-                  6,700 / 10,000 tokens
-                </p>
+                <p className="mt-2 text-xs text-gray-400">6,700 / 10,000 tokens</p>
               </div>
             </div>
 
@@ -206,18 +179,16 @@ export function Hero() {
                   <TrendingUp className="h-5 w-5 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900">
-                    Token Stream
-                  </h3>
+                  <h3 className="text-sm font-semibold text-gray-900">Token Stream</h3>
                   <p className="text-xs text-gray-500">Active Distribution</p>
                 </div>
               </div>
 
               {/* Mini bar chart */}
               <div className="mt-4 flex h-12 items-end gap-1.5">
-                {barValues.map((val, i) => (
+                {barValues.map((val) => (
                   <div
-                    key={i}
+                    key={val}
                     className="flex-1 rounded-t bg-gradient-to-t from-purple-400 to-purple-300"
                     style={{ height: `${val}%` }}
                   />
@@ -225,8 +196,7 @@ export function Hero() {
               </div>
 
               <p className="mt-3 text-xs text-gray-400">
-                <span className="font-medium text-green-600">+41.6 tokens</span>{" "}
-                streamed
+                <span className="font-medium text-green-600">+41.6 tokens</span> streamed
               </p>
             </div>
 
