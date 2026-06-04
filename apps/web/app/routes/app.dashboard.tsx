@@ -12,7 +12,7 @@ export const Route = createRoute({
   path: "/dashboard",
   component: DashboardPage,
   validateSearch: (search: Record<string, unknown>) => ({
-    tab: (search.tab as string) || "created",
+    tab: typeof search.tab === "string" ? search.tab : "created",
   }),
 });
 
@@ -52,7 +52,7 @@ function DashboardPage() {
         ))}
       </div>
 
-      <StreamList role={tab as "created" | "received"} />
+      <StreamList role={tab === "created" ? "created" : "received"} />
     </div>
   );
 }
