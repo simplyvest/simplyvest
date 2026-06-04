@@ -1,7 +1,7 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import { createRoute } from "@tanstack/react-router";
 
-import { CreateStreamForm } from "@/components/streams/create-stream-form";
+import { CreateStreamForm } from "@/components/streams/create-stream/create-stream-form";
 
 import { Route as AppRoute } from "./app";
 

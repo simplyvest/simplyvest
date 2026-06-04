@@ -8,7 +8,9 @@ import { PublicKey } from "@solana/web3.js";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useWithdraw } from "@/hooks/use-transactions";
-import { formatSol, formatDate, formatDuration } from "@/utils/format";
+import { formatSol, formatDuration } from "@/utils/format";
+
+import { StreamProgressBar } from "./stream-progress-bar";
 
 export function StreamCard({
   stream,
@@ -88,21 +90,11 @@ export function StreamCard({
             </div>
           </div>
 
-          <div className="pt-1">
-            <div className="flex items-center gap-2">
-              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-border2">
-                <div
-                  className="h-full rounded-full bg-sol transition-all"
-                  style={{ width: `${Math.min(100, progress)}%` }}
-                />
-              </div>
-              <span className="font-mono text-xs text-dim">{Math.round(progress)}%</span>
-            </div>
-            <div className="mt-1 flex justify-between font-mono text-xs text-dim">
-              <span>{formatDate(stream.startTime)}</span>
-              <span>{formatDate(stream.endTime)}</span>
-            </div>
-          </div>
+          <StreamProgressBar
+            progress={progress}
+            startTime={stream.startTime}
+            endTime={stream.endTime}
+          />
         </div>
 
         <div className="flex shrink-0 flex-col gap-2">

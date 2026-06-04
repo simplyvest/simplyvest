@@ -2,7 +2,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { createRoute } from "@tanstack/react-router";
 import { Link, useSearch } from "@tanstack/react-router";
 
-import { StreamList } from "@/components/streams/stream-list";
+import { StreamList } from "@/components/streams/stream-list/stream-list";
 import { cn } from "@/utils/cn";
 
 import { Route as AppRoute } from "./app";

@@ -1,24 +1,20 @@
 import { getVaultPda, PROGRAM_ID } from "@solana-tdp/sdk";
 import type { StreamAccount, MilestoneStreamAccount } from "@solana-tdp/sdk";
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
-import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { useState } from "react";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { useStreams, useMilestoneStreams } from "@/hooks/use-stream";
 import {
   useTriggerMilestone,
   useWithdrawMilestone,
   useCancelMilestone,
 } from "@/hooks/use-transactions";
-import { formatAddress } from "@solana-tdp/sdk";
-import { formatSol } from "@/utils/format";
 
-import { CancelDialog } from "./cancel-dialog";
-import { StreamCard } from "./stream-card";
-
+import { CancelDialog } from "../cancel-dialog";
+import { StreamCard } from "../stream-card/stream-card";
+import { MilestoneStreamCard } from "./milestone-stream-card";
 
 interface StreamItem {
   publicKey: PublicKey;
@@ -119,82 +115,48 @@ export function StreamList({ role }: { role: "created" | "received" }) {
 
         {relevantMilestoneStreams.map((s) => {
           const canTrigger = role === "created" && !s.account.milestoneReached;
-          const [vaultPda] = getVaultPda(s.publicKey, PROGRAM_ID);
-          const recipientToken = getAssociatedTokenAddressSync(s.account.mint, s.account.recipient);
           const isRecipient = publicKey?.equals(s.account.recipient);
           return (
-            <div
+            <MilestoneStreamCard
               key={s.publicKey.toBase58()}
-              className="rounded-xl border border-border bg-bg1 px-5 py-4"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0 flex-1 space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Badge variant={s.account.milestoneReached ? "sol2" : "sol"}>
-                      {s.account.milestoneReached ? "completed" : "active"}
-                    </Badge>
-                    <span className="font-mono text-xs text-dim">Milestone stream</span>
-                  </div>
-                  <p className="text-sm text-text">
-                    {formatAddress(s.account.recipient)} — {s.account.amount.toString()} tokens
-                  </p>
-                  <p className="text-xs text-dim">
-                    Claimed: {formatSol(s.account.amountWithdrawn, 6)}
-                  </p>
-                </div>
-                <div className="flex shrink-0 flex-col gap-2">
-                  {canTrigger && (
-                    <Button
-                      size="sm"
-                      onClick={() => triggerMilestone.mutate(s.publicKey)}
-                      disabled={triggerMilestone.isPending}
-                    >
-                      {triggerMilestone.isPending ? "Completing..." : "Complete Milestone"}
-                    </Button>
-                  )}
-                  {role === "created" && !s.account.milestoneReached && !s.account.cancelled && (
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => {
-                        if (window.confirm("Cancel this milestone stream?")) {
-                          const senderToken = getAssociatedTokenAddressSync(
-                            s.account.mint,
-                            s.account.creator,
-                          );
-                          cancelMilestone.mutate({
-                            stream: s.publicKey,
-                            vault: vaultPda,
-                            senderToken,
-                            mint: s.account.mint,
-                          });
-                        }
-                      }}
-                      disabled={cancelMilestone.isPending}
-                    >
-                      {cancelMilestone.isPending ? "Cancelling..." : "Cancel"}
-                    </Button>
-                  )}
-                  {role === "received" && isRecipient && s.account.milestoneReached && (
-                    <Button
-                      size="sm"
-                      onClick={() =>
-                        withdrawMilestone.mutate({
-                          stream: s.publicKey,
-                          vault: vaultPda,
-                          sender: s.account.creator,
-                          mint: s.account.mint,
-                          recipientToken,
-                        })
-                      }
-                      disabled={withdrawMilestone.isPending}
-                    >
-                      {withdrawMilestone.isPending ? "Claiming..." : "Claim"}
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </div>
+              item={s}
+              role={role}
+              isRecipient={isRecipient ?? false}
+              canTrigger={canTrigger}
+              onTrigger={() => triggerMilestone.mutate(s.publicKey)}
+              onCancel={() => {
+                if (window.confirm("Cancel this milestone stream?")) {
+                  const senderToken = getAssociatedTokenAddressSync(
+                    s.account.mint,
+                    s.account.creator,
+                  );
+                  const [vaultPda] = getVaultPda(s.publicKey, PROGRAM_ID);
+                  cancelMilestone.mutate({
+                    stream: s.publicKey,
+                    vault: vaultPda,
+                    senderToken,
+                    mint: s.account.mint,
+                  });
+                }
+              }}
+              onClaim={() => {
+                const [vaultPda] = getVaultPda(s.publicKey, PROGRAM_ID);
+                const recipientToken = getAssociatedTokenAddressSync(
+                  s.account.mint,
+                  s.account.recipient,
+                );
+                withdrawMilestone.mutate({
+                  stream: s.publicKey,
+                  vault: vaultPda,
+                  sender: s.account.creator,
+                  mint: s.account.mint,
+                  recipientToken,
+                });
+              }}
+              triggerPending={triggerMilestone.isPending}
+              cancelPending={cancelMilestone.isPending}
+              withdrawPending={withdrawMilestone.isPending}
+            />
           );
         })}
       </div>

@@ -3,11 +3,16 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { useState, useMemo } from "react";
 
-import { TokenSelector } from "@/components/tokens/token-selector";
+import { TokenSelector } from "@/components/tokens/token-selector/token-selector";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useCreateStream, useCreateMilestoneStream } from "@/hooks/use-transactions";
+
+import { StreamCreationSuccess } from "./stream-creation-success";
+import { StreamTypeToggle } from "./stream-type-toggle";
+import { TimeFields } from "./time-fields";
+import { toUnixSec, isValidPubkey } from "./utils";
 
 type StreamType = "time" | "milestone";
 
@@ -30,20 +35,6 @@ const initialForm: FormState = {
   endTime: "",
   cliffTime: "",
 };
-
-function toUnixSec(datetimeLocal: string): number {
-  if (!datetimeLocal) return 0;
-  const d = new Date(datetimeLocal);
-  return Math.floor(d.getTime() / 1000);
-}
-
-function isValidPubkey(s: string): boolean {
-  try {
-    return !!new PublicKey(s);
-  } catch {
-    return false;
-  }
-}
 
 export function CreateStreamForm() {
   const { publicKey } = useWallet();
@@ -107,48 +98,21 @@ export function CreateStreamForm() {
     }
   };
 
-  const resetForm = () => {
-    setForm(initialForm);
-    createStream.reset();
-    createMilestoneStream.reset();
-  };
+  const resetForm = () => setForm(initialForm);
 
   const update = (field: keyof FormState, val: string) => setForm((f) => ({ ...f, [field]: val }));
 
   if (createStream.isSuccess || createMilestoneStream.isSuccess) {
-    return (
-      <div className="flex flex-col items-center justify-center rounded-xl border border-sol2/30 bg-sol2/5 px-8 py-12 text-center">
-        <p className="text-lg font-semibold text-sol2">Stream Created!</p>
-        <p className="mt-1 text-sm text-muted">
-          Transaction:{" "}
-          {createStream.isSuccess
-            ? createStream.data.slice(0, 16) + "..."
-            : (createMilestoneStream.data ?? "").slice(0, 16) + "..."}
-        </p>
-        <Button variant="outline" className="mt-4" onClick={resetForm}>
-          Create Another
-        </Button>
-      </div>
-    );
+    const txSignature = createStream.isSuccess
+      ? createStream.data
+      : (createMilestoneStream.data ?? "");
+    return <StreamCreationSuccess txSignature={txSignature} onReset={resetForm} />;
   }
 
   return (
     <div className="space-y-5">
       <Field label="Stream Type" required>
-        <div className="flex rounded-lg border border-border bg-bg1 p-0.5">
-          {(["time", "milestone"] as const).map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => update("streamType", t)}
-              className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all ${
-                form.streamType === t ? "bg-sol text-white shadow-sm" : "text-muted hover:text-text"
-              }`}
-            >
-              {t === "time" ? "Time-based Vesting" : "Milestone-gated"}
-            </button>
-          ))}
-        </div>
+        <StreamTypeToggle streamType={form.streamType} onChange={(t) => update("streamType", t)} />
       </Field>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -166,7 +130,6 @@ export function CreateStreamForm() {
       <Field label="Amount (tokens)" required>
         <Input
           type="number"
-          step="any"
           min="0"
           placeholder="1000"
           value={form.amount}
@@ -174,36 +137,16 @@ export function CreateStreamForm() {
         />
       </Field>
 
-      {form.streamType === "time" ? (
-        <>
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-            <Field label="Start Date/Time" required>
-              <Input
-                type="datetime-local"
-                value={form.startTime}
-                onChange={(e) => update("startTime", e.target.value)}
-              />
-            </Field>
-
-            <Field label="End Date/Time" required>
-              <Input
-                type="datetime-local"
-                value={form.endTime}
-                onChange={(e) => update("endTime", e.target.value)}
-              />
-            </Field>
-
-            <Field label="Cliff Date/Time (optional)">
-              <Input
-                type="datetime-local"
-                value={form.cliffTime}
-                onChange={(e) => update("cliffTime", e.target.value)}
-              />
-            </Field>
-          </div>
-        </>
-      ) : null}
-
+      {form.streamType === "time" && (
+        <TimeFields
+          startTime={form.startTime}
+          endTime={form.endTime}
+          cliffTime={form.cliffTime}
+          onStartTimeChange={(v) => update("startTime", v)}
+          onEndTimeChange={(v) => update("endTime", v)}
+          onCliffTimeChange={(v) => update("cliffTime", v)}
+        />
+      )}
       {errors.length > 0 && (
         <div className="rounded-md border border-warn/30 bg-warn/5 px-4 py-3">
           <ul className="list-inside list-disc space-y-1 text-sm text-warn">
