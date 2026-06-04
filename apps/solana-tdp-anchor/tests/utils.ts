@@ -1,6 +1,6 @@
 import * as anchor from "@coral-xyz/anchor";
 import type { SolanaTdp } from "@solana-tdp/sdk";
-import { SolanaTdpIdl } from "@solana-tdp/sdk";
+import { SOLANA_TDP_PROGRAM_IDL } from "@solana-tdp/sdk";
 import {
   TOKEN_PROGRAM_ID,
   createInitializeMintInstruction,
@@ -52,7 +52,7 @@ export const setupTest = () => {
 
   anchor.setProvider(provider);
 
-  const program = new anchor.Program<SolanaTdp>(SolanaTdpIdl as SolanaTdp, provider);
+  const program = new anchor.Program<SolanaTdp>(SOLANA_TDP_PROGRAM_IDL, provider);
 
   // --- SVM-based helpers ---
 
@@ -61,16 +61,21 @@ export const setupTest = () => {
     if (!meta) return null;
     const m = meta as SvmTxMeta;
     const logs =
+      // TODO: look into proper typing — SVM monkey-patch meta type varies by runtime context
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
       "logs" in m ? (m.logs as () => string[])() : (m.meta as () => { logs(): string[] })().logs();
     return {
       meta: {
         logMessages: logs,
+        // TODO: look into proper typing — SVM monkey-patch meta type varies by runtime context
+        // oxlint-disable-next-line typescript/no-unsafe-type-assertion
         err: "err" in m ? (m.err as () => null)() : null,
       },
     } satisfies SvmGetTxResult;
   };
 
-  // Monkey-patch for EventParser + parseEvents compatibility
+  // TODO: look into proper typing — SVM connection monkey-patch for test harness
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   (
     provider.connection as Omit<Connection, "getTransaction"> & {
       getTransaction(sig: string): Promise<SvmGetTxResult | null>;

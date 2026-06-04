@@ -1,7 +1,6 @@
 import { Program, AnchorProvider, BN, web3 } from "@coral-xyz/anchor";
 import type { Wallet } from "@coral-xyz/anchor";
 import {
-  SolanaTdpIdl,
   getStreamPda,
   getMilestoneStreamPda,
   getVaultPda,
@@ -13,6 +12,7 @@ import {
   getTriggerMilestoneAccounts,
   getWithdrawMilestoneAccounts,
   getCancelMilestoneAccounts,
+  SOLANA_TDP_PROGRAM_IDL,
   PROGRAM_ID,
 } from "@solana-tdp/sdk";
 import type { SolanaTdp } from "@solana-tdp/sdk";
@@ -26,11 +26,12 @@ function buildProgram(connection: Connection, wallet: WalletContextState) {
   if (!wallet.publicKey || !wallet.signTransaction) {
     throw new Error("Wallet not connected");
   }
-
+  // TODO: look into proper typing — Anchor Wallet<T> generic variance mismatches WalletContextState
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   const provider = new AnchorProvider(connection, wallet as unknown as Wallet, {
     commitment: "confirmed",
   });
-  return new Program<SolanaTdp>(SolanaTdpIdl as SolanaTdp, provider);
+  return new Program<SolanaTdp>(SOLANA_TDP_PROGRAM_IDL, provider);
 }
 
 export function useCreateStream() {
@@ -86,9 +87,9 @@ export function useCreateStream() {
 
       return tx;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["streams"] });
-      queryClient.invalidateQueries({ queryKey: ["creatorConfig"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["streams"] });
+      await queryClient.invalidateQueries({ queryKey: ["creatorConfig"] });
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Transaction failed");
@@ -129,11 +130,11 @@ export function useWithdraw() {
 
       return tx;
     },
-    onSuccess: (_tx, vars) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (_tx, vars) => {
+      await queryClient.invalidateQueries({
         queryKey: ["stream", vars.stream.toBase58()],
       });
-      queryClient.invalidateQueries({ queryKey: ["streams"] });
+      await queryClient.invalidateQueries({ queryKey: ["streams"] });
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Transaction failed");
@@ -175,11 +176,11 @@ export function useCancel() {
 
       return tx;
     },
-    onSuccess: (_tx, vars) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (_tx, vars) => {
+      await queryClient.invalidateQueries({
         queryKey: ["stream", vars.stream.toBase58()],
       });
-      queryClient.invalidateQueries({ queryKey: ["streams"] });
+      await queryClient.invalidateQueries({ queryKey: ["streams"] });
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Transaction failed");
@@ -234,9 +235,9 @@ export function useCreateMilestoneStream() {
 
       return tx;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["milestoneStreams"] });
-      queryClient.invalidateQueries({ queryKey: ["creatorConfig"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["milestoneStreams"] });
+      await queryClient.invalidateQueries({ queryKey: ["creatorConfig"] });
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Transaction failed");
@@ -261,11 +262,11 @@ export function useTriggerMilestone() {
 
       return tx;
     },
-    onSuccess: (_tx, stream) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (_tx, stream) => {
+      await queryClient.invalidateQueries({
         queryKey: ["milestoneStream", stream.toBase58()],
       });
-      queryClient.invalidateQueries({ queryKey: ["milestoneStreams"] });
+      await queryClient.invalidateQueries({ queryKey: ["milestoneStreams"] });
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Transaction failed");
@@ -305,11 +306,11 @@ export function useWithdrawMilestone() {
 
       return tx;
     },
-    onSuccess: (_tx, vars) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (_tx, vars) => {
+      await queryClient.invalidateQueries({
         queryKey: ["milestoneStream", vars.stream.toBase58()],
       });
-      queryClient.invalidateQueries({ queryKey: ["milestoneStreams"] });
+      await queryClient.invalidateQueries({ queryKey: ["milestoneStreams"] });
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Transaction failed");
@@ -347,11 +348,11 @@ export function useCancelMilestone() {
 
       return tx;
     },
-    onSuccess: (_tx, vars) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (_tx, vars) => {
+      await queryClient.invalidateQueries({
         queryKey: ["milestoneStream", vars.stream.toBase58()],
       });
-      queryClient.invalidateQueries({ queryKey: ["milestoneStreams"] });
+      await queryClient.invalidateQueries({ queryKey: ["milestoneStreams"] });
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Transaction failed");
