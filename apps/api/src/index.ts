@@ -1,6 +1,7 @@
 import type { Env } from "../env";
 
 import { getAccessToken, appendToSheet } from "./google-auth";
+import { isRecord } from "./utils";
 
 interface WaitlistPayload {
   name: string;
@@ -40,7 +41,17 @@ export default {
 
     let body: WaitlistPayload;
     try {
-      body = (await request.json()) as WaitlistPayload;
+      const raw = await request.json();
+      if (!isRecord(raw)) {
+        return json({ error: "Invalid JSON body" }, 400, origin);
+      }
+      body = {
+        name: typeof raw.name === "string" ? raw.name : "",
+        email: typeof raw.email === "string" ? raw.email : "",
+        telegram: typeof raw.telegram === "string" ? raw.telegram : "",
+        following: typeof raw.following === "string" ? raw.following : "",
+        interview: typeof raw.interview === "boolean" ? raw.interview : false,
+      };
     } catch {
       return json({ error: "Invalid JSON body" }, 400, origin);
     }
