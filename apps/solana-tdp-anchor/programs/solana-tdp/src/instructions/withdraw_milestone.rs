@@ -51,6 +51,11 @@ pub fn withdraw_milestone_handler(ctx: Context<WithdrawMilestone>) -> Result<()>
     require!(!stream.cancelled, TdpError::AlreadyCancelled);
     require!(stream.milestone_reached, TdpError::NothingToWithdraw);
     require!(stream.amount_withdrawn == 0, TdpError::FullyVested);
+    require_keys_eq!(
+        ctx.accounts.sender.key(),
+        stream.creator,
+        TdpError::Unauthorized
+    );
 
     let payout = stream.amount;
     let creator = stream.creator;
@@ -89,8 +94,6 @@ pub fn withdraw_milestone_handler(ctx: Context<WithdrawMilestone>) -> Result<()>
         recipient: ctx.accounts.recipient.key(),
         amount: payout,
     });
-
-    require_keys_eq!(ctx.accounts.sender.key(), creator, TdpError::Unauthorized);
 
     token::close_account(CpiContext::new_with_signer(
         ctx.accounts.token_program.to_account_info(),
