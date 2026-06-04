@@ -1,5 +1,9 @@
 import { type ReactElement } from "react";
-import { render, type RenderOptions } from "@testing-library/react";
+import {
+  render,
+  type RenderOptions,
+  type RenderResult,
+} from "@testing-library/react";
 import {
   createRouter,
   RouterProvider,
@@ -15,7 +19,7 @@ type RouterOptions = {
 export function renderWithRouter(
   component: ReactElement,
   options: RenderOptions & RouterOptions = {},
-) {
+): RenderResult {
   const { initialEntries = ["/"], ...renderOptions } = options;
 
   const rootRoute = createRootRoute();
