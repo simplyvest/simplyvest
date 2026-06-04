@@ -1,11 +1,9 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { Outlet, createRoute, Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Outlet, createRoute, useNavigate, useRouterState } from "@tanstack/react-router";
 import * as React from "react";
 
-import { WalletButton } from "@/components/solana/wallet-button";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/utils/cn";
 
 import { Route as RootRoute } from "./__root";
 
@@ -14,48 +12,6 @@ export const Route = createRoute({
   path: "/app",
   component: AppLayout,
 });
-
-const tabs = [
-  { path: "/app/dashboard", label: "Dashboard" },
-  { path: "/app/create", label: "Create Stream" },
-];
-
-function AppHeader() {
-  const routerState = useRouterState();
-  const location = routerState.location;
-
-  return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
-        <Link to="/" className="flex items-center gap-2.5 no-underline hover:no-underline">
-          <div className="flex items-center gap-2.5 rounded-md bg-sol p-1.5 dark:bg-transparent">
-            <img src="/simplyvest.png" alt="SimplyVest" className="h-7 w-auto" />
-          </div>
-          <span className="text-lg font-semibold tracking-tight text-text">SimplyVest</span>
-        </Link>
-
-        <nav className="flex items-center gap-1">
-          {tabs.map((tab) => {
-            const isActive = location.pathname === tab.path;
-            return (
-              <Link
-                key={tab.path}
-                to={tab.path}
-                className={cn(
-                  "rounded px-3 py-1.5 font-mono text-[0.67rem] tracking-wide transition-colors hover:bg-bg2 hover:text-text hover:no-underline focus-visible:ring-2 focus-visible:ring-sol focus-visible:outline-none",
-                  isActive ? "text-text" : "text-muted",
-                )}
-              >
-                {tab.label}
-              </Link>
-            );
-          })}
-          <WalletButton />
-        </nav>
-      </div>
-    </header>
-  );
-}
 
 function AppLayout() {
   const { publicKey, connecting } = useWallet();
@@ -73,9 +29,7 @@ function AppLayout() {
   }, [showContent, location.pathname, navigate]);
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col px-6 pt-20">
-      <AppHeader />
-
+    <div className="mx-auto flex w-full max-w-5xl flex-col px-6">
       {showContent ? (
         <div className="pb-12">
           <Outlet />

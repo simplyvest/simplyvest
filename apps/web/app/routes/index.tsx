@@ -1,6 +1,5 @@
 import { createRoute } from "@tanstack/react-router";
 
-import { Footer } from "@/components/layout/footer";
 import { CTA } from "@/components/sections/cta";
 import { Features } from "@/components/sections/features";
 import { Hero } from "@/components/sections/hero";
@@ -27,7 +26,6 @@ function LandingPage() {
       <Security />
       <HomeFAQ />
       <CTA />
-      <Footer />
     </div>
   );
 }

@@ -83,18 +83,4 @@ describe("WaitlistPage", () => {
     expect(await screen.findByText("You're on the list!")).toBeInTheDocument();
     expect(await screen.findByText(/Thank you for signing up/)).toBeInTheDocument();
   });
-
-  it("renders Navbar and Footer", async () => {
-    renderWithRouter(<WaitlistPage />);
-
-    // Navbar brand and Footer brand both render "SimplyVest"
-    const brandTexts = await screen.findAllByText("SimplyVest");
-    expect(brandTexts.length).toBeGreaterThanOrEqual(1);
-
-    // Footer: copyright present
-    const year = new Date().getFullYear();
-    expect(
-      await screen.findByText(`© ${year} SimplyVest. All rights reserved.`),
-    ).toBeInTheDocument();
-  });
 });

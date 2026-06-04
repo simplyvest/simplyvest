@@ -1,9 +1,6 @@
 import { createRoute, Link } from "@tanstack/react-router";
 import { SiGithub } from "react-icons/si";
 
-import { Footer } from "@/components/layout/footer";
-import { Navbar } from "@/components/layout/navbar";
-
 import { Route as RootRoute } from "./__root";
 
 const faqData = [
@@ -50,8 +47,6 @@ export const Route = createRoute({
 function FAQPage() {
   return (
     <div className="min-h-screen">
-      <Navbar />
-
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-white dark:from-slate-950 via-purple-50/20 dark:via-purple-950 to-white dark:to-slate-950 pt-32 pb-20">
         {/* Decorative blurred circles */}
@@ -126,8 +121,6 @@ function FAQPage() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }

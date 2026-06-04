@@ -6,6 +6,8 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import * as React from "react";
 import { Toaster } from "sonner";
 
+import { Footer } from "@/components/layout/footer";
+import { Navbar } from "@/components/layout/navbar";
 import { SolanaProvider } from "@/components/solana/solana-provider";
 import { ThemeProvider } from "@/lib/theme";
 import { trackPageView } from "@/utils/analytics";
@@ -57,6 +59,8 @@ function RootComponent() {
               Skip to main content
             </a>
 
+            <Navbar />
+
             <main id="main-content" className="flex-1">
               {isLoading ? (
                 <div className="flex h-64 items-center justify-center">
@@ -66,6 +70,8 @@ function RootComponent() {
                 <Outlet />
               )}
             </main>
+
+            <Footer />
 
             {DEV && (
               <TanStackDevtools

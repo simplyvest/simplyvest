@@ -2,8 +2,6 @@ import { createRoute } from "@tanstack/react-router";
 import * as React from "react";
 import { LuSend, LuCircleCheck } from "react-icons/lu";
 
-import { Footer } from "@/components/layout/footer";
-import { Navbar } from "@/components/layout/navbar";
 import { trackEvent } from "@/utils/analytics";
 
 import { Route as RootRoute } from "./__root";
@@ -77,8 +75,6 @@ function WaitlistPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-purple-50/20 to-white dark:from-slate-950 dark:via-purple-950/20 dark:to-slate-950">
-      <Navbar />
-
       <section className="relative overflow-hidden px-6 py-32">
         {/* Decorative background */}
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
@@ -254,8 +250,6 @@ function WaitlistPage() {
           </p>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }

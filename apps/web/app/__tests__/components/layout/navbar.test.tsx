@@ -16,7 +16,7 @@ describe("Navbar", () => {
     expect(brandLink.closest("a")).toHaveAttribute("href", "/");
   });
 
-  it("renders all navigation links", async () => {
+  it("renders public navigation links on marketing pages", async () => {
     renderWithRouter(<Navbar />);
 
     const expectedLinks = [
@@ -24,7 +24,6 @@ describe("Navbar", () => {
       { label: "Docs", href: "/docs" },
       { label: "FAQ", href: "/faq" },
       { label: "Waitlist", href: "/waitlist" },
-      { label: "App", href: "/app" },
     ];
 
     await Promise.all(
@@ -34,5 +33,14 @@ describe("Navbar", () => {
         expect(link.closest("a")).toHaveAttribute("href", href);
       }),
     );
+  });
+
+  it("does not render app-specific links on marketing pages", async () => {
+    renderWithRouter(<Navbar />);
+
+    // Wait for Navbar to render, then confirm app links are absent
+    await screen.findByText("Home");
+    expect(screen.queryByText("Dashboard")).not.toBeInTheDocument();
+    expect(screen.queryByText("Create Stream")).not.toBeInTheDocument();
   });
 });

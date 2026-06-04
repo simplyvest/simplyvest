@@ -57,18 +57,4 @@ describe("FAQPage", () => {
     const communityLink = await screen.findByText("Join Community");
     expect(communityLink.closest("a")).toHaveAttribute("href", "/waitlist");
   });
-
-  it("renders Navbar and Footer", async () => {
-    renderWithRouter(<FAQPage />);
-
-    // Navbar brand and Footer brand both render "SimplyVest"
-    const brandTexts = await screen.findAllByText("SimplyVest");
-    expect(brandTexts.length).toBeGreaterThanOrEqual(1);
-
-    // Footer: copyright
-    const year = new Date().getFullYear();
-    expect(
-      await screen.findByText(`© ${year} SimplyVest. All rights reserved.`),
-    ).toBeInTheDocument();
-  });
 });

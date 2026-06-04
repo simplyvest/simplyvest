@@ -64,16 +64,4 @@ describe("DocsPage", () => {
     expect(await screen.findByText("Rent Recovery")).toBeInTheDocument();
     expect(await screen.findByText("Token-2022")).toBeInTheDocument();
   });
-
-  it("renders Navbar and Footer", async () => {
-    renderWithRouter(<DocsPage />);
-
-    const brandTexts = await screen.findAllByText("SimplyVest");
-    expect(brandTexts.length).toBeGreaterThanOrEqual(1);
-
-    const year = new Date().getFullYear();
-    expect(
-      await screen.findByText(`© ${year} SimplyVest. All rights reserved.`),
-    ).toBeInTheDocument();
-  });
 });

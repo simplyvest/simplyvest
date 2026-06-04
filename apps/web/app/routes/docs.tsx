@@ -12,9 +12,6 @@ import {
   LuSettings,
 } from "react-icons/lu";
 
-import { Footer } from "@/components/layout/footer";
-import { Navbar } from "@/components/layout/navbar";
-
 import { Route as RootRoute } from "./__root";
 
 export const Route = createRoute({
@@ -222,8 +219,6 @@ function SectionHeader({
 function DocsPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900">
-      <Navbar />
-
       {/* ── Hero ────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-white via-purple-50/30 to-white dark:from-slate-950 dark:via-purple-950/30 dark:to-slate-950 pt-28 pb-20">
         {/* Decorative blurred circles */}
@@ -572,8 +567,6 @@ function DocsPage() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }
