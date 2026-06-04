@@ -28,9 +28,14 @@ export function Navbar() {
   const links = isApp ? appLinks : publicLinks;
 
   const toggleTheme = () => {
-    if (theme === "dark") setTheme("light");
-    else if (theme === "light") setTheme("system");
-    else setTheme("dark");
+    if (theme === "system") {
+      // Jumps to the opposite of what's currently rendered
+      setTheme(resolved === "dark" ? "light" : "dark");
+    } else if (theme === "dark") {
+      setTheme("light");
+    } else {
+      setTheme("system");
+    }
   };
 
   return (
