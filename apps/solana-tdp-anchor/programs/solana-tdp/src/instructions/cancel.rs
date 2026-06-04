@@ -72,7 +72,9 @@ pub fn cancel_handler(ctx: Context<Cancel>) -> Result<()> {
     require!(now < stream.end_time, TdpError::StreamExpired);
 
     // Calculate split at moment of cancellation (cliff-aware: vesting locked until cliff_time)
-    let vested_at_cancel = if now >= stream.end_time {
+    let vested_at_cancel = if now < stream.start_time {
+        0
+    } else if now >= stream.end_time {
         stream.amount
     } else if now < stream.cliff_time {
         0

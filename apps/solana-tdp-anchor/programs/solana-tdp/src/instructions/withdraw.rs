@@ -66,7 +66,9 @@ pub fn withdraw_handler(ctx: Context<Withdraw>, params: WithdrawParams) -> Resul
     require!(params.amount > 0, TdpError::ZeroAmount);
 
     // 2. Calculate linear vesting from start_time to end_time (locked until cliff_time)
-    let total_vested = if now >= stream.end_time {
+    let total_vested = if now < stream.start_time {
+        0
+    } else if now >= stream.end_time {
         stream.amount
     } else if now < stream.cliff_time {
         0
