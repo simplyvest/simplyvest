@@ -51,7 +51,7 @@ function FeatureCard({
         "relative flex flex-col gap-4 rounded-2xl p-6",
         highlighted
           ? "bg-gradient-to-br from-purple-600 to-purple-500 text-white"
-          : "border border-white/60 bg-white/60 backdrop-blur-sm",
+          : "border border-white/60 bg-white/60 backdrop-blur-sm dark:border-slate-700/60 dark:bg-slate-900/60",
       )}
     >
       <div className="flex items-center justify-between">
@@ -73,7 +73,7 @@ function FeatureCard({
               <span
                 className={cn(
                   "font-mono text-xs font-medium",
-                  highlighted ? "text-white/80" : "text-purple-600",
+                  highlighted ? "text-white/80" : "text-purple-600 dark:text-purple-400",
                 )}
               >
                 {feature.label}
@@ -81,7 +81,7 @@ function FeatureCard({
               <span
                 className={cn(
                   "text-xs font-medium",
-                  highlighted ? "text-white/80" : "text-purple-600",
+                  highlighted ? "text-white/80" : "text-purple-600 dark:text-purple-400",
                 )}
               >
                 {feature.title}
@@ -99,12 +99,16 @@ function FeatureCard({
       ) : (
         <>
           <div>
-            <span className="font-mono text-[0.65rem] font-semibold uppercase tracking-widest text-purple-600">
+            <span className="font-mono text-[0.65rem] font-semibold uppercase tracking-widest text-purple-600 dark:text-purple-400">
               {feature.label}
             </span>
-            <h3 className="mt-1 text-lg font-bold text-gray-900">{feature.title}</h3>
+            <h3 className="mt-1 text-lg font-bold text-gray-900 dark:text-slate-100">
+              {feature.title}
+            </h3>
           </div>
-          <p className="text-sm leading-relaxed text-gray-600">{feature.description}</p>
+          <p className="text-sm leading-relaxed text-gray-600 dark:text-slate-300">
+            {feature.description}
+          </p>
           <div className="flex items-center gap-1.5 text-emerald-500">
             <LuCheck className="h-4 w-4" />
             <span className="text-xs font-medium">Verified</span>
@@ -117,12 +121,12 @@ function FeatureCard({
 
 export function Security() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-white via-purple-50/30 to-white py-24">
+    <section className="relative overflow-hidden bg-gradient-to-b from-white via-purple-50/30 to-white py-24 dark:from-slate-950 dark:via-purple-950/30 dark:to-slate-950">
       {/* Decorative blurred circles */}
       <div className="pointer-events-none absolute inset-0" aria-hidden>
-        <div className="absolute -left-32 top-1/4 h-64 w-64 rounded-full bg-purple-200/30 blur-3xl" />
-        <div className="absolute -right-32 top-1/3 h-64 w-64 rounded-full bg-purple-300/20 blur-3xl" />
-        <div className="absolute bottom-1/4 left-1/3 h-48 w-48 rounded-full bg-purple-100/40 blur-3xl" />
+        <div className="absolute -left-32 top-1/4 h-64 w-64 rounded-full bg-purple-200/30 blur-3xl dark:bg-purple-800/30" />
+        <div className="absolute -right-32 top-1/3 h-64 w-64 rounded-full bg-purple-300/20 blur-3xl dark:bg-purple-700/20" />
+        <div className="absolute bottom-1/4 left-1/3 h-48 w-48 rounded-full bg-purple-100/40 blur-3xl dark:bg-purple-900/40" />
       </div>
 
       {/* Security grid pattern */}
@@ -141,7 +145,7 @@ export function Security() {
         className="pointer-events-none absolute inset-0 flex items-center justify-center"
         aria-hidden
       >
-        <LuShield className="h-[600px] w-[600px] text-purple-600 opacity-[0.05]" />
+        <LuShield className="h-[600px] w-[600px] text-purple-600 opacity-[0.05] dark:text-purple-400" />
       </div>
 
       <div className="relative mx-auto max-w-4xl px-6">
@@ -155,9 +159,9 @@ export function Security() {
         </div>
 
         {/* Glassmorphism panel */}
-        <div className="mt-12 rounded-3xl border border-white/60 bg-white/60 p-8 shadow-2xl shadow-purple-600/10 backdrop-blur-sm">
+        <div className="mt-12 rounded-3xl border border-white/60 bg-white/60 p-8 shadow-2xl shadow-purple-600/10 backdrop-blur-sm dark:border-slate-700/60 dark:bg-slate-900/60 dark:shadow-purple-400/10">
           {/* Status bar */}
-          <div className="flex flex-wrap items-center gap-4 border-b border-gray-200/60 pb-6">
+          <div className="flex flex-wrap items-center gap-4 border-b border-gray-200/60 pb-6 dark:border-slate-600/60">
             <div className="flex items-center gap-2">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -170,7 +174,7 @@ export function Security() {
             <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-0.5 font-mono text-[0.65rem] font-medium text-emerald-700">
               Audited
             </span>
-            <span className="font-mono text-[0.65rem] uppercase tracking-widest text-gray-400">
+            <span className="font-mono text-[0.65rem] uppercase tracking-widest text-gray-400 dark:text-slate-500">
               SECURITY_LEVEL: MAX
             </span>
           </div>
@@ -190,11 +194,13 @@ export function Security() {
           </div>
 
           {/* Footer metrics */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-6 border-t border-gray-200/60 pt-6">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-6 border-t border-gray-200/60 pt-6 dark:border-slate-600/60">
             {metrics.map((metric) => (
               <div key={metric} className="flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-purple-500" />
-                <span className="font-mono text-xs font-medium text-gray-600">{metric}</span>
+                <span className="font-mono text-xs font-medium text-gray-600 dark:text-slate-300">
+                  {metric}
+                </span>
               </div>
             ))}
           </div>

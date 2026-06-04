@@ -58,15 +58,14 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-white via-purple-50/20 to-white py-24 sm:py-32">
-      {/* ------------------------------------------------------------------ */}
+    <section className="relative overflow-hidden bg-gradient-to-b from-white via-purple-50/20 to-white dark:from-slate-950 dark:via-purple-950/20 dark:to-slate-950 py-24 sm:py-32">
       {/*  Background decoration                                             */}
       {/* ------------------------------------------------------------------ */}
       <div className="pointer-events-none absolute inset-0" aria-hidden>
         {/* Blurred circles */}
-        <div className="absolute -left-32 top-1/4 h-96 w-96 rounded-full bg-purple-200/30 blur-3xl" />
+        <div className="absolute -left-32 top-1/4 h-96 w-96 rounded-full bg-purple-200/30 dark:bg-purple-800/30 blur-3xl" />
         <div className="absolute -right-24 top-2/3 h-80 w-80 rounded-full bg-purple-300/20 blur-3xl" />
-        <div className="absolute left-1/2 top-10 h-64 w-64 -translate-x-1/2 rounded-full bg-purple-100/40 blur-3xl" />
+        <div className="absolute left-1/2 top-10 h-64 w-64 -translate-x-1/2 rounded-full bg-purple-100/40 dark:bg-purple-900/40 blur-3xl" />
 
         {/* Dot grid */}
         <div
@@ -84,7 +83,7 @@ export function HowItWorks() {
       <div className="relative mx-auto max-w-4xl px-6">
         {/* Header */}
         <div className="text-center">
-          <span className="inline-flex items-center rounded-full bg-purple-100 px-4 py-1.5 font-mono text-xs font-medium uppercase tracking-wider text-purple-700">
+          <span className="inline-flex items-center rounded-full bg-purple-100 px-4 py-1.5 font-mono text-xs font-medium uppercase tracking-wider text-purple-700 dark:bg-purple-900 dark:text-purple-300">
             02
           </span>
           <h2 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">How It Works</h2>
@@ -111,7 +110,7 @@ export function HowItWorks() {
         {/*  Bottom CTA                                                      */}
         {/* ---------------------------------------------------------------- */}
         <div className="mt-20 flex justify-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-purple-200 bg-white/80 px-6 py-3 text-sm font-medium text-purple-700 shadow-sm backdrop-blur-sm">
+          <div className="inline-flex items-center gap-2 rounded-full border border-purple-200 bg-white/80 px-6 py-3 text-sm font-medium text-purple-700 shadow-sm dark:bg-slate-900/80 dark:text-purple-300 backdrop-blur-sm">
             <span className="inline-block h-2 w-2 rounded-full bg-purple-500" />
             Ready in minutes, secure forever
           </div>
@@ -149,23 +148,23 @@ function StepCard({ step, index }: { step: (typeof steps)[number]; index: number
       {/* ---- Card ---- */}
       <div
         className={cn(
-          "group relative w-full flex-1 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:border-purple-200 hover:shadow-md sm:p-8",
+          "group relative w-full flex-1 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:border-purple-200 hover:shadow-md dark:border-slate-600 dark:bg-slate-900 sm:p-8",
           /* Offset on md+ so card doesn't overlap timeline circle */
           "md:w-[calc(50%-2.5rem)]",
           isEven ? "md:mr-auto md:pr-8" : "md:ml-auto md:pl-8",
         )}
       >
         {/* Hover gradient overlay */}
-        <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-50/0 to-purple-100/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-50/0 to-purple-100/0 dark:from-purple-950/0 dark:to-purple-900/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
         {/* Icon badge — top right */}
-        <div className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 text-purple-600 transition-colors duration-300 group-hover:bg-purple-200">
+        <div className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 text-purple-600 transition-colors duration-300 group-hover:bg-purple-200 dark:bg-purple-900 dark:text-purple-400 dark:group-hover:bg-purple-800">
           <Icon className="h-5 w-5" strokeWidth={1.75} />
         </div>
 
         {/* Title + mono label */}
         <h3 className="text-xl font-bold tracking-tight">{step.title}</h3>
-        <span className="mt-1.5 inline-block rounded-md bg-purple-100 px-2.5 py-0.5 font-mono text-xs text-purple-700">
+        <span className="mt-1.5 inline-block rounded-md bg-purple-100 px-2.5 py-0.5 font-mono text-xs text-purple-700 dark:bg-purple-900 dark:text-purple-300">
           {step.label}
         </span>
 

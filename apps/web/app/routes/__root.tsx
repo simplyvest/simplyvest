@@ -7,6 +7,7 @@ import * as React from "react";
 import { Toaster } from "sonner";
 
 import { SolanaProvider } from "@/components/solana/solana-provider";
+import { ThemeProvider } from "@/lib/theme";
 import { trackPageView } from "@/utils/analytics";
 
 const DEV = import.meta.env.DEV;
@@ -47,36 +48,38 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <SolanaProvider>
-        <div className="flex min-h-screen flex-col bg-white text-text">
-          <a
-            href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-sol focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:no-underline"
-          >
-            Skip to main content
-          </a>
+        <ThemeProvider>
+          <div className="flex min-h-screen flex-col bg-bg text-text">
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-sol focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:no-underline"
+            >
+              Skip to main content
+            </a>
 
-          <main id="main-content" className="flex-1">
-            {isLoading ? (
-              <div className="flex h-64 items-center justify-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-sol border-t-transparent" />
-              </div>
-            ) : (
-              <Outlet />
+            <main id="main-content" className="flex-1">
+              {isLoading ? (
+                <div className="flex h-64 items-center justify-center">
+                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-sol border-t-transparent" />
+                </div>
+              ) : (
+                <Outlet />
+              )}
+            </main>
+
+            {DEV && (
+              <TanStackDevtools
+                plugins={[
+                  { name: "TanStack Query", render: <ReactQueryDevtoolsPanel /> },
+                  {
+                    name: "TanStack Router",
+                    render: <TanStackRouterDevtoolsPanel />,
+                  },
+                ]}
+              />
             )}
-          </main>
-
-          {DEV && (
-            <TanStackDevtools
-              plugins={[
-                { name: "TanStack Query", render: <ReactQueryDevtoolsPanel /> },
-                {
-                  name: "TanStack Router",
-                  render: <TanStackRouterDevtoolsPanel />,
-                },
-              ]}
-            />
-          )}
-        </div>
+          </div>
+        </ThemeProvider>
         <Toaster richColors />
       </SolanaProvider>
     </QueryClientProvider>

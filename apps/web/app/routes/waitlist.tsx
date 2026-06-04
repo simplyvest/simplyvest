@@ -76,29 +76,29 @@ function WaitlistPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-purple-50/20 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-white via-purple-50/20 to-white dark:from-slate-950 dark:via-purple-950/20 dark:to-slate-950">
       <Navbar />
 
       <section className="relative overflow-hidden px-6 py-32">
         {/* Decorative background */}
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-          <div className="absolute -left-32 top-20 h-96 w-96 rounded-full bg-purple-300 opacity-5 blur-3xl" />
-          <div className="absolute -right-24 top-1/2 h-80 w-80 rounded-full bg-purple-400 opacity-5 blur-3xl" />
-          <div className="absolute bottom-10 left-1/3 h-64 w-64 rounded-full bg-purple-200 opacity-5 blur-3xl" />
-          <div className="absolute left-10 top-1/3 h-48 w-48 rotate-45 rounded-3xl border border-purple-300 opacity-5" />
-          <div className="absolute bottom-1/4 right-1/4 h-32 w-32 rotate-12 rounded-2xl border border-purple-400 opacity-5" />
+          <div className="absolute -left-32 top-20 h-96 w-96 rounded-full bg-purple-300 opacity-5 blur-3xl dark:bg-purple-700" />
+          <div className="absolute -right-24 top-1/2 h-80 w-80 rounded-full bg-purple-400 opacity-5 blur-3xl dark:bg-purple-600" />
+          <div className="absolute bottom-10 left-1/3 h-64 w-64 rounded-full bg-purple-200 opacity-5 blur-3xl dark:bg-purple-800" />
+          <div className="absolute left-10 top-1/3 h-48 w-48 rotate-45 rounded-3xl border border-purple-300 opacity-5 dark:border-purple-700" />
+          <div className="absolute bottom-1/4 right-1/4 h-32 w-32 rotate-12 rounded-2xl border border-purple-400 opacity-5 dark:border-purple-600" />
         </div>
 
         <div className="relative mx-auto max-w-2xl">
           {/* Header */}
           <div className="mb-12 text-center">
-            <span className="inline-block rounded-full bg-purple-100 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-purple-700">
+            <span className="inline-block rounded-full bg-purple-100 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-purple-700 dark:bg-purple-900 dark:text-purple-300">
               Waitlist
             </span>
-            <h1 className="mt-6 text-4xl font-bold tracking-tight text-gray-900 md:text-5xl">
+            <h1 className="mt-6 text-4xl font-bold tracking-tight text-gray-900 md:text-5xl dark:text-slate-100">
               Waitlist SimplyVest
             </h1>
-            <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-gray-500">
+            <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-gray-500 dark:text-slate-400">
               We help you transfer your money in a safer way — with commitment from both the sender
               and the receiver.
             </p>
@@ -106,15 +106,15 @@ function WaitlistPage() {
 
           {/* Form card */}
           <div className="relative">
-            <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-purple-400 to-purple-600 opacity-20 blur-lg" />
-            <div className="relative rounded-3xl border border-gray-100 bg-white p-10 shadow-lg md:p-12">
+            <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-purple-400 to-purple-600 opacity-20 blur-lg dark:from-purple-600 dark:to-purple-800" />
+            <div className="relative rounded-3xl border border-gray-100 bg-white p-10 shadow-lg md:p-12 dark:border-slate-700 dark:bg-slate-900">
               {submitted ? (
                 <div className="py-8 text-center">
                   <LuCircleCheck className="mx-auto h-16 w-16 text-green-500" />
-                  <h2 className="mt-4 text-2xl font-bold text-gray-900">
+                  <h2 className="mt-4 text-2xl font-bold text-gray-900 dark:text-slate-100">
                     You&apos;re on the list!
                   </h2>
-                  <p className="mt-2 text-gray-500">
+                  <p className="mt-2 text-gray-500 dark:text-slate-400">
                     Thank you for signing up. We&apos;ll reach out to you soon.
                   </p>
                 </div>
@@ -122,7 +122,10 @@ function WaitlistPage() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Name */}
                   <div>
-                    <label htmlFor="name" className="mb-2 block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="name"
+                      className="mb-2 block text-sm font-medium text-gray-700 dark:text-slate-200"
+                    >
                       Your Name <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -133,13 +136,16 @@ function WaitlistPage() {
                       placeholder="Enter your full name"
                       value={formData.name}
                       onChange={handleChange}
-                      className="w-full rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm transition-all placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600"
+                      className="w-full rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm transition-all placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 dark:border-slate-600 dark:bg-slate-900 dark:placeholder:text-slate-500 dark:focus:ring-purple-400"
                     />
                   </div>
 
                   {/* Email */}
                   <div>
-                    <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="email"
+                      className="mb-2 block text-sm font-medium text-gray-700 dark:text-slate-200"
+                    >
                       Email <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -150,7 +156,7 @@ function WaitlistPage() {
                       placeholder="your.email@example.com"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm transition-all placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600"
+                      className="w-full rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm transition-all placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 dark:border-slate-600 dark:bg-slate-900 dark:placeholder:text-slate-500 dark:focus:ring-purple-400"
                     />
                   </div>
 
@@ -158,7 +164,7 @@ function WaitlistPage() {
                   <div>
                     <label
                       htmlFor="telegram"
-                      className="mb-2 block text-sm font-medium text-gray-700"
+                      className="mb-2 block text-sm font-medium text-gray-700 dark:text-slate-200"
                     >
                       Telegram ID <span className="text-red-500">*</span>
                     </label>
@@ -170,7 +176,7 @@ function WaitlistPage() {
                       placeholder="@yourtelegramid"
                       value={formData.telegram}
                       onChange={handleChange}
-                      className="w-full rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm transition-all placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600"
+                      className="w-full rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm transition-all placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 dark:border-slate-600 dark:bg-slate-900 dark:placeholder:text-slate-500 dark:focus:ring-purple-400"
                     />
                   </div>
 
@@ -178,7 +184,7 @@ function WaitlistPage() {
                   <div>
                     <label
                       htmlFor="following"
-                      className="mb-2 block text-sm font-medium text-gray-700"
+                      className="mb-2 block text-sm font-medium text-gray-700 dark:text-slate-200"
                     >
                       Following @simplyvestsol on X?
                     </label>
@@ -188,7 +194,7 @@ function WaitlistPage() {
                         name="following"
                         value={formData.following}
                         onChange={handleChange}
-                        className="w-full appearance-none rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600"
+                        className="w-full appearance-none rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 dark:border-slate-600 dark:bg-slate-900 dark:focus:ring-purple-400"
                         style={{
                           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%237c3aed' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
                           backgroundRepeat: "no-repeat",
@@ -205,22 +211,22 @@ function WaitlistPage() {
                   </div>
 
                   {/* Willing to interview */}
-                  <div className="rounded-xl border border-purple-100 bg-purple-50 p-4">
+                  <div className="rounded-xl border border-purple-100 bg-purple-50 p-4 dark:border-purple-900/50 dark:bg-purple-950">
                     <label className="flex cursor-pointer items-start gap-3">
                       <input
                         name="interview"
                         type="checkbox"
                         checked={formData.interview}
                         onChange={handleChange}
-                        className="mt-0.5 h-5 w-5 shrink-0 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                        className="mt-0.5 h-5 w-5 shrink-0 rounded border-gray-300 text-purple-600 focus:ring-purple-500 dark:border-slate-500 dark:text-purple-400 dark:focus:ring-purple-400"
                       />
-                      <span className="text-sm text-gray-700">
+                      <span className="text-sm text-gray-700 dark:text-slate-200">
                         I&apos;m willing to be contacted for a user interview.
                       </span>
                     </label>
                   </div>
 
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-gray-400 dark:text-slate-500">
                     <span className="text-red-500">*</span> Required fields
                   </p>
                   {error && (
@@ -231,7 +237,7 @@ function WaitlistPage() {
                   <button
                     type="submit"
                     disabled={sending}
-                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-4 text-sm font-semibold text-white shadow-lg shadow-purple-200 transition-all hover:from-purple-700 hover:to-purple-800 hover:shadow-xl hover:shadow-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2"
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-4 text-sm font-semibold text-white shadow-lg shadow-purple-200 transition-all hover:from-purple-700 hover:to-purple-800 hover:shadow-xl hover:shadow-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2 dark:from-purple-500 dark:to-purple-600 dark:shadow-purple-900 dark:hover:from-purple-600 dark:hover:to-purple-700 dark:hover:shadow-purple-800 dark:focus:ring-purple-400"
                   >
                     {sending ? "Submitting..." : "Join Waitlist"}
                     <LuSend className="h-4 w-4" />
@@ -242,7 +248,7 @@ function WaitlistPage() {
           </div>
 
           {/* Privacy note */}
-          <p className="mt-8 text-center text-sm leading-relaxed text-gray-400">
+          <p className="mt-8 text-center text-sm leading-relaxed text-gray-400 dark:text-slate-500">
             We respect your privacy. Your information will only be used to contact you about
             SimplyVest. We will never share your data with third parties.
           </p>

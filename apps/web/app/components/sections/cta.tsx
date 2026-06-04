@@ -3,7 +3,7 @@ import { LuArrowRight, LuSparkles } from "react-icons/lu";
 
 export function CTA() {
   return (
-    <section className="bg-gradient-to-b from-white to-gray-50 py-24">
+    <section className="bg-gradient-to-b from-white dark:from-slate-950 to-gray-50 dark:to-slate-950 py-24">
       <div className="relative mx-auto max-w-4xl px-6">
         {/* Glow effect behind card */}
         <div className="absolute inset-0 -z-10 rounded-3xl bg-purple-500/20 blur-3xl" />
@@ -26,18 +26,18 @@ export function CTA() {
           </svg>
 
           {/* Floating dots */}
-          <div className="pointer-events-none absolute left-12 top-8 h-2 w-2 rounded-full bg-white/40 animate-pulse" />
-          <div className="pointer-events-none absolute right-16 top-14 h-1.5 w-1.5 rounded-full bg-white/30 animate-pulse [animation-delay:200ms]" />
-          <div className="pointer-events-none absolute bottom-12 left-20 h-1.5 w-1.5 rounded-full bg-white/25 animate-pulse [animation-delay:400ms]" />
-          <div className="pointer-events-none absolute bottom-20 right-12 h-2 w-2 rounded-full bg-white/35 animate-pulse [animation-delay:600ms]" />
+          <div className="pointer-events-none absolute left-12 top-8 h-2 w-2 rounded-full bg-white/40 dark:bg-slate-900/40 animate-pulse" />
+          <div className="pointer-events-none absolute right-16 top-14 h-1.5 w-1.5 rounded-full bg-white/30 dark:bg-slate-900/30 animate-pulse [animation-delay:200ms]" />
+          <div className="pointer-events-none absolute bottom-12 left-20 h-1.5 w-1.5 rounded-full bg-white/25 dark:bg-slate-900/25 animate-pulse [animation-delay:400ms]" />
+          <div className="pointer-events-none absolute bottom-20 right-12 h-2 w-2 rounded-full bg-white/35 dark:bg-slate-900/35 animate-pulse [animation-delay:600ms]" />
 
           {/* Glass highlight on top */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
-          <div className="pointer-events-none absolute inset-x-8 top-0 h-24 bg-gradient-to-b from-white/10 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 dark:via-slate-950/50 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-8 top-0 h-24 bg-gradient-to-b from-white/10 dark:from-slate-950/10 to-transparent" />
 
           {/* Content */}
           <div className="relative z-10">
-            <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/20 bg-white/15 backdrop-blur-sm">
+            <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/20 dark:border-slate-700/20 bg-white/15 dark:bg-slate-900/15 backdrop-blur-sm">
               <LuSparkles className="h-7 w-7 text-white" />
             </div>
 
@@ -52,7 +52,7 @@ export function CTA() {
             <div className="mt-10">
               <Link
                 to="/waitlist"
-                className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3.5 text-base font-semibold text-purple-600 shadow-lg transition-all hover:scale-105 hover:shadow-xl focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
+                className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-900 px-8 py-3.5 text-base font-semibold text-purple-600 dark:text-purple-400 shadow-lg transition-all hover:scale-105 hover:shadow-xl focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
               >
                 Join Waitlist
                 <LuArrowRight className="h-5 w-5" />
@@ -62,7 +62,7 @@ export function CTA() {
             {/* Trust indicators */}
             <div className="mt-8 flex items-center justify-center gap-3 text-sm text-purple-50">
               <span>No credit card required</span>
-              <span className="h-1 w-1 rounded-full bg-white/60" />
+              <span className="h-1 w-1 rounded-full bg-white/60 dark:bg-slate-900/60" />
               <span>Launch in Q2 2026</span>
             </div>
           </div>

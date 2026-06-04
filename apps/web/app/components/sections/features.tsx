@@ -4,21 +4,21 @@ function LinearVestingCard() {
   const barValues = [20, 35, 50, 65, 80, 95, 100];
 
   return (
-    <div className="group relative overflow-hidden rounded-[32px] border border-gray-200 bg-white shadow-md transition-shadow duration-300 hover:shadow-lg md:col-span-7">
+    <div className="group relative overflow-hidden rounded-[32px] border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 shadow-md transition-shadow duration-300 hover:shadow-lg md:col-span-7">
       <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       <div className="h-1 w-full bg-gradient-to-r from-purple-500 to-purple-600" />
 
       <div className="relative p-8">
         <div className="flex items-start gap-8">
           <div className="flex-1 space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold tracking-wide text-purple-700">
+            <div className="inline-flex items-center gap-2 rounded-full bg-purple-100 dark:bg-purple-900 px-3 py-1 text-xs font-semibold tracking-wide text-purple-700 dark:text-purple-300">
               <LuTrendingUp className="h-3.5 w-3.5" />
               TIME-BASED
             </div>
 
-            <h3 className="text-2xl font-bold text-gray-900">Linear Vesting</h3>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-slate-100">Linear Vesting</h3>
 
-            <p className="text-gray-500">
+            <p className="text-gray-500 dark:text-slate-400">
               Tokens unlock continuously over a predefined schedule. Set it once and watch
               allocations grow block by block with full on-chain enforcement.
             </p>
@@ -30,7 +30,10 @@ function LinearVestingCard() {
                 "Automatic cliff periods supported",
                 "On-chain schedule verification",
               ].map((point) => (
-                <li key={point} className="flex items-start gap-2.5 text-sm text-gray-600">
+                <li
+                  key={point}
+                  className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-slate-300"
+                >
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-500" />
                   {point}
                 </li>
@@ -56,7 +59,7 @@ function LinearVestingCard() {
 
 function MilestonePaymentsCard() {
   return (
-    <div className="group relative overflow-hidden rounded-[32px] border border-gray-200 bg-white shadow-md transition-shadow duration-300 hover:shadow-lg md:col-span-5">
+    <div className="group relative overflow-hidden rounded-[32px] border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 shadow-md transition-shadow duration-300 hover:shadow-lg md:col-span-5">
       <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
       <div className="relative p-8 space-y-4">
@@ -65,9 +68,9 @@ function MilestonePaymentsCard() {
           MILESTONE
         </div>
 
-        <h3 className="text-2xl font-bold text-gray-900">Milestone Payments</h3>
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-slate-100">Milestone Payments</h3>
 
-        <p className="text-gray-500">
+        <p className="text-gray-500 dark:text-slate-400">
           Release funds only when verifiable conditions are met. Perfect for contractor agreements,
           grants, and performance-based compensation.
         </p>
@@ -79,7 +82,10 @@ function MilestonePaymentsCard() {
             "Dispute resolution mechanisms",
             "Multi-party approval workflows",
           ].map((point) => (
-            <li key={point} className="flex items-start gap-2.5 text-sm text-gray-600">
+            <li
+              key={point}
+              className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-slate-300"
+            >
               <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
               {point}
             </li>
@@ -97,7 +103,7 @@ function MilestonePaymentsCard() {
                 className={`flex h-8 w-8 items-center justify-center rounded-full ${
                   i === 2
                     ? "bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-md shadow-emerald-200"
-                    : "border-2 border-emerald-300 bg-white"
+                    : "border-2 border-emerald-300 bg-white dark:bg-slate-900"
                 }`}
               >
                 <LuFlag className={`h-3.5 w-3.5 ${i === 2 ? "text-white" : "text-emerald-500"}`} />
@@ -112,7 +118,7 @@ function MilestonePaymentsCard() {
 
 function PdaVaultsCard() {
   return (
-    <div className="group relative overflow-hidden rounded-[32px] border border-gray-200 bg-white shadow-md transition-shadow duration-300 hover:shadow-lg md:col-span-5">
+    <div className="group relative overflow-hidden rounded-[32px] border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 shadow-md transition-shadow duration-300 hover:shadow-lg md:col-span-5">
       {/* Dot pattern background */}
       <div className="absolute inset-0 opacity-[0.03]">
         <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
@@ -136,9 +142,9 @@ function PdaVaultsCard() {
           NON-CUSTODIAL
         </div>
 
-        <h3 className="text-2xl font-bold text-gray-900">PDA Vaults</h3>
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-slate-100">PDA Vaults</h3>
 
-        <p className="text-gray-500">
+        <p className="text-gray-500 dark:text-slate-400">
           Every vesting schedule lives inside a Program Derived Address — a trustless vault that no
           single party can drain or tamper with.
         </p>
@@ -150,7 +156,10 @@ function PdaVaultsCard() {
             "Immutable on-chain vault logic",
             "Transparent balance tracking",
           ].map((point) => (
-            <li key={point} className="flex items-start gap-2.5 text-sm text-gray-600">
+            <li
+              key={point}
+              className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-slate-300"
+            >
               <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" />
               {point}
             </li>
@@ -163,7 +172,7 @@ function PdaVaultsCard() {
 
 function CancelAnytimeCard() {
   return (
-    <div className="group relative overflow-hidden rounded-[32px] border border-gray-200 bg-white shadow-md transition-shadow duration-300 hover:shadow-lg md:col-span-7">
+    <div className="group relative overflow-hidden rounded-[32px] border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 shadow-md transition-shadow duration-300 hover:shadow-lg md:col-span-7">
       {/* Gradient corner accent */}
       <div className="absolute -left-16 -top-16 h-40 w-40 rounded-full bg-gradient-to-br from-rose-500/10 to-orange-500/10 blur-2xl" />
 
@@ -179,9 +188,9 @@ function CancelAnytimeCard() {
             CONTROL
           </div>
 
-          <h3 className="text-2xl font-bold text-gray-900">Cancel Anytime</h3>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-slate-100">Cancel Anytime</h3>
 
-          <p className="text-gray-500">
+          <p className="text-gray-500 dark:text-slate-400">
             Grant issuer retains the authority to halt vesting and reclaim unvested tokens at any
             point — full administrative control without compromising user-vested balances.
           </p>
@@ -193,7 +202,10 @@ function CancelAnytimeCard() {
               "Granular per-beneficiary control",
               "Emergency pause capability",
             ].map((point) => (
-              <li key={point} className="flex items-start gap-2.5 text-sm text-gray-600">
+              <li
+                key={point}
+                className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-slate-300"
+              >
                 <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-rose-500" />
                 {point}
               </li>
@@ -207,15 +219,17 @@ function CancelAnytimeCard() {
 
 export function Features() {
   return (
-    <section className="bg-gradient-to-b from-white to-gray-50 py-24">
+    <section className="bg-gradient-to-b from-white dark:from-slate-950 to-gray-50 py-24">
       <div className="mx-auto max-w-6xl px-6">
         {/* Section header */}
         <div className="mb-16 max-w-2xl space-y-4">
-          <span className="inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold tracking-widest text-gray-500">
+          <span className="inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold tracking-widest text-gray-500 dark:text-slate-400">
             01
           </span>
-          <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">Features</h2>
-          <p className="text-lg text-gray-500">
+          <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-slate-100 sm:text-5xl">
+            Features
+          </h2>
+          <p className="text-lg text-gray-500 dark:text-slate-400">
             Everything you need to build trustless vesting schedules on Solana — from linear unlocks
             to milestone-based releases, all secured by program-derived vaults.
           </p>

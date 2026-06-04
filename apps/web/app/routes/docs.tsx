@@ -174,7 +174,7 @@ function SectionHeader({
   center?: boolean;
 }) {
   const numBg: Record<string, string> = {
-    purple: "bg-purple-100 text-purple-700",
+    purple: "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
     blue: "bg-blue-100 text-blue-700",
   };
 
@@ -198,14 +198,18 @@ function SectionHeader({
           >
             {num}
           </span>
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{title}</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-slate-100 sm:text-4xl">
+            {title}
+          </h2>
         </div>
       )}
       {center && (
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{title}</h2>
+        <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-slate-100 sm:text-4xl">
+          {title}
+        </h2>
       )}
       <p
-        className={`mt-3 max-w-[580px] text-[0.95rem] leading-relaxed text-gray-500 ${center ? "mx-auto" : ""}`}
+        className={`mt-3 max-w-[580px] text-[0.95rem] leading-relaxed text-gray-500 dark:text-slate-400 ${center ? "mx-auto" : ""}`}
       >
         {subtitle}
       </p>
@@ -217,11 +221,11 @@ function SectionHeader({
 
 function DocsPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-slate-900">
       <Navbar />
 
       {/* ── Hero ────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-white via-purple-50/30 to-white pt-28 pb-20">
+      <section className="relative overflow-hidden bg-gradient-to-br from-white via-purple-50/30 to-white dark:from-slate-950 dark:via-purple-950/30 dark:to-slate-950 pt-28 pb-20">
         {/* Decorative blurred circles */}
         <div className="pointer-events-none absolute inset-0" aria-hidden>
           <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-purple-300/20 blur-3xl" />
@@ -248,12 +252,12 @@ function DocsPage() {
         <div className="relative z-10 mx-auto max-w-7xl px-6 lg:grid lg:grid-cols-2 lg:gap-12">
           {/* Left column — copy */}
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50/80 px-4 py-1.5 font-mono text-[0.72rem] uppercase tracking-wide text-purple-700">
+            <div className="inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50/80 dark:bg-purple-950/80 px-4 py-1.5 font-mono text-[0.72rem] uppercase tracking-wide text-purple-700 dark:text-purple-300">
               <span className="text-purple-400">{"//"}</span>
               Protocol V1
             </div>
 
-            <h1 className="mt-8 font-display text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl lg:text-7xl">
+            <h1 className="mt-8 font-display text-5xl font-bold tracking-tight text-gray-900 dark:text-slate-100 sm:text-6xl lg:text-7xl">
               DOCS
               <br />
               <span className="bg-gradient-to-r from-purple-600 via-purple-500 to-purple-400 bg-clip-text text-transparent">
@@ -261,7 +265,7 @@ function DocsPage() {
               </span>
             </h1>
 
-            <p className="mt-6 max-w-[520px] text-lg leading-relaxed text-gray-500">
+            <p className="mt-6 max-w-[520px] text-lg leading-relaxed text-gray-500 dark:text-slate-400">
               SimplyVest is a non-custodial, on-chain SPL-token vesting and distribution protocol
               built with Anchor on Solana. Everything you need to understand the architecture.
             </p>
@@ -299,31 +303,33 @@ function DocsPage() {
             <div className="flex flex-col items-center gap-8">
               {/* Card 1 — FileText */}
               <div
-                className="w-72 rounded-2xl border border-gray-200 bg-white p-5 shadow-lg shadow-gray-900/5 transition-transform duration-300 hover:scale-105"
+                className="w-72 rounded-2xl border border-gray-200 bg-white dark:border-slate-600 dark:bg-slate-900 p-5 shadow-lg shadow-gray-900/5 transition-transform duration-300 hover:scale-105"
                 style={{ transform: "rotate(3deg)" }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100">
-                    <LuFileText className="h-5 w-5 text-purple-600" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-900">
+                    <LuFileText className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-900">Documentation</h3>
-                    <p className="text-xs text-gray-500">Protocol Reference</p>
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">
+                      Documentation
+                    </h3>
+                    <p className="text-xs text-gray-500 dark:text-slate-400">Protocol Reference</p>
                   </div>
                 </div>
                 <div className="mt-4 space-y-2">
                   <div className="h-2 w-full rounded-full bg-gray-100">
-                    <div className="h-full w-3/4 rounded-full bg-purple-200" />
+                    <div className="h-full w-3/4 rounded-full bg-purple-200 dark:bg-purple-800" />
                   </div>
                   <div className="h-2 w-5/6 rounded-full bg-gray-100">
-                    <div className="h-full w-1/2 rounded-full bg-purple-100" />
+                    <div className="h-full w-1/2 rounded-full bg-purple-100 dark:bg-purple-900" />
                   </div>
                 </div>
               </div>
 
               {/* Card 2 — Database */}
               <div
-                className="w-72 rounded-2xl border border-gray-200 bg-white p-5 shadow-lg shadow-gray-900/5 transition-transform duration-300 hover:scale-105"
+                className="w-72 rounded-2xl border border-gray-200 bg-white dark:border-slate-600 dark:bg-slate-900 p-5 shadow-lg shadow-gray-900/5 transition-transform duration-300 hover:scale-105"
                 style={{ transform: "rotate(-3deg)" }}
               >
                 <div className="flex items-center gap-3">
@@ -331,8 +337,10 @@ function DocsPage() {
                     <LuDatabase className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-900">Account Model</h3>
-                    <p className="text-xs text-gray-500">On-chain State</p>
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">
+                      Account Model
+                    </h3>
+                    <p className="text-xs text-gray-500 dark:text-slate-400">On-chain State</p>
                   </div>
                 </div>
                 <div className="mt-4 space-y-2">
@@ -370,7 +378,7 @@ function DocsPage() {
       </section>
 
       {/* ── 01  Stream Types ────────────────────────────────────────── */}
-      <section className="bg-white py-24">
+      <section className="bg-white dark:bg-slate-900 py-24">
         <div className="mx-auto max-w-7xl px-6">
           <SectionHeader
             num="01"
@@ -385,7 +393,7 @@ function DocsPage() {
               return (
                 <div
                   key={stream.title}
-                  className="group relative overflow-hidden rounded-[28px] border border-gray-200 bg-white shadow-md transition-shadow duration-300 hover:shadow-lg"
+                  className="group relative overflow-hidden rounded-[28px] border border-gray-200 bg-white dark:border-slate-600 dark:bg-slate-900 shadow-md transition-shadow duration-300 hover:shadow-lg"
                 >
                   {/* Top accent line */}
                   <div className={`h-1 w-full ${accentBar[c]}`} />
@@ -402,26 +410,29 @@ function DocsPage() {
                         <Icon className={`h-5 w-5 ${iconText[c]}`} />
                       </div>
                       <span
-                        className={`font-mono text-[0.68rem] font-semibold uppercase tracking-widest ${c === "purple" ? "text-purple-600" : "text-emerald-600"}`}
+                        className={`font-mono text-[0.68rem] font-semibold uppercase tracking-widest ${c === "purple" ? "text-purple-600 dark:text-purple-400" : "text-emerald-600"}`}
                       >
                         {stream.label}
                       </span>
                     </div>
 
                     {/* Title */}
-                    <h3 className="mt-4 font-mono text-xl font-bold text-gray-900">
+                    <h3 className="mt-4 font-mono text-xl font-bold text-gray-900 dark:text-slate-100">
                       {stream.title}
                     </h3>
 
                     {/* Description */}
-                    <p className="mt-3 text-[0.9rem] leading-relaxed text-gray-500">
+                    <p className="mt-3 text-[0.9rem] leading-relaxed text-gray-500 dark:text-slate-400">
                       {stream.description}
                     </p>
 
                     {/* Bullet points */}
                     <ul className="mt-6 space-y-2.5">
                       {stream.points.map((point) => (
-                        <li key={point} className="flex items-start gap-2.5 text-sm text-gray-600">
+                        <li
+                          key={point}
+                          className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-slate-300"
+                        >
                           <span
                             className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${bulletColor[c]}`}
                           />
@@ -438,7 +449,7 @@ function DocsPage() {
       </section>
 
       {/* ── 02  Account Model ───────────────────────────────────────── */}
-      <section className="bg-gradient-to-b from-gray-50/50 to-white py-24">
+      <section className="bg-gradient-to-b from-gray-50/50 to-white dark:to-slate-950 py-24">
         <div className="mx-auto max-w-7xl px-6">
           <SectionHeader
             num="02"
@@ -454,7 +465,7 @@ function DocsPage() {
               return (
                 <div
                   key={acct.monoLabel}
-                  className="group relative overflow-hidden rounded-[32px] border border-gray-200 bg-white shadow-md transition-shadow duration-300 hover:shadow-lg"
+                  className="group relative overflow-hidden rounded-[32px] border border-gray-200 bg-white dark:border-slate-600 dark:bg-slate-900 shadow-md transition-shadow duration-300 hover:shadow-lg"
                 >
                   {/* Gradient blur behind icon */}
                   <div className="pointer-events-none absolute -left-8 -top-8 h-32 w-32 rounded-full bg-gradient-to-br from-purple-500/10 to-transparent blur-2xl transition-opacity duration-300 group-hover:opacity-100 opacity-60" />
@@ -471,17 +482,17 @@ function DocsPage() {
                     </div>
 
                     {/* Label */}
-                    <span className="mt-5 block font-mono text-[0.68rem] font-semibold uppercase tracking-widest text-gray-400">
+                    <span className="mt-5 block font-mono text-[0.68rem] font-semibold uppercase tracking-widest text-gray-400 dark:text-slate-500">
                       {acct.label}
                     </span>
 
                     {/* Mono subtitle */}
-                    <h3 className="mt-1 font-mono text-lg font-bold text-gray-900">
+                    <h3 className="mt-1 font-mono text-lg font-bold text-gray-900 dark:text-slate-100">
                       {acct.monoLabel}
                     </h3>
 
                     {/* Description */}
-                    <p className="mt-3 text-[0.9rem] leading-relaxed text-gray-500">
+                    <p className="mt-3 text-[0.9rem] leading-relaxed text-gray-500 dark:text-slate-400">
                       {acct.description}
                     </p>
                   </div>
@@ -493,7 +504,7 @@ function DocsPage() {
       </section>
 
       {/* ── 03  Security Model ──────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-purple-50/30 to-white py-24">
+      <section className="relative overflow-hidden bg-gradient-to-b from-purple-50/30 to-white dark:from-purple-950/30 dark:to-slate-950 py-24">
         {/* Security grid pattern */}
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.03]"
@@ -510,7 +521,7 @@ function DocsPage() {
           className="pointer-events-none absolute inset-0 flex items-center justify-center"
           aria-hidden
         >
-          <LuShield className="h-[600px] w-[600px] text-purple-600 opacity-[0.05]" />
+          <LuShield className="h-[600px] w-[600px] text-purple-600 dark:text-purple-400 opacity-[0.05]" />
         </div>
 
         <div className="relative mx-auto max-w-7xl px-6">
@@ -523,7 +534,7 @@ function DocsPage() {
           />
 
           {/* Security panel */}
-          <div className="mt-12 rounded-[32px] border border-white/60 bg-white/80 p-8 shadow-2xl shadow-purple-600/10 backdrop-blur-sm sm:p-10">
+          <div className="mt-12 rounded-[32px] border border-white/60 bg-white/80 dark:border-slate-700/60 dark:bg-slate-900/80 p-8 shadow-2xl shadow-purple-600/10 backdrop-blur-sm sm:p-10">
             <div className="space-y-5">
               {securityFeatures.map((feat) => {
                 const Icon = feat.icon;
@@ -547,8 +558,10 @@ function DocsPage() {
 
                     {/* Text */}
                     <div className="min-w-0">
-                      <h4 className="font-mono text-sm font-bold text-gray-900">{feat.title}</h4>
-                      <p className="mt-1 text-[0.88rem] leading-relaxed text-gray-500">
+                      <h4 className="font-mono text-sm font-bold text-gray-900 dark:text-slate-100">
+                        {feat.title}
+                      </h4>
+                      <p className="mt-1 text-[0.88rem] leading-relaxed text-gray-500 dark:text-slate-400">
                         {feat.description}
                       </p>
                     </div>

@@ -22,13 +22,13 @@ export function Hero() {
   const { location } = useRouterState();
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-gradient-to-b from-white via-purple-50/20 to-white">
+    <section className="relative min-h-screen overflow-hidden bg-gradient-to-b from-white dark:from-slate-950 via-purple-50/20 dark:via-purple-950 to-white dark:to-slate-950">
       {/* ---- Decorative background ---- */}
       <div className="pointer-events-none absolute inset-0" aria-hidden>
         {/* Blurred blobs */}
-        <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-purple-300/20 blur-3xl" />
-        <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-purple-400/15 blur-3xl" />
-        <div className="absolute left-1/2 top-1/3 h-64 w-64 -translate-x-1/2 rounded-full bg-purple-200/10 blur-3xl" />
+        <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-purple-300/20 dark:bg-purple-900/20 blur-3xl" />
+        <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-purple-400/15 dark:bg-purple-800/15 blur-3xl" />
+        <div className="absolute left-1/2 top-1/3 h-64 w-64 -translate-x-1/2 rounded-full bg-purple-200/10 dark:bg-purple-800/10 blur-3xl" />
 
         {/* Dot grid */}
         <svg className="absolute inset-0 h-full w-full opacity-[0.035]">
@@ -39,19 +39,20 @@ export function Hero() {
         </svg>
 
         {/* Orbital rings */}
-        <div className="absolute left-1/2 top-[40%] h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-purple-200/30" />
-        <div className="absolute left-1/2 top-[40%] h-[760px] w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-purple-100/20" />
+        <div className="absolute left-1/2 top-[40%] h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-purple-200/30 dark:border-purple-800/30" />
+        <div className="absolute left-1/2 top-[40%] h-[760px] w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-purple-100/20 dark:border-purple-900/50" />
       </div>
 
       {/* ---- Inline navbar ---- */}
       <nav className="relative z-50 mx-auto max-w-7xl px-6 pt-6">
-        <div className="rounded-2xl border border-white/60 bg-white/70 px-6 py-4 shadow-lg shadow-purple-600/5 backdrop-blur-xl">
+        <div className="rounded-2xl border border-white/60 dark:border-slate-700/60 bg-white/70 dark:bg-slate-900/70 px-6 py-4 shadow-lg shadow-purple-600/5 dark:shadow-purple-400/10 backdrop-blur-xl">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2 no-underline hover:no-underline">
               <img src="/simplyvest.png" alt="SimplyVest" className="h-8 w-auto" />
-              <span className="text-lg font-semibold text-gray-900">SimplyVest</span>
+              <span className="text-lg font-semibold text-gray-900 dark:text-slate-100">
+                SimplyVest
+              </span>
             </Link>
-
             <div className="hidden items-center gap-8 md:flex">
               {navLinks.map((link) => (
                 <Link
@@ -59,8 +60,8 @@ export function Hero() {
                   to={link.to}
                   className={`text-sm font-medium transition-colors no-underline hover:no-underline ${
                     location.pathname === link.to
-                      ? "text-purple-600"
-                      : "text-gray-600 hover:text-purple-600"
+                      ? "text-purple-600 dark:text-purple-400"
+                      : "text-gray-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400"
                   }`}
                 >
                   {link.label}
@@ -76,13 +77,13 @@ export function Hero() {
         {/* Left column — copy & CTAs */}
         <div>
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50/80 px-4 py-1.5 font-mono text-[0.72rem] uppercase tracking-wide text-purple-700">
-            <span className="text-purple-400">{"//"}</span>
+          <div className="inline-flex items-center gap-2 rounded-full border border-purple-200 dark:border-purple-800 bg-purple-50/80 dark:bg-purple-950/80 px-4 py-1.5 font-mono text-[0.72rem] uppercase tracking-wide text-purple-700 dark:text-purple-300">
+            <span className="text-purple-400 dark:text-purple-200">{"//"}</span>
             Solana Vesting Protocol
           </div>
 
           {/* Heading */}
-          <h1 className="mt-8 font-display text-6xl font-bold tracking-tight text-gray-900 sm:text-7xl lg:text-8xl">
+          <h1 className="mt-8 font-display text-6xl font-bold tracking-tight text-gray-900 dark:text-slate-100 sm:text-7xl lg:text-8xl">
             SIMPLY
             <br />
             <span className="bg-gradient-to-r from-purple-600 via-purple-500 to-purple-400 bg-clip-text text-transparent">
@@ -91,7 +92,7 @@ export function Hero() {
           </h1>
 
           {/* Description */}
-          <p className="mt-6 max-w-[520px] text-lg leading-relaxed text-gray-500">
+          <p className="mt-6 max-w-[520px] text-lg leading-relaxed text-gray-500 dark:text-slate-400">
             Non-custodial, programmable token vesting with time-based streams and milestone-gated
             releases on Solana.
           </p>
@@ -101,7 +102,7 @@ export function Hero() {
             <Link
               to="/app/dashboard"
               search={{ tab: "created" }}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-500/25 transition-all hover:shadow-xl hover:shadow-purple-500/30 hover:brightness-110 no-underline hover:no-underline focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:outline-none"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-500/25 dark:shadow-purple-900/30 transition-all hover:shadow-xl hover:shadow-purple-500/30 dark:hover:shadow-purple-800/30 hover:brightness-110 no-underline hover:no-underline focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:outline-none"
             >
               Try Beta App
               <LuArrowRight className="h-4 w-4" />
@@ -109,18 +110,18 @@ export function Hero() {
 
             <Link
               to="/waitlist"
-              className="inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-white px-6 py-3 text-sm font-semibold text-gray-700 transition-all hover:border-purple-300 hover:shadow-md no-underline hover:no-underline focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:outline-none"
+              className="inline-flex items-center gap-2 rounded-xl border border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 px-6 py-3 text-sm font-semibold text-gray-700 dark:text-slate-200 transition-all hover:border-purple-300 dark:hover:border-purple-700 hover:shadow-md no-underline hover:no-underline focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:outline-none"
             >
               Join Waitlist
-              <LuUsers className="h-4 w-4 text-purple-500" />
+              <LuUsers className="h-4 w-4 text-purple-500 dark:text-purple-300" />
             </Link>
 
             <Link
               to="/docs"
-              className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-gray-700 transition-all hover:border-gray-300 hover:shadow-md no-underline hover:no-underline focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none"
+              className="inline-flex items-center gap-2 rounded-xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-6 py-3 text-sm font-semibold text-gray-700 dark:text-slate-200 transition-all hover:border-gray-300 dark:hover:border-slate-500 hover:shadow-md no-underline hover:no-underline focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none"
             >
               Read Docs
-              <LuBookOpen className="h-4 w-4 text-gray-400" />
+              <LuBookOpen className="h-4 w-4 text-gray-400 dark:text-slate-500" />
             </Link>
           </div>
         </div>
@@ -156,38 +157,44 @@ export function Hero() {
 
           <div className="flex flex-col items-center gap-12">
             {/* Card 1 — Vesting Schedule */}
-            <div className="group w-80 rounded-2xl border border-gray-200 bg-white p-5 shadow-lg shadow-gray-900/5 transition-transform duration-300 hover:scale-105">
+            <div className="group w-80 rounded-2xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 p-5 shadow-lg shadow-gray-900/5 dark:shadow-slate-950/20 transition-transform duration-300 hover:scale-105">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100">
-                  <LuCalendar className="h-5 w-5 text-purple-600" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-900">
+                  <LuCalendar className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900">Vesting Schedule</h3>
-                  <p className="text-xs text-gray-500">Team Token Grant</p>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">
+                    Vesting Schedule
+                  </h3>
+                  <p className="text-xs text-gray-500 dark:text-slate-400">Team Token Grant</p>
                 </div>
               </div>
 
               <div className="mt-4">
-                <div className="flex items-center justify-between text-xs text-gray-500">
+                <div className="flex items-center justify-between text-xs text-gray-500 dark:text-slate-400">
                   <span>8 / 12 months</span>
-                  <span className="font-medium text-purple-600">67 %</span>
+                  <span className="font-medium text-purple-600 dark:text-purple-400">67 %</span>
                 </div>
-                <div className="mt-2 h-2 overflow-hidden rounded-full bg-gray-100">
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-slate-700">
                   <div className="h-full w-[67%] rounded-full bg-gradient-to-r from-purple-500 to-purple-400" />
                 </div>
-                <p className="mt-2 text-xs text-gray-400">6,700 / 10,000 tokens</p>
+                <p className="mt-2 text-xs text-gray-400 dark:text-slate-500">
+                  6,700 / 10,000 tokens
+                </p>
               </div>
             </div>
 
             {/* Card 2 — Token Stream */}
-            <div className="group w-80 rounded-2xl border border-gray-200 bg-white p-5 shadow-lg shadow-gray-900/5 transition-transform duration-300 hover:scale-105">
+            <div className="group w-80 rounded-2xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 p-5 shadow-lg shadow-gray-900/5 dark:shadow-slate-950/20 transition-transform duration-300 hover:scale-105">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100">
-                  <LuTrendingUp className="h-5 w-5 text-green-600" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100 dark:bg-green-900/50">
+                  <LuTrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900">Token Stream</h3>
-                  <p className="text-xs text-gray-500">Active Distribution</p>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">
+                    Token Stream
+                  </h3>
+                  <p className="text-xs text-gray-500 dark:text-slate-400">Active Distribution</p>
                 </div>
               </div>
 
@@ -202,13 +209,14 @@ export function Hero() {
                 ))}
               </div>
 
-              <p className="mt-3 text-xs text-gray-400">
-                <span className="font-medium text-green-600">+41.6 tokens</span> streamed
+              <p className="mt-3 text-xs text-gray-400 dark:text-slate-500">
+                <span className="font-medium text-green-600 dark:text-green-400">+41.6 tokens</span>{" "}
+                streamed
               </p>
             </div>
 
             {/* Card 3 — Security Badge */}
-            <div className="group w-80 rounded-2xl bg-gradient-to-br from-purple-600 to-purple-500 p-5 text-white shadow-lg shadow-purple-500/25 transition-transform duration-300 hover:scale-105">
+            <div className="group w-80 rounded-2xl bg-gradient-to-br from-purple-600 to-purple-500 p-5 text-white shadow-lg shadow-purple-500/25 dark:shadow-purple-900/30 transition-transform duration-300 hover:scale-105">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20">
                   <LuLock className="h-5 w-5 text-white" />

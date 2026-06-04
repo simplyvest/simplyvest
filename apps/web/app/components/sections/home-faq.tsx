@@ -39,7 +39,7 @@ export function HomeFAQ() {
   const [openIndex, setOpenIndex] = React.useState<number | null>(null);
 
   return (
-    <section className="relative overflow-hidden bg-white pb-24 pt-20">
+    <section className="relative overflow-hidden bg-white dark:bg-slate-900 pb-24 pt-20">
       {/* Decorative blurred circles */}
       <div className="pointer-events-none absolute inset-0 select-none" aria-hidden>
         <div className="absolute -left-32 top-1/4 h-64 w-64 rounded-full bg-sol/5 blur-3xl" />

@@ -1,9 +1,3 @@
-import { type ReactElement } from "react";
-import {
-  render,
-  type RenderOptions,
-  type RenderResult,
-} from "@testing-library/react";
 import {
   createRouter,
   RouterProvider,
@@ -11,6 +5,10 @@ import {
   createRoute,
   createMemoryHistory,
 } from "@tanstack/react-router";
+import { render, type RenderOptions, type RenderResult } from "@testing-library/react";
+import { type ReactElement } from "react";
+
+import { ThemeProvider } from "@/lib/theme";
 
 type RouterOptions = {
   initialEntries?: string[];
@@ -35,5 +33,10 @@ export function renderWithRouter(
     defaultViewTransition: false,
   });
 
-  return render(<RouterProvider router={router} />, renderOptions);
+  return render(
+    <ThemeProvider>
+      <RouterProvider router={router} />
+    </ThemeProvider>,
+    renderOptions,
+  );
 }
