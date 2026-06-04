@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { Github, Twitter, Mail } from "lucide-react";
+import { LuMail } from "react-icons/lu";
+import { SiGithub, SiX } from "react-icons/si";
 
 const footerLinks = {
   product: [
@@ -83,7 +84,7 @@ export function Footer() {
                 className="text-gray-400 hover:text-purple-600 transition-colors"
                 aria-label="GitHub"
               >
-                <Github className="w-5 h-5" strokeWidth={1.5} />
+                <SiGithub className="w-5 h-5" />
               </a>
               <a
                 href="https://x.com/simplyvestsol"
@@ -92,14 +93,14 @@ export function Footer() {
                 className="text-gray-400 hover:text-purple-600 transition-colors"
                 aria-label="Twitter"
               >
-                <Twitter className="w-5 h-5" strokeWidth={1.5} />
+                <SiX className="w-5 h-5" />
               </a>
               <a
                 href="mailto:hello@simplyvest.com"
                 className="text-gray-400 hover:text-purple-600 transition-colors"
                 aria-label="Email"
               >
-                <Mail className="w-5 h-5" strokeWidth={1.5} />
+                <LuMail className="w-5 h-5" strokeWidth={1.5} />
               </a>
             </div>
           </div>

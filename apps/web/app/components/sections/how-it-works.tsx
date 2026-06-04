@@ -1,5 +1,5 @@
-import { Download, Lock, Radio } from "lucide-react";
 import * as React from "react";
+import { LuDownload, LuLock, LuRadio } from "react-icons/lu";
 
 import { cn } from "@/utils/cn";
 
@@ -11,7 +11,7 @@ const steps = [
   {
     number: 1,
     title: "Create Stream",
-    icon: Radio,
+    icon: LuRadio,
     label: "initialize_vesting()",
     description:
       "Define your vesting parameters in a single transaction. Set cliffs, duration, and unlock logic — all encoded on-chain.",
@@ -25,7 +25,7 @@ const steps = [
   {
     number: 2,
     title: "Tokens Lock",
-    icon: Lock,
+    icon: LuLock,
     label: "deposit_to_vault()",
     description:
       "Tokens move into a program-owned PDA vault. Once deposited, the smart contract is the sole authority — no admin keys, no backdoors.",
@@ -39,7 +39,7 @@ const steps = [
   {
     number: 3,
     title: "Claim Unlocked",
-    icon: Download,
+    icon: LuDownload,
     label: "withdraw_vested()",
     description:
       "Recipients claim tokens as they vest. The program calculates entitlement in real time — partial withdrawals and batch claims included.",
@@ -72,8 +72,7 @@ export function HowItWorks() {
         <div
           className="absolute inset-0 opacity-[0.08]"
           style={{
-            backgroundImage:
-              "radial-gradient(circle, #7c3aed 1px, transparent 1px)",
+            backgroundImage: "radial-gradient(circle, #7c3aed 1px, transparent 1px)",
             backgroundSize: "60px 60px",
           }}
         />
@@ -88,9 +87,7 @@ export function HowItWorks() {
           <span className="inline-flex items-center rounded-full bg-purple-100 px-4 py-1.5 font-mono text-xs font-medium uppercase tracking-wider text-purple-700">
             02
           </span>
-          <h2 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">
-            How It Works
-          </h2>
+          <h2 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">How It Works</h2>
           <p className="mx-auto mt-4 max-w-lg text-base text-muted">
             Three simple steps to create and manage token vesting on Solana.
           </p>
@@ -128,13 +125,7 @@ export function HowItWorks() {
 /*  Step Card                                                                 */
 /* -------------------------------------------------------------------------- */
 
-function StepCard({
-  step,
-  index,
-}: {
-  step: (typeof steps)[number];
-  index: number;
-}) {
+function StepCard({ step, index }: { step: (typeof steps)[number]; index: number }) {
   const Icon = step.icon;
   const isEven = index % 2 === 0;
 
@@ -179,9 +170,7 @@ function StepCard({
         </span>
 
         {/* Description */}
-        <p className="mt-4 text-sm leading-relaxed text-muted">
-          {step.description}
-        </p>
+        <p className="mt-4 text-sm leading-relaxed text-muted">{step.description}</p>
 
         {/* Details grid */}
         <ul className="mt-5 grid gap-x-6 gap-y-2.5 sm:grid-cols-2">

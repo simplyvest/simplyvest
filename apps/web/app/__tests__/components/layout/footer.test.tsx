@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
 
-import { Footer } from "@/components/layout/footer";
 import { renderWithRouter } from "@/__tests__/test-utils";
+import { Footer } from "@/components/layout/footer";
 
 describe("Footer", () => {
   it("renders the brand logo and description", async () => {
@@ -32,28 +32,22 @@ describe("Footer", () => {
       "href",
       "/docs",
     );
-    expect((await screen.findByText("Waitlist")).closest("a")).toHaveAttribute(
-      "href",
-      "/waitlist",
-    );
+    expect((await screen.findByText("Waitlist")).closest("a")).toHaveAttribute("href", "/waitlist");
 
     // Resources links (internal)
-    expect((await screen.findByText("Support")).closest("a")).toHaveAttribute(
-      "href",
-      "/waitlist",
-    );
+    expect((await screen.findByText("Support")).closest("a")).toHaveAttribute("href", "/waitlist");
 
     // Company links - GitHub is external
-    const githubLink = await screen.findByText("GitHub");
-    expect(githubLink.closest("a")).toHaveAttribute(
-      "href",
-      "https://github.com/simplyvest/simplyvest",
-    );
-    expect(githubLink.closest("a")).toHaveAttribute("target", "_blank");
-    expect(githubLink.closest("a")).toHaveAttribute(
-      "rel",
-      "noopener noreferrer",
-    );
+    // findAllByText returns both the <a>GitHub</a> company link AND the <title>GitHub</title> inside the SVG icon
+    const allGithubLinks = await screen.findAllByText("GitHub");
+    const githubLink = allGithubLinks.find((el) => el.tagName === "A");
+    expect(githubLink).toBeDefined();
+    // Non-null assertion is safe: guarded by expect(githubLink).toBeDefined() above
+    // oxlint-disable-next-line typescript/no-non-null-assertion
+    const link = githubLink!;
+    expect(link.closest("a")).toHaveAttribute("href", "https://github.com/simplyvest/simplyvest");
+    expect(link.closest("a")).toHaveAttribute("target", "_blank");
+    expect(link.closest("a")).toHaveAttribute("rel", "noopener noreferrer");
   });
 
   it("renders social media links with aria labels", async () => {
@@ -61,10 +55,7 @@ describe("Footer", () => {
 
     const githubIcon = await screen.findByLabelText("GitHub");
     expect(githubIcon).toBeInTheDocument();
-    expect(githubIcon).toHaveAttribute(
-      "href",
-      "https://github.com/simplyvest/simplyvest",
-    );
+    expect(githubIcon).toHaveAttribute("href", "https://github.com/simplyvest/simplyvest");
 
     const twitterIcon = await screen.findByLabelText("Twitter");
     expect(twitterIcon).toBeInTheDocument();

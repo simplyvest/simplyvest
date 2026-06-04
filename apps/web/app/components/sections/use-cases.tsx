@@ -1,11 +1,11 @@
-import { Users, Target, User } from "lucide-react";
 import * as React from "react";
+import { LuUsers, LuTarget, LuUser } from "react-icons/lu";
 
 import { cn } from "@/utils/cn";
 
 const useCases = [
   {
-    icon: Users,
+    icon: LuUsers,
     number: "01",
     title: "TEAM VESTING",
     description:
@@ -19,7 +19,7 @@ const useCases = [
     highlighted: false,
   },
   {
-    icon: Target,
+    icon: LuTarget,
     number: "02",
     title: "MILESTONE PAYMENTS",
     description:
@@ -33,7 +33,7 @@ const useCases = [
     highlighted: true,
   },
   {
-    icon: User,
+    icon: LuUser,
     number: "03",
     title: "SELF-VESTING",
     description:

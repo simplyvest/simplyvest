@@ -1,4 +1,4 @@
-import { TrendingUp, Flag, Shield, XCircle } from "lucide-react";
+import { LuTrendingUp, LuFlag, LuShield, LuBan } from "react-icons/lu";
 
 function LinearVestingCard() {
   const barValues = [20, 35, 50, 65, 80, 95, 100];
@@ -12,7 +12,7 @@ function LinearVestingCard() {
         <div className="flex items-start gap-8">
           <div className="flex-1 space-y-4">
             <div className="inline-flex items-center gap-2 rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold tracking-wide text-purple-700">
-              <TrendingUp className="h-3.5 w-3.5" />
+              <LuTrendingUp className="h-3.5 w-3.5" />
               TIME-BASED
             </div>
 
@@ -61,7 +61,7 @@ function MilestonePaymentsCard() {
 
       <div className="relative p-8 space-y-4">
         <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold tracking-wide text-emerald-700">
-          <Flag className="h-3.5 w-3.5" />
+          <LuFlag className="h-3.5 w-3.5" />
           MILESTONE
         </div>
 
@@ -100,7 +100,7 @@ function MilestonePaymentsCard() {
                     : "border-2 border-emerald-300 bg-white"
                 }`}
               >
-                <Flag className={`h-3.5 w-3.5 ${i === 2 ? "text-white" : "text-emerald-500"}`} />
+                <LuFlag className={`h-3.5 w-3.5 ${i === 2 ? "text-white" : "text-emerald-500"}`} />
               </div>
             </div>
           ))}
@@ -126,13 +126,13 @@ function PdaVaultsCard() {
       </div>
 
       {/* Large shield watermark */}
-      <Shield className="absolute -bottom-4 -right-4 h-40 w-40 text-blue-500 opacity-5" />
+      <LuShield className="absolute -bottom-4 -right-4 h-40 w-40 text-blue-500 opacity-5" />
 
       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
       <div className="relative z-10 p-8 space-y-4">
         <div className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold tracking-wide text-blue-700">
-          <Shield className="h-3.5 w-3.5" />
+          <LuShield className="h-3.5 w-3.5" />
           NON-CUSTODIAL
         </div>
 
@@ -168,14 +168,14 @@ function CancelAnytimeCard() {
       <div className="absolute -left-16 -top-16 h-40 w-40 rounded-full bg-gradient-to-br from-rose-500/10 to-orange-500/10 blur-2xl" />
 
       {/* Large XCircle watermark */}
-      <XCircle className="absolute -bottom-6 -right-6 h-48 w-48 text-rose-500 opacity-10" />
+      <LuBan className="absolute -bottom-6 -right-6 h-48 w-48 text-rose-500 opacity-10" />
 
       <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
       <div className="relative z-10 p-8">
         <div className="space-y-4">
           <div className="inline-flex items-center gap-2 rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold tracking-wide text-rose-700">
-            <XCircle className="h-3.5 w-3.5" />
+            <LuBan className="h-3.5 w-3.5" />
             CONTROL
           </div>
 

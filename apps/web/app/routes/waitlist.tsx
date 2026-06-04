@@ -1,6 +1,6 @@
 import { createRoute } from "@tanstack/react-router";
-import { Send, CheckCircle } from "lucide-react";
 import * as React from "react";
+import { LuSend, LuCircleCheck } from "react-icons/lu";
 
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
@@ -31,19 +31,16 @@ function WaitlistPage() {
   });
   const [submitted, setSubmitted] = React.useState(false);
 
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     const { name, value, type } = e.target;
-    const checked =
-      e.target instanceof HTMLInputElement ? e.target.checked : false;
+    const checked = e.target instanceof HTMLInputElement ? e.target.checked : false;
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     setSubmitted(true);
     setTimeout(() => setSubmitted(false), 3000);
@@ -73,8 +70,8 @@ function WaitlistPage() {
               Waitlist SimplyVest
             </h1>
             <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-gray-500">
-              We help you transfer your money in a safer way — with commitment
-              from both the sender and the receiver.
+              We help you transfer your money in a safer way — with commitment from both the sender
+              and the receiver.
             </p>
           </div>
 
@@ -84,7 +81,7 @@ function WaitlistPage() {
             <div className="relative rounded-3xl border border-gray-100 bg-white p-10 shadow-lg md:p-12">
               {submitted ? (
                 <div className="py-8 text-center">
-                  <CheckCircle className="mx-auto h-16 w-16 text-green-500" />
+                  <LuCircleCheck className="mx-auto h-16 w-16 text-green-500" />
                   <h2 className="mt-4 text-2xl font-bold text-gray-900">
                     You&apos;re on the list!
                   </h2>
@@ -96,10 +93,7 @@ function WaitlistPage() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Name */}
                   <div>
-                    <label
-                      htmlFor="name"
-                      className="mb-2 block text-sm font-medium text-gray-700"
-                    >
+                    <label htmlFor="name" className="mb-2 block text-sm font-medium text-gray-700">
                       Your Name <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -116,10 +110,7 @@ function WaitlistPage() {
 
                   {/* Email */}
                   <div>
-                    <label
-                      htmlFor="email"
-                      className="mb-2 block text-sm font-medium text-gray-700"
-                    >
+                    <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-700">
                       Email <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -209,7 +200,7 @@ function WaitlistPage() {
                     className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-4 text-sm font-semibold text-white shadow-lg shadow-purple-200 transition-all hover:from-purple-700 hover:to-purple-800 hover:shadow-xl hover:shadow-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2"
                   >
                     Join Waitlist
-                    <Send className="h-4 w-4" />
+                    <LuSend className="h-4 w-4" />
                   </button>
                 </form>
               )}
@@ -218,9 +209,8 @@ function WaitlistPage() {
 
           {/* Privacy note */}
           <p className="mt-8 text-center text-sm leading-relaxed text-gray-400">
-            We respect your privacy. Your information will only be used to
-            contact you about SimplyVest. We will never share your data with
-            third parties.
+            We respect your privacy. Your information will only be used to contact you about
+            SimplyVest. We will never share your data with third parties.
           </p>
         </div>
       </section>

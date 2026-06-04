@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
-
-import { ArrowRight, Sparkles } from "lucide-react";
+import { LuArrowRight, LuSparkles } from "react-icons/lu";
 
 export function CTA() {
   return (
@@ -23,10 +22,7 @@ export function CTA() {
             fill="none"
             preserveAspectRatio="none"
           >
-            <path
-              d="M0 60C240 120 480 0 720 60C960 120 1200 0 1440 60V120H0V60Z"
-              fill="white"
-            />
+            <path d="M0 60C240 120 480 0 720 60C960 120 1200 0 1440 60V120H0V60Z" fill="white" />
           </svg>
 
           {/* Floating dots */}
@@ -42,7 +38,7 @@ export function CTA() {
           {/* Content */}
           <div className="relative z-10">
             <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/20 bg-white/15 backdrop-blur-sm">
-              <Sparkles className="h-7 w-7 text-white" />
+              <LuSparkles className="h-7 w-7 text-white" />
             </div>
 
             <h2 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
@@ -59,7 +55,7 @@ export function CTA() {
                 className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3.5 text-base font-semibold text-purple-600 shadow-lg transition-all hover:scale-105 hover:shadow-xl focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
               >
                 Join Waitlist
-                <ArrowRight className="h-5 w-5" />
+                <LuArrowRight className="h-5 w-5" />
               </Link>
             </div>
 

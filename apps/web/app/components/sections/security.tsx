@@ -1,32 +1,32 @@
 import * as React from "react";
-import { Check, Code2, DollarSign, Lock, Shield, Zap } from "lucide-react";
+import { LuBrackets, LuCheck, LuDollarSign, LuLock, LuShield, LuZap } from "react-icons/lu";
 
 import { cn } from "@/utils/cn";
 
 const features = [
   {
-    icon: Lock,
+    icon: LuLock,
     label: "PDA",
     title: "Vaults",
     description:
       "All tokens secured in program-derived addresses with mathematical guarantees. No admin keys or backdoors.",
   },
   {
-    icon: DollarSign,
+    icon: LuDollarSign,
     label: "SOL",
     title: "Rent Recovery",
     description:
       "Automatic recovery of Solana rent when vesting streams close. No wasted SOL locked in closed accounts.",
   },
   {
-    icon: Code2,
+    icon: LuBrackets,
     label: "MIT",
     title: "Open Source",
     description:
       "Fully auditable smart contracts published under MIT license. Community-verified and transparently developed.",
   },
   {
-    icon: Zap,
+    icon: LuZap,
     label: "0",
     title: "Protocol Fees",
     description:
@@ -34,11 +34,7 @@ const features = [
   },
 ] as const;
 
-const metrics = [
-  "Audited Smart Contracts",
-  "Non-Custodial Architecture",
-  "Community Verified",
-];
+const metrics = ["Audited Smart Contracts", "Non-Custodial Architecture", "Community Verified"];
 
 function FeatureCard({
   feature,
@@ -98,9 +94,7 @@ function FeatureCard({
       {highlighted ? (
         <>
           <h3 className="text-2xl font-bold">{feature.title}</h3>
-          <p className="text-sm leading-relaxed text-purple-100">
-            {feature.description}
-          </p>
+          <p className="text-sm leading-relaxed text-purple-100">{feature.description}</p>
         </>
       ) : (
         <>
@@ -108,15 +102,11 @@ function FeatureCard({
             <span className="font-mono text-[0.65rem] font-semibold uppercase tracking-widest text-purple-600">
               {feature.label}
             </span>
-            <h3 className="mt-1 text-lg font-bold text-gray-900">
-              {feature.title}
-            </h3>
+            <h3 className="mt-1 text-lg font-bold text-gray-900">{feature.title}</h3>
           </div>
-          <p className="text-sm leading-relaxed text-gray-600">
-            {feature.description}
-          </p>
+          <p className="text-sm leading-relaxed text-gray-600">{feature.description}</p>
           <div className="flex items-center gap-1.5 text-emerald-500">
-            <Check className="h-4 w-4" />
+            <LuCheck className="h-4 w-4" />
             <span className="text-xs font-medium">Verified</span>
           </div>
         </>
@@ -147,20 +137,20 @@ export function Security() {
       />
 
       {/* Large decorative shield */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center" aria-hidden>
-        <Shield className="h-[600px] w-[600px] text-purple-600 opacity-[0.05]" />
+      <div
+        className="pointer-events-none absolute inset-0 flex items-center justify-center"
+        aria-hidden
+      >
+        <LuShield className="h-[600px] w-[600px] text-purple-600 opacity-[0.05]" />
       </div>
 
       <div className="relative mx-auto max-w-4xl px-6">
         {/* Section header */}
         <div className="border-t border-border pt-14">
-          <div className="font-mono text-[0.68rem] uppercase tracking-wide text-dim">
-            04
-          </div>
+          <div className="font-mono text-[0.68rem] uppercase tracking-wide text-dim">04</div>
           <h2 className="mt-2">Trust &amp; Security</h2>
           <p className="mt-2 max-w-[580px] text-[0.95rem] text-muted">
-            Security-first architecture with verifiable guarantees at every
-            layer of the protocol.
+            Security-first architecture with verifiable guarantees at every layer of the protocol.
           </p>
         </div>
 
@@ -204,9 +194,7 @@ export function Security() {
             {metrics.map((metric) => (
               <div key={metric} className="flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-purple-500" />
-                <span className="font-mono text-xs font-medium text-gray-600">
-                  {metric}
-                </span>
+                <span className="font-mono text-xs font-medium text-gray-600">{metric}</span>
               </div>
             ))}
           </div>

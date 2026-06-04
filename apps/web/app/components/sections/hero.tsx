@@ -1,5 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ArrowRight, BookOpen, Users, Calendar, TrendingUp, Lock } from "lucide-react";
+import {
+  LuArrowRight,
+  LuBookOpen,
+  LuUsers,
+  LuCalendar,
+  LuTrendingUp,
+  LuLock,
+} from "react-icons/lu";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -97,7 +104,7 @@ export function Hero() {
               className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-500/25 transition-all hover:shadow-xl hover:shadow-purple-500/30 hover:brightness-110 no-underline hover:no-underline focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:outline-none"
             >
               Try Beta App
-              <ArrowRight className="h-4 w-4" />
+              <LuArrowRight className="h-4 w-4" />
             </Link>
 
             <Link
@@ -105,7 +112,7 @@ export function Hero() {
               className="inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-white px-6 py-3 text-sm font-semibold text-gray-700 transition-all hover:border-purple-300 hover:shadow-md no-underline hover:no-underline focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:outline-none"
             >
               Join Waitlist
-              <Users className="h-4 w-4 text-purple-500" />
+              <LuUsers className="h-4 w-4 text-purple-500" />
             </Link>
 
             <Link
@@ -113,7 +120,7 @@ export function Hero() {
               className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-gray-700 transition-all hover:border-gray-300 hover:shadow-md no-underline hover:no-underline focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none"
             >
               Read Docs
-              <BookOpen className="h-4 w-4 text-gray-400" />
+              <LuBookOpen className="h-4 w-4 text-gray-400" />
             </Link>
           </div>
         </div>
@@ -152,7 +159,7 @@ export function Hero() {
             <div className="group w-80 rounded-2xl border border-gray-200 bg-white p-5 shadow-lg shadow-gray-900/5 transition-transform duration-300 hover:scale-105">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100">
-                  <Calendar className="h-5 w-5 text-purple-600" />
+                  <LuCalendar className="h-5 w-5 text-purple-600" />
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900">Vesting Schedule</h3>
@@ -176,7 +183,7 @@ export function Hero() {
             <div className="group w-80 rounded-2xl border border-gray-200 bg-white p-5 shadow-lg shadow-gray-900/5 transition-transform duration-300 hover:scale-105">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100">
-                  <TrendingUp className="h-5 w-5 text-green-600" />
+                  <LuTrendingUp className="h-5 w-5 text-green-600" />
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900">Token Stream</h3>
@@ -204,7 +211,7 @@ export function Hero() {
             <div className="group w-80 rounded-2xl bg-gradient-to-br from-purple-600 to-purple-500 p-5 text-white shadow-lg shadow-purple-500/25 transition-transform duration-300 hover:scale-105">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20">
-                  <Lock className="h-5 w-5 text-white" />
+                  <LuLock className="h-5 w-5 text-white" />
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold">Security Badge</h3>

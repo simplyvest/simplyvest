@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, ChevronDown, HelpCircle } from "lucide-react";
 import * as React from "react";
+import { LuArrowRight, LuChevronDown, LuCircleAlert } from "react-icons/lu";
 
 import { cn } from "@/utils/cn";
 
@@ -68,7 +68,7 @@ export function HomeFAQ() {
                 {/* Question row */}
                 <div className="flex items-center justify-between py-5">
                   <span className="pr-4 text-[0.95rem] font-medium text-text">{faq.q}</span>
-                  <ChevronDown
+                  <LuChevronDown
                     className={cn(
                       "h-4 w-4 shrink-0 text-dim transition-transform duration-200",
                       isOpen && "rotate-180",
@@ -90,7 +90,7 @@ export function HomeFAQ() {
         {/* Bottom CTA */}
         <div className="mt-12 text-center">
           <div className="flex items-center justify-center gap-2 text-muted">
-            <HelpCircle className="h-4 w-4" />
+            <LuCircleAlert className="h-4 w-4" />
             <span className="text-sm">Still have questions?</span>
           </div>
           <Link
@@ -98,7 +98,7 @@ export function HomeFAQ() {
             className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-sol no-underline transition-colors hover:text-[#6d28d9] hover:no-underline focus-visible:ring-2 focus-visible:ring-sol focus-visible:outline-none"
           >
             View full FAQ
-            <ArrowRight className="h-3.5 w-3.5" />
+            <LuArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
       </div>

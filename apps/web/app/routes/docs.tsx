@@ -1,19 +1,19 @@
 import { createRoute } from "@tanstack/react-router";
 import {
-  Clock,
-  Flag,
-  FileText,
-  Lock,
-  UserCheck,
-  DollarSign,
-  Coins,
-  Shield,
-  Database,
-  Settings,
-} from "lucide-react";
+  LuClock,
+  LuFlag,
+  LuFileText,
+  LuLock,
+  LuUserCheck,
+  LuDollarSign,
+  LuCoins,
+  LuShield,
+  LuDatabase,
+  LuSettings,
+} from "react-icons/lu";
 
-import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { Navbar } from "@/components/layout/navbar";
 
 import { Route as RootRoute } from "./__root";
 
@@ -28,7 +28,7 @@ export const Route = createRoute({
 const streamTypes = [
   {
     color: "purple" as const,
-    icon: Clock,
+    icon: LuClock,
     label: "TIME-BASED",
     title: "STREAMACCOUNT",
     description:
@@ -42,7 +42,7 @@ const streamTypes = [
   },
   {
     color: "green" as const,
-    icon: Flag,
+    icon: LuFlag,
     label: "MILESTONE",
     title: "MILESTONESTREAM",
     description:
@@ -58,7 +58,7 @@ const streamTypes = [
 
 const accountTypes = [
   {
-    icon: Database,
+    icon: LuDatabase,
     color: "purple" as const,
     label: "STREAM ACCOUNT",
     monoLabel: "StreamAccount",
@@ -66,7 +66,7 @@ const accountTypes = [
       "Stores stream metadata: creator, recipient, mint, vault, amount, amounts withdrawn, timestamps. Created at stream creation and closed on completion or cancellation.",
   },
   {
-    icon: Lock,
+    icon: LuLock,
     color: "green" as const,
     label: "VAULT ACCOUNT",
     monoLabel: "VaultAccount",
@@ -74,7 +74,7 @@ const accountTypes = [
       "A custom PDA token account holding the locked tokens. The stream PDA is the authority. Closed on completion or cancellation to return rent SOL to the creator.",
   },
   {
-    icon: Settings,
+    icon: LuSettings,
     color: "blue" as const,
     label: "CREATOR CONFIG",
     monoLabel: "CreatorConfig",
@@ -85,28 +85,28 @@ const accountTypes = [
 
 const securityFeatures = [
   {
-    icon: Lock,
+    icon: LuLock,
     color: "purple" as const,
     title: "PDA Vaults",
     description:
       "All tokens secured in program-derived addresses with mathematical guarantees. Only the program can authorize transfers via invoke_signed.",
   },
   {
-    icon: UserCheck,
+    icon: LuUserCheck,
     color: "green" as const,
     title: "Recipient Commitment",
     description:
       "Recipient address locked at creation and encoded in the PDA seeds. The address itself proves who the stream is for.",
   },
   {
-    icon: DollarSign,
+    icon: LuDollarSign,
     color: "blue" as const,
     title: "Rent Recovery",
     description:
       "Automatic SOL rent refund when closing streams. Vault and stream accounts closed, returning rent-exempt SOL to the creator.",
   },
   {
-    icon: Coins,
+    icon: LuCoins,
     color: "orange" as const,
     title: "Token-2022",
     description:
@@ -198,15 +198,11 @@ function SectionHeader({
           >
             {num}
           </span>
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            {title}
-          </h2>
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{title}</h2>
         </div>
       )}
       {center && (
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-          {title}
-        </h2>
+        <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{title}</h2>
       )}
       <p
         className={`mt-3 max-w-[580px] text-[0.95rem] leading-relaxed text-gray-500 ${center ? "mx-auto" : ""}`}
@@ -266,9 +262,8 @@ function DocsPage() {
             </h1>
 
             <p className="mt-6 max-w-[520px] text-lg leading-relaxed text-gray-500">
-              SimplyVest is a non-custodial, on-chain SPL-token vesting and
-              distribution protocol built with Anchor on Solana. Everything you
-              need to understand the architecture.
+              SimplyVest is a non-custodial, on-chain SPL-token vesting and distribution protocol
+              built with Anchor on Solana. Everything you need to understand the architecture.
             </p>
           </div>
 
@@ -303,17 +298,16 @@ function DocsPage() {
 
             <div className="flex flex-col items-center gap-8">
               {/* Card 1 — FileText */}
-              <div className="w-72 rounded-2xl border border-gray-200 bg-white p-5 shadow-lg shadow-gray-900/5 transition-transform duration-300 hover:scale-105"
+              <div
+                className="w-72 rounded-2xl border border-gray-200 bg-white p-5 shadow-lg shadow-gray-900/5 transition-transform duration-300 hover:scale-105"
                 style={{ transform: "rotate(3deg)" }}
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100">
-                    <FileText className="h-5 w-5 text-purple-600" />
+                    <LuFileText className="h-5 w-5 text-purple-600" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-900">
-                      Documentation
-                    </h3>
+                    <h3 className="text-sm font-semibold text-gray-900">Documentation</h3>
                     <p className="text-xs text-gray-500">Protocol Reference</p>
                   </div>
                 </div>
@@ -328,17 +322,16 @@ function DocsPage() {
               </div>
 
               {/* Card 2 — Database */}
-              <div className="w-72 rounded-2xl border border-gray-200 bg-white p-5 shadow-lg shadow-gray-900/5 transition-transform duration-300 hover:scale-105"
+              <div
+                className="w-72 rounded-2xl border border-gray-200 bg-white p-5 shadow-lg shadow-gray-900/5 transition-transform duration-300 hover:scale-105"
                 style={{ transform: "rotate(-3deg)" }}
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100">
-                    <Database className="h-5 w-5 text-blue-600" />
+                    <LuDatabase className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-900">
-                      Account Model
-                    </h3>
+                    <h3 className="text-sm font-semibold text-gray-900">Account Model</h3>
                     <p className="text-xs text-gray-500">On-chain State</p>
                   </div>
                 </div>
@@ -357,12 +350,10 @@ function DocsPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20">
-                      <Coins className="h-5 w-5 text-white" />
+                      <LuCoins className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-semibold text-white">
-                        Token Streams
-                      </h3>
+                      <h3 className="text-sm font-semibold text-white">Token Streams</h3>
                       <p className="text-xs text-purple-200">SPL &amp; Token-2022</p>
                     </div>
                   </div>
@@ -430,10 +421,7 @@ function DocsPage() {
                     {/* Bullet points */}
                     <ul className="mt-6 space-y-2.5">
                       {stream.points.map((point) => (
-                        <li
-                          key={point}
-                          className="flex items-start gap-2.5 text-sm text-gray-600"
-                        >
+                        <li key={point} className="flex items-start gap-2.5 text-sm text-gray-600">
                           <span
                             className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${bulletColor[c]}`}
                           />
@@ -522,7 +510,7 @@ function DocsPage() {
           className="pointer-events-none absolute inset-0 flex items-center justify-center"
           aria-hidden
         >
-          <Shield className="h-[600px] w-[600px] text-purple-600 opacity-[0.05]" />
+          <LuShield className="h-[600px] w-[600px] text-purple-600 opacity-[0.05]" />
         </div>
 
         <div className="relative mx-auto max-w-7xl px-6">
@@ -559,9 +547,7 @@ function DocsPage() {
 
                     {/* Text */}
                     <div className="min-w-0">
-                      <h4 className="font-mono text-sm font-bold text-gray-900">
-                        {feat.title}
-                      </h4>
+                      <h4 className="font-mono text-sm font-bold text-gray-900">{feat.title}</h4>
                       <p className="mt-1 text-[0.88rem] leading-relaxed text-gray-500">
                         {feat.description}
                       </p>
