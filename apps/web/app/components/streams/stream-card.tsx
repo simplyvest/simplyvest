@@ -1,15 +1,14 @@
 import { getClaimable, getStatus, getVaultPda, PROGRAM_ID } from "@solana-tdp/sdk";
 import type { StreamAccount } from "@solana-tdp/sdk";
+import { formatAddress } from "@solana-tdp/sdk";
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
-import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useWithdraw } from "@/hooks/use-transactions";
-import { formatAddress } from "@solana-tdp/sdk";
 import { formatSol, formatDate, formatDuration } from "@/utils/format";
-
 
 export function StreamCard({
   stream,
@@ -107,11 +106,14 @@ export function StreamCard({
         </div>
 
         <div className="flex shrink-0 flex-col gap-2">
-          {role !== "received" && isSender && status === "active" && (
-            <Button variant="destructive" size="sm" onClick={() => onCancel(stream, pda)}>
-              Cancel
-            </Button>
-          )}
+          {role !== "received" &&
+            isSender &&
+            status === "active" &&
+            clockTime < stream.endTime.toNumber() && (
+              <Button variant="destructive" size="sm" onClick={() => onCancel(stream, pda)}>
+                Cancel
+              </Button>
+            )}
           {role === "received" &&
             isRecipient &&
             status === "active" &&
