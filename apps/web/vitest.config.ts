@@ -12,6 +12,9 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./app/__tests__/setup.ts"],
+    deps: {
+      inline: ["@ledgerhq/errors"],
+    },
     css: true,
   },
 });
