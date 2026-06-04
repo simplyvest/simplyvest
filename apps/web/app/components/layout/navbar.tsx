@@ -10,6 +10,7 @@ const publicLinks = [
   { to: "/", label: "Home" },
   { to: "/docs", label: "Docs" },
   { to: "/faq", label: "FAQ" },
+  { to: "/app", label: "App" },
   { to: "/waitlist", label: "Waitlist" },
 ];
 

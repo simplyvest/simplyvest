@@ -23,25 +23,6 @@ describe("Hero", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders inline navigation links", async () => {
-    renderWithRouter(<Hero />);
-
-    const expectedLinks = [
-      { label: "Home", href: "/" },
-      { label: "Docs", href: "/docs" },
-      { label: "FAQ", href: "/faq" },
-      { label: "Waitlist", href: "/waitlist" },
-      { label: "App", href: "/app" },
-    ];
-
-    await Promise.all(
-      expectedLinks.map(async ({ label, href }) => {
-        const link = await screen.findByText(label);
-        expect(link.closest("a")).toHaveAttribute("href", href);
-      }),
-    );
-  });
-
   it("renders CTA buttons with correct paths", async () => {
     renderWithRouter(<Hero />);
 
@@ -53,12 +34,5 @@ describe("Hero", () => {
 
     const readDocs = await screen.findByText("Read Docs");
     expect(readDocs.closest("a")).toHaveAttribute("href", "/docs");
-  });
-
-  it("renders the SimplyVest logo", async () => {
-    renderWithRouter(<Hero />);
-
-    const logo = await screen.findByAltText("SimplyVest");
-    expect(logo).toBeInTheDocument();
   });
 });

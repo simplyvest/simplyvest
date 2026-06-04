@@ -48,7 +48,7 @@ function FAQPage() {
   return (
     <div className="min-h-screen">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-white dark:from-slate-950 via-purple-50/20 dark:via-purple-950 to-white dark:to-slate-950 pt-32 pb-20">
+      <section className="relative overflow-hidden bg-gradient-to-br from-white dark:from-slate-950 via-purple-50/20 dark:via-purple-950 to-white dark:to-slate-950 pt-16 pb-20">
         {/* Decorative blurred circles */}
         <div className="pointer-events-none absolute top-10 left-1/4 h-72 w-72 rounded-full bg-purple-200/30 dark:bg-purple-800/30 blur-3xl" />
         <div className="pointer-events-none absolute bottom-10 right-1/4 h-64 w-64 rounded-full bg-violet-200/20 blur-3xl" />

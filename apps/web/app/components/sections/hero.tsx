@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import {
   LuArrowRight,
   LuBookOpen,
@@ -8,19 +8,9 @@ import {
   LuLock,
 } from "react-icons/lu";
 
-const navLinks = [
-  { to: "/", label: "Home" },
-  { to: "/docs", label: "Docs" },
-  { to: "/faq", label: "FAQ" },
-  { to: "/waitlist", label: "Waitlist" },
-  { to: "/app", label: "App" },
-];
-
 const barValues = [30, 45, 60, 75, 85, 95];
 
 export function Hero() {
-  const { location } = useRouterState();
-
   return (
     <section className="relative min-h-screen overflow-hidden bg-gradient-to-b from-white dark:from-slate-950 via-purple-50/20 dark:via-purple-950 to-white dark:to-slate-950">
       {/* ---- Decorative background ---- */}
@@ -43,37 +33,8 @@ export function Hero() {
         <div className="absolute left-1/2 top-[40%] h-[760px] w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-purple-100/20 dark:border-purple-900/50" />
       </div>
 
-      {/* ---- Inline navbar ---- */}
-      <nav className="relative z-50 mx-auto max-w-7xl px-6 pt-6">
-        <div className="rounded-2xl border border-white/60 dark:border-slate-700/60 bg-white/70 dark:bg-slate-900/70 px-6 py-4 shadow-lg shadow-purple-600/5 dark:shadow-purple-400/10 backdrop-blur-xl">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2 no-underline hover:no-underline">
-              <img src="/simplyvest.png" alt="SimplyVest" className="h-8 w-auto" />
-              <span className="text-lg font-semibold text-gray-900 dark:text-slate-100">
-                SimplyVest
-              </span>
-            </Link>
-            <div className="hidden items-center gap-8 md:flex">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className={`text-sm font-medium transition-colors no-underline hover:no-underline ${
-                    location.pathname === link.to
-                      ? "text-purple-600 dark:text-purple-400"
-                      : "text-gray-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      </nav>
-
       {/* ---- Main content ---- */}
-      <div className="relative z-10 mx-auto max-w-7xl px-6 pt-16 lg:grid lg:grid-cols-2 lg:gap-12 lg:pt-24">
+      <div className="relative z-10 mx-auto max-w-7xl px-6 pt-8 lg:grid lg:grid-cols-2 lg:gap-12 lg:pt-12">
         {/* Left column — copy & CTAs */}
         <div>
           {/* Badge */}

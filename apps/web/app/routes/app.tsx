@@ -29,13 +29,13 @@ function AppLayout() {
   }, [showContent, location.pathname, navigate]);
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col px-6">
+    <div className="mx-auto flex w-full max-w-5xl flex-col px-6 pt-4">
       {showContent ? (
         <div className="pb-12">
           <Outlet />
         </div>
       ) : (
-        <div className="flex flex-1 items-center justify-center py-32">
+        <div className="flex flex-1 items-center justify-center py-16">
           <div className="flex flex-col items-center gap-8 text-center">
             <div className="rounded-2xl border border-sol/20 bg-sol/5 p-6">
               <svg

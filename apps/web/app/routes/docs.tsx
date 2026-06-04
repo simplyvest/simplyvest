@@ -220,7 +220,7 @@ function DocsPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900">
       {/* ── Hero ────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-white via-purple-50/30 to-white dark:from-slate-950 dark:via-purple-950/30 dark:to-slate-950 pt-28 pb-20">
+      <section className="relative overflow-hidden bg-gradient-to-br from-white via-purple-50/30 to-white dark:from-slate-950 dark:via-purple-950/30 dark:to-slate-950 pt-14 pb-20">
         {/* Decorative blurred circles */}
         <div className="pointer-events-none absolute inset-0" aria-hidden>
           <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-purple-300/20 blur-3xl" />
