@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect } from "vitest";
 
 import { renderWithRouter } from "@/__tests__/test-utils";
-import { HomeFAQ } from "@/components/sections/home-faq";
+import { HomeFAQ } from "@/components/marketing/home-faq/home-faq";
 
 describe("HomeFAQ", () => {
   it("renders section heading", async () => {

@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
 
-import { UseCases } from "@/components/sections/use-cases";
 import { renderWithRouter } from "@/__tests__/test-utils";
+import { UseCases } from "@/components/marketing/use-cases/use-cases";
 
 describe("UseCases", () => {
   it("renders section heading and subtitle", async () => {

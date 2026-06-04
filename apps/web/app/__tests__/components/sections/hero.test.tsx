@@ -2,7 +2,7 @@ import { screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 
 import { renderWithRouter } from "@/__tests__/test-utils";
-import { Hero } from "@/components/sections/hero";
+import { Hero } from "@/components/marketing/hero/hero";
 
 describe("Hero", () => {
   it("renders the badge and main heading", async () => {

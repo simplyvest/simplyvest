@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
 
-import { CTA } from "@/components/sections/cta";
 import { renderWithRouter } from "@/__tests__/test-utils";
+import { CTA } from "@/components/marketing/cta/cta";
 
 describe("CTA", () => {
   it("renders heading and description", async () => {
@@ -10,7 +10,9 @@ describe("CTA", () => {
 
     expect(await screen.findByText("Start Vesting Today")).toBeInTheDocument();
     expect(
-      await screen.findByText("Join the waitlist to be the first to know when SimplyVest launches."),
+      await screen.findByText(
+        "Join the waitlist to be the first to know when SimplyVest launches.",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -24,9 +26,7 @@ describe("CTA", () => {
   it("renders trust indicators", async () => {
     renderWithRouter(<CTA />);
 
-    expect(
-      await screen.findByText("No credit card required"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("No credit card required")).toBeInTheDocument();
     expect(await screen.findByText("Launch in Q2 2026")).toBeInTheDocument();
   });
 });

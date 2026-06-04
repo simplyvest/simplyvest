@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
 
-import { HowItWorks } from "@/components/sections/how-it-works";
 import { renderWithRouter } from "@/__tests__/test-utils";
+import { HowItWorks } from "@/components/marketing/how-it-works/how-it-works";
 
 describe("HowItWorks", () => {
   it("renders section heading and subtitle", async () => {
@@ -32,8 +32,6 @@ describe("HowItWorks", () => {
   it("renders the bottom CTA tagline", async () => {
     renderWithRouter(<HowItWorks />);
 
-    expect(
-      await screen.findByText("Ready in minutes, secure forever"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Ready in minutes, secure forever")).toBeInTheDocument();
   });
 });

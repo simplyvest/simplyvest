@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
 
-import { Security } from "@/components/sections/security";
 import { renderWithRouter } from "@/__tests__/test-utils";
+import { Security } from "@/components/marketing/security/security";
 
 describe("Security", () => {
   it("renders section heading and description", async () => {
@@ -40,12 +40,8 @@ describe("Security", () => {
   it("renders footer metrics", async () => {
     renderWithRouter(<Security />);
 
-    expect(
-      await screen.findByText("Audited Smart Contracts"),
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText("Non-Custodial Architecture"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Audited Smart Contracts")).toBeInTheDocument();
+    expect(await screen.findByText("Non-Custodial Architecture")).toBeInTheDocument();
     expect(await screen.findByText("Community Verified")).toBeInTheDocument();
   });
 });
