@@ -1,15 +1,21 @@
 import path from "node:path";
 
 import type { StorybookConfig } from "@storybook/tanstack-react";
-
+import tailwindcss from "@tailwindcss/vite";
 const config: StorybookConfig = {
   stories: [
     "../app/components/ui/**/*.stories.@(js|jsx|mjs|ts|tsx)",
     "../app/components/**/*.stories.@(js|jsx|mjs|ts|tsx)",
   ],
-  addons: ["@chromatic-com/storybook", "@storybook/addon-a11y", "@storybook/addon-docs"],
+  addons: [
+    "@chromatic-com/storybook",
+    "@storybook/addon-a11y",
+    "@storybook/addon-docs",
+    "@storybook/addon-vitest",
+  ],
   framework: "@storybook/tanstack-react",
   viteFinal: async (viteConfig) => {
+    viteConfig.plugins?.push(tailwindcss());
     viteConfig.resolve ||= {};
     viteConfig.resolve.alias ||= [];
     // @ alias matching app's vite.config.ts

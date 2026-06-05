@@ -9,6 +9,9 @@
     "check:ts": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:unit": "vitest run --project=unit",
+    "test:storybook": "vitest run --project=storybook",
+    "test:ci": "vitest run --project=unit --project=storybook",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -42,6 +45,7 @@
     "@storybook/addon-mcp": "^0.6.0",
     "@storybook/addon-vitest": "^10.4.2",
     "@storybook/tanstack-react": "^10.4.2",
+    "@storybook/test": "^8.6.15",
     "@tailwindcss/vite": "^4.2.4",
     "@tanstack/react-devtools": "^0.10.2",
     "@tanstack/react-query-devtools": "^5.100.6",
