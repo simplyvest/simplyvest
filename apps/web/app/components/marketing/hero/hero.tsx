@@ -1,6 +1,6 @@
-import { Link } from "@tanstack/react-router";
 import { LuArrowRight, LuBookOpen, LuUsers } from "react-icons/lu";
 
+import { LinkButton } from "@/components/ui/link-button";
 import { SectionDecorations, BlobBlob } from "@/components/ui/section-decorations";
 
 import { HeroStatsCards } from "./hero-stats-cards";
@@ -55,30 +55,29 @@ export function Hero() {
 
           {/* CTA buttons */}
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            <Link
+            <LinkButton
               to="/app/dashboard"
               search={{ tab: "created" }}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-500/25 dark:shadow-purple-900/30 transition-all hover:shadow-xl hover:shadow-purple-500/30 dark:hover:shadow-purple-800/30 hover:brightness-110 no-underline hover:no-underline focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:outline-none"
+              variant="brand"
+              className="rounded-xl px-6 py-3"
             >
               Try Beta App
               <LuArrowRight className="h-4 w-4" />
-            </Link>
+            </LinkButton>
 
-            <Link
-              to="/waitlist"
-              className="inline-flex items-center gap-2 rounded-xl border border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 px-6 py-3 text-sm font-semibold text-gray-700 dark:text-slate-200 transition-all hover:border-purple-300 dark:hover:border-purple-700 hover:shadow-md no-underline hover:no-underline focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:outline-none"
-            >
+            <LinkButton to="/waitlist" variant="outline-brand" className="rounded-xl px-6 py-3">
               Join Waitlist
               <LuUsers className="h-4 w-4 text-purple-500 dark:text-purple-300" />
-            </Link>
+            </LinkButton>
 
-            <Link
+            <LinkButton
               to="/docs"
-              className="inline-flex items-center gap-2 rounded-xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-6 py-3 text-sm font-semibold text-gray-700 dark:text-slate-200 transition-all hover:border-gray-300 dark:hover:border-slate-500 hover:shadow-md no-underline hover:no-underline focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none"
+              variant="outline"
+              className="rounded-xl px-6 py-3 border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-200 bg-white dark:bg-slate-900 hover:border-gray-300 dark:hover:border-slate-500 hover:shadow-md"
             >
               Read Docs
               <LuBookOpen className="h-4 w-4 text-gray-400 dark:text-slate-500" />
-            </Link>
+            </LinkButton>
           </div>
         </div>
 

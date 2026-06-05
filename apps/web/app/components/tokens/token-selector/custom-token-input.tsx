@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
@@ -19,13 +20,9 @@ export function CustomTokenInput({
           onChange={(e) => onChange(e.target.value)}
           className="flex-1"
         />
-        <button
-          type="button"
-          onClick={onSwitchToOwned}
-          className="rounded-md border border-border2 bg-bg2 px-3 py-2 text-sm text-muted transition-colors hover:text-text"
-        >
+        <Button type="button" variant="outline" size="sm" onClick={onSwitchToOwned}>
           Owned
-        </button>
+        </Button>
       </div>
     </Field>
   );

@@ -1,5 +1,6 @@
 import { LuMoon, LuSun } from "react-icons/lu";
 
+import { Button } from "@/components/ui/button";
 import { useTheme } from "@/lib/theme";
 
 export function ThemeToggle() {
@@ -16,12 +17,13 @@ export function ThemeToggle() {
   };
 
   return (
-    <button
+    <Button
+      variant="ghost"
+      size="icon"
       onClick={toggle}
-      className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-slate-400 dark:hover:bg-purple-900 dark:hover:text-slate-200"
       aria-label={`Switch to ${resolved === "dark" ? "light" : "dark"} mode`}
     >
       {resolved === "dark" ? <LuSun className="h-4 w-4" /> : <LuMoon className="h-4 w-4" />}
-    </button>
+    </Button>
   );
 }

@@ -1,5 +1,6 @@
-import { Link } from "@tanstack/react-router";
 import { SiGithub } from "react-icons/si";
+
+import { LinkButton } from "@/components/ui/link-button";
 
 export function FaqCta() {
   return (
@@ -14,19 +15,17 @@ export function FaqCta() {
             documentation.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              to="/docs"
-              className="inline-flex items-center gap-2 rounded-xl bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-600/25 dark:shadow-purple-400/25 transition-colors hover:bg-purple-700 no-underline hover:no-underline"
-            >
+            <LinkButton to="/docs" variant="brand" className="rounded-xl px-6 py-3">
               View Documentation
-            </Link>
-            <Link
+            </LinkButton>
+            <LinkButton
               to="/waitlist"
-              className="inline-flex items-center gap-2 rounded-xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-6 py-3 text-sm font-semibold text-gray-900 dark:text-slate-100 shadow-sm transition-colors hover:bg-gray-50 no-underline hover:no-underline"
+              variant="outline"
+              className="rounded-xl px-6 py-3 border-gray-200 dark:border-slate-600"
             >
               <SiGithub className="h-4 w-4" aria-hidden="true" focusable="false" />
               Join Community
-            </Link>
+            </LinkButton>
           </div>
         </div>
       </div>

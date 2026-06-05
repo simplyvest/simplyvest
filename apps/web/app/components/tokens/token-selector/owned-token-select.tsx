@@ -1,5 +1,6 @@
 import { formatTokenLabel } from "@solana-tdp/sdk";
 
+import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Select } from "@/components/ui/select";
 
@@ -41,13 +42,9 @@ export function OwnedTokenSelect({
             ))
           )}
         </Select>
-        <button
-          type="button"
-          onClick={onSwitchToCustom}
-          className="rounded-md border border-border2 bg-bg2 px-3 py-2 text-sm text-muted transition-colors hover:text-text"
-        >
+        <Button type="button" variant="outline" size="sm" onClick={onSwitchToCustom}>
           Custom
-        </button>
+        </Button>
       </div>
     </Field>
   );

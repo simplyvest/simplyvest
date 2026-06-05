@@ -1,6 +1,6 @@
-import { Link } from "@tanstack/react-router";
 import { LuArrowRight, LuSparkles } from "react-icons/lu";
 
+import { LinkButton } from "@/components/ui/link-button";
 import { SectionDecorations, BlobBlob } from "@/components/ui/section-decorations";
 
 export function CTA() {
@@ -54,13 +54,14 @@ export function CTA() {
             </p>
 
             <div className="mt-10">
-              <Link
+              <LinkButton
                 to="/waitlist"
-                className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-900 px-8 py-3.5 text-base font-semibold text-purple-600 dark:text-purple-400 shadow-lg transition-all hover:scale-105 hover:shadow-xl focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
+                variant="light-brand"
+                className="rounded-xl px-8 py-3.5 text-base"
               >
                 Join Waitlist
                 <LuArrowRight className="h-5 w-5" />
-              </Link>
+              </LinkButton>
             </div>
 
             {/* Trust indicators */}

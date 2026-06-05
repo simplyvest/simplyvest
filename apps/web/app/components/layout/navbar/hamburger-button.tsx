@@ -1,9 +1,13 @@
+import { Button } from "@/components/ui/button";
+
 export function HamburgerButton({ open, onClick }: { open: boolean; onClick: () => void }) {
   return (
-    <button
+    <Button
+      variant="ghost"
+      size="icon"
       onClick={onClick}
-      className="md:hidden rounded-lg p-2 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-purple-900"
       aria-label={open ? "Close menu" : "Open menu"}
+      className="md:hidden"
     >
       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         {open ? (
@@ -12,6 +16,6 @@ export function HamburgerButton({ open, onClick }: { open: boolean; onClick: () 
           <path strokeLinecap="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
         )}
       </svg>
-    </button>
+    </Button>
   );
 }
