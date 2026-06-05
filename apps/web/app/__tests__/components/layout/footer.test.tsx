@@ -60,10 +60,6 @@ describe("Footer", () => {
     const twitterIcon = await screen.findByLabelText("Twitter");
     expect(twitterIcon).toBeInTheDocument();
     expect(twitterIcon).toHaveAttribute("href", "https://x.com/simplyvestsol");
-
-    const emailIcon = await screen.findByLabelText("Email");
-    expect(emailIcon).toBeInTheDocument();
-    expect(emailIcon).toHaveAttribute("href", "mailto:hello@simplyvest.com");
   });
 
   it("renders copyright with current year", async () => {

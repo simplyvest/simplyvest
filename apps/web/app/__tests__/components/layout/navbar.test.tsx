@@ -23,7 +23,7 @@ describe("Navbar", () => {
       { label: "Home", href: "/" },
       { label: "Docs", href: "/docs" },
       { label: "FAQ", href: "/faq" },
-      { label: "App", href: "/app" },
+      { label: "Beta App", href: "/app" },
       { label: "Waitlist", href: "/waitlist" },
     ];
 

@@ -1,6 +1,6 @@
 import { fetchTokenMetadata, formatTokenLabel } from "@solana-tdp/sdk";
-import { getMint } from "@solana/spl-token";
 import { useConnection } from "@solana/wallet-adapter-react";
+import type { Connection } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 import { useEffect, useRef, useState } from "react";
 
@@ -11,6 +11,14 @@ export interface TokenInfoState {
 }
 
 const MINT_RE = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+
+/** Read the decimals field from an SPL Token mint account. */
+async function getMintDecimals(connection: Connection, mintAddr: PublicKey): Promise<number> {
+  const info = await connection.getAccountInfo(mintAddr, { commitment: "confirmed" });
+  if (!info || !info.data || info.data.length < 46) throw new Error("Invalid mint");
+  // Mint layout: mintAuthorityOption(4) + mintAuthority(32) + supply(8) + decimals(1)
+  return info.data[44]; // uint8 at fixed offset
+}
 
 /**
  * Debounced token metadata resolver.
@@ -46,13 +54,13 @@ export function useTokenInfo(mintAddress: string): TokenInfoState {
     const timer = setTimeout(async () => {
       try {
         const mint = new PublicKey(addr);
-        const [meta, mintInfo] = await Promise.all([
+        const [meta, decimals] = await Promise.all([
           fetchTokenMetadata(connection, mint),
-          getMint(connection, mint),
+          getMintDecimals(connection, mint),
         ]);
         if (cancelledRef.current) return;
         const name = formatTokenLabel(meta, mint);
-        setState({ label: `${name} — ${mintInfo.decimals} decimals`, error: null, loading: false });
+        setState({ label: `${name} — ${decimals} decimals`, error: null, loading: false });
       } catch {
         if (cancelledRef.current) return;
         setState({ label: null, error: "Token not found", loading: false });

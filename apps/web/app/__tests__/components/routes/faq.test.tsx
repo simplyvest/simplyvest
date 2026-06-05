@@ -54,7 +54,7 @@ describe("FAQPage", () => {
     const docsLink = await screen.findByText("View Documentation");
     expect(docsLink.closest("a")).toHaveAttribute("href", "/docs");
 
-    const communityLink = await screen.findByText("Join Community");
-    expect(communityLink.closest("a")).toHaveAttribute("href", "/waitlist");
+    const waitlistLink = await screen.findByText("Join Waitlist");
+    expect(waitlistLink.closest("a")).toHaveAttribute("href", "/waitlist");
   });
 });
