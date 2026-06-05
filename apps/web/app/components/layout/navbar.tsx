@@ -29,8 +29,8 @@ export function Navbar() {
   const links = isApp ? appLinks : publicLinks;
 
   return (
-    <nav className="sticky top-4 z-50 mx-auto w-full max-w-7xl px-6">
-      <div className="rounded-2xl border border-white/60 bg-white/70 shadow-lg shadow-purple-600/5 backdrop-blur-xl dark:border-slate-700/60 dark:bg-slate-900/70 dark:shadow-purple-400/10 px-6 py-3">
+    <nav className="fixed top-0 inset-x-0 z-50 px-6 pt-4">
+      <div className="mx-auto w-full max-w-7xl rounded-2xl border border-white/60 bg-white/70 shadow-lg shadow-purple-600/5 backdrop-blur-xl dark:border-slate-700/60 dark:bg-slate-900/70 dark:shadow-purple-400/10 px-6 py-3">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 no-underline hover:no-underline">
             <img src="/simplyvest.png" alt="SimplyVest" className="h-7 w-auto" />

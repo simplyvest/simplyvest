@@ -4,7 +4,7 @@ import { FloatingCards } from "./floating-cards";
 
 export function DocsHero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-white via-purple-50/30 to-white dark:from-slate-950 dark:via-purple-950/30 dark:to-slate-950 pt-14 pb-20">
+    <section className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-gradient-to-br from-white via-purple-50/30 to-white dark:from-slate-950 dark:via-purple-950/30 dark:to-slate-950">
       <SectionDecorations>
         <BlobBlob className="absolute -left-32 -top-32 h-96 w-96 bg-purple-300/20" />
         <BlobBlob className="absolute -bottom-32 -right-32 h-96 w-96 bg-purple-400/15" />

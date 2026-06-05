@@ -1,13 +1,13 @@
 import { LuArrowRight, LuBookOpen, LuUsers } from "react-icons/lu";
 
 import { LinkButton } from "@/components/ui/link-button";
-import { SectionDecorations, BlobBlob } from "@/components/ui/section-decorations";
+import { BlobBlob, SectionDecorations } from "@/components/ui/section-decorations";
 
 import { HeroStatsCards } from "./hero-stats-cards";
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen overflow-hidden bg-gradient-to-b from-white dark:from-slate-950 via-purple-50/20 dark:via-purple-950 to-white dark:to-slate-950">
+    <section className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-gradient-to-b from-white dark:from-slate-950 via-purple-50/20 dark:via-purple-950 to-white dark:to-slate-950">
       {/* ---- Decorative background ---- */}
       <SectionDecorations>
         {/* Blurred blobs */}
@@ -29,7 +29,7 @@ export function Hero() {
       </SectionDecorations>
 
       {/* ---- Main content ---- */}
-      <div className="relative z-10 mx-auto max-w-7xl px-6 pt-8 lg:grid lg:grid-cols-2 lg:gap-12 lg:pt-12">
+      <div className="relative z-10 mx-auto max-w-7xl px-6 lg:grid lg:grid-cols-2 lg:gap-12">
         {/* Left column — copy & CTAs */}
         <div>
           {/* Badge */}

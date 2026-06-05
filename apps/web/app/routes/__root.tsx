@@ -1,7 +1,7 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-import { Outlet, createRootRoute, Link, useRouterState } from "@tanstack/react-router";
+import { createRootRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import * as React from "react";
 import { Toaster } from "sonner";
