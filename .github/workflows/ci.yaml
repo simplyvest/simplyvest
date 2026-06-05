@@ -15,6 +15,15 @@ env:
   CARGO_INCREMENTAL: "0"
   CARGO_PROFILE_TEST_DEBUG: "0"
 
+x-cache-pnpm: &cache-pnpm
+  name: Cache pnpm store
+  uses: actions/cache@v5
+  with:
+    path: node_modules/.pnpm
+    key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+    restore-keys: |
+      ${{ runner.os }}-pnpm-store-
+
 jobs:
   typecheck-web:
     runs-on: ubuntu-24.04
@@ -27,6 +36,7 @@ jobs:
         with:
           node-version: "24"
           cache: pnpm
+      - *cache-pnpm
       - run: pnpm install --frozen-lockfile
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
@@ -44,15 +54,15 @@ jobs:
         with:
           node-version: "24"
           cache: pnpm
-      - name: Cache pnpm virtual store
+      - name: Cache pnpm store + Playwright
         uses: actions/cache@v5
         with:
           path: |
             node_modules/.pnpm
             ~/.cache/ms-playwright
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-store-v2-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+            ${{ runner.os }}-pnpm-store-v2-
       - run: pnpm install --frozen-lockfile
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
@@ -72,6 +82,7 @@ jobs:
         with:
           node-version: "24"
           cache: pnpm
+      - *cache-pnpm
       - run: pnpm install --frozen-lockfile
       - name: TypeScript check (api)
         run: pnpm --filter @solana-tdp/api typecheck
@@ -87,6 +98,7 @@ jobs:
         with:
           node-version: "24"
           cache: pnpm
+      - *cache-pnpm
       - run: pnpm install --frozen-lockfile
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
@@ -104,6 +116,7 @@ jobs:
         with:
           node-version: "24"
           cache: pnpm
+      - *cache-pnpm
       - run: pnpm install --frozen-lockfile
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
@@ -121,6 +134,7 @@ jobs:
         with:
           node-version: "24"
           cache: pnpm
+      - *cache-pnpm
       - run: pnpm install --frozen-lockfile
       - name: Format check
         run: pnpm exec oxfmt --check .
@@ -136,6 +150,7 @@ jobs:
         with:
           node-version: "24"
           cache: pnpm
+      - *cache-pnpm
       - run: pnpm install --frozen-lockfile
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
@@ -196,6 +211,7 @@ jobs:
       - name: Generate keypair
         run: solana-keygen new --no-bip39-passphrase --silent -f
 
+      - *cache-pnpm
       - run: pnpm install --frozen-lockfile
         working-directory: .
 
@@ -244,6 +260,7 @@ jobs:
         with:
           node-version: "24"
           cache: pnpm
+      - *cache-pnpm
       - run: pnpm install --frozen-lockfile
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
@@ -268,6 +285,7 @@ jobs:
         with:
           node-version: "24"
           cache: pnpm
+      - *cache-pnpm
       - run: pnpm install --frozen-lockfile
       - name: Deploy API Worker
         run: pnpm --filter @solana-tdp/api run deploy
