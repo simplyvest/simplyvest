@@ -2,6 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import * as React from "react";
 
 import { WalletButton } from "@/components/solana/wallet-button";
+import { LinkButton } from "@/components/ui/link-button";
 
 import { HamburgerButton } from "./navbar/hamburger-button";
 import { MobileMenu } from "./navbar/mobile-menu";
@@ -12,7 +13,6 @@ const publicLinks = [
   { to: "/", label: "Home" },
   { to: "/docs", label: "Docs" },
   { to: "/faq", label: "FAQ" },
-  { to: "/app", label: "App" },
   { to: "/waitlist", label: "Waitlist" },
 ];
 
@@ -40,6 +40,11 @@ export function Navbar() {
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-6">
             <NavLinks links={links} />
+            {!isApp && (
+              <LinkButton to="/app" variant="brand" size="sm" className="rounded-xl px-4">
+                Beta App
+              </LinkButton>
+            )}
             <div className="flex items-center gap-2">
               <ThemeToggle />
               {isApp && <WalletButton />}
