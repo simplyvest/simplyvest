@@ -96,6 +96,8 @@ jobs:
           node-version: "24"
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Build SDK
+        run: pnpm --filter @solana-tdp/sdk build
       - name: Lint
         run: pnpm exec oxlint .
 
