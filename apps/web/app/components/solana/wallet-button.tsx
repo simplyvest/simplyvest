@@ -1,6 +1,7 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import * as React from "react";
+import { createPortal } from "react-dom";
 
 import { Button } from "@/components/ui/button";
 
@@ -100,16 +101,18 @@ export function WalletButton() {
         <Button variant="outline-brand" size="sm" onClick={handleClick}>
           {short}
         </Button>
-        {showDialog && (
-          <DisconnectDialog
-            address={full}
-            onConfirm={() => {
-              setShowDialog(false);
-              void wallet.disconnect();
-            }}
-            onDismiss={() => setShowDialog(false)}
-          />
-        )}
+        {showDialog &&
+          createPortal(
+            <DisconnectDialog
+              address={full}
+              onConfirm={() => {
+                setShowDialog(false);
+                void wallet.disconnect();
+              }}
+              onDismiss={() => setShowDialog(false)}
+            />,
+            document.body,
+          )}
       </>
     );
   }
