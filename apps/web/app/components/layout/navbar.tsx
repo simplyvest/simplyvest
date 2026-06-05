@@ -48,8 +48,8 @@ export function Navbar() {
               </LinkButton>
             )}
             <div className="flex items-center gap-2">
-              <ThemeToggle />
               {isApp && <WalletButton />}
+              <ThemeToggle />
             </div>
           </div>
 
