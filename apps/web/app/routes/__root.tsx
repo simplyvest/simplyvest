@@ -41,7 +41,6 @@ export const Route = createRootRoute({
 function RootComponent() {
   const routerState = useRouterState();
   const location = routerState.location;
-  const isLoading = routerState.status === "pending";
 
   React.useEffect(() => {
     trackPageView(location.pathname);
@@ -62,13 +61,7 @@ function RootComponent() {
             <Navbar />
 
             <main id="main-content" className="flex-1">
-              {isLoading ? (
-                <div className="flex h-64 items-center justify-center">
-                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-sol border-t-transparent" />
-                </div>
-              ) : (
-                <Outlet />
-              )}
+              <Outlet />
             </main>
 
             <Footer />
