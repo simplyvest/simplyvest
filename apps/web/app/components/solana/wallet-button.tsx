@@ -33,14 +33,14 @@ function DisconnectDialog({
       onClick={onDismiss}
     >
       <div
-        className="mx-4 w-full max-w-sm rounded-2xl border border-purple-100 bg-white p-6 shadow-xl dark:border-purple-900/50 dark:bg-slate-900"
+        className="mx-4 w-[480px] max-w-full rounded-2xl border border-purple-100 bg-white p-6 shadow-xl dark:border-purple-900/50 dark:bg-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="text-lg font-semibold text-text">Disconnect wallet</h3>
         <p className="mt-2 text-sm text-muted">
           You are connected as <span className="font-mono font-medium text-text">{short}</span>
         </p>
-        <div className="mt-3 rounded-lg bg-bg2 p-3 break-all font-mono text-xs text-text">
+        <div className="mt-3 flex items-center gap-2 rounded-lg bg-purple-50 dark:bg-purple-950/50 px-3 py-2.5 font-mono text-xs text-purple-700 dark:text-purple-300 truncate">
           {full}
         </div>
         <label className="mt-4 flex items-start gap-2 cursor-pointer">
