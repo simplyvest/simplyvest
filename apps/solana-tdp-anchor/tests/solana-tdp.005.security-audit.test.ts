@@ -226,7 +226,7 @@ describe("Feature 5: security audit", () => {
       const largeAmount = "10000000000000000";
       await mintTo(prov, mint, senderToken, sender, BigInt("20000000000000000"));
 
-      const now = Number(prov.connection.getSlot()) || 1_000_000;
+      const now = clockNow(svm) || 1_000_000;
       const start = now + 60;
       const end = start + 3600;
 

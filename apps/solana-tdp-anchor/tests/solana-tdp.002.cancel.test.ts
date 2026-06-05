@@ -1,7 +1,7 @@
-import { getCancelAccounts, parseEvents, findEvent } from "@solana-tdp/sdk";
+import { getCancelAccounts, findEvent } from "@solana-tdp/sdk";
 
 import { createStreamFixture } from "./fixtures";
-import { setupTest, SetupTest } from "./utils";
+import { setupTest, SetupTest, svmParseEvents } from "./utils";
 
 describe("Feature 2: cancel", () => {
   let program: SetupTest["program"];
@@ -206,7 +206,7 @@ describe("Feature 2: cancel", () => {
       .signers([sender])
       .rpc();
 
-    const events = await parseEvents(provider, program, txSig);
+    const events = await svmParseEvents(svm, program, txSig);
     const event = findEvent(events, "streamCancelled");
 
     expect(event.data.stream.toBase58()).toBe(streamPDA.toBase58());

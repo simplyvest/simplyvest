@@ -1,12 +1,12 @@
 import * as anchor from "@coral-xyz/anchor";
 import { BN } from "@coral-xyz/anchor";
-import { getWithdrawAccounts, getCancelAccounts, parseEvents, findEvent } from "@solana-tdp/sdk";
+import { getWithdrawAccounts, getCancelAccounts, findEvent } from "@solana-tdp/sdk";
 import { createAssociatedTokenAccountInstruction } from "@solana/spl-token";
 import { Keypair } from "@solana/web3.js";
 
 import { createStreamFixture } from "./fixtures";
 import { clockNow } from "./helpers";
-import { setupTest, SetupTest } from "./utils";
+import { setupTest, SetupTest, svmParseEvents } from "./utils";
 
 describe("Feature 1: withdraw", () => {
   let program: SetupTest["program"];
@@ -356,7 +356,7 @@ describe("Feature 1: withdraw", () => {
       .signers([recipient])
       .rpc();
 
-    const events = await parseEvents(provider, program, txSig);
+    const events = await svmParseEvents(svm, program, txSig);
     const event = findEvent(events, "tokensClaimed");
 
     expect(event.data.stream.toBase58()).toBe(streamPDA.toBase58());

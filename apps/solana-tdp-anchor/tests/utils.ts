@@ -67,6 +67,28 @@ export const setupTest = () => {
 
 export type SetupTest = ReturnType<typeof setupTest>;
 
+/**
+ * Parse Anchor events from a transaction using the SVM instance directly.
+ * Use this in tests instead of the SDK's `parseEvents` (which requires
+ * `provider.connection.getTransaction` — not available on LiteSVM).
+ */
+export const svmParseEvents = async (
+  svm: SetupTest["svm"],
+  program: anchor.Program<SolanaTdp>,
+  txSig: string,
+): Promise<anchor.Event[]> => {
+  const meta = svm.getTransaction(anchor.utils.bytes.bs58.decode(txSig));
+  if (!meta) return [];
+  const txMeta = "logs" in meta ? meta : meta.meta();
+  const logs = txMeta.logs();
+  const parser = new anchor.EventParser(program.programId, program.coder);
+  const events: anchor.Event[] = [];
+  for (const event of parser.parseLogs(logs)) {
+    events.push(event);
+  }
+  return events;
+};
+
 // ── SPL Token Helpers ──────────────────────────────────────────────────────
 // These build manual transactions because LiteSVMConnectionProxy doesn't
 // expose sendTransaction() — the @solana/spl-token convenience functions

@@ -7,7 +7,6 @@ import {
   getTriggerMilestoneAccounts,
   getWithdrawMilestoneAccounts,
   getCancelMilestoneAccounts,
-  parseEvents,
   findEvent,
   PROGRAM_ID,
 } from "@solana-tdp/sdk";
@@ -15,7 +14,14 @@ import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { Keypair } from "@solana/web3.js";
 
 import { createMilestoneStreamFixture } from "./fixtures";
-import { setupTest, SetupTest, createMint, createTokenAccount, mintTo } from "./utils";
+import {
+  setupTest,
+  SetupTest,
+  svmParseEvents,
+  createMint,
+  createTokenAccount,
+  mintTo,
+} from "./utils";
 
 describe("Feature 3: milestone streams", () => {
   let program: SetupTest["program"];
@@ -64,7 +70,7 @@ describe("Feature 3: milestone streams", () => {
     );
 
     // Re-create to capture the event
-    const { provider: p2, program: prog2, svmAirdrop: a2 } = setupTest();
+    const { provider: p2, program: prog2, svmAirdrop: a2, svm: svm2 } = setupTest();
     const s2 = Keypair.generate();
     const r2 = Keypair.generate();
     const ma2 = Keypair.generate();
@@ -95,7 +101,7 @@ describe("Feature 3: milestone streams", () => {
       .signers([s2])
       .rpc();
 
-    const events = await parseEvents(p2, prog2, txSig);
+    const events = await svmParseEvents(svm2, prog2, txSig);
     const event = findEvent(events, "milestoneStreamCreated");
 
     expect(event.data.stream.toBase58()).toBe(sp2.toBase58());
@@ -136,7 +142,7 @@ describe("Feature 3: milestone streams", () => {
       .signers([milestoneAuthority])
       .rpc();
 
-    const events = await parseEvents(provider, program, txSig);
+    const events = await svmParseEvents(svm, program, txSig);
     const event = findEvent(events, "milestoneTriggered");
 
     expect(event.data.stream.toBase58()).toBe(streamPDA.toBase58());
@@ -271,7 +277,7 @@ describe("Feature 3: milestone streams", () => {
       .signers([recipient])
       .rpc();
 
-    const events = await parseEvents(provider, program, txSig);
+    const events = await svmParseEvents(svm, program, txSig);
     const event = findEvent(events, "milestoneCompleted");
 
     expect(event.data.stream.toBase58()).toBe(streamPDA.toBase58());
@@ -421,7 +427,7 @@ describe("Feature 3: milestone streams", () => {
       .signers([sender])
       .rpc();
 
-    const events = await parseEvents(provider, program, txSig);
+    const events = await svmParseEvents(svm, program, txSig);
     const event = findEvent(events, "milestoneCancelled");
 
     expect(event.data.stream.toBase58()).toBe(streamPDA.toBase58());
