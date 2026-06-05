@@ -29,11 +29,9 @@ function AppLayout() {
   }, [showContent, location.pathname, navigate]);
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col px-6 pt-4">
+    <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-6 pt-40">
       {showContent ? (
-        <div className="pb-12">
-          <Outlet />
-        </div>
+        <Outlet />
       ) : (
         <div className="flex flex-1 items-center justify-center py-16">
           <div className="flex flex-col items-center gap-8 text-center">
