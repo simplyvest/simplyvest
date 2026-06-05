@@ -11,44 +11,46 @@ import { ThemeProvider } from "../app/lib/theme";
  */
 export const MOCK_PUBKEY = new PublicKey("11111111111111111111111111111111");
 
-type Wallet = NonNullable<WalletContextState["wallet"]>;
-type WalletAdapter = Wallet["adapter"];
-
 /** Mock wallet context state that components can consume via useWallet(). */
 export function createMockWallet(overrides: Partial<WalletContextState> = {}): WalletContextState {
-  const adapter: WalletAdapter = {
-    name: "MockWallet",
-    icon: "",
-    url: "",
-    iconDark: "",
-    iconLight: "",
-    readyState: "Installed",
-    supportedTransactionVersions: new Set(["legacy", 0]),
-    publicKey: MOCK_PUBKEY,
-    connecting: false,
-    connected: true,
-    autoConnect: false,
-    connect: async () => {},
-    disconnect: async () => {},
-    sendTransaction: async () => "",
-    signTransaction: async <T extends Transaction | VersionedTransaction>(tx: T) => tx,
-    signAllTransactions: async <T extends Transaction | VersionedTransaction>(txs: T[]) => txs,
-    signMessage: async () => new Uint8Array(),
-    on: () => {},
-    removeListener: () => {},
-    emit: () => false,
-  };
-
   return {
     autoConnect: false,
     connected: true,
     connecting: false,
+    wallet: {
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+      adapter: {
+        name: "MockWallet",
+        icon: "",
+        url: "",
+        readyState: "Installed",
+        supportedTransactionVersions: new Set(["legacy", 0]),
+        publicKey: MOCK_PUBKEY,
+        connect: async () => {},
+        disconnect: async () => {},
+        sendTransaction: async () => "",
+        signTransaction: async <T extends Transaction | VersionedTransaction>(tx: T) => tx,
+        signAllTransactions: async <T extends Transaction | VersionedTransaction>(txs: T[]) => txs,
+        signMessage: async () => new Uint8Array(),
+      } as never,
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+      readyState: "Installed" as never,
+    },
     disconnecting: false,
     publicKey: MOCK_PUBKEY,
-    wallet: { adapter },
     signTransaction: async <T extends Transaction | VersionedTransaction>(tx: T) => tx,
+    wallets: [],
+    select: () => {},
+    connect: async () => {},
+    disconnect: async () => {},
     signAllTransactions: async <T extends Transaction | VersionedTransaction>(txs: T[]) => txs,
     signMessage: async () => new Uint8Array(),
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+    signIn: (async () => ({
+      account: { address: "", chain: "solana" },
+      signedMessage: new Uint8Array(),
+      signature: new Uint8Array(),
+    })) as never,
     sendTransaction: async () => "",
     ...overrides,
   };

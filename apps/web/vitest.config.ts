@@ -13,6 +13,16 @@ export default defineConfig({
       "@": path.resolve(__dirname, "app"),
     },
   },
+  optimizeDeps: {
+    include: [
+      "react-icons/lu",
+      "@solana/wallet-adapter-react-ui",
+      "@solana/wallet-adapter-react",
+      "@solana/web3.js",
+      "@solana/spl-token",
+      "bn.js",
+    ],
+  },
   test: {
     // Project 1: existing JSDom unit tests
     projects: [
