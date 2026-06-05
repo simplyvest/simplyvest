@@ -11,7 +11,7 @@ export function WalletButton() {
   if (connected && publicKey) {
     const short = `${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}`;
     return (
-      <Button variant="secondary" size="sm" onClick={() => void wallet.disconnect()}>
+      <Button variant="outline-brand" size="sm" onClick={() => void wallet.disconnect()}>
         {short}
       </Button>
     );
