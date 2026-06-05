@@ -40,7 +40,7 @@ function DisconnectDialog({
         <p className="mt-2 text-sm text-muted">
           You are connected as <span className="font-mono font-medium text-text">{short}</span>
         </p>
-        <div className="mt-3 flex items-center gap-2 rounded-lg bg-purple-50 dark:bg-purple-950/50 px-3 py-2.5 font-mono text-xs text-purple-700 dark:text-purple-300 truncate">
+        <div className="mt-3 flex items-center gap-2 rounded-lg bg-gray-100 dark:bg-slate-800 px-3 py-2.5 font-mono text-xs text-gray-900 dark:text-slate-100 truncate">
           {full}
         </div>
         <label className="mt-4 flex items-start gap-2 cursor-pointer">
