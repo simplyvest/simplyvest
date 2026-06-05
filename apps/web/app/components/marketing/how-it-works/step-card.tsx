@@ -19,21 +19,14 @@ interface Step {
 /*  Step Card                                                                 */
 /* -------------------------------------------------------------------------- */
 
-function StepCard({ step, index }: { step: Step; index: number }) {
+function StepCard({ step }: { step: Step }) {
   const Icon = step.icon;
-  const isEven = index % 2 === 0;
 
   return (
-    <div
-      className={cn(
-        "relative flex flex-col items-start gap-6 sm:flex-row sm:items-center",
-        /* Alternate layout on md+ */
-        isEven ? "md:flex-row" : "md:flex-row-reverse",
-      )}
-    >
-      {/* ---- Step number circle (timeline anchor) ---- */}
-      <div className="relative z-10 flex shrink-0 items-center sm:left-0 md:absolute md:left-1/2 md:-translate-x-1/2">
-        <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-600 to-purple-500 text-2xl font-bold text-white shadow-lg md:h-20 md:w-20 md:text-3xl">
+    <div className={cn("relative flex flex-row items-center gap-4 sm:gap-6")}>
+      {/* ---- Step number circle ---- */}
+      <div className="relative z-10 flex shrink-0 items-center">
+        <div className="relative flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-purple-600 to-purple-500 text-lg font-bold text-white shadow-lg sm:h-16 sm:w-16 sm:text-2xl">
           {/* Glow */}
           <div className="absolute inset-0 rounded-full bg-purple-400/40 blur-xl" />
           <span className="relative">{step.number}</span>
@@ -41,14 +34,7 @@ function StepCard({ step, index }: { step: Step; index: number }) {
       </div>
 
       {/* ---- Card ---- */}
-      <div
-        className={cn(
-          "group relative w-full flex-1 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:border-purple-200 hover:shadow-md dark:border-slate-600 dark:bg-slate-900 sm:p-8",
-          /* Offset on md+ so card doesn't overlap timeline circle */
-          "md:w-[calc(50%-2.5rem)]",
-          isEven ? "md:mr-auto md:pr-8" : "md:ml-auto md:pl-8",
-        )}
-      >
+      <div className="group relative flex-1 rounded-3xl border border-gray-200 bg-white p-5 shadow-sm transition-all duration-300 hover:border-purple-200 hover:shadow-md dark:border-slate-600 dark:bg-slate-900 sm:p-8">
         {/* Hover gradient overlay */}
         <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-50/0 to-purple-100/0 dark:from-purple-950/0 dark:to-purple-900/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 

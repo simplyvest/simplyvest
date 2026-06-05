@@ -97,12 +97,12 @@ export function HowItWorks() {
         {/*  Timeline                                                        */}
         {/* ---------------------------------------------------------------- */}
         <div className="relative mt-16">
-          {/* Vertical line */}
-          <div className="absolute left-8 top-0 bottom-0 w-px bg-gradient-to-b from-purple-300 via-purple-400 to-purple-300 sm:left-10 md:left-1/2 md:-translate-x-px" />
+          {/* Vertical line — tracks left edge of step number circles */}
+          <div className="absolute left-6 top-4 bottom-0 w-px bg-gradient-to-b from-purple-300 via-purple-400 to-purple-300 sm:left-9 sm:top-4" />
 
           <div className="flex flex-col gap-16">
-            {steps.map((step, i) => (
-              <StepCard key={step.number} step={step} index={i} />
+            {steps.map((step) => (
+              <StepCard key={step.number} step={step} />
             ))}
           </div>
         </div>

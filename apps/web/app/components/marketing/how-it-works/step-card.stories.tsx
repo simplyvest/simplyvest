@@ -27,7 +27,6 @@ const meta = {
         "Connect your Solana wallet to get started. SimplyVest supports Phantom, Backpack, and all major wallets.",
       details: ["Install wallet", "Connect to app", "Approve signature"],
     },
-    index: 0,
   },
 } satisfies Meta<typeof StepCard>;
 
