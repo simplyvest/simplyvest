@@ -109,6 +109,11 @@ code {
   font-family: "JetBrains Mono", monospace;
 }
 
+/* ---- Form overrides ---- */
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  margin-left: auto;
+  margin-right: 0;
+}
 /* ---- Animations ---- */
 @keyframes fadeUp {
   from {
