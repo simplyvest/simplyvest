@@ -48,7 +48,7 @@ jobs:
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
       - name: Install Playwright browsers
-        run: npx playwright install chromium --with-deps
+        run: pnpm exec playwright install chromium --with-deps
       - name: Run tests (unit + storybook)
         run: pnpm --filter @solana-tdp/web test:ci
 
