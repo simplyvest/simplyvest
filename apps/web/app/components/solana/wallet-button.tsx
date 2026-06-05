@@ -18,7 +18,7 @@ export function WalletButton() {
   }
 
   return (
-    <Button variant="default" size="sm" onClick={() => setVisible(true)} disabled={connecting}>
+    <Button variant="brand" size="sm" onClick={() => setVisible(true)} disabled={connecting}>
       {connecting ? "Connecting..." : "Connect Wallet"}
     </Button>
   );
