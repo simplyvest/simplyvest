@@ -47,7 +47,9 @@ jobs:
       - name: Cache pnpm virtual store
         uses: actions/cache@v5
         with:
-          path: node_modules/.pnpm
+          path: |
+            node_modules/.pnpm
+            ~/.cache/ms-playwright
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
