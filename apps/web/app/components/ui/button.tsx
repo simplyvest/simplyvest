@@ -14,6 +14,12 @@ const buttonVariants = cva(
         secondary: "bg-bg2 text-text border border-border shadow-sm hover:bg-border",
         ghost: "hover:bg-bg2 text-muted hover:text-text",
         link: "text-sol underline-offset-4 hover:underline",
+        brand:
+          "bg-gradient-to-r from-purple-600 to-purple-500 text-white shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 hover:brightness-110",
+        "outline-brand":
+          "border border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-200 hover:border-purple-300 dark:hover:border-purple-700 hover:shadow-md",
+        "light-brand":
+          "bg-white dark:bg-slate-900 text-purple-600 dark:text-purple-400 shadow-lg hover:scale-105 hover:shadow-xl",
       },
       size: {
         default: "h-9 px-4 py-2",

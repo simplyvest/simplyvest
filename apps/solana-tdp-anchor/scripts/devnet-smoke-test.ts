@@ -10,7 +10,7 @@ import {
   getCreateStreamAccounts,
   getWithdrawAccounts,
   getCancelAccounts,
-  SolanaTdpIdl,
+  SOLANA_TDP_PROGRAM_IDL,
   PROGRAM_ID,
 } from "@solana-tdp/sdk";
 import { createMint, mintTo, getOrCreateAssociatedTokenAccount } from "@solana/spl-token";
@@ -42,7 +42,7 @@ async function main() {
   });
   anchor.setProvider(provider);
 
-  const program = new anchor.Program<SolanaTdp>(SolanaTdpIdl as SolanaTdp, provider);
+  const program = new anchor.Program<SolanaTdp>(SOLANA_TDP_PROGRAM_IDL, provider);
 
   // ──────────────────────────────────────────────────────────────────────────
   // Step 1 — Create a test token mint

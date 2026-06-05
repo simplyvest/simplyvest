@@ -1,6 +1,9 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "react", "import", "unicorn", "oxc"],
+  "options": {
+    "typeAware": true
+  },
   "env": {
     "node": true,
     "browser": true,
@@ -20,7 +23,8 @@
     "react/react-in-jsx-scope": "off",
     "import/no-cycle": "error",
     "import/no-unassigned-import": ["error", { "allow": ["**/*.css"] }],
-    "typescript/no-non-null-assertion": "error"
+    "typescript/no-non-null-assertion": "error",
+    "typescript/no-deprecated": "error"
   },
   "ignorePatterns": [
     "**/node_modules/**",

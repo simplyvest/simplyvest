@@ -1,6 +1,6 @@
 import * as anchor from "@coral-xyz/anchor";
 import type { SolanaTdp } from "@solana-tdp/sdk";
-import { SolanaTdpIdl } from "@solana-tdp/sdk";
+import { SOLANA_TDP_PROGRAM_IDL } from "@solana-tdp/sdk";
 import {
   TOKEN_PROGRAM_ID,
   createInitializeMintInstruction,
@@ -21,19 +21,6 @@ import {
 } from "@solana/web3.js";
 import { fromWorkspace, LiteSVMProvider } from "anchor-litesvm";
 
-interface SvmTxMeta {
-  logs?(): string[];
-  meta?(): { logs(): string[] };
-  err?(): null;
-}
-
-interface SvmGetTxResult {
-  meta: {
-    logMessages: string[];
-    err: null;
-  };
-}
-
 interface ProviderSend {
   connection: Connection;
   sendAndConfirm?(
@@ -52,30 +39,7 @@ export const setupTest = () => {
 
   anchor.setProvider(provider);
 
-  const program = new anchor.Program<SolanaTdp>(SolanaTdpIdl as SolanaTdp, provider);
-
-  // --- SVM-based helpers ---
-
-  const svmGetTransaction = (txSig: string) => {
-    const meta: unknown = svm.getTransaction(anchor.utils.bytes.bs58.decode(txSig));
-    if (!meta) return null;
-    const m = meta as SvmTxMeta;
-    const logs =
-      "logs" in m ? (m.logs as () => string[])() : (m.meta as () => { logs(): string[] })().logs();
-    return {
-      meta: {
-        logMessages: logs,
-        err: "err" in m ? (m.err as () => null)() : null,
-      },
-    } satisfies SvmGetTxResult;
-  };
-
-  // Monkey-patch for EventParser + parseEvents compatibility
-  (
-    provider.connection as Omit<Connection, "getTransaction"> & {
-      getTransaction(sig: string): Promise<SvmGetTxResult | null>;
-    }
-  ).getTransaction = async (sig: string) => svmGetTransaction(sig);
+  const program = new anchor.Program<SolanaTdp>(SOLANA_TDP_PROGRAM_IDL, provider);
 
   const svmAirdrop = (addresses: PublicKey[]) => {
     for (const address of addresses) {
@@ -102,6 +66,28 @@ export const setupTest = () => {
 };
 
 export type SetupTest = ReturnType<typeof setupTest>;
+
+/**
+ * Parse Anchor events from a transaction using the SVM instance directly.
+ * Use this in tests instead of the SDK's `parseEvents` (which requires
+ * `provider.connection.getTransaction` — not available on LiteSVM).
+ */
+export const svmParseEvents = async (
+  svm: SetupTest["svm"],
+  program: anchor.Program<SolanaTdp>,
+  txSig: string,
+): Promise<anchor.Event[]> => {
+  const meta = svm.getTransaction(anchor.utils.bytes.bs58.decode(txSig));
+  if (!meta) return [];
+  const txMeta = "logs" in meta ? meta : meta.meta();
+  const logs = txMeta.logs();
+  const parser = new anchor.EventParser(program.programId, program.coder);
+  const events: anchor.Event[] = [];
+  for (const event of parser.parseLogs(logs)) {
+    events.push(event);
+  }
+  return events;
+};
 
 // ── SPL Token Helpers ──────────────────────────────────────────────────────
 // These build manual transactions because LiteSVMConnectionProxy doesn't

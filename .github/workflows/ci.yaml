@@ -27,11 +27,44 @@ jobs:
         with:
           node-version: "24"
           cache: pnpm
+      - name: Cache pnpm store
+        uses: actions/cache@v5
+        with:
+          path: node_modules/.pnpm
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
       - run: pnpm install --frozen-lockfile
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
       - name: TypeScript check (web)
         run: pnpm --filter @solana-tdp/web check:ts
+
+  test-web:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.2.2
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: pnpm
+      - name: Cache pnpm store + Playwright
+        uses: actions/cache@v5
+        with:
+          path: |
+            node_modules/.pnpm
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-pw-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pw-
+      - run: pnpm install --frozen-lockfile
+      - name: Build SDK
+        run: pnpm --filter @solana-tdp/sdk build
+      - name: Install Playwright browsers
+        run: pnpm --filter @solana-tdp/web exec playwright install chromium --with-deps
+      - name: Run tests (unit + storybook)
+        run: pnpm --filter @solana-tdp/web test:ci
 
   typecheck-api:
     runs-on: ubuntu-24.04
@@ -44,6 +77,12 @@ jobs:
         with:
           node-version: "24"
           cache: pnpm
+      - name: Cache pnpm store
+        uses: actions/cache@v5
+        with:
+          path: node_modules/.pnpm
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
       - run: pnpm install --frozen-lockfile
       - name: TypeScript check (api)
         run: pnpm --filter @solana-tdp/api typecheck
@@ -59,6 +98,12 @@ jobs:
         with:
           node-version: "24"
           cache: pnpm
+      - name: Cache pnpm store
+        uses: actions/cache@v5
+        with:
+          path: node_modules/.pnpm
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
       - run: pnpm install --frozen-lockfile
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
@@ -76,7 +121,15 @@ jobs:
         with:
           node-version: "24"
           cache: pnpm
+      - name: Cache pnpm store
+        uses: actions/cache@v5
+        with:
+          path: node_modules/.pnpm
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
       - run: pnpm install --frozen-lockfile
+      - name: Build SDK
+        run: pnpm --filter @solana-tdp/sdk build
       - name: Lint
         run: pnpm exec oxlint .
 
@@ -91,6 +144,12 @@ jobs:
         with:
           node-version: "24"
           cache: pnpm
+      - name: Cache pnpm store
+        uses: actions/cache@v5
+        with:
+          path: node_modules/.pnpm
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
       - run: pnpm install --frozen-lockfile
       - name: Format check
         run: pnpm exec oxfmt --check .
@@ -106,6 +165,12 @@ jobs:
         with:
           node-version: "24"
           cache: pnpm
+      - name: Cache pnpm store
+        uses: actions/cache@v5
+        with:
+          path: node_modules/.pnpm
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
       - run: pnpm install --frozen-lockfile
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
@@ -166,6 +231,12 @@ jobs:
       - name: Generate keypair
         run: solana-keygen new --no-bip39-passphrase --silent -f
 
+      - name: Cache pnpm store
+        uses: actions/cache@v5
+        with:
+          path: node_modules/.pnpm
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
       - run: pnpm install --frozen-lockfile
         working-directory: .
 
@@ -198,7 +269,7 @@ jobs:
 
   deploy-web:
     if: github.ref == 'refs/heads/main'
-    needs: build-web
+    needs: [build-web, test-web]
     runs-on: ubuntu-24.04
     environment: main
     env:
@@ -214,6 +285,12 @@ jobs:
         with:
           node-version: "24"
           cache: pnpm
+      - name: Cache pnpm store
+        uses: actions/cache@v5
+        with:
+          path: node_modules/.pnpm
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
       - run: pnpm install --frozen-lockfile
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
@@ -238,6 +315,12 @@ jobs:
         with:
           node-version: "24"
           cache: pnpm
+      - name: Cache pnpm store
+        uses: actions/cache@v5
+        with:
+          path: node_modules/.pnpm
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
       - run: pnpm install --frozen-lockfile
       - name: Deploy API Worker
         run: pnpm --filter @solana-tdp/api run deploy

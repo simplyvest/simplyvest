@@ -1,11 +1,13 @@
 import { Program, AnchorProvider } from "@coral-xyz/anchor";
 import type { Wallet } from "@coral-xyz/anchor";
-import { SolanaTdpIdl, PROGRAM_ID } from "@solana-tdp/sdk";
+import { SOLANA_TDP_PROGRAM_IDL, PROGRAM_ID } from "@solana-tdp/sdk";
 import type { SolanaTdp } from "@solana-tdp/sdk";
 import { useConnection } from "@solana/wallet-adapter-react";
 import type { VersionedTransaction, Transaction } from "@solana/web3.js";
 import { useMemo } from "react";
 
+// TODO: look into proper typing — Anchor Wallet<T> generic variance mismatches WalletContextState
+// oxlint-disable-next-line typescript/no-unsafe-type-assertion
 const dummyWallet: Wallet = {
   publicKey: PROGRAM_ID,
   signTransaction: async <T extends VersionedTransaction | Transaction>(t: T) => t,
@@ -19,6 +21,6 @@ export function useProgram() {
     const provider = new AnchorProvider(connection, dummyWallet, {
       commitment: "confirmed",
     });
-    return new Program<SolanaTdp>(SolanaTdpIdl as SolanaTdp, provider);
+    return new Program<SolanaTdp>(SOLANA_TDP_PROGRAM_IDL, provider);
   }, [connection]);
 }

@@ -1,10 +1,12 @@
 import { createRoute } from "@tanstack/react-router";
+import { LuShield } from "react-icons/lu";
 
-import { Badge } from "@/components/ui/badge";
-import { Callout } from "@/components/ui/callout";
-import { ConceptRow } from "@/components/ui/concept-row";
-import { SectionHeader } from "@/components/ui/section-header";
-import { VestingCard } from "@/components/ui/vesting-card";
+import { AccountTypeCard } from "@/components/docs/account-type-card";
+import { SectionHeader } from "@/components/docs/docs-data";
+import { streamTypes, accountTypes, securityFeatures } from "@/components/docs/docs-data";
+import { DocsHero } from "@/components/docs/docs-hero";
+import { SecurityFeatureRow } from "@/components/docs/security-feature-row";
+import { StreamTypeCard } from "@/components/docs/stream-type-card";
 
 import { Route as RootRoute } from "./__root";
 
@@ -16,115 +18,76 @@ export const Route = createRoute({
 
 function DocsPage() {
   return (
-    <div className="mx-auto max-w-4xl px-6 pt-28">
-      <Badge variant="sol">Protocol v1</Badge>
-      <h1 className="mt-4">
-        DOCS
-        <br />
-        <em>OVERVIEW</em>
-      </h1>
-      <p className="max-w-[580px] text-lg leading-relaxed text-muted">
-        SimplyVest is a non-custodial, on-chain SPL-token vesting and distribution protocol built
-        with Anchor on Solana.
-      </p>
+    <div className="min-h-screen bg-white dark:bg-slate-900">
+      <DocsHero />
 
-      <SectionHeader
-        num="01"
-        title="Stream Types"
-        sub="Two types of vesting streams for different distribution models."
-      />
+      {/* ── 01  Stream Types ────────────────────────────────────────── */}
+      <section className="bg-white dark:bg-slate-900 py-24">
+        <div className="mx-auto max-w-7xl px-6">
+          <SectionHeader
+            num="01"
+            title="Stream Types"
+            subtitle="Two types of vesting streams for different distribution models."
+          />
+          <div className="mt-12 grid gap-8 sm:grid-cols-2">
+            {streamTypes.map((stream) => (
+              <StreamTypeCard key={stream.title} {...stream} />
+            ))}
+          </div>
+        </div>
+      </section>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2">
-        <VestingCard
-          color="#9945ff"
-          label="Time-Based"
-          title="StreamAccount"
-          description="Linear vesting from start to end, with optional cliff. Tokens vest continuously based on elapsed time."
-          examples={["Team token grants with 1-year cliff", "Investor lockups", "Salary streaming"]}
+      {/* ── 02  Account Model ───────────────────────────────────────── */}
+      <section className="bg-gradient-to-b from-gray-50/50 to-white dark:from-slate-950 dark:via-purple-950/30 dark:to-slate-950 py-24">
+        <div className="mx-auto max-w-7xl px-6">
+          <SectionHeader
+            num="02"
+            numColor="blue"
+            title="Account Model"
+            subtitle="Three on-chain account types power the protocol."
+          />
+          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {accountTypes.map((acct) => (
+              <AccountTypeCard key={acct.monoLabel} {...acct} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 03  Security Model ──────────────────────────────────────── */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-purple-50/30 to-white dark:from-slate-950 dark:via-purple-950/30 dark:to-slate-950 py-24">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.03]"
+          aria-hidden
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(147,51,234,1) 1px, transparent 1px), linear-gradient(90deg, rgba(147,51,234,1) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
         />
-        <VestingCard
-          color="#14f195"
-          label="Milestone"
-          title="MilestoneStream"
-          description="All-or-nothing release gated by a milestone authority. When triggered, the full amount is claimable."
-          examples={[
-            "Freelance payments on completion",
-            "Grant disbursements",
-            "Escrow for services",
-          ]}
-        />
-      </div>
-
-      <SectionHeader
-        num="02"
-        title="Account Model"
-        sub="Four on-chain account types power the protocol."
-      />
-
-      <div className="mt-8 flex flex-col gap-4">
-        <ConceptRow
-          icon="📦"
-          title="Stream Account"
-          monoLabel="StreamAccount (PDA)"
-          color="#9945ff"
+        <div
+          className="pointer-events-none absolute inset-0 flex items-center justify-center"
+          aria-hidden
         >
-          <p className="text-[0.9rem] leading-relaxed text-muted">
-            Stores stream metadata: creator, recipient, mint, vault, amount, amounts withdrawn,
-            timestamps. Created at stream creation and closed on completion or cancellation.
-          </p>
-        </ConceptRow>
-        <ConceptRow
-          icon="🔐"
-          title="Vault Account"
-          monoLabel="Vault (PDA Token Account)"
-          color="#14f195"
-        >
-          <p className="text-[0.9rem] leading-relaxed text-muted">
-            A custom PDA token account holding the locked tokens. The stream PDA is the authority.
-            Closed on completion or cancellation to return rent SOL to the creator.
-          </p>
-        </ConceptRow>
-        <ConceptRow
-          icon="📋"
-          title="Creator Config"
-          monoLabel="CreatorConfig (PDA)"
-          color="#00c2ff"
-        >
-          <p className="text-[0.9rem] leading-relaxed text-muted">
-            One per creator. Tracks a sequential nonce enabling multiple streams between the same
-            creator, recipient, and mint without address collisions.
-          </p>
-        </ConceptRow>
-      </div>
+          <LuShield className="h-[600px] w-[600px] text-purple-600 dark:text-purple-400 opacity-[0.05]" />
+        </div>
 
-      <SectionHeader
-        num="03"
-        title="Security Model"
-        sub="Key security properties of the protocol."
-      />
-
-      <div className="mt-8 flex flex-col gap-4">
-        <Callout variant="default">
-          <strong>PDA Vaults:</strong> Tokens are held in program-derived accounts. Only the program
-          can authorize transfers via <code>invoke_signed</code>. Neither the creator nor recipient
-          can move tokens outside the vesting schedule.
-        </Callout>
-        <Callout variant="green">
-          <strong>Recipient Commitment:</strong> The recipient is encoded in the PDA seeds. Even if
-          account data were corrupted, the address itself proves who the stream is for.
-        </Callout>
-        <Callout variant="blue">
-          <strong>Rent Recovery:</strong> When a stream completes or is cancelled, the vault and
-          stream accounts are closed and the rent-exempt SOL is returned to the creator.
-        </Callout>
-        <Callout variant="warn">
-          <strong>Token-2022:</strong> If a mint has a transfer-hook extension, creation is rejected
-          to prevent silent CPI failures during withdraw or cancel. Standard SPL Token and
-          Token-2022 mints are supported.
-        </Callout>
-      </div>
-
-      <div className="h-16" />
+        <div className="relative mx-auto max-w-7xl px-6">
+          <SectionHeader
+            num="03"
+            title="Security Model"
+            subtitle="Key security properties of the protocol."
+            center
+          />
+          <div className="mt-12 rounded-[32px] border border-white/60 bg-white/80 dark:border-slate-700/60 dark:bg-slate-900/80 p-8 shadow-2xl shadow-purple-600/10 backdrop-blur-sm sm:p-10">
+            <div className="space-y-5">
+              {securityFeatures.map((feat) => (
+                <SecurityFeatureRow key={feat.title} {...feat} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

@@ -17,14 +17,20 @@ function mapToCamelCase(raw: Record<string, unknown>): Record<string, unknown> {
   return out;
 }
 
+// TODO: look into proper typing — BorshAccountsCoder expects explicit Idl type
+// oxlint-disable-next-line typescript/no-unsafe-type-assertion
 const coder = new BorshAccountsCoder(SolanaTdpIdl as Idl);
 
 export function decodeStreamAccount(data: Buffer): StreamAccount {
   const raw = coder.decode("StreamAccount", data);
+  // TODO: look into proper typing — Borsh decode returns any, domain type is structural
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   return mapToCamelCase(raw as Record<string, unknown>) as unknown as StreamAccount;
 }
 
 export function decodeMilestoneStreamAccount(data: Buffer): MilestoneStreamAccount {
   const raw = coder.decode("MilestoneStreamAccount", data);
+  // TODO: look into proper typing — same Borsh decode limitation as above
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   return mapToCamelCase(raw as Record<string, unknown>) as unknown as MilestoneStreamAccount;
 }

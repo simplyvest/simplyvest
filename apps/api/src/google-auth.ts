@@ -1,3 +1,4 @@
+import { isRecord } from "./utils";
 function pemToBinary(pem: string): Uint8Array {
   const base64 = pem
     .replace(/-----BEGIN PRIVATE KEY-----/, "")
@@ -20,7 +21,7 @@ async function signRS256(data: Uint8Array, privateKeyPem: string): Promise<Uint8
   const keyData = pemToBinary(privateKeyPem);
   const privateKey = await crypto.subtle.importKey(
     "pkcs8",
-    keyData.buffer as ArrayBuffer,
+    keyData,
     { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
     false,
     ["sign"],
@@ -79,9 +80,13 @@ export async function getAccessToken(clientEmail: string, privateKey: string): P
     throw new Error(`Token exchange failed: ${tokenResp.status} ${err}`);
   }
 
-  const tokenData = (await tokenResp.json()) as {
-    access_token: string;
-    expires_in: number;
+  const tokenRespJson = await tokenResp.json();
+  if (!isRecord(tokenRespJson)) {
+    throw new Error("Invalid token response");
+  }
+  const tokenData = {
+    access_token: typeof tokenRespJson.access_token === "string" ? tokenRespJson.access_token : "",
+    expires_in: typeof tokenRespJson.expires_in === "number" ? tokenRespJson.expires_in : 3600,
   };
 
   cachedToken = {

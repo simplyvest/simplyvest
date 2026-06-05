@@ -146,12 +146,15 @@ The CI pipeline (`.github/workflows/ci.yaml`) runs on:
 - Push to `main`
 - Pull requests targeting `main`
 
-| Job          | What it does                             | Tooling needed                                                                         |
-| ------------ | ---------------------------------------- | -------------------------------------------------------------------------------------- |
-| `lint`       | TypeScript check on web                  | Node 24, pnpm (cached)                                                                 |
-| `anchor`     | Build Anchor program + run LiteSVM tests | Solana CLI + Anchor CLI (cached), Rust (cached via Swatinem/rust-cache), Node 24, pnpm |
-| `web`        | Production build of React frontend       | Node 24, pnpm (cached)                                                                 |
-| `deploy-web` | Deploy to Cloudflare Pages (main only)   | Node 24, pnpm + Cloudflare secrets                                                     |
+| Job           | What it does                                             | Tooling needed                                                                         |
+| ------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `lint`        | JS/TS lint with oxlint                                   | Node 24, pnpm (cached)                                                                 |
+| `format`      | Format check with oxfmt                                  | Node 24, pnpm (cached)                                                                 |
+| `typecheck-*` | TypeScript check (web/api/anchor-ts)                     | Node 24, pnpm (cached), SDK build                                                      |
+| `test-web`    | Unit + Storybook browser tests with Vitest               | Node 24, pnpm (cached), Playwright Chromium                                            |
+| `anchor`      | Build Anchor program + run LiteSVM tests                 | Solana CLI + Anchor CLI (cached), Rust (cached via Swatinem/rust-cache), Node 24, pnpm |
+| `build-web`   | Production build of React frontend                       | Node 24, pnpm (cached), SDK build                                                      |
+| `deploy-web`  | Deploy to Cloudflare Pages (main only, blocked on tests) | Node 24, pnpm + Cloudflare secrets                                                     |
 
 The `deploy-web` job uses `cloudflare/wrangler-action@v3` and runs only on
 push to `main`. Preview deploys for PRs are handled by Cloudflare's git integration.

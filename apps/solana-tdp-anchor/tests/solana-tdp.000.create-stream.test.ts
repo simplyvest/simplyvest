@@ -4,14 +4,13 @@ import {
   getVaultPda,
   getCreatorConfigPda,
   getCreateStreamAccounts,
-  parseEvents,
-  findEvent,
   PROGRAM_ID,
 } from "@solana-tdp/sdk";
+import { findEvent } from "@solana-tdp/sdk";
 import { Keypair } from "@solana/web3.js";
 
 import { now } from "./helpers";
-import { setupTest, createMint, createTokenAccount, mintTo } from "./utils";
+import { setupTest, svmParseEvents, createMint, createTokenAccount, mintTo } from "./utils";
 
 describe("Feature 0: create_stream", () => {
   it("creates stream and transfers tokens to vault", async () => {
@@ -64,7 +63,7 @@ describe("Feature 0: create_stream", () => {
       .rpc();
 
     const stream = await program.account.streamAccount.fetch(streamPDA);
-    expect(stream.sender.toString()).toBe(sender.publicKey.toString());
+    expect(stream.creator.toString()).toBe(sender.publicKey.toString());
     expect(stream.recipient.toString()).toBe(recipient.publicKey.toString());
     expect(stream.mint.toString()).toBe(mint.toString());
     expect(stream.vault.toString()).toBe(vaultPDA.toString());
@@ -415,7 +414,7 @@ describe("Feature 0: create_stream", () => {
   });
 
   it("emits StreamCreated event with correct data", async () => {
-    const { provider, program, svmAirdrop } = setupTest();
+    const { provider, program, svmAirdrop, svm } = setupTest();
     const sender = Keypair.generate();
     const recipient = Keypair.generate();
     svmAirdrop([sender.publicKey]);
@@ -461,7 +460,7 @@ describe("Feature 0: create_stream", () => {
       .signers([sender])
       .rpc();
 
-    const events = await parseEvents(provider, program, txSig);
+    const events = await svmParseEvents(svm, program, txSig);
     const event = findEvent(events, "streamCreated");
 
     expect(event.data.stream.toBase58()).toBe(streamPDA.toBase58());

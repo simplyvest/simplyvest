@@ -553,7 +553,7 @@ Each decision documents the alternatives considered and why the chosen approach 
 **Alternatives considered:**
 
 1. `["vesting", creator, mint, vesting_count]` (architecture documentation) — recipient is not in seeds, verified via `has_one` constraint.
-2. `["stream", sender, recipient]` (stub code) — one stream per (sender, recipient) pair max; no mint in seeds means cross-token collisions.
+2. `["stream", creator, recipient]` (stub code) — one stream per (creator, recipient) pair max; no mint in seeds means cross-token collisions.
 3. `["stream", creator, recipient, mint, vesting_count]` (chosen).
 
 **Rationale:** Putting recipient in the seed cryptographically commits the beneficiary to the PDA address itself — an extra safety invariant beyond Anchor's `has_one`. Mint in the seed prevents address collisions between streams for different tokens sent to the same recipient. The `vesting_count` nonce (per-creator) allows unlimited streams for the same (creator, recipient, mint) triple.

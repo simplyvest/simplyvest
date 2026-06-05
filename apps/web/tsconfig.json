@@ -6,6 +6,7 @@
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "strict": true,
+    "types": ["vitest/globals"],
     "noEmit": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -15,10 +16,9 @@
     "isolatedModules": true,
     "declaration": true,
     "declarationMap": true,
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["app/*"]
+      "@/*": ["./app/*"]
     }
   },
-  "include": ["app", "components", "vite-env.d.ts"]
+  "include": ["app", "components", "vitest.shims.d.ts", "vite-env.d.ts"]
 }

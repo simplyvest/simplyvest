@@ -23,12 +23,7 @@ pub struct CancelMilestone<'info> {
         bump,
     )]
     pub vault: Box<Account<'info, TokenAccount>>,
-    #[account(
-        init_if_needed,
-        payer = sender,
-        associated_token::mint = mint,
-        associated_token::authority = sender,
-    )]
+    #[account(mut, constraint = sender_token.mint == mint.key() @ TdpError::Unauthorized)]
     pub sender_token: Box<Account<'info, TokenAccount>>,
     #[account(
         constraint = mint.key() == stream.mint @ TdpError::Unauthorized
@@ -36,7 +31,6 @@ pub struct CancelMilestone<'info> {
     pub mint: Box<Account<'info, Mint>>,
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
-    pub system_program: Program<'info, System>,
 }
 
 pub fn cancel_milestone_handler(ctx: Context<CancelMilestone>) -> Result<()> {
@@ -97,14 +91,13 @@ pub fn cancel_milestone_handler(ctx: Context<CancelMilestone>) -> Result<()> {
     ))?;
 
     let stream_info = stream.to_account_info();
-    let rent = Rent::get()?;
-    let rent_lamports = rent.minimum_balance(stream_info.data_len());
+    let lamports = stream_info.lamports();
     **ctx
         .accounts
         .sender
         .to_account_info()
-        .try_borrow_mut_lamports()? += rent_lamports;
-    **stream_info.try_borrow_mut_lamports()? -= rent_lamports;
+        .try_borrow_mut_lamports()? += lamports;
+    **stream_info.try_borrow_mut_lamports()? = 0;
     stream_info.data.borrow_mut().fill(0);
 
     Ok(())

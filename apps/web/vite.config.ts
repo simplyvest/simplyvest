@@ -1,15 +1,16 @@
+import path from "node:path";
+
 import tailwindcss from "@tailwindcss/vite";
-import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
-import viteTsConfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   define: {
     global: "globalThis",
   },
   plugins: [
-    TanStackRouterVite({
+    tanstackRouter({
       target: "react",
       autoCodeSplitting: true,
       routesDirectory: "./app/routes",
@@ -17,8 +18,11 @@ export default defineConfig({
     }),
     react(),
     tailwindcss(),
-    viteTsConfigPaths({
-      projects: ["./tsconfig.json"],
-    }),
   ],
+  resolve: {
+    tsconfigPaths: true,
+    alias: {
+      "@": path.resolve(import.meta.dirname, "app"),
+    },
+  },
 });

@@ -1,29 +1,7 @@
-import { BN } from "@coral-xyz/anchor";
-import {
-  getStreamPda,
-  getVaultPda,
-  getCreatorConfigPda,
-  getCreateStreamAccounts,
-  getCancelAccounts,
-  parseEvents,
-  findEvent,
-  PROGRAM_ID,
-} from "@solana-tdp/sdk";
-import { getAssociatedTokenAddressSync } from "@solana/spl-token";
-import { Keypair, PublicKey } from "@solana/web3.js";
+import { getCancelAccounts, findEvent } from "@solana-tdp/sdk";
 
-import { setupTest, SetupTest, createMint, createTokenAccount, mintTo } from "./utils";
-
-// Shared accounts for cancel instructions — uses SDK
-const cancelAccounts = (
-  sender: PublicKey,
-  recipient: PublicKey,
-  stream: PublicKey,
-  vault: PublicKey,
-  senderToken: PublicKey,
-  recipientToken: PublicKey,
-  mint: PublicKey,
-) => getCancelAccounts(sender, recipient, stream, vault, senderToken, recipientToken, mint);
+import { createStreamFixture } from "./fixtures";
+import { setupTest, SetupTest, svmParseEvents } from "./utils";
 
 describe("Feature 2: cancel", () => {
   let program: SetupTest["program"];
@@ -37,80 +15,9 @@ describe("Feature 2: cancel", () => {
     ({ program, provider, svm, svmAirdrop, warp, svmTokenBalance } = setupTest());
   });
 
-  // Use SVM clock for time calculations (LiteSVM starts at epoch 0)
-  const clockNow = () => Number(svm.getClock().unixTimestamp);
-
-  const setupStream = async (
-    amount: number,
-    startOffset: number,
-    endOffset: number,
-    cliffOffset: number,
-  ) => {
-    const sender = Keypair.generate();
-    const recipient = Keypair.generate();
-    svmAirdrop([sender.publicKey, recipient.publicKey]);
-
-    const mint = await createMint(provider, sender, sender.publicKey, 6);
-    const senderToken = await createTokenAccount(provider, sender, mint, sender.publicKey);
-    await mintTo(provider, mint, senderToken, sender, BigInt(amount));
-
-    // Derive recipient's ATA address (cancel handler creates it via init_if_needed)
-    const recipientToken = getAssociatedTokenAddressSync(mint, recipient.publicKey, true);
-
-    const now = clockNow();
-    const start = now + startOffset;
-    const cliff = start + cliffOffset;
-    const end = start + endOffset;
-
-    const [streamPDA] = getStreamPda(
-      sender.publicKey,
-      recipient.publicKey,
-      mint,
-      new BN(0),
-      PROGRAM_ID,
-    );
-    const [vaultPDA] = getVaultPda(streamPDA, PROGRAM_ID);
-    const [creatorConfigPDA] = getCreatorConfigPda(sender.publicKey, PROGRAM_ID);
-
-    await program.methods
-      .createStream({
-        amount: new BN(amount),
-        startTime: new BN(start),
-        endTime: new BN(end),
-        cliffTime: new BN(cliff),
-      })
-      .accountsPartial(
-        getCreateStreamAccounts(
-          sender.publicKey,
-          recipient.publicKey,
-          mint,
-          streamPDA,
-          vaultPDA,
-          senderToken,
-          creatorConfigPDA,
-        ),
-      )
-      .signers([sender])
-      .rpc();
-
-    return {
-      sender,
-      recipient,
-      mint,
-      senderToken,
-      recipientToken,
-      streamPDA,
-      vaultPDA,
-      amount,
-      start,
-      cliff,
-      end,
-    };
-  };
-
   it("cancel between start_time and cliff_time returns all to sender", async () => {
     const { sender, recipient, mint, senderToken, recipientToken, vaultPDA, streamPDA } =
-      await setupStream(1_000_000, 60, 3600, 120); // cliff = start + 120s
+      await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 60, 3600, 120); // cliff = start + 120s
     warp(90); // after start (60), before cliff (120)
 
     const vaultBefore = svmTokenBalance(vaultPDA);
@@ -120,7 +27,7 @@ describe("Feature 2: cancel", () => {
     await program.methods
       .cancel()
       .accountsPartial(
-        cancelAccounts(
+        getCancelAccounts(
           sender.publicKey,
           recipient.publicKey,
           streamPDA,
@@ -142,7 +49,7 @@ describe("Feature 2: cancel", () => {
 
   it("cancel before start_time returns all to sender", async () => {
     const { sender, recipient, mint, senderToken, recipientToken, vaultPDA, streamPDA } =
-      await setupStream(1_000_000, 60, 3600, 60);
+      await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 60, 3600, 60);
 
     const vaultBefore = svmTokenBalance(vaultPDA);
     const senderBefore = svmTokenBalance(senderToken);
@@ -151,7 +58,7 @@ describe("Feature 2: cancel", () => {
     await program.methods
       .cancel()
       .accountsPartial(
-        cancelAccounts(
+        getCancelAccounts(
           sender.publicKey,
           recipient.publicKey,
           streamPDA,
@@ -179,7 +86,7 @@ describe("Feature 2: cancel", () => {
 
   it("cancel after partial vesting splits accordingly", async () => {
     const { sender, recipient, mint, senderToken, recipientToken, vaultPDA, streamPDA } =
-      await setupStream(1_000_000, 10, 3600, 10);
+      await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 10, 3600, 10);
     warp(1210); // ~1/3 of vesting elapsed (1200s out of 3600s)
 
     const senderBefore = svmTokenBalance(senderToken);
@@ -189,7 +96,7 @@ describe("Feature 2: cancel", () => {
     await program.methods
       .cancel()
       .accountsPartial(
-        cancelAccounts(
+        getCancelAccounts(
           sender.publicKey,
           recipient.publicKey,
           streamPDA,
@@ -214,14 +121,14 @@ describe("Feature 2: cancel", () => {
 
   it("rejects cancel after end_time — use withdraw instead", async () => {
     const { sender, recipient, mint, senderToken, recipientToken, vaultPDA, streamPDA } =
-      await setupStream(1_000_000, 10, 300, 10);
+      await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 10, 300, 10);
     warp(600); // well past end
 
     await expect(
       program.methods
         .cancel()
         .accountsPartial(
-          cancelAccounts(
+          getCancelAccounts(
             sender.publicKey,
             recipient.publicKey,
             streamPDA,
@@ -238,14 +145,14 @@ describe("Feature 2: cancel", () => {
 
   it("rejects if already cancelled", async () => {
     const { sender, recipient, mint, senderToken, recipientToken, vaultPDA, streamPDA } =
-      await setupStream(1_000_000, 10, 3600, 10);
+      await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 10, 3600, 10);
     warp(100);
 
     // First cancel
     await program.methods
       .cancel()
       .accountsPartial(
-        cancelAccounts(
+        getCancelAccounts(
           sender.publicKey,
           recipient.publicKey,
           streamPDA,
@@ -262,7 +169,7 @@ describe("Feature 2: cancel", () => {
     const promise = program.methods
       .cancel()
       .accountsPartial(
-        cancelAccounts(
+        getCancelAccounts(
           sender.publicKey,
           recipient.publicKey,
           streamPDA,
@@ -280,13 +187,13 @@ describe("Feature 2: cancel", () => {
 
   it("emits StreamCancelled event", async () => {
     const { sender, recipient, mint, senderToken, recipientToken, vaultPDA, streamPDA } =
-      await setupStream(1_000_000, 10, 3600, 10);
+      await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 10, 3600, 10);
     warp(1210);
 
     const txSig = await program.methods
       .cancel()
       .accountsPartial(
-        cancelAccounts(
+        getCancelAccounts(
           sender.publicKey,
           recipient.publicKey,
           streamPDA,
@@ -299,7 +206,7 @@ describe("Feature 2: cancel", () => {
       .signers([sender])
       .rpc();
 
-    const events = await parseEvents(provider, program, txSig);
+    const events = await svmParseEvents(svm, program, txSig);
     const event = findEvent(events, "streamCancelled");
 
     expect(event.data.stream.toBase58()).toBe(streamPDA.toBase58());
@@ -315,14 +222,14 @@ describe("Feature 2: cancel", () => {
 
   it("closes vault and stream on cancel", async () => {
     const { sender, recipient, mint, senderToken, recipientToken, vaultPDA, streamPDA } =
-      await setupStream(1_000_000, 10, 3600, 10);
+      await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 10, 3600, 10);
     warp(100);
     const senderBefore = svm.getBalance(sender.publicKey) ?? BigInt(0);
 
     await program.methods
       .cancel()
       .accountsPartial(
-        cancelAccounts(
+        getCancelAccounts(
           sender.publicKey,
           recipient.publicKey,
           streamPDA,

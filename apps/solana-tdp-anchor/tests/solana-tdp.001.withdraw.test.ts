@@ -1,33 +1,12 @@
 import * as anchor from "@coral-xyz/anchor";
 import { BN } from "@coral-xyz/anchor";
-import {
-  getStreamPda,
-  getVaultPda,
-  getCreatorConfigPda,
-  getCreateStreamAccounts,
-  getWithdrawAccounts,
-  getCancelAccounts,
-  parseEvents,
-  findEvent,
-  PROGRAM_ID,
-} from "@solana-tdp/sdk";
-import {
-  getAssociatedTokenAddressSync,
-  createAssociatedTokenAccountInstruction,
-} from "@solana/spl-token";
-import { Keypair, PublicKey } from "@solana/web3.js";
+import { getWithdrawAccounts, getCancelAccounts, findEvent } from "@solana-tdp/sdk";
+import { createAssociatedTokenAccountInstruction } from "@solana/spl-token";
+import { Keypair } from "@solana/web3.js";
 
-import { setupTest, SetupTest, createMint, createTokenAccount, mintTo } from "./utils";
-
-// Shared account set for withdraw instructions — using SDK helpers
-const withdrawAccounts = (
-  recipient: PublicKey,
-  stream: PublicKey,
-  vault: PublicKey,
-  recipientToken: PublicKey,
-  sender: PublicKey,
-  mint: PublicKey,
-) => getWithdrawAccounts(recipient, stream, vault, recipientToken, sender, mint);
+import { createStreamFixture } from "./fixtures";
+import { clockNow } from "./helpers";
+import { setupTest, SetupTest, svmParseEvents } from "./utils";
 
 describe("Feature 1: withdraw", () => {
   let program: SetupTest["program"];
@@ -41,84 +20,12 @@ describe("Feature 1: withdraw", () => {
     ({ program, provider, svm, svmAirdrop, warp, svmTokenBalance } = setupTest());
   });
 
-  const clockNow = () => Number(svm.getClock().unixTimestamp);
-
-  // Create a fully set-up stream, returning keys and PDAs.
-  // `recipientToken` is the ATA address — the withdraw handler creates it on demand.
-  const createStreamFixture = async (
-    amount: number,
-    startOffset: number,
-    endOffset: number,
-    cliffOffset: number,
-  ) => {
-    const sender = Keypair.generate();
-    const recipient = Keypair.generate();
-    svmAirdrop([sender.publicKey, recipient.publicKey]);
-
-    const mint = await createMint(provider, sender, sender.publicKey, 6);
-    const senderToken = await createTokenAccount(provider, sender, mint, sender.publicKey);
-    await mintTo(provider, mint, senderToken, sender, BigInt(amount));
-
-    // Derive ATA address (account won't be created yet — withdraw handler does it)
-    const recipientToken = getAssociatedTokenAddressSync(mint, recipient.publicKey, true);
-
-    const now = clockNow();
-    const start = now + startOffset;
-    const cliff = start + cliffOffset;
-    const end = start + endOffset;
-
-    const [streamPDA] = getStreamPda(
-      sender.publicKey,
-      recipient.publicKey,
-      mint,
-      new BN(0),
-      PROGRAM_ID,
-    );
-    const [vaultPDA] = getVaultPda(streamPDA, PROGRAM_ID);
-    const [creatorConfigPDA] = getCreatorConfigPda(sender.publicKey, PROGRAM_ID);
-
-    await program.methods
-      .createStream({
-        amount: new BN(amount),
-        startTime: new BN(start),
-        endTime: new BN(end),
-        cliffTime: new BN(cliff),
-      })
-      .accountsPartial(
-        getCreateStreamAccounts(
-          sender.publicKey,
-          recipient.publicKey,
-          mint,
-          streamPDA,
-          vaultPDA,
-          senderToken,
-          creatorConfigPDA,
-        ),
-      )
-      .signers([sender])
-      .rpc();
-
-    return {
-      sender,
-      recipient,
-      mint,
-      senderToken,
-      recipientToken,
-      streamPDA,
-      vaultPDA,
-      amount,
-      start,
-      cliff,
-      end,
-    };
-  };
-
   it("withdraws vested amount after cliff (partial vesting)", async () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, start, end } =
-      await createStreamFixture(1_000_000, 60, 3600, 60);
+      await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 60, 3600, 60);
     warp(1800); // half-way through vesting
 
-    const elapsed = clockNow() - start;
+    const elapsed = clockNow(svm) - start;
     const duration = end - start;
     const expectedVested = Math.floor((amount * elapsed) / duration);
 
@@ -128,7 +35,7 @@ describe("Feature 1: withdraw", () => {
     await program.methods
       .withdraw({ amount: new BN(expectedVested) })
       .accountsPartial(
-        withdrawAccounts(
+        getWithdrawAccounts(
           recipient.publicKey,
           streamPDA,
           vaultPDA,
@@ -152,13 +59,13 @@ describe("Feature 1: withdraw", () => {
 
   it("withdraws full amount after end_time", async () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount } =
-      await createStreamFixture(500_000_000, 10, 300, 10);
+      await createStreamFixture({ program, provider, svmAirdrop, svm }, 500_000_000, 10, 300, 10);
     warp(600); // past end
 
     await program.methods
       .withdraw({ amount: new BN(amount) })
       .accountsPartial(
-        withdrawAccounts(
+        getWithdrawAccounts(
           recipient.publicKey,
           streamPDA,
           vaultPDA,
@@ -182,17 +89,17 @@ describe("Feature 1: withdraw", () => {
 
   it("tracks cumulative amount_withdrawn", async () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, start, end } =
-      await createStreamFixture(1_000_000, 10, 3600, 10);
+      await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 10, 3600, 10);
     warp(1800);
 
-    const elapsed = clockNow() - start;
+    const elapsed = clockNow(svm) - start;
     const duration = end - start;
     const withdraw1 = Math.floor((amount * elapsed) / duration);
 
     await program.methods
       .withdraw({ amount: new BN(withdraw1) })
       .accountsPartial(
-        withdrawAccounts(
+        getWithdrawAccounts(
           recipient.publicKey,
           streamPDA,
           vaultPDA,
@@ -220,16 +127,16 @@ describe("Feature 1: withdraw", () => {
       amount: a2,
       start: st2,
       end: en2,
-    } = await createStreamFixture(2_000_000, 10, 7200, 10);
+    } = await createStreamFixture({ program, provider, svmAirdrop, svm }, 2_000_000, 10, 7200, 10);
     warp(3600);
 
-    const elapsed2 = clockNow() - st2;
+    const elapsed2 = clockNow(svm) - st2;
     const duration2 = en2 - st2;
     const withdraw2 = Math.floor((a2 * elapsed2) / duration2);
 
     await program.methods
       .withdraw({ amount: new BN(withdraw2) })
-      .accountsPartial(withdrawAccounts(r2.publicKey, s2p, v2, rt2, s2.publicKey, m2))
+      .accountsPartial(getWithdrawAccounts(r2.publicKey, s2p, v2, rt2, s2.publicKey, m2))
       .signers([r2])
       .rpc();
 
@@ -239,14 +146,14 @@ describe("Feature 1: withdraw", () => {
 
   it("rejects if cliff not reached", async () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA } =
-      await createStreamFixture(100_000_000, 60, 3600, 120);
+      await createStreamFixture({ program, provider, svmAirdrop, svm }, 100_000_000, 60, 3600, 120);
     warp(90); // between start (60) and cliff (120)
 
     await expect(
       program.methods
         .withdraw({ amount: new BN(1) })
         .accountsPartial(
-          withdrawAccounts(
+          getWithdrawAccounts(
             recipient.publicKey,
             streamPDA,
             vaultPDA,
@@ -262,13 +169,13 @@ describe("Feature 1: withdraw", () => {
 
   it("rejects if nothing to withdraw (before start_time)", async () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA } =
-      await createStreamFixture(100_000_000, 60, 3600, 60);
+      await createStreamFixture({ program, provider, svmAirdrop, svm }, 100_000_000, 60, 3600, 60);
 
     await expect(
       program.methods
         .withdraw({ amount: new BN(1) })
         .accountsPartial(
-          withdrawAccounts(
+          getWithdrawAccounts(
             recipient.publicKey,
             streamPDA,
             vaultPDA,
@@ -284,15 +191,15 @@ describe("Feature 1: withdraw", () => {
 
   it("rejects withdraw 1 second before cliff_time", async () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, cliff } =
-      await createStreamFixture(1_000_000, 60, 3600, 120);
+      await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 60, 3600, 120);
     // Warp to 1 second before cliff
-    warp(cliff - clockNow() - 1);
+    warp(cliff - clockNow(svm) - 1);
 
     await expect(
       program.methods
         .withdraw({ amount: new BN(1) })
         .accountsPartial(
-          withdrawAccounts(
+          getWithdrawAccounts(
             recipient.publicKey,
             streamPDA,
             vaultPDA,
@@ -318,8 +225,8 @@ describe("Feature 1: withdraw", () => {
       cliff,
       end,
       amount,
-    } = await createStreamFixture(1_000_000, 60, 3600, 120);
-    warp(cliff - clockNow()); // exactly at cliff_time
+    } = await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 60, 3600, 120);
+    warp(cliff - clockNow(svm)); // exactly at cliff_time
 
     // At the exact cliff boundary, elapsed = cliff - start, so it returns accrued amount
     const elapsed = cliff - start;
@@ -329,7 +236,7 @@ describe("Feature 1: withdraw", () => {
     await program.methods
       .withdraw({ amount: new BN(expectedVested) })
       .accountsPartial(
-        withdrawAccounts(
+        getWithdrawAccounts(
           recipient.publicKey,
           streamPDA,
           vaultPDA,
@@ -347,7 +254,7 @@ describe("Feature 1: withdraw", () => {
 
   it("rejects if stream already cancelled", async () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, senderToken } =
-      await createStreamFixture(1_000_000, 10, 3600, 10);
+      await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 10, 3600, 10);
     warp(100);
 
     // Cancel needs an initialized token account for recipient.
@@ -383,7 +290,7 @@ describe("Feature 1: withdraw", () => {
       program.methods
         .withdraw({ amount: new BN(1) })
         .accountsPartial(
-          withdrawAccounts(
+          getWithdrawAccounts(
             recipient.publicKey,
             streamPDA,
             vaultPDA,
@@ -399,10 +306,10 @@ describe("Feature 1: withdraw", () => {
 
   it("rejects amount > claimable", async () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, start, end } =
-      await createStreamFixture(1_000_000, 10, 3600, 10);
+      await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 10, 3600, 10);
     warp(1800); // partially vested
 
-    const elapsed = clockNow() - start;
+    const elapsed = clockNow(svm) - start;
     const duration = end - start;
     const claimable = Math.floor((amount * elapsed) / duration);
 
@@ -411,7 +318,7 @@ describe("Feature 1: withdraw", () => {
       program.methods
         .withdraw({ amount: new BN(claimable + 1) })
         .accountsPartial(
-          withdrawAccounts(
+          getWithdrawAccounts(
             recipient.publicKey,
             streamPDA,
             vaultPDA,
@@ -427,17 +334,17 @@ describe("Feature 1: withdraw", () => {
 
   it("emits TokensClaimed event", async () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, start, end } =
-      await createStreamFixture(1_000_000, 10, 3600, 10);
+      await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 10, 3600, 10);
     warp(1800);
 
-    const elapsed = clockNow() - start;
+    const elapsed = clockNow(svm) - start;
     const duration = end - start;
     const expectedVested = Math.floor((amount * elapsed) / duration);
 
     const txSig = await program.methods
       .withdraw({ amount: new BN(expectedVested) })
       .accountsPartial(
-        withdrawAccounts(
+        getWithdrawAccounts(
           recipient.publicKey,
           streamPDA,
           vaultPDA,
@@ -449,7 +356,7 @@ describe("Feature 1: withdraw", () => {
       .signers([recipient])
       .rpc();
 
-    const events = await parseEvents(provider, program, txSig);
+    const events = await svmParseEvents(svm, program, txSig);
     const event = findEvent(events, "tokensClaimed");
 
     expect(event.data.stream.toBase58()).toBe(streamPDA.toBase58());
@@ -461,14 +368,14 @@ describe("Feature 1: withdraw", () => {
 
   it("closes vault and stream on final withdrawal", async () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount } =
-      await createStreamFixture(500_000_000, 10, 300, 10);
+      await createStreamFixture({ program, provider, svmAirdrop, svm }, 500_000_000, 10, 300, 10);
     warp(600); // past end — fully vested
     const senderBefore = svm.getBalance(sender.publicKey) ?? BigInt(0);
 
     await program.methods
       .withdraw({ amount: new BN(amount) })
       .accountsPartial(
-        withdrawAccounts(
+        getWithdrawAccounts(
           recipient.publicKey,
           streamPDA,
           vaultPDA,
@@ -499,14 +406,14 @@ describe("Feature 1: withdraw", () => {
 
   it("withdraws 25% at quarter vesting", async () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount } =
-      await createStreamFixture(1_000_000, 10, 400, 0);
+      await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 10, 400, 0);
     warp(110); // 25% elapsed (100 / 400)
     const expected = Math.floor((amount * 100) / 400);
 
     await program.methods
       .withdraw({ amount: new BN(expected) })
       .accountsPartial(
-        withdrawAccounts(
+        getWithdrawAccounts(
           recipient.publicKey,
           streamPDA,
           vaultPDA,
@@ -524,7 +431,7 @@ describe("Feature 1: withdraw", () => {
 
   it("withdraws 50% then remaining 50% on same stream", async () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount } =
-      await createStreamFixture(1_000_000, 10, 400, 0);
+      await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 10, 400, 0);
 
     // First withdrawal at 50% elapsed
     warp(210);
@@ -532,7 +439,7 @@ describe("Feature 1: withdraw", () => {
     await program.methods
       .withdraw({ amount: new BN(half) })
       .accountsPartial(
-        withdrawAccounts(
+        getWithdrawAccounts(
           recipient.publicKey,
           streamPDA,
           vaultPDA,
@@ -551,6 +458,7 @@ describe("Feature 1: withdraw", () => {
 
   it("rejects withdraw by third party", async () => {
     const { sender, mint, recipientToken, vaultPDA, streamPDA } = await createStreamFixture(
+      { program, provider, svmAirdrop, svm },
       1_000_000,
       10,
       400,
@@ -564,7 +472,7 @@ describe("Feature 1: withdraw", () => {
       program.methods
         .withdraw({ amount: new BN(100) })
         .accountsPartial(
-          withdrawAccounts(
+          getWithdrawAccounts(
             thirdParty.publicKey,
             streamPDA,
             vaultPDA,
@@ -580,6 +488,7 @@ describe("Feature 1: withdraw", () => {
 
   it("rejects withdraw by creator (not recipient)", async () => {
     const { sender, mint, recipientToken, vaultPDA, streamPDA } = await createStreamFixture(
+      { program, provider, svmAirdrop, svm },
       1_000_000,
       10,
       400,
@@ -591,7 +500,7 @@ describe("Feature 1: withdraw", () => {
       program.methods
         .withdraw({ amount: new BN(100) })
         .accountsPartial(
-          withdrawAccounts(
+          getWithdrawAccounts(
             sender.publicKey,
             streamPDA,
             vaultPDA,

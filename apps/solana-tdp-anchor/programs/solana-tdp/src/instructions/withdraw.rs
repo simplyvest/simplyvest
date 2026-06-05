@@ -21,7 +21,7 @@ pub struct Withdraw<'info> {
 
     #[account(
         mut,
-        seeds = [b"stream", stream.sender.as_ref(), recipient.key().as_ref(), stream.mint.as_ref(), &stream.vesting_count.to_le_bytes()],
+        seeds = [b"stream", stream.creator.as_ref(), recipient.key().as_ref(), stream.mint.as_ref(), &stream.vesting_count.to_le_bytes()],
         bump = stream.bump,
     )]
     pub stream: Box<Account<'info, StreamAccount>>,
@@ -42,7 +42,7 @@ pub struct Withdraw<'info> {
     )]
     pub recipient_token: Box<Account<'info, TokenAccount>>,
 
-    /// CHECK: Used only for rent return on closure. Verified via stream.sender.
+    /// CHECK: Used only for rent return on closure. Verified via stream.creator.
     #[account(mut)]
     pub sender: AccountInfo<'info>,
 
@@ -66,7 +66,9 @@ pub fn withdraw_handler(ctx: Context<Withdraw>, params: WithdrawParams) -> Resul
     require!(params.amount > 0, TdpError::ZeroAmount);
 
     // 2. Calculate linear vesting from start_time to end_time (locked until cliff_time)
-    let total_vested = if now >= stream.end_time {
+    let total_vested = if now < stream.start_time {
+        0
+    } else if now >= stream.end_time {
         stream.amount
     } else if now < stream.cliff_time {
         0
@@ -92,7 +94,7 @@ pub fn withdraw_handler(ctx: Context<Withdraw>, params: WithdrawParams) -> Resul
     // 5. CPI Transfer (Signed by Stream PDA)
     let seeds = &[
         b"stream",
-        stream.sender.as_ref(),
+        stream.creator.as_ref(),
         stream.recipient.as_ref(),
         stream.mint.as_ref(),
         &stream.vesting_count.to_le_bytes(),
@@ -124,7 +126,7 @@ pub fn withdraw_handler(ctx: Context<Withdraw>, params: WithdrawParams) -> Resul
     if stream.amount_withdrawn == stream.amount {
         require_keys_eq!(
             ctx.accounts.sender.key(),
-            stream.sender,
+            stream.creator,
             TdpError::Unauthorized
         );
 

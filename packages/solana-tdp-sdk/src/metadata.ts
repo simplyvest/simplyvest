@@ -2,6 +2,10 @@ import { PublicKey } from "@solana/web3.js";
 import type { Connection } from "@solana/web3.js";
 
 const METADATA_PROGRAM_ID = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
+export function formatAddress(pubkey: PublicKey | string, chars = 4): string {
+  const s = typeof pubkey === "string" ? pubkey : pubkey.toBase58();
+  return `${s.slice(0, chars)}...${s.slice(-chars)}`;
+}
 
 export interface TokenMetadata {
   name: string;
@@ -25,12 +29,12 @@ export async function fetchTokenMetadata(
     let offset = 1 + 32 + 32;
     const nameLen = data.readUInt32LE(offset);
     offset += 4;
-    const name = data.slice(offset, offset + nameLen).toString("utf8");
+    const name = data.subarray(offset, offset + nameLen).toString("utf8");
     offset += nameLen;
 
     const symbolLen = data.readUInt32LE(offset);
     offset += 4;
-    const symbol = data.slice(offset, offset + symbolLen).toString("utf8");
+    const symbol = data.subarray(offset, offset + symbolLen).toString("utf8");
 
     return { name, symbol };
   } catch {
@@ -48,6 +52,5 @@ export function formatTokenLabel(
 }
 
 export function shortAddress(pk: PublicKey): string {
-  const addr = pk.toBase58();
-  return addr.slice(0, 4) + "..." + addr.slice(-4);
+  return formatAddress(pk, 4);
 }

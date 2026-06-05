@@ -1,17 +1,18 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-import { Outlet, createRootRoute, Link, useRouterState } from "@tanstack/react-router";
+import { createRootRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import * as React from "react";
 import { Toaster } from "sonner";
 
+import { Footer } from "@/components/layout/footer";
+import { Navbar } from "@/components/layout/navbar";
 import { SolanaProvider } from "@/components/solana/solana-provider";
+import { ThemeProvider } from "@/lib/theme";
 import { trackPageView } from "@/utils/analytics";
 
 const DEV = import.meta.env.DEV;
-import { Footer } from "@/components/layout/footer";
-import { Header } from "@/components/layout/header";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,8 +41,6 @@ export const Route = createRootRoute({
 function RootComponent() {
   const routerState = useRouterState();
   const location = routerState.location;
-  const isAppRoute = location.pathname.startsWith("/app");
-  const isLoading = routerState.status === "pending";
 
   React.useEffect(() => {
     trackPageView(location.pathname);
@@ -50,40 +49,36 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <SolanaProvider>
-        <div className="flex min-h-screen flex-col bg-bg text-text">
-          {!isAppRoute && <Header />}
+        <ThemeProvider>
+          <div className="flex min-h-screen flex-col bg-bg text-text">
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-sol focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:no-underline"
+            >
+              Skip to main content
+            </a>
 
-          <a
-            href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-sol focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:no-underline"
-          >
-            Skip to main content
-          </a>
+            <Navbar />
 
-          <main id="main-content" className="flex-1">
-            {isLoading ? (
-              <div className="flex h-64 items-center justify-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-sol border-t-transparent" />
-              </div>
-            ) : (
+            <main id="main-content" className="flex-1">
               <Outlet />
+            </main>
+
+            <Footer />
+
+            {DEV && (
+              <TanStackDevtools
+                plugins={[
+                  { name: "TanStack Query", render: <ReactQueryDevtoolsPanel /> },
+                  {
+                    name: "TanStack Router",
+                    render: <TanStackRouterDevtoolsPanel />,
+                  },
+                ]}
+              />
             )}
-          </main>
-
-          {!isAppRoute && <Footer />}
-
-          {DEV && (
-            <TanStackDevtools
-              plugins={[
-                { name: "TanStack Query", render: <ReactQueryDevtoolsPanel /> },
-                {
-                  name: "TanStack Router",
-                  render: <TanStackRouterDevtoolsPanel />,
-                },
-              ]}
-            />
-          )}
-        </div>
+          </div>
+        </ThemeProvider>
         <Toaster richColors />
       </SolanaProvider>
     </QueryClientProvider>

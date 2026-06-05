@@ -14,6 +14,8 @@ import {
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { Keypair, PublicKey } from "@solana/web3.js";
 
+import { createStreamFixture, createMilestoneStreamFixture } from "./fixtures";
+import { clockNow } from "./helpers";
 import { setupTest, SetupTest, createMint, createTokenAccount, mintTo } from "./utils";
 
 describe("Feature 5: security audit", () => {
@@ -26,124 +28,6 @@ describe("Feature 5: security audit", () => {
   beforeEach(() => {
     ({ program, provider, svm, svmAirdrop, warp } = setupTest());
   });
-
-  const clockNow = () => Number(svm.getClock().unixTimestamp);
-
-  const createStreamFixture = async (
-    amount: number,
-    startOffset: number,
-    endOffset: number,
-    cliffOffset: number,
-  ) => {
-    const sender = Keypair.generate();
-    const recipient = Keypair.generate();
-    svmAirdrop([sender.publicKey, recipient.publicKey]);
-
-    const mint = await createMint(provider, sender, sender.publicKey, 6);
-    const senderToken = await createTokenAccount(provider, sender, mint, sender.publicKey);
-    await mintTo(provider, mint, senderToken, sender, BigInt(amount));
-
-    const recipientToken = getAssociatedTokenAddressSync(mint, recipient.publicKey, true);
-
-    const now = clockNow();
-    const start = now + startOffset;
-    const cliff = start + cliffOffset;
-    const end = start + endOffset;
-
-    const [streamPDA] = getStreamPda(
-      sender.publicKey,
-      recipient.publicKey,
-      mint,
-      new BN(0),
-      PROGRAM_ID,
-    );
-    const [vaultPDA] = getVaultPda(streamPDA, PROGRAM_ID);
-    const [creatorConfigPDA] = getCreatorConfigPda(sender.publicKey, PROGRAM_ID);
-
-    await program.methods
-      .createStream({
-        amount: new BN(amount),
-        startTime: new BN(start),
-        endTime: new BN(end),
-        cliffTime: new BN(cliff),
-      })
-      .accountsPartial(
-        getCreateStreamAccounts(
-          sender.publicKey,
-          recipient.publicKey,
-          mint,
-          streamPDA,
-          vaultPDA,
-          senderToken,
-          creatorConfigPDA,
-        ),
-      )
-      .signers([sender])
-      .rpc();
-
-    return {
-      sender,
-      recipient,
-      mint,
-      senderToken,
-      recipientToken,
-      streamPDA,
-      vaultPDA,
-      amount,
-      start,
-      cliff,
-      end,
-    };
-  };
-
-  const createMilestoneFixture = async (amount: number) => {
-    const sender = Keypair.generate();
-    const recipient = Keypair.generate();
-    const milestoneAuthority = Keypair.generate();
-    svmAirdrop([sender.publicKey, recipient.publicKey, milestoneAuthority.publicKey]);
-
-    const mint = await createMint(provider, sender, sender.publicKey, 6);
-    const senderToken = await createTokenAccount(provider, sender, mint, sender.publicKey);
-    await mintTo(provider, mint, senderToken, sender, BigInt(amount));
-
-    const [creatorConfigPDA] = getCreatorConfigPda(sender.publicKey, PROGRAM_ID);
-    const [streamPDA] = getMilestoneStreamPda(
-      sender.publicKey,
-      recipient.publicKey,
-      mint,
-      new BN(0),
-      PROGRAM_ID,
-    );
-    const [vaultPDA] = getVaultPda(streamPDA, PROGRAM_ID);
-
-    await program.methods
-      .createMilestoneStream({ amount: new BN(amount) })
-      .accountsPartial(
-        getCreateMilestoneStreamAccounts(
-          sender.publicKey,
-          recipient.publicKey,
-          milestoneAuthority.publicKey,
-          creatorConfigPDA,
-          streamPDA,
-          vaultPDA,
-          senderToken,
-          mint,
-        ),
-      )
-      .signers([sender])
-      .rpc();
-
-    return {
-      sender,
-      recipient,
-      milestoneAuthority,
-      mint,
-      senderToken,
-      streamPDA,
-      vaultPDA,
-      amount,
-    };
-  };
 
   // ── 1. SIGNER AUTHORITY ───────────────────────────────────────────────
 
@@ -193,8 +77,10 @@ describe("Feature 5: security audit", () => {
     });
 
     it("rejects cancel_milestone with non-creator signer", async () => {
-      const { sender, mint, streamPDA, vaultPDA } = await createMilestoneFixture(100_000_000);
-      const senderAta = getAssociatedTokenAddressSync(mint, sender.publicKey, true);
+      const { senderToken, mint, streamPDA, vaultPDA } = await createMilestoneStreamFixture(
+        { program, provider, svmAirdrop, svm },
+        100_000_000,
+      );
       const imposter = Keypair.generate();
       svmAirdrop([imposter.publicKey]);
 
@@ -202,7 +88,7 @@ describe("Feature 5: security audit", () => {
         program.methods
           .cancelMilestone()
           .accountsPartial(
-            getCancelMilestoneAccounts(imposter.publicKey, streamPDA, vaultPDA, senderAta, mint),
+            getCancelMilestoneAccounts(imposter.publicKey, streamPDA, vaultPDA, senderToken, mint),
           )
           .signers([imposter])
           .rpc(),
@@ -211,7 +97,7 @@ describe("Feature 5: security audit", () => {
 
     it("rejects withdraw with wrong sender account on full withdrawal", async () => {
       const { recipient, mint, recipientToken, vaultPDA, streamPDA, amount } =
-        await createStreamFixture(1_000_000, 10, 300, 0);
+        await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 10, 300, 0);
       warp(600);
       const wrongSender = Keypair.generate();
       svmAirdrop([wrongSender.publicKey]);
@@ -277,12 +163,13 @@ describe("Feature 5: security audit", () => {
 
     it("wrong vault PDA rejected at Anchor constraint", async () => {
       const { sender, recipient, mint, senderToken, amount } = await createStreamFixture(
+        { program, provider, svmAirdrop, svm },
         1_000_000,
         60,
         3600,
         0,
       );
-      const now = clockNow();
+      const now = clockNow(svm);
       const [otherStream] = getStreamPda(
         sender.publicKey,
         recipient.publicKey,
@@ -339,7 +226,7 @@ describe("Feature 5: security audit", () => {
       const largeAmount = "10000000000000000";
       await mintTo(prov, mint, senderToken, sender, BigInt("20000000000000000"));
 
-      const now = Number(prov.connection.getSlot) || 1_000_000;
+      const now = clockNow(svm) || 1_000_000;
       const start = now + 60;
       const end = start + 3600;
 
@@ -391,7 +278,13 @@ describe("Feature 5: security audit", () => {
 
   describe("account ownership verification", () => {
     it("vault token account authority is the stream PDA", async () => {
-      const { vaultPDA, streamPDA } = await createStreamFixture(1_000_000, 60, 3600, 60);
+      const { vaultPDA, streamPDA } = await createStreamFixture(
+        { program, provider, svmAirdrop, svm },
+        1_000_000,
+        60,
+        3600,
+        60,
+      );
       const vaultAcc = svm.getAccount(vaultPDA);
       if (!vaultAcc) throw new Error("vault account not found");
       const owner = new PublicKey(Buffer.from(vaultAcc.data).subarray(32, 64));
@@ -400,6 +293,7 @@ describe("Feature 5: security audit", () => {
 
     it("mint constraint on withdraw rejects mismatched mint", async () => {
       const { sender, recipient, vaultPDA, streamPDA } = await createStreamFixture(
+        { program, provider, svmAirdrop, svm },
         1_000_000,
         10,
         300,
@@ -429,6 +323,7 @@ describe("Feature 5: security audit", () => {
 
     it("mint constraint on cancel rejects mismatched mint", async () => {
       const { sender, recipient, senderToken, vaultPDA, streamPDA } = await createStreamFixture(
+        { program, provider, svmAirdrop, svm },
         1_000_000,
         60,
         3600,
@@ -458,7 +353,10 @@ describe("Feature 5: security audit", () => {
     });
 
     it("mint constraint on cancel_milestone rejects mismatched mint", async () => {
-      const { sender, streamPDA, vaultPDA } = await createMilestoneFixture(100_000_000);
+      const { sender, streamPDA, vaultPDA } = await createMilestoneStreamFixture(
+        { program, provider, svmAirdrop, svm },
+        100_000_000,
+      );
       const wrongMint = await createMint(provider, sender, sender.publicKey, 6);
       const wrongAta = getAssociatedTokenAddressSync(wrongMint, sender.publicKey, true);
 
@@ -479,7 +377,7 @@ describe("Feature 5: security audit", () => {
   describe("state transition guards", () => {
     it("cancel sets cancelled before CPI", async () => {
       const { sender, recipient, mint, senderToken, recipientToken, vaultPDA, streamPDA } =
-        await createStreamFixture(1_000_000, 60, 3600, 60);
+        await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 60, 3600, 60);
       warp(90);
 
       const before = await program.account.streamAccount.fetch(streamPDA);
@@ -508,8 +406,10 @@ describe("Feature 5: security audit", () => {
     });
 
     it("cancel_milestone sets cancelled before CPI", async () => {
-      const { sender, mint, streamPDA, vaultPDA } = await createMilestoneFixture(100_000_000);
-      const ata = getAssociatedTokenAddressSync(mint, sender.publicKey, true);
+      const { sender, senderToken, mint, streamPDA, vaultPDA } = await createMilestoneStreamFixture(
+        { program, provider, svmAirdrop, svm },
+        100_000_000,
+      );
 
       const before = await program.account.milestoneStreamAccount.fetch(streamPDA);
       expect(before.cancelled).toBe(false);
@@ -517,7 +417,7 @@ describe("Feature 5: security audit", () => {
       await program.methods
         .cancelMilestone()
         .accountsPartial(
-          getCancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, ata, mint),
+          getCancelMilestoneAccounts(sender.publicKey, streamPDA, vaultPDA, senderToken, mint),
         )
         .signers([sender])
         .rpc();
@@ -534,7 +434,7 @@ describe("Feature 5: security audit", () => {
   describe("wrong account attacks", () => {
     it("rejects withdraw with wrong vault PDA", async () => {
       const { sender, recipient, mint, recipientToken, streamPDA, amount } =
-        await createStreamFixture(1_000_000, 10, 300, 0);
+        await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 10, 300, 0);
       warp(600);
       const [wrongVault] = getVaultPda(Keypair.generate().publicKey, PROGRAM_ID);
 
@@ -558,7 +458,7 @@ describe("Feature 5: security audit", () => {
 
     it("rejects cancel with wrong vault PDA", async () => {
       const { sender, recipient, mint, senderToken, recipientToken, streamPDA } =
-        await createStreamFixture(1_000_000, 60, 3600, 60);
+        await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 60, 3600, 60);
       warp(90);
       const [wrongVault] = getVaultPda(Keypair.generate().publicKey, PROGRAM_ID);
 
@@ -582,15 +482,17 @@ describe("Feature 5: security audit", () => {
     });
 
     it("rejects cancel_milestone with wrong vault PDA", async () => {
-      const { sender, mint, streamPDA } = await createMilestoneFixture(100_000_000);
-      const ata = getAssociatedTokenAddressSync(mint, sender.publicKey, true);
+      const { sender, senderToken, mint, streamPDA } = await createMilestoneStreamFixture(
+        { program, provider, svmAirdrop, svm },
+        100_000_000,
+      );
       const [wrongVault] = getVaultPda(Keypair.generate().publicKey, PROGRAM_ID);
 
       await expect(
         program.methods
           .cancelMilestone()
           .accountsPartial(
-            getCancelMilestoneAccounts(sender.publicKey, streamPDA, wrongVault, ata, mint),
+            getCancelMilestoneAccounts(sender.publicKey, streamPDA, wrongVault, senderToken, mint),
           )
           .signers([sender])
           .rpc(),
@@ -599,7 +501,7 @@ describe("Feature 5: security audit", () => {
 
     it("rejects cancel with wrong sender_token", async () => {
       const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA } =
-        await createStreamFixture(1_000_000, 60, 3600, 60);
+        await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 60, 3600, 60);
       warp(90);
 
       await expect(
@@ -635,7 +537,7 @@ describe("Feature 5: security audit", () => {
       const senderToken = await createTokenAccount(prov, sender, mint, sender.publicKey);
       await mintTo(prov, mint, senderToken, sender, BigInt(100_000_000));
 
-      const start = clockNow() - 10;
+      const start = clockNow(svm) - 10;
       const [sp] = getStreamPda(sender.publicKey, recipient.publicKey, mint, new BN(0), PROGRAM_ID);
       const [vp] = getVaultPda(sp, PROGRAM_ID);
       const [cc] = getCreatorConfigPda(sender.publicKey, PROGRAM_ID);
