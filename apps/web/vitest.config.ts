@@ -21,11 +21,12 @@ export default defineConfig({
       "@solana/web3.js",
       "@solana/spl-token",
       "bn.js",
+      "buffer",
     ],
   },
   test: {
-    // Project 1: existing JSDom unit tests
     projects: [
+      // Project 1: existing JSDom unit tests
       {
         extends: true,
         test: {
@@ -51,6 +52,7 @@ export default defineConfig({
         ],
         test: {
           name: "storybook",
+          setupFiles: ["./app/__tests__/storybook-setup.ts"],
           browser: {
             enabled: true,
             provider: playwright({}),
