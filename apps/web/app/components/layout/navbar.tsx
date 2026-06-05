@@ -1,3 +1,4 @@
+import { useWallet } from "@solana/wallet-adapter-react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import * as React from "react";
 
@@ -22,10 +23,11 @@ const appLinks = [
 ];
 
 export function Navbar() {
+  const { publicKey } = useWallet();
   const { location } = useRouterState();
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const isApp = location.pathname.startsWith("/app");
+  const isApp = location.pathname.startsWith("/app") && !!publicKey;
   const links = isApp ? appLinks : publicLinks;
 
   return (
