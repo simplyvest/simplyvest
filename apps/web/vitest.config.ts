@@ -42,6 +42,7 @@ export default defineConfig({
         test: {
           name: "storybook",
           setupFiles: ["./app/__tests__/storybook-setup.ts"],
+          globals: true,
           browser: {
             enabled: true,
             provider: playwright({}),

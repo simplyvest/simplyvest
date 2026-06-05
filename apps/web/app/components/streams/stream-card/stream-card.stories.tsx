@@ -1,6 +1,5 @@
 import type { StoryObj } from "@storybook/tanstack-react";
 import { fn, expect } from "storybook/test";
-import { vi } from "vitest";
 
 import { StreamCard } from "./stream-card";
 

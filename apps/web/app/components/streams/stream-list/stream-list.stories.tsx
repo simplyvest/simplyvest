@@ -1,6 +1,5 @@
 import type { StoryObj } from "@storybook/tanstack-react";
 import { fn } from "storybook/test";
-import { vi } from "vitest";
 
 import { createMockPublicKey, createMockBN } from "../../../__tests__/story-mocks";
 import { StreamList } from "./stream-list";

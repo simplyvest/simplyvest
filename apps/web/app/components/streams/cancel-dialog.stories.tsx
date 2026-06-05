@@ -1,7 +1,6 @@
 import type { StoryObj } from "@storybook/tanstack-react";
 import BN from "bn.js";
 import { fn, expect } from "storybook/test";
-import { vi } from "vitest";
 
 import { CancelDialog } from "./cancel-dialog";
 
