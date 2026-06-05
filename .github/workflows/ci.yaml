@@ -33,6 +33,25 @@ jobs:
       - name: TypeScript check (web)
         run: pnpm --filter @solana-tdp/web check:ts
 
+  test-web:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.2.2
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build SDK
+        run: pnpm --filter @solana-tdp/sdk build
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+      - name: Run tests (unit + storybook)
+        run: pnpm --filter @solana-tdp/web test:ci
+
   typecheck-api:
     runs-on: ubuntu-24.04
     steps:
@@ -198,7 +217,7 @@ jobs:
 
   deploy-web:
     if: github.ref == 'refs/heads/main'
-    needs: build-web
+    needs: [build-web, test-web]
     runs-on: ubuntu-24.04
     environment: main
     env:
