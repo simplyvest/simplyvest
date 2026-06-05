@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { LuMail } from "react-icons/lu";
 import { SiGithub, SiX } from "react-icons/si";
 
 const footerLinks = {
@@ -96,18 +95,6 @@ export function Footer() {
                 aria-label="Twitter"
               >
                 <SiX className="w-5 h-5" aria-hidden="true" focusable="false" />
-              </a>
-              <a
-                href="mailto:hello@simplyvest.com"
-                className="text-gray-500 hover:text-purple-600 transition-colors dark:text-slate-400 dark:hover:text-purple-400"
-                aria-label="Email"
-              >
-                <LuMail
-                  className="w-5 h-5"
-                  strokeWidth={1.5}
-                  aria-hidden="true"
-                  focusable="false"
-                />
               </a>
             </div>
           </div>
