@@ -4,7 +4,6 @@ import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
-import viteTsConfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   define: {
@@ -19,11 +18,9 @@ export default defineConfig({
     }),
     react(),
     tailwindcss(),
-    viteTsConfigPaths({
-      projects: ["./tsconfig.json"],
-    }),
   ],
   resolve: {
+    tsconfigPaths: true,
     alias: {
       "@": path.resolve(import.meta.dirname, "app"),
     },
