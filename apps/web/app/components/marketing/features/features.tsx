@@ -5,7 +5,7 @@ import { PdaVaultsCard } from "./pda-vaults-card";
 
 export function Features() {
   return (
-    <section className="bg-gradient-to-b from-white dark:from-slate-950 to-gray-50 py-24">
+    <section className="bg-gradient-to-b from-white dark:from-slate-950 via-purple-50/20 dark:via-purple-950/30 to-gray-50 dark:to-slate-950 py-24">
       <div className="mx-auto max-w-6xl px-6">
         {/* Section header */}
         <div className="mb-16 max-w-2xl space-y-4">

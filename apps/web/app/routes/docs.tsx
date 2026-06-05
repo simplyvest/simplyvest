@@ -38,7 +38,7 @@ function DocsPage() {
       </section>
 
       {/* ── 02  Account Model ───────────────────────────────────────── */}
-      <section className="bg-gradient-to-b from-gray-50/50 to-white dark:to-slate-950 py-24">
+      <section className="bg-gradient-to-b from-gray-50/50 to-white dark:from-slate-950 dark:via-purple-950/30 dark:to-slate-950 py-24">
         <div className="mx-auto max-w-7xl px-6">
           <SectionHeader
             num="02"
@@ -55,7 +55,7 @@ function DocsPage() {
       </section>
 
       {/* ── 03  Security Model ──────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-purple-50/30 to-white dark:from-purple-950/30 dark:to-slate-950 py-24">
+      <section className="relative overflow-hidden bg-gradient-to-b from-purple-50/30 to-white dark:from-slate-950 dark:via-purple-950/30 dark:to-slate-950 py-24">
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.03]"
           aria-hidden
