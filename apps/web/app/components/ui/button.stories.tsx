@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/tanstack-react";
+import { fn, userEvent, expect } from "storybook/test";
 
 import { Button } from "./button";
 
@@ -35,6 +36,14 @@ export const Default: Story = {
   args: {
     children: "Button",
     variant: "default",
+    onClick: fn(),
+  },
+  play: async ({ args, canvas, step }) => {
+    await step("click triggers onClick", async () => {
+      const button = canvas.getByRole("button", { name: /button/i });
+      await userEvent.click(button);
+      await expect(args.onClick).toHaveBeenCalledTimes(1);
+    });
   },
 };
 
@@ -98,6 +107,15 @@ export const Small: Story = {
   args: {
     children: "Small",
     size: "sm",
+    onClick: fn(),
+  },
+  play: async ({ args, canvas, step }) => {
+    await step("focus and press Enter triggers onClick", async () => {
+      await expect(canvas.getByRole("button", { name: /small/i })).toBeInTheDocument();
+      await userEvent.tab();
+      await userEvent.keyboard("{Enter}");
+      await expect(args.onClick).toHaveBeenCalledTimes(1);
+    });
   },
 };
 
@@ -113,6 +131,14 @@ export const Icon: Story = {
     children: "★",
     size: "icon",
     variant: "ghost",
+    onClick: fn(),
+  },
+  play: async ({ args, canvas, step }) => {
+    await step("click triggers onClick", async () => {
+      const button = canvas.getByRole("button", { name: /★/i });
+      await userEvent.click(button);
+      await expect(args.onClick).toHaveBeenCalledTimes(1);
+    });
   },
 };
 
@@ -120,5 +146,12 @@ export const Disabled: Story = {
   args: {
     children: "Disabled",
     disabled: true,
+    onClick: fn(),
+  },
+  play: async ({ canvas, step }) => {
+    await step("disabled button cannot be clicked", async () => {
+      const button = canvas.getByRole("button", { name: /disabled/i });
+      await expect(button).toBeDisabled();
+    });
   },
 };

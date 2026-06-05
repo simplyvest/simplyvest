@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/tanstack-react";
+import { fn, userEvent, expect } from "storybook/test";
 
 import { Field } from "./field";
 import { Input } from "./input";
 
 const meta = {
   component: Field,
-  args: { children: <Input placeholder="Type here" /> },
+  args: { children: <Input placeholder="Type here" onChange={fn()} /> },
   argTypes: {
     label: { control: "text" },
     required: { control: "boolean" },
@@ -21,6 +22,13 @@ export const Default: Story = {
   args: {
     label: "Your Name",
   },
+  play: async ({ canvas, step }) => {
+    await step("Type into the input field", async () => {
+      const input = canvas.getByPlaceholderText("Type here");
+      await userEvent.type(input, "hello");
+      await expect(input).toHaveValue("hello");
+    });
+  },
 };
 
 export const Required: Story = {
@@ -35,6 +43,12 @@ export const WithError: Story = {
     label: "Email",
     required: true,
     error: "Invalid email address",
+  },
+  play: async ({ canvas, step }) => {
+    await step("Verify error message is visible", async () => {
+      const alert = canvas.getByRole("alert");
+      await expect(alert).toHaveTextContent("Invalid email address");
+    });
   },
 };
 
