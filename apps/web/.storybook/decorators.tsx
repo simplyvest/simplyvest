@@ -1,4 +1,5 @@
 import type { WalletContextState } from "@solana/wallet-adapter-react";
+import { WalletProvider } from "@solana/wallet-adapter-react";
 import { PublicKey, Transaction, VersionedTransaction } from "@solana/web3.js";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { type ReactNode } from "react";
@@ -84,5 +85,44 @@ export function withProviders(Story: () => ReactNode) {
         <Story />
       </ThemeProvider>
     </QueryClientProvider>
+  );
+}
+
+/**
+ * Storybook decorator that adds mock Solana wallet context.
+ * Needed for components that call useWallet() (WalletButton, Navbar).
+ * Combines with withProviders — use as a nested decorator.
+ *
+ * ```ts
+ * import { withWalletProvider } from "../../../.storybook/decorators";
+ * const meta = { decorators: [withWalletProvider], ... };
+ * ```
+ */
+export function withWalletProvider(Story: () => ReactNode) {
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+  const adapter = {
+    name: "MockWallet",
+    url: "",
+    icon: "",
+    readyState: "Installed",
+    publicKey: MOCK_PUBKEY,
+    connecting: false,
+    connected: true,
+    autoConnect: async () => {},
+    supportedTransactionVersions: new Set(["legacy", 0]),
+    connect: async () => {},
+    disconnect: async () => {},
+    sendTransaction: async () => "",
+    signTransaction: async <T extends Transaction | VersionedTransaction>(tx: T) => tx,
+    signAllTransactions: async <T extends Transaction | VersionedTransaction>(txs: T[]) => txs,
+    signMessage: async () => new Uint8Array(),
+    on: () => adapter,
+    removeListener: () => adapter,
+    emit: () => false,
+  } as never;
+  return (
+    <WalletProvider wallets={[adapter]} autoConnect={false}>
+      <Story />
+    </WalletProvider>
   );
 }

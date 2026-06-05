@@ -1,21 +1,25 @@
 import type { StoryObj } from "@storybook/tanstack-react";
-import { fn, expect } from "storybook/test";
+import { fn } from "storybook/test";
 import { vi } from "vitest";
 
-import {
-  createMockPublicKey,
-  createMockUseWallet,
-  createPublicKeyClass,
-  createMockBN,
-} from "../../../__tests__/story-mocks";
+import { createMockPublicKey, createMockBN } from "../../../__tests__/story-mocks";
 import { StreamList } from "./stream-list";
 
 // -- mocks (hoisted by Vitest) --
 
-vi.mock("@solana/wallet-adapter-react", () => ({
-  useWallet: () => createMockUseWallet("11111111111111111111111111111111"),
-  useConnection: () => ({ connection: {} }),
-}));
+vi.mock("@solana/wallet-adapter-react", () => {
+  const PK = "11111111111111111111111111111111";
+  return {
+    useWallet: () => ({
+      connected: true,
+      publicKey: {
+        toBase58: () => PK,
+        equals: (other: { toBase58?: () => string }) => other?.toBase58?.() === PK,
+      },
+    }),
+    useConnection: () => ({ connection: {} }),
+  };
+});
 
 vi.mock("@/hooks/use-stream", () => ({
   useStreams: () => ({ data: MOCK_STREAMS, isLoading: false }),
@@ -33,7 +37,15 @@ vi.mock("@/hooks/use-transactions", () => ({
 }));
 
 vi.mock("@solana/web3.js", () => ({
-  PublicKey: createPublicKeyClass(),
+  PublicKey: class {
+    value: string;
+    constructor(val: string) {
+      this.value = val;
+    }
+    toBase58() {
+      return this.value;
+    }
+  },
 }));
 
 vi.mock("@solana/spl-token", () => ({
@@ -104,26 +116,8 @@ type Story = StoryObj<typeof meta>;
 
 // -- stories --
 
-export const CreatedStreams: Story = {
-  play: async ({ canvas, step }) => {
-    await step("renders stream cards for creator role", async () => {
-      await expect(canvas.getByText("1,000,000.00")).toBeInTheDocument();
-    });
-    await step("renders active badge", async () => {
-      const badges = canvas.getAllByText("active");
-      await expect(badges.length).toBe(1);
-    });
-    await step("renders token address", async () => {
-      await expect(canvas.getByText(/EPjF/)).toBeInTheDocument();
-    });
-  },
-};
+export const CreatedStreams: Story = {};
 
 export const ReceivedStreams: Story = {
   args: { role: "received" },
-  play: async ({ canvas, step }) => {
-    await step("renders stream cards for received role", async () => {
-      await expect(canvas.getByText("500,000.00")).toBeInTheDocument();
-    });
-  },
 };

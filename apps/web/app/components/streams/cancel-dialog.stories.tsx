@@ -3,19 +3,20 @@ import BN from "bn.js";
 import { fn, expect } from "storybook/test";
 import { vi } from "vitest";
 
-import {
-  createMockPublicKey,
-  createMockUseWallet,
-  createPublicKeyClass,
-} from "../../__tests__/story-mocks";
 import { CancelDialog } from "./cancel-dialog";
 
 // -- mocks (hoisted by Vitest) --
 
-vi.mock("@solana/wallet-adapter-react", () => ({
-  useWallet: () => createMockUseWallet(),
-  useConnection: () => ({ connection: {} }),
-}));
+vi.mock("@solana/wallet-adapter-react", () => {
+  const PK = "11111111111111111111111111111111";
+  return {
+    useWallet: () => ({
+      connected: true,
+      publicKey: { toBase58: () => PK, equals: () => false },
+    }),
+    useConnection: () => ({ connection: {} }),
+  };
+});
 
 const cancelState = {
   mutate: fn(),
@@ -29,12 +30,21 @@ vi.mock("@/hooks/use-transactions", () => ({
 }));
 
 vi.mock("@solana/web3.js", () => ({
-  PublicKey: createPublicKeyClass(),
+  PublicKey: class {
+    value: string;
+    constructor(val: string) {
+      this.value = val;
+    }
+    toBase58() {
+      return this.value;
+    }
+  },
 }));
 
 vi.mock("@solana/spl-token", () => ({
-  getAssociatedTokenAddressSync: () =>
-    createMockPublicKey("mock_ata_11111111111111111111111111111"),
+  getAssociatedTokenAddressSync: () => ({
+    toBase58: () => "mock_ata_11111111111111111111111111111",
+  }),
 }));
 vi.mock("@solana-tdp/sdk", () => ({
   getVaultPda: () => [{ toBase58: () => "vault_pda_addr" }, 255],
