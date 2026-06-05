@@ -13,7 +13,6 @@ const footerLinks = {
     { name: "Support", href: "/waitlist" },
   ],
   company: [
-    { name: "About", href: "/" },
     { name: "GitHub", href: "https://github.com/simplyvest/simplyvest" },
     { name: "App", href: "/app" },
   ],
