@@ -96,10 +96,8 @@ export function HowItWorks() {
         {/* ---------------------------------------------------------------- */}
         {/*  Timeline                                                        */}
         {/* ---------------------------------------------------------------- */}
-        <div className="relative mt-16">
-          {/* Vertical line — tracks left edge of step number circles */}
-          <div className="absolute left-6 top-4 bottom-0 w-px bg-gradient-to-b from-purple-300 via-purple-400 to-purple-300 sm:left-9 sm:top-4" />
-
+        {/* Timeline */}
+        <div className="mt-16">
           <div className="flex flex-col gap-16">
             {steps.map((step) => (
               <StepCard key={step.number} step={step} />
