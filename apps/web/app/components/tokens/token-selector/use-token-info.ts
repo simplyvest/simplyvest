@@ -2,7 +2,7 @@ import { fetchTokenMetadata, formatTokenLabel } from "@solana-tdp/sdk";
 import { getMint } from "@solana/spl-token";
 import { useConnection } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export interface TokenInfoState {
   label: string | null;
@@ -28,7 +28,6 @@ export function useTokenInfo(mintAddress: string): TokenInfoState {
   useEffect(() => {
     const addr = mintAddress.trim();
 
-    // Empty — reset
     // Empty — reset
     if (!addr) {
       setState({ label: null, error: null, loading: false });
