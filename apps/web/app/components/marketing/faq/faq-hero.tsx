@@ -2,7 +2,7 @@ import { SectionDecorations, BlobBlob } from "@/components/ui/section-decoration
 
 export function FaqHero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-white dark:from-slate-950 via-purple-50/20 dark:via-purple-950 to-white dark:to-slate-950 pt-16 pb-20">
+    <section className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-gradient-to-br from-white dark:from-slate-950 via-purple-50/20 dark:via-purple-950 to-white dark:to-slate-950">
       <SectionDecorations>
         <BlobBlob className="absolute top-10 left-1/4 h-72 w-72 bg-purple-200/30 dark:bg-purple-800/30" />
         <BlobBlob className="absolute bottom-10 right-1/4 h-64 w-64 bg-violet-200/20" />
