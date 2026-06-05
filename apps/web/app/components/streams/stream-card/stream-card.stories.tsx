@@ -2,30 +2,22 @@ import type { StoryObj } from "@storybook/tanstack-react";
 import { fn, expect } from "storybook/test";
 import { vi } from "vitest";
 
+import {
+  createMockPublicKey,
+  createMockBN,
+  createMockUseWallet,
+  createPublicKeyClass,
+} from "../../../__tests__/story-mocks";
 import { StreamCard } from "./stream-card";
 
 // -- mocks (hoisted by Vitest) --
 
 vi.mock("@solana/web3.js", () => ({
-  PublicKey: class {
-    value: string;
-    constructor(val: string) {
-      this.value = val;
-    }
-    toBase58() {
-      return this.value;
-    }
-  },
+  PublicKey: createPublicKeyClass(),
 }));
 
 vi.mock("@solana/wallet-adapter-react", () => ({
-  useWallet: () => ({
-    connected: true,
-    publicKey: {
-      toBase58: () => WALLET_PK,
-      equals: (other: { toBase58?: () => string }) => other?.toBase58?.() === WALLET_PK,
-    },
-  }),
+  useWallet: () => createMockUseWallet(WALLET_PK),
   useConnection: () => ({ connection: {} }),
 }));
 
@@ -42,7 +34,7 @@ vi.mock("@solana/spl-token", () => ({
 }));
 
 // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-const CLAIMABLE_BN = { toNumber: () => 550_000_000_000 } as never;
+const CLAIMABLE_BN = createMockBN(550_000_000_000);
 
 vi.mock("@solana-tdp/sdk", () => ({
   getStatus: () => "active",
@@ -61,25 +53,17 @@ const WALLET_PK = "11111111111111111111111111111111";
 const CREATOR_PK = WALLET_PK;
 const RECIPIENT_PK = "22222222222222222222222222222222";
 
-const mockPK = (base58: string) => ({ toBase58: () => base58 });
-
-const mockBN = (n: number) => ({
-  toNumber: () => n,
-  valueOf: () => n,
-  sub: (other: { toNumber?: () => number }) => mockBN(n - (other?.toNumber?.() ?? 0)),
-});
-
 const baseStream = {
-  creator: mockPK(CREATOR_PK),
-  recipient: mockPK(RECIPIENT_PK),
-  mint: mockPK("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
-  vault: mockPK("33333333333333333333333333333333"),
-  amount: mockBN(1_000_000_000_000),
-  amountWithdrawn: mockBN(250_000_000_000),
-  startTime: mockBN(1_700_000_000),
-  cliffTime: mockBN(1_700_000_000),
-  endTime: mockBN(1_800_000_000),
-  vestingCount: mockBN(0),
+  creator: createMockPublicKey(CREATOR_PK),
+  recipient: createMockPublicKey(RECIPIENT_PK),
+  mint: createMockPublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
+  vault: createMockPublicKey("33333333333333333333333333333333"),
+  amount: createMockBN(1_000_000_000_000),
+  amountWithdrawn: createMockBN(250_000_000_000),
+  startTime: createMockBN(1_700_000_000),
+  cliffTime: createMockBN(1_700_000_000),
+  endTime: createMockBN(1_800_000_000),
+  vestingCount: createMockBN(0),
   cancelled: false,
   bump: 255,
   vaultBump: 255,
@@ -87,8 +71,8 @@ const baseStream = {
 
 const streamForReceived = {
   ...baseStream,
-  creator: mockPK(RECIPIENT_PK),
-  recipient: mockPK(CREATOR_PK),
+  creator: createMockPublicKey(RECIPIENT_PK),
+  recipient: createMockPublicKey(CREATOR_PK),
 };
 
 // -- meta --
@@ -97,7 +81,7 @@ const meta = {
   component: StreamCard,
   args: {
     stream: baseStream,
-    pda: mockPK(WALLET_PK),
+    pda: createMockPublicKey(WALLET_PK),
     onCancel: fn(),
     role: "created",
   },

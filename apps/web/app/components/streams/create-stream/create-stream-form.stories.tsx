@@ -2,15 +2,17 @@ import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import { fn, userEvent, expect } from "storybook/test";
 import { vi } from "vitest";
 
+import {
+  createMockPublicKey,
+  createMockUseWallet,
+  createPublicKeyClass,
+} from "../../../__tests__/story-mocks";
 import { CreateStreamForm } from "./create-stream-form";
 
 // -- mocks (hoisted by Vitest) --
 
 vi.mock("@solana/wallet-adapter-react", () => ({
-  useWallet: () => ({
-    connected: true,
-    publicKey: { toBase58: () => "11111111111111111111111111111111", equals: () => false },
-  }),
+  useWallet: () => createMockUseWallet(),
   useConnection: () => ({ connection: {} }),
 }));
 
@@ -41,24 +43,14 @@ vi.mock("@/components/tokens/token-selector/use-owned-tokens", () => ({
 }));
 
 vi.mock("@solana/spl-token", () => ({
-  getAssociatedTokenAddressSync: fn().mockReturnValue({ toBase58: () => "mock_ata" }),
+  getAssociatedTokenAddressSync: () =>
+    createMockPublicKey("mock_ata_11111111111111111111111111111"),
   ASSOCIATED_TOKEN_PROGRAM_ID: { toBase58: () => "AToken..." },
   TOKEN_PROGRAM_ID: { toBase58: () => "Tokenkeg..." },
 }));
 
 vi.mock("@solana/web3.js", () => ({
-  PublicKey: class {
-    value: string;
-    constructor(val: string) {
-      if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(val)) {
-        throw new Error("Invalid public key");
-      }
-      this.value = val;
-    }
-    toBase58() {
-      return this.value;
-    }
-  },
+  PublicKey: createPublicKeyClass(),
 }));
 
 // -- meta --
