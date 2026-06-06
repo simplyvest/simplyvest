@@ -1,7 +1,7 @@
 import { getVaultPda, PROGRAM_ID } from "@solana-tdp/sdk";
 import type { StreamAccount, MilestoneStreamAccount } from "@solana-tdp/sdk";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useAuth } from "@/lib/solana/use-auth";
 import { PublicKey } from "@solana/web3.js";
 import { useState } from "react";
 
@@ -32,7 +32,7 @@ interface SelectedStream {
 }
 
 export function StreamList({ role }: { role: "created" | "received" }) {
-  const { publicKey } = useWallet();
+  const { publicKey } = useAuth();
   const [selected, setSelected] = useState<SelectedStream | null>(null);
   const triggerMilestone = useTriggerMilestone();
   const withdrawMilestone = useWithdrawMilestone();

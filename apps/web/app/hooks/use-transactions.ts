@@ -16,19 +16,14 @@ import {
   PROGRAM_ID,
 } from "@solana-tdp/sdk";
 import type { SolanaTdp } from "@solana-tdp/sdk";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import type { WalletContextState } from "@solana/wallet-adapter-react";
+import { useAnchorSigner } from "@/lib/solana/use-anchor-signer";
+import { useConnection } from "@/lib/solana/use-connection";
 import type { Connection } from "@solana/web3.js";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-function buildProgram(connection: Connection, wallet: WalletContextState) {
-  if (!wallet.publicKey || !wallet.signTransaction) {
-    throw new Error("Wallet not connected");
-  }
-  // TODO: look into proper typing — Anchor Wallet<T> generic variance mismatches WalletContextState
-  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-  const provider = new AnchorProvider(connection, wallet as unknown as Wallet, {
+function buildProgram(connection: Connection, wallet: Wallet) {
+  const provider = new AnchorProvider(connection, wallet, {
     commitment: "confirmed",
   });
   return new Program<SolanaTdp>(SOLANA_TDP_PROGRAM_IDL, provider);
@@ -36,7 +31,7 @@ function buildProgram(connection: Connection, wallet: WalletContextState) {
 
 export function useCreateStream() {
   const queryClient = useQueryClient();
-  const wallet = useWallet();
+  const wallet = useAnchorSigner();
   const { connection } = useConnection();
 
   return useMutation({
@@ -49,7 +44,7 @@ export function useCreateStream() {
       cliffTime: number;
       senderToken: web3.PublicKey;
     }) => {
-      if (!wallet.publicKey) throw new Error("Wallet not connected");
+      if (!wallet) throw new Error("Wallet not connected");
       const program = buildProgram(connection, wallet);
 
       const [creatorConfigPda] = getCreatorConfigPda(wallet.publicKey, PROGRAM_ID);
@@ -99,7 +94,7 @@ export function useCreateStream() {
 
 export function useWithdraw() {
   const queryClient = useQueryClient();
-  const wallet = useWallet();
+  const wallet = useAnchorSigner();
   const { connection } = useConnection();
 
   return useMutation({
@@ -111,7 +106,7 @@ export function useWithdraw() {
       recipientToken: web3.PublicKey;
       amount: number;
     }) => {
-      if (!wallet.publicKey) throw new Error("Wallet not connected");
+      if (!wallet) throw new Error("Wallet not connected");
       const program = buildProgram(connection, wallet);
 
       const tx = await program.methods
@@ -144,7 +139,7 @@ export function useWithdraw() {
 
 export function useCancel() {
   const queryClient = useQueryClient();
-  const wallet = useWallet();
+  const wallet = useAnchorSigner();
   const { connection } = useConnection();
 
   return useMutation({
@@ -156,7 +151,7 @@ export function useCancel() {
       recipientToken: web3.PublicKey;
       mint: web3.PublicKey;
     }) => {
-      if (!wallet.publicKey) throw new Error("Wallet not connected");
+      if (!wallet) throw new Error("Wallet not connected");
       const program = buildProgram(connection, wallet);
 
       const tx = await program.methods
@@ -190,7 +185,7 @@ export function useCancel() {
 
 export function useCreateMilestoneStream() {
   const queryClient = useQueryClient();
-  const wallet = useWallet();
+  const wallet = useAnchorSigner();
   const { connection } = useConnection();
 
   return useMutation({
@@ -201,7 +196,7 @@ export function useCreateMilestoneStream() {
       amount: number;
       senderToken: web3.PublicKey;
     }) => {
-      if (!wallet.publicKey) throw new Error("Wallet not connected");
+      if (!wallet) throw new Error("Wallet not connected");
       const program = buildProgram(connection, wallet);
 
       const [creatorConfigPda] = getCreatorConfigPda(wallet.publicKey, PROGRAM_ID);
@@ -247,12 +242,12 @@ export function useCreateMilestoneStream() {
 
 export function useTriggerMilestone() {
   const queryClient = useQueryClient();
-  const wallet = useWallet();
+  const wallet = useAnchorSigner();
   const { connection } = useConnection();
 
   return useMutation({
     mutationFn: async (stream: web3.PublicKey) => {
-      if (!wallet.publicKey) throw new Error("Wallet not connected");
+      if (!wallet) throw new Error("Wallet not connected");
       const program = buildProgram(connection, wallet);
 
       const tx = await program.methods
@@ -276,7 +271,7 @@ export function useTriggerMilestone() {
 
 export function useWithdrawMilestone() {
   const queryClient = useQueryClient();
-  const wallet = useWallet();
+  const wallet = useAnchorSigner();
   const { connection } = useConnection();
 
   return useMutation({
@@ -287,7 +282,7 @@ export function useWithdrawMilestone() {
       mint: web3.PublicKey;
       recipientToken: web3.PublicKey;
     }) => {
-      if (!wallet.publicKey) throw new Error("Wallet not connected");
+      if (!wallet) throw new Error("Wallet not connected");
       const program = buildProgram(connection, wallet);
 
       const tx = await program.methods
@@ -320,7 +315,7 @@ export function useWithdrawMilestone() {
 
 export function useCancelMilestone() {
   const queryClient = useQueryClient();
-  const wallet = useWallet();
+  const wallet = useAnchorSigner();
   const { connection } = useConnection();
 
   return useMutation({
@@ -330,7 +325,7 @@ export function useCancelMilestone() {
       senderToken: web3.PublicKey;
       mint: web3.PublicKey;
     }) => {
-      if (!wallet.publicKey) throw new Error("Wallet not connected");
+      if (!wallet) throw new Error("Wallet not connected");
       const program = buildProgram(connection, wallet);
 
       const tx = await program.methods

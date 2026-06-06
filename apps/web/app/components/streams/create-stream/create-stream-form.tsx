@@ -1,5 +1,5 @@
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useAuth } from "@/lib/solana/use-auth";
 import { PublicKey } from "@solana/web3.js";
 import { useState, useMemo } from "react";
 
@@ -37,7 +37,7 @@ const initialForm: FormState = {
 };
 
 export function CreateStreamForm() {
-  const { publicKey } = useWallet();
+  const { publicKey } = useAuth();
   const createStream = useCreateStream();
   const createMilestoneStream = useCreateMilestoneStream();
   const isPending = createStream.isPending || createMilestoneStream.isPending;

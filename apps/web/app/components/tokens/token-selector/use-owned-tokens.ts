@@ -1,7 +1,8 @@
 import { fetchTokenMetadata } from "@solana-tdp/sdk";
 import type { TokenMetadata } from "@solana-tdp/sdk";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useAuth } from "@/lib/solana/use-auth";
+import { useConnection } from "@/lib/solana/use-connection";
 import { PublicKey } from "@solana/web3.js";
 import { useState, useEffect } from "react";
 
@@ -24,7 +25,7 @@ export function useOwnedTokens(): {
   loading: boolean;
 } {
   const { connection } = useConnection();
-  const { publicKey } = useWallet();
+  const { publicKey } = useAuth();
   const [tokens, setTokens] = useState<TokenInfo[]>([]);
   const [loading, setLoading] = useState(false);
 

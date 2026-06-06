@@ -2,7 +2,7 @@ import { Program, AnchorProvider } from "@coral-xyz/anchor";
 import type { Wallet } from "@coral-xyz/anchor";
 import { SOLANA_TDP_PROGRAM_IDL, PROGRAM_ID } from "@solana-tdp/sdk";
 import type { SolanaTdp } from "@solana-tdp/sdk";
-import { useConnection } from "@solana/wallet-adapter-react";
+import { useConnection } from "@/lib/solana/use-connection";
 import type { VersionedTransaction, Transaction } from "@solana/web3.js";
 import { useMemo } from "react";
 

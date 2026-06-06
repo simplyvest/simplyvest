@@ -2,7 +2,7 @@ import { getClaimable, getStatus, getVaultPda, PROGRAM_ID } from "@solana-tdp/sd
 import type { StreamAccount } from "@solana-tdp/sdk";
 import { formatAddress } from "@solana-tdp/sdk";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useAuth } from "@/lib/solana/use-auth";
 import { PublicKey } from "@solana/web3.js";
 
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +23,7 @@ export function StreamCard({
   onCancel: (stream: StreamAccount, pda: PublicKey) => void;
   role?: "created" | "received";
 }) {
-  const { publicKey } = useWallet();
+  const { publicKey } = useAuth();
   const withdraw = useWithdraw();
   const isSender = publicKey?.equals(stream.creator);
   const isRecipient = publicKey?.equals(stream.recipient);

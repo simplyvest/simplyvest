@@ -1,5 +1,5 @@
 import { fetchTokenMetadata, formatTokenLabel } from "@solana-tdp/sdk";
-import { useConnection } from "@solana/wallet-adapter-react";
+import { useConnection } from "@/lib/solana/use-connection";
 import type { Connection } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 import { useEffect, useRef, useState } from "react";

@@ -2,7 +2,7 @@ import { getVaultPda, PROGRAM_ID } from "@solana-tdp/sdk";
 import type { StreamAccount } from "@solana-tdp/sdk";
 import { formatAddress } from "@solana-tdp/sdk";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useAuth } from "@/lib/solana/use-auth";
 import type { PublicKey } from "@solana/web3.js";
 import { useMemo } from "react";
 
@@ -21,7 +21,7 @@ export function CancelDialog({
   onClose: () => void;
 }) {
   const cancel = useCancel();
-  const { publicKey } = useWallet();
+  const { publicKey } = useAuth();
 
   const vaultPda = useMemo(() => getVaultPda(pda, PROGRAM_ID)[0], [pda]);
 
