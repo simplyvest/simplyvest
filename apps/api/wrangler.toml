@@ -2,7 +2,10 @@ name = "simplyvest-api"
 main = "src/index.ts"
 compatibility_date = "2025-05-01"
 
+[[d1_databases]]
+binding = "DB"
+database_name = "simplyvest-db"
+database_id = "local-dev-d1"
+
 [vars]
 GOOGLE_SHEET_NAME = "Sheet1"
-
-

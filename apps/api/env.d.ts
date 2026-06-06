@@ -3,4 +3,5 @@ export interface Env {
   GOOGLE_PRIVATE_KEY: string;
   GOOGLE_SHEET_ID: string;
   GOOGLE_SHEET_NAME?: string;
+  DB: D1Database;
 }
