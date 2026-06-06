@@ -5,49 +5,40 @@ import { useMemo } from "react";
 
 export function useAnchorSigner(): Wallet | null {
   const { wallets } = useWallets();
-  const { signTransaction } = useSignTransaction();
+  // oxlint-disable-next-line typescript/unbound-method
+  const { signTransaction: privySignTransaction } = useSignTransaction();
 
-  const solanaWallet = useMemo(() => {
-    return wallets.find((w) => w.chainType === "solana") ?? null;
-  }, [wallets]);
+  const solanaWallet = wallets[0] ?? null;
 
   return useMemo(() => {
     if (!solanaWallet) return null;
 
     const publicKey = new PublicKey(solanaWallet.address);
 
-    return {
-      publicKey,
-      signTransaction: async <T extends Transaction | VersionedTransaction>(tx: T): Promise<T> => {
-        const serialized = tx.serialize();
-        const { signedTransaction } = await signTransaction({
-          transaction: new Uint8Array(serialized),
-          wallet: solanaWallet,
-        });
-        const buffer = Buffer.from(signedTransaction);
-        if ("version" in tx) {
-          return VersionedTransaction.deserialize(buffer) as T;
-        }
-        return Transaction.deserialize(buffer) as T;
-      },
-      signAllTransactions: async <T extends Transaction | VersionedTransaction>(
-        txs: T[],
-      ): Promise<T[]> => {
-        return Promise.all(
-          txs.map(async (tx) => {
-            const serialized = tx.serialize();
-            const { signedTransaction } = await signTransaction({
-              transaction: new Uint8Array(serialized),
-              wallet: solanaWallet,
-            });
-            const buffer = Buffer.from(signedTransaction);
-            if ("version" in tx) {
-              return VersionedTransaction.deserialize(buffer) as T;
-            }
-            return Transaction.deserialize(buffer) as T;
-          }),
-        );
-      },
-    } as Wallet;
-  }, [solanaWallet, signTransaction]);
+    const signTransaction = async <T extends Transaction | VersionedTransaction>(
+      tx: T,
+    ): Promise<T> => {
+      const serialized = tx.serialize();
+      const { signedTransaction } = await privySignTransaction({
+        transaction: new Uint8Array(serialized),
+        wallet: solanaWallet,
+      });
+      const buffer = Buffer.from(signedTransaction);
+      if ("version" in tx) {
+        // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+        return VersionedTransaction.deserialize(buffer) as T;
+      }
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+      return Transaction.from(buffer) as T;
+    };
+
+    const signAllTransactions = async <T extends Transaction | VersionedTransaction>(
+      txs: T[],
+    ): Promise<T[]> => {
+      return Promise.all(txs.map((tx) => signTransaction(tx)));
+    };
+
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+    return { publicKey, signTransaction, signAllTransactions } as Wallet;
+  }, [solanaWallet, privySignTransaction]);
 }

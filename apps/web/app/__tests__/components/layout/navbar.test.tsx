@@ -1,8 +1,22 @@
 import { screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
 import { renderWithRouter } from "@/__tests__/test-utils";
 import { Navbar } from "@/components/layout/navbar";
+
+vi.mock("@/lib/solana/use-auth", () => ({
+  useAuth: () => ({
+    connected: false,
+    connecting: false,
+    publicKey: null,
+    user: null,
+  }),
+}));
+
+vi.mock("@privy-io/react-auth", () => ({
+  useLogin: () => ({ login: () => {} }),
+  useLogout: () => ({ logout: () => {} }),
+}));
 
 describe("Navbar", () => {
   it("renders the SimplyVest logo and brand name", async () => {

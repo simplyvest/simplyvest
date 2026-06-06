@@ -1,4 +1,4 @@
-import { WalletButton } from "@/components/solana/wallet-button";
+import { AuthButton } from "@/components/solana/wallet-button";
 import { LinkButton } from "@/components/ui/link-button";
 
 import { NavLinks } from "./nav-links";
@@ -34,7 +34,7 @@ export function MobileMenu({
       )}
       <div className="flex items-center gap-3 pt-2 border-t border-gray-200 dark:border-slate-700">
         <ThemeToggle />
-        {isApp && <WalletButton />}
+        {isApp && <AuthButton />}
       </div>
     </div>
   );

@@ -17,9 +17,7 @@ export function useAuth(): AuthState {
   const { ready, authenticated, user } = usePrivy();
   const { wallets } = useWallets();
 
-  const solanaWallet = useMemo(() => {
-    return wallets.find((w) => w.chainType === "solana") ?? null;
-  }, [wallets]);
+  const solanaWallet = wallets[0] ?? null;
 
   const publicKey = useMemo(() => {
     if (!solanaWallet?.address) return null;

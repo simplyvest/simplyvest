@@ -38,6 +38,10 @@
   "devDependencies": {
     "@chromatic-com/storybook": "^5.2.1",
     "@playwright/test": "^1.60.0",
+    "@solana-program/memo": "^0.11.1",
+    "@solana-program/system": "^0.12.2",
+    "@solana-program/token": "^0.13.0",
+    "@solana/kit": "^6.9.0",
     "@storybook/addon-a11y": "^10.4.2",
     "@storybook/addon-docs": "^10.4.2",
     "@storybook/addon-mcp": "^0.6.0",
@@ -64,5 +68,11 @@
     "typescript": "^5.7.0",
     "vite": "^8.0.16",
     "vitest": "^4.1.8"
+  },
+  "peerDependencies": {
+    "@solana-program/memo": "^0.11.1",
+    "@solana-program/system": "^0.12.2",
+    "@solana-program/token": "^0.13.0",
+    "@solana/kit": "^6.9.0"
   }
 }
