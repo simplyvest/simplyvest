@@ -8,5 +8,8 @@ database_name = "simplyvest-db"
 database_id = "local-dev-d1"
 migrations_dir = "src/db/migrations"
 
+[triggers]
+crons = ["*/15 * * * *"]
+
 [vars]
 GOOGLE_SHEET_NAME = "Sheet1"

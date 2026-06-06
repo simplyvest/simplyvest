@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, index } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, index, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
@@ -100,5 +100,6 @@ export const streamEvents = sqliteTable(
   (t) => ({
     streamIdx: index("idx_events_stream").on(t.streamId),
     typeIdx: index("idx_events_type").on(t.eventType),
+    dedupIdx: uniqueIndex("idx_events_dedup").on(t.streamId, t.eventType, t.txSignature),
   }),
 );

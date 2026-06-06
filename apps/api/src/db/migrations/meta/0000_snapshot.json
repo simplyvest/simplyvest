@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "d33e572e-610c-4374-92ac-919e94b18d1a",
+  "id": "f9bc88a2-737c-4ff3-88d1-5f36b076cfb6",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "org_members": {
@@ -210,6 +210,15 @@
             "event_type"
           ],
           "isUnique": false
+        },
+        "idx_events_dedup": {
+          "name": "idx_events_dedup",
+          "columns": [
+            "stream_id",
+            "event_type",
+            "tx_signature"
+          ],
+          "isUnique": true
         }
       },
       "foreignKeys": {
@@ -416,21 +425,7 @@
           "isUnique": false
         }
       },
-      "foreignKeys": {
-        "streams_org_id_organizations_id_fk": {
-          "name": "streams_org_id_organizations_id_fk",
-          "tableFrom": "streams",
-          "tableTo": "organizations",
-          "columnsFrom": [
-            "org_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}

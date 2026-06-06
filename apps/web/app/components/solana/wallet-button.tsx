@@ -126,7 +126,7 @@ export function AuthButton() {
   }
 
   return (
-    <Button variant="brand" size="sm" onClick={() => login()}>
+    <Button variant="brand" size="sm" onClick={() => login({ loginMethods: ["email", "google", "wallet"] })}>
       Log In
     </Button>
   );

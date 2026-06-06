@@ -31,6 +31,7 @@ CREATE TABLE `stream_events` (
 --> statement-breakpoint
 CREATE INDEX `idx_events_stream` ON `stream_events` (`stream_id`);--> statement-breakpoint
 CREATE INDEX `idx_events_type` ON `stream_events` (`event_type`);--> statement-breakpoint
+CREATE UNIQUE INDEX `idx_events_dedup` ON `stream_events` (`stream_id`,`event_type`,`tx_signature`);--> statement-breakpoint
 CREATE TABLE `streams` (
 	`id` text PRIMARY KEY NOT NULL,
 	`type` text NOT NULL,
@@ -52,8 +53,7 @@ CREATE TABLE `streams` (
 	`closed_at` integer,
 	`close_tx` text,
 	`last_synced_at` integer,
-	`sync_version` integer DEFAULT 0,
-	FOREIGN KEY (`org_id`) REFERENCES `organizations`(`id`) ON UPDATE no action ON DELETE no action
+	`sync_version` integer DEFAULT 0
 );
 --> statement-breakpoint
 CREATE INDEX `idx_streams_creator` ON `streams` (`creator_address`);--> statement-breakpoint

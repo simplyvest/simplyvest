@@ -12,7 +12,7 @@ function LedgerSetup() {
 }
 
 function LoginTracker() {
-  const { authenticated } = usePrivy();
+  const { authenticated, user } = usePrivy();
   const { wallets } = useWallets();
   const prevAuthRef = React.useRef(authenticated);
 
@@ -20,10 +20,19 @@ function LoginTracker() {
     if (authenticated && !prevAuthRef.current) {
       const wallet = wallets[0];
       const walletAddress = wallet?.address ?? "unknown";
-      trackEvent("user_login", "engagement", walletAddress);
+      const loginMethod = user?.google
+        ? "google"
+        : user?.email
+          ? "email"
+          : user?.wallet
+            ? "wallet"
+            : "unknown";
+      trackEvent("user_login", "engagement", walletAddress, undefined, {
+        login_method: loginMethod,
+      });
     }
     prevAuthRef.current = authenticated;
-  }, [authenticated, wallets]);
+  }, [authenticated, wallets, user]);
 
   return null;
 }

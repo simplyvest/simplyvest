@@ -61,7 +61,7 @@ function AppLayout() {
               variant="default"
               size="lg"
               className="min-w-[200px]"
-              onClick={() => login()}
+              onClick={() => login({ loginMethods: ["email", "google", "wallet"] })}
               disabled={connecting}
             >
               {connecting ? "Loading..." : "Log In"}
