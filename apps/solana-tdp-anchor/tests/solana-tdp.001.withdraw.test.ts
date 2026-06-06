@@ -430,7 +430,7 @@ describe("Feature 1: withdraw", () => {
   });
 
   it("withdraws 50% then remaining 50% on same stream", async () => {
-    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount } =
+    const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, end } =
       await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 10, 400, 0);
 
     // First withdrawal at 50% elapsed
@@ -454,6 +454,34 @@ describe("Feature 1: withdraw", () => {
     const streamAfterFirst = await program.account.streamAccount.fetch(streamPDA);
     expect(Number(streamAfterFirst.amountWithdrawn)).toBe(half);
     expect(svmTokenBalance(vaultPDA)).toBe(BigInt(amount - half));
+
+    // Second withdrawal — warp past end, withdraw the rest
+    const recipientBefore = svmTokenBalance(recipientToken);
+    warp(end - clockNow(svm) + 10); // past end_time
+    const remaining = amount - half;
+    await program.methods
+      .withdraw({ amount: new BN(remaining) })
+      .accountsPartial(
+        getWithdrawAccounts(
+          recipient.publicKey,
+          streamPDA,
+          vaultPDA,
+          recipientToken,
+          sender.publicKey,
+          mint,
+        ),
+      )
+      .signers([recipient])
+      .rpc();
+
+    // Stream and vault should be closed on final withdrawal
+    expect(svm.getAccount(vaultPDA)).toBeNull();
+    const streamAcc = svm.getAccount(streamPDA);
+    if (streamAcc) {
+      const data = Buffer.from(streamAcc.data);
+      expect(data.every((b: number) => b === 0)).toBe(true);
+    }
+    expect(svmTokenBalance(recipientToken)).toBe(recipientBefore + BigInt(remaining));
   });
 
   it("rejects withdraw by third party", async () => {

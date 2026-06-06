@@ -26,14 +26,19 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
-          cache: pnpm
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          pnpm config set store-dir ~/.pnpm-store
+          echo "store-path=~/.pnpm-store" >> $GITHUB_OUTPUT
       - name: Cache pnpm store
         uses: actions/cache@v5
         with:
-          path: node_modules/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
+          path: ${{ steps.pnpm-cache.outputs.store-path }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - run: pnpm install --frozen-lockfile --prefer-offline
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
       - name: TypeScript check (web)
@@ -49,16 +54,26 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
-          cache: pnpm
-      - name: Cache pnpm store + Playwright
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          pnpm config set store-dir ~/.pnpm-store
+          echo "store-path=~/.pnpm-store" >> $GITHUB_OUTPUT
+      - name: Cache pnpm store
         uses: actions/cache@v5
         with:
-          path: |
-            node_modules/.pnpm
-            ~/.cache/ms-playwright
-          key: ${{ runner.os }}-pw-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pw-
-      - run: pnpm install --frozen-lockfile
+          path: ${{ steps.pnpm-cache.outputs.store-path }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Cache Playwright browsers
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+      - run: pnpm install --frozen-lockfile --prefer-offline
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
       - name: Install Playwright browsers
@@ -76,14 +91,19 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
-          cache: pnpm
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          pnpm config set store-dir ~/.pnpm-store
+          echo "store-path=~/.pnpm-store" >> $GITHUB_OUTPUT
       - name: Cache pnpm store
         uses: actions/cache@v5
         with:
-          path: node_modules/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
+          path: ${{ steps.pnpm-cache.outputs.store-path }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - run: pnpm install --frozen-lockfile --prefer-offline
       - name: TypeScript check (api)
         run: pnpm --filter @solana-tdp/api typecheck
 
@@ -97,14 +117,19 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
-          cache: pnpm
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          pnpm config set store-dir ~/.pnpm-store
+          echo "store-path=~/.pnpm-store" >> $GITHUB_OUTPUT
       - name: Cache pnpm store
         uses: actions/cache@v5
         with:
-          path: node_modules/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
+          path: ${{ steps.pnpm-cache.outputs.store-path }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - run: pnpm install --frozen-lockfile --prefer-offline
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
       - name: TypeScript check (anchor)
@@ -120,14 +145,19 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
-          cache: pnpm
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          pnpm config set store-dir ~/.pnpm-store
+          echo "store-path=~/.pnpm-store" >> $GITHUB_OUTPUT
       - name: Cache pnpm store
         uses: actions/cache@v5
         with:
-          path: node_modules/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
+          path: ${{ steps.pnpm-cache.outputs.store-path }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - run: pnpm install --frozen-lockfile --prefer-offline
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
       - name: Lint
@@ -143,16 +173,41 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
-          cache: pnpm
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          pnpm config set store-dir ~/.pnpm-store
+          echo "store-path=~/.pnpm-store" >> $GITHUB_OUTPUT
       - name: Cache pnpm store
         uses: actions/cache@v5
         with:
-          path: node_modules/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
+          path: ${{ steps.pnpm-cache.outputs.store-path }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - run: pnpm install --frozen-lockfile --prefer-offline
       - name: Format check
         run: pnpm exec oxfmt --check .
+
+  lint-rust:
+    runs-on: ubuntu-24.04
+    env:
+      CARGO_TARGET_DIR: ${{ github.workspace }}/apps/solana-tdp-anchor/target
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "apps/solana-tdp-anchor/programs/solana-tdp -> ../../target"
+          key: solana-${{ env.SOLANA_VERSION }}
+      - name: Check Rust formatting
+        run: cargo fmt --check
+        working-directory: apps/solana-tdp-anchor/programs/solana-tdp
+      - name: Clippy
+        run: cargo clippy --all-targets --locked -- -D warnings
+        working-directory: apps/solana-tdp-anchor/programs/solana-tdp
 
   build-web:
     runs-on: ubuntu-24.04
@@ -164,14 +219,19 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
-          cache: pnpm
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          pnpm config set store-dir ~/.pnpm-store
+          echo "store-path=~/.pnpm-store" >> $GITHUB_OUTPUT
       - name: Cache pnpm store
         uses: actions/cache@v5
         with:
-          path: node_modules/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
+          path: ${{ steps.pnpm-cache.outputs.store-path }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - run: pnpm install --frozen-lockfile --prefer-offline
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
       - name: Build web app
@@ -186,6 +246,8 @@ jobs:
         working-directory: apps/solana-tdp-anchor
     env:
       CARGO_TARGET_DIR: ${{ github.workspace }}/apps/solana-tdp-anchor/target
+      RUSTC_WRAPPER: sccache
+      SCCACHE_GHA_ENABLED: "true"
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v6
@@ -194,7 +256,11 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
-          cache: pnpm
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          pnpm config set store-dir ~/.pnpm-store
+          echo "store-path=~/.pnpm-store" >> $GITHUB_OUTPUT
 
       - name: Cache Solana + Anchor
         id: cache-solana
@@ -223,6 +289,9 @@ jobs:
           key: solana-${{ env.SOLANA_VERSION }}
           cache-on-failure: true
 
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.9
+
       - name: Set up PATH
         run: |
           echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
@@ -234,19 +303,12 @@ jobs:
       - name: Cache pnpm store
         uses: actions/cache@v5
         with:
-          path: node_modules/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
+          path: ${{ steps.pnpm-cache.outputs.store-path }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - run: pnpm install --frozen-lockfile --prefer-offline
         working-directory: .
-
-      - name: Check Rust formatting
-        run: cargo fmt --check
-        working-directory: apps/solana-tdp-anchor/programs/solana-tdp
-
-      - name: Clippy
-        run: cargo clippy --all-targets -- -D warnings
-        working-directory: apps/solana-tdp-anchor/programs/solana-tdp
 
       - name: Build program (BPF)
         run: anchor build
@@ -284,14 +346,19 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
-          cache: pnpm
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          pnpm config set store-dir ~/.pnpm-store
+          echo "store-path=~/.pnpm-store" >> $GITHUB_OUTPUT
       - name: Cache pnpm store
         uses: actions/cache@v5
         with:
-          path: node_modules/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
+          path: ${{ steps.pnpm-cache.outputs.store-path }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - run: pnpm install --frozen-lockfile --prefer-offline
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
       - name: Build web app
@@ -314,13 +381,18 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
-          cache: pnpm
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          pnpm config set store-dir ~/.pnpm-store
+          echo "store-path=~/.pnpm-store" >> $GITHUB_OUTPUT
       - name: Cache pnpm store
         uses: actions/cache@v5
         with:
-          path: node_modules/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
+          path: ${{ steps.pnpm-cache.outputs.store-path }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - run: pnpm install --frozen-lockfile --prefer-offline
       - name: Deploy API Worker
         run: pnpm --filter @solana-tdp/api run deploy
