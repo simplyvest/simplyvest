@@ -1,3 +1,4 @@
+import { usePrivy } from "@privy-io/react-auth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -93,5 +94,75 @@ export function useApiStream(id: string) {
     queryKey: ["api-stream", id],
     queryFn: () => api.get<StreamWithEvents>(`/api/streams/${id}`),
     enabled: !!id,
+  });
+}
+
+// User profile types
+interface UserProfile {
+  id: string;
+  walletAddress: string;
+  displayName: string | null;
+  avatarUrl: string | null;
+  email: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface UpdateProfileInput {
+  displayName?: string;
+  avatarUrl?: string;
+  email?: string;
+}
+
+// User profile hooks
+export function useUserProfile() {
+  const { getAccessToken } = usePrivy();
+
+  return useQuery({
+    queryKey: ["user-profile"],
+    queryFn: async () => {
+      const token = await getAccessToken();
+      if (!token) throw new Error("Not authenticated");
+      return api.get<UserProfile>("/api/users/me", { token });
+    },
+  });
+}
+
+export function useUpdateProfile() {
+  const queryClient = useQueryClient();
+  const { getAccessToken } = usePrivy();
+
+  return useMutation({
+    mutationFn: async (input: UpdateProfileInput) => {
+      const token = await getAccessToken();
+      if (!token) throw new Error("Not authenticated");
+      return api.put<UserProfile>("/api/users/me", input, token);
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+      toast.success("Profile updated");
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to update profile");
+    },
+  });
+}
+
+export function useCreateProfile() {
+  const queryClient = useQueryClient();
+  const { getAccessToken } = usePrivy();
+
+  return useMutation({
+    mutationFn: async (input: { walletAddress: string; displayName?: string; email?: string }) => {
+      const token = await getAccessToken();
+      if (!token) throw new Error("Not authenticated");
+      return api.post<UserProfile>("/api/users/me", input, token);
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to create profile");
+    },
   });
 }
