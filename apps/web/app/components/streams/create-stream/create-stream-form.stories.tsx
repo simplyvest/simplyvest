@@ -3,16 +3,15 @@ import { fn, userEvent, expect } from "storybook/test";
 
 import {
   createMockPublicKey,
-  createMockUseWallet,
+  createMockUseAuth,
   createPublicKeyClass,
 } from "../../../__tests__/story-mocks";
 import { CreateStreamForm } from "./create-stream-form";
 
 // -- mocks (hoisted by Vitest) --
 
-vi.mock("@solana/wallet-adapter-react", () => ({
-  useWallet: () => createMockUseWallet(),
-  useConnection: () => ({ connection: {} }),
+vi.mock("@/lib/solana/use-auth", () => ({
+  useAuth: () => createMockUseAuth(),
 }));
 
 vi.mock("@/hooks/use-transactions", () => ({

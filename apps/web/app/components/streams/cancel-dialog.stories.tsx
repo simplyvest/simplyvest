@@ -6,14 +6,15 @@ import { CancelDialog } from "./cancel-dialog";
 
 // -- mocks (hoisted by Vitest) --
 
-vi.mock("@solana/wallet-adapter-react", () => {
+vi.mock("@/lib/solana/use-auth", () => {
   const PK = "11111111111111111111111111111111";
   return {
-    useWallet: () => ({
+    useAuth: () => ({
       connected: true,
+      connecting: false,
       publicKey: { toBase58: () => PK, equals: () => false },
+      user: null,
     }),
-    useConnection: () => ({ connection: {} }),
   };
 });
 

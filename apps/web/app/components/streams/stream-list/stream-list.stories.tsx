@@ -6,17 +6,18 @@ import { StreamList } from "./stream-list";
 
 // -- mocks (hoisted by Vitest) --
 
-vi.mock("@solana/wallet-adapter-react", () => {
+vi.mock("@/lib/solana/use-auth", () => {
   const PK = "11111111111111111111111111111111";
   return {
-    useWallet: () => ({
+    useAuth: () => ({
       connected: true,
+      connecting: false,
       publicKey: {
         toBase58: () => PK,
         equals: (other: { toBase58?: () => string }) => other?.toBase58?.() === PK,
       },
+      user: null,
     }),
-    useConnection: () => ({ connection: {} }),
   };
 });
 

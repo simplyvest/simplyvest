@@ -4,12 +4,13 @@ import { vi } from "vitest";
 
 import { TokenSelector } from "./token-selector";
 
-vi.mock("@solana/wallet-adapter-react", () => ({
-  useWallet: () => ({
+vi.mock("@/lib/solana/use-auth", () => ({
+  useAuth: () => ({
     connected: true,
+    connecting: false,
     publicKey: { toBase58: () => "11111111111111111111111111111111", equals: () => false },
+    user: null,
   }),
-  useConnection: () => ({ connection: {} }),
 }));
 
 vi.mock("./use-owned-tokens", () => ({

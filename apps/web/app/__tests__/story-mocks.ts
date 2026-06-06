@@ -23,11 +23,13 @@ export function createMockBN(n: number) {
   };
 }
 
-/** Mock return value of useWallet() — connected with a mock public key. */
-export function createMockUseWallet(pk = "11111111111111111111111111111111") {
+/** Mock return value of useAuth() — connected with a mock public key. */
+export function createMockUseAuth(pk = "11111111111111111111111111111111") {
   return {
     connected: true,
+    connecting: false,
     publicKey: createMockPublicKey(pk),
+    user: null,
   };
 }
 
