@@ -8,11 +8,13 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250501.0",
+    "drizzle-kit": "^0.31.10",
     "typescript": "^5.7.0",
     "wrangler": "^4.90.0"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",
-    "hono": "^4.12.23"
+    "hono": "^4.12.23",
+    "uuid": "^14.0.0"
   }
 }

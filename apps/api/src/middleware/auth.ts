@@ -144,5 +144,9 @@ export async function authMiddleware(c: Context, next: Next) {
 }
 
 export function getUserId(c: Context): string {
-  return c.get("userId");
+  const userId = c.get("userId");
+  if (!userId) {
+    throw new Error("User not authenticated");
+  }
+  return userId;
 }

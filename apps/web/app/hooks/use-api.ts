@@ -166,3 +166,122 @@ export function useCreateProfile() {
     },
   });
 }
+
+// Organization types
+interface Organization {
+  id: string;
+  name: string;
+  slug: string;
+  createdBy: string;
+  createdAt: Date;
+}
+
+interface OrgMember {
+  userId: string;
+  role: "owner" | "admin" | "member";
+  joinedAt: Date;
+  walletAddress: string;
+  displayName: string | null;
+}
+
+interface OrgWithMembers extends Organization {
+  members: OrgMember[];
+}
+
+interface CreateOrgInput {
+  name: string;
+  slug: string;
+}
+
+// Organization hooks
+export function useCreateOrg() {
+  const queryClient = useQueryClient();
+  const { getAccessToken } = usePrivy();
+
+  return useMutation({
+    mutationFn: async (input: CreateOrgInput) => {
+      const token = await getAccessToken();
+      if (!token) throw new Error("Not authenticated");
+      return api.post<Organization>("/api/orgs", input, token);
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["user-orgs"] });
+      toast.success("Organization created");
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to create organization");
+    },
+  });
+}
+
+export function useOrg(id: string) {
+  return useQuery({
+    queryKey: ["org", id],
+    queryFn: () => api.get<OrgWithMembers>(`/api/orgs/${id}`),
+    enabled: !!id,
+  });
+}
+
+export function useUserOrgs() {
+  const { getAccessToken } = usePrivy();
+
+  return useQuery({
+    queryKey: ["user-orgs"],
+    queryFn: async () => {
+      const token = await getAccessToken();
+      if (!token) throw new Error("Not authenticated");
+      return api.get<Organization[]>("/api/orgs/me/list", { token });
+    },
+  });
+}
+
+export function useAddOrgMember() {
+  const queryClient = useQueryClient();
+  const { getAccessToken } = usePrivy();
+
+  return useMutation({
+    mutationFn: async ({
+      orgId,
+      userId,
+      role,
+    }: {
+      orgId: string;
+      userId: string;
+      role: "admin" | "member";
+    }) => {
+      const token = await getAccessToken();
+      if (!token) throw new Error("Not authenticated");
+      return api.post<OrgMember>(`/api/orgs/${orgId}/members`, { userId, role }, token);
+    },
+    onSuccess: (_data, variables) => {
+      void queryClient.invalidateQueries({ queryKey: ["org", variables.orgId] });
+      toast.success("Member added");
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to add member");
+    },
+  });
+}
+
+export function useRemoveOrgMember() {
+  const queryClient = useQueryClient();
+  const { getAccessToken } = usePrivy();
+
+  return useMutation({
+    mutationFn: async ({ orgId, userId }: { orgId: string; userId: string }) => {
+      const token = await getAccessToken();
+      if (!token) throw new Error("Not authenticated");
+      return api.get(`/api/orgs/${orgId}/members/${userId}`, {
+        method: "DELETE" as string,
+        token,
+      });
+    },
+    onSuccess: (_data, variables) => {
+      void queryClient.invalidateQueries({ queryKey: ["org", variables.orgId] });
+      toast.success("Member removed");
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to remove member");
+    },
+  });
+}
