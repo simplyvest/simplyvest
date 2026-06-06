@@ -373,6 +373,7 @@ jobs:
     environment: main
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v6
@@ -394,5 +395,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
       - run: pnpm install --frozen-lockfile --prefer-offline
+      - name: Apply D1 migrations
+        run: pnpm --filter @solana-tdp/api db:migrate:remote
       - name: Deploy API Worker
         run: pnpm --filter @solana-tdp/api run deploy
