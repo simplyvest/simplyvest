@@ -213,7 +213,21 @@ test = "jest"
 | `organizations` | Team/org metadata |
 | `org_members` | Many-to-many: users ↔ orgs with roles |
 | `streams` | Stream records (includes closed streams) |
-| `stream_events` | Immutable event log per stream |
+| `stream_events` | Immutable event log per stream (unique on stream_id + event_type + tx_signature) |
+
+### Middleware
+
+| Middleware | Purpose |
+|-----------|---------|
+| `cors.ts` | CORS restricted to localhost + simplyvest.pages.dev + simplyvest.xyz |
+| `auth.ts` | Privy JWT verification via JWKS (cached 1hr) |
+| `rate-limit.ts` | In-memory per-IP rate limiting (30/min streams, 20/min users, 5/min waitlist) |
+
+### Scheduled tasks
+
+| Trigger | Frequency | Purpose |
+|---------|-----------|---------|
+| Reconciliation | Every 15 minutes | Sync missed on-chain events to D1 |
 
 ### API commands
 
@@ -224,4 +238,5 @@ pnpm db:migrate       # Apply migrations (local D1)
 pnpm db:migrate:remote # Apply migrations (remote D1)
 pnpm db:reset         # Drop all tables (local)
 pnpm deploy:api       # Deploy API worker to Cloudflare
+pnpm --filter @solana-tdp/api test  # Run API tests
 ```
