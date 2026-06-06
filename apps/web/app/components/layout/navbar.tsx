@@ -20,6 +20,7 @@ const publicLinks = [
 const appLinks = [
   { to: "/app/dashboard", label: "Dashboard" },
   { to: "/app/create", label: "Create Stream" },
+  { to: "/app/settings", label: "Settings" },
 ];
 
 export function Navbar() {

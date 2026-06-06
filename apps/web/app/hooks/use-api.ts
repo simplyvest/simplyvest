@@ -176,6 +176,10 @@ interface Organization {
   createdAt: Date;
 }
 
+interface UserOrg extends Organization {
+  role: "owner" | "admin" | "member";
+}
+
 interface OrgMember {
   userId: string;
   role: "owner" | "admin" | "member";
@@ -230,7 +234,7 @@ export function useUserOrgs() {
     queryFn: async () => {
       const token = await getAccessToken();
       if (!token) throw new Error("Not authenticated");
-      return api.get<Organization[]>("/api/orgs/me/list", { token });
+      return api.get<UserOrg[]>("/api/orgs/me/list", { token });
     },
   });
 }

@@ -63,6 +63,7 @@ async function importRsaKey(jwk: PrivyJwksKey): Promise<CryptoKey> {
 async function verifyJwt(
   token: string,
   keys: PrivyJwksKey[],
+  expectedAud?: string,
 ): Promise<{ sub: string; [key: string]: unknown }> {
   const parts = token.split(".");
   if (parts.length !== 3) {
@@ -118,6 +119,11 @@ async function verifyJwt(
     throw new Error(`Invalid issuer: ${payload.iss}`);
   }
 
+  // Verify audience (app ID)
+  if (expectedAud && payload.aud !== expectedAud) {
+    throw new Error(`Invalid audience: ${payload.aud}`);
+  }
+
   return payload;
 }
 
@@ -131,7 +137,7 @@ export async function authMiddleware(c: Context, next: Next) {
 
   try {
     const keys = await getJwks();
-    const claims = await verifyJwt(token, keys);
+    const claims = await verifyJwt(token, keys, c.env.PRIVY_APP_ID);
 
     // Attach user ID to context
     c.set("userId", claims.sub);

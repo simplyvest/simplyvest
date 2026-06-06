@@ -6,6 +6,7 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import * as React from "react";
 import { Toaster } from "sonner";
 
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { SolanaProvider } from "@/lib/solana/solana-provider";
@@ -47,40 +48,42 @@ function RootComponent() {
   }, [location.pathname]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <SolanaProvider>
-        <ThemeProvider>
-          <div className="flex min-h-screen flex-col bg-bg text-text">
-            <a
-              href="#main-content"
-              className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-sol focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:no-underline"
-            >
-              Skip to main content
-            </a>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <SolanaProvider>
+          <ThemeProvider>
+            <div className="flex min-h-screen flex-col bg-bg text-text">
+              <a
+                href="#main-content"
+                className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-sol focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:no-underline"
+              >
+                Skip to main content
+              </a>
 
-            <Navbar />
+              <Navbar />
 
-            <main id="main-content" className="flex-1">
-              <Outlet />
-            </main>
+              <main id="main-content" className="flex-1">
+                <Outlet />
+              </main>
 
-            <Footer />
+              <Footer />
 
-            {DEV && (
-              <TanStackDevtools
-                plugins={[
-                  { name: "TanStack Query", render: <ReactQueryDevtoolsPanel /> },
-                  {
-                    name: "TanStack Router",
-                    render: <TanStackRouterDevtoolsPanel />,
-                  },
-                ]}
-              />
-            )}
-          </div>
-        </ThemeProvider>
-        <Toaster richColors />
-      </SolanaProvider>
-    </QueryClientProvider>
+              {DEV && (
+                <TanStackDevtools
+                  plugins={[
+                    { name: "TanStack Query", render: <ReactQueryDevtoolsPanel /> },
+                    {
+                      name: "TanStack Router",
+                      render: <TanStackRouterDevtoolsPanel />,
+                    },
+                  ]}
+                />
+              )}
+            </div>
+          </ThemeProvider>
+          <Toaster richColors />
+        </SolanaProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
