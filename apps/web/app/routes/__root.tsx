@@ -8,7 +8,7 @@ import { Toaster } from "sonner";
 
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
-import { SolanaProvider } from "@/components/solana/solana-provider";
+import { SolanaProvider } from "@/lib/solana/solana-provider";
 import { ThemeProvider } from "@/lib/theme";
 import { trackPageView } from "@/utils/analytics";
 

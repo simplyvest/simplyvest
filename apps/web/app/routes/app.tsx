@@ -1,8 +1,8 @@
-import { useWallet } from "@solana/wallet-adapter-react";
-import { useWalletModal } from "@solana/wallet-adapter-react-ui";
+import { useLogin } from "@privy-io/react-auth";
 import { Outlet, createRoute, useNavigate, useRouterState } from "@tanstack/react-router";
 import * as React from "react";
 
+import { useAuth } from "@/lib/solana/use-auth";
 import { Button } from "@/components/ui/button";
 
 import { Route as RootRoute } from "./__root";
@@ -14,14 +14,14 @@ export const Route = createRoute({
 });
 
 function AppLayout() {
-  const { publicKey, connecting } = useWallet();
-  const { setVisible } = useWalletModal();
+  const { connected, connecting } = useAuth();
+  const { login } = useLogin();
   const navigate = useNavigate();
   const location = useRouterState().location;
 
-  const showContent = publicKey && !connecting;
+  const showContent = connected && !connecting;
 
-  // Redirect /app to /app/dashboard when wallet is connected
+  // Redirect /app to /app/dashboard when authenticated
   React.useEffect(() => {
     if (showContent && location.pathname === "/app") {
       void navigate({ to: "/app/dashboard", search: { tab: "created" }, replace: true });
@@ -51,20 +51,20 @@ function AppLayout() {
               </svg>
             </div>
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-text">Connect Your Wallet</h2>
+              <h2 className="text-2xl font-bold tracking-tight text-text">Log In to Continue</h2>
               <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted">
-                To use the SimplyVest app, connect your Phantom or Solflare wallet and make sure
-                you're on <span className="font-mono text-sol">Solana devnet</span>.
+                To use the SimplyVest app, log in with your email, Google, or connect a wallet on{" "}
+                <span className="font-mono text-sol">Solana devnet</span>.
               </p>
             </div>
             <Button
               variant="default"
               size="lg"
               className="min-w-[200px]"
-              onClick={() => setVisible(true)}
+              onClick={() => login()}
               disabled={connecting}
             >
-              {connecting ? "Connecting..." : "Connect Wallet"}
+              {connecting ? "Loading..." : "Log In"}
             </Button>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useAuth } from "@/lib/solana/use-auth";
 import { createRoute } from "@tanstack/react-router";
 import { Link, useSearch } from "@tanstack/react-router";
 
@@ -22,7 +22,7 @@ const tabs = [
 ] as const;
 
 function DashboardPage() {
-  const { connected } = useWallet();
+  const { connected } = useAuth();
   const { tab } = useSearch({ from: Route.id });
 
   return (

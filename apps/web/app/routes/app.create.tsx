@@ -1,4 +1,4 @@
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useAuth } from "@/lib/solana/use-auth";
 import { createRoute } from "@tanstack/react-router";
 
 import { CreateStreamForm } from "@/components/streams/create-stream/create-stream-form";
@@ -12,7 +12,7 @@ export const Route = createRoute({
 });
 
 function CreatePage() {
-  const { connected } = useWallet();
+  const { connected } = useAuth();
 
   if (!connected) {
     return (

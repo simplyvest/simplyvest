@@ -1,8 +1,8 @@
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useAuth } from "@/lib/solana/use-auth";
 import { Link, useRouterState } from "@tanstack/react-router";
 import * as React from "react";
 
-import { WalletButton } from "@/components/solana/wallet-button";
+import { AuthButton } from "@/components/solana/wallet-button";
 import { LinkButton } from "@/components/ui/link-button";
 
 import { HamburgerButton } from "./navbar/hamburger-button";
@@ -23,7 +23,7 @@ const appLinks = [
 ];
 
 export function Navbar() {
-  const { publicKey } = useWallet();
+  const { publicKey } = useAuth();
   const { location } = useRouterState();
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -48,7 +48,7 @@ export function Navbar() {
               </LinkButton>
             )}
             <div className="flex items-center gap-2">
-              {isApp && <WalletButton />}
+              {isApp && <AuthButton />}
               <ThemeToggle />
             </div>
           </div>
