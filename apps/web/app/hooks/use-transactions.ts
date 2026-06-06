@@ -22,6 +22,8 @@ import type { Connection } from "@solana/web3.js";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+import { useRecordStream, useRecordStreamEvent } from "./use-api";
+
 function buildProgram(connection: Connection, wallet: Wallet) {
   const provider = new AnchorProvider(connection, wallet, {
     commitment: "confirmed",
@@ -33,6 +35,7 @@ export function useCreateStream() {
   const queryClient = useQueryClient();
   const wallet = useAnchorSigner();
   const { connection } = useConnection();
+  const recordStream = useRecordStream();
 
   return useMutation({
     mutationFn: async (input: {
@@ -80,11 +83,28 @@ export function useCreateStream() {
         )
         .rpc();
 
-      return tx;
+      return { tx, streamPda, vaultPda, input };
     },
-    onSuccess: async () => {
+    onSuccess: async (result) => {
       await queryClient.invalidateQueries({ queryKey: ["streams"] });
       await queryClient.invalidateQueries({ queryKey: ["creatorConfig"] });
+
+      if (wallet) {
+        recordStream.mutate({
+          id: result.streamPda.toBase58(),
+          type: "time",
+          creatorAddress: wallet.publicKey.toBase58(),
+          recipientAddress: result.input.recipient.toBase58(),
+          mintAddress: result.input.mint.toBase58(),
+          vaultAddress: result.vaultPda.toBase58(),
+          amount: result.input.amount.toString(),
+          startTime: result.input.startTime,
+          endTime: result.input.endTime,
+          cliffTime: result.input.cliffTime,
+          creationTx: result.tx,
+          createdAt: Math.floor(Date.now() / 1000),
+        });
+      }
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Transaction failed");
@@ -96,6 +116,7 @@ export function useWithdraw() {
   const queryClient = useQueryClient();
   const wallet = useAnchorSigner();
   const { connection } = useConnection();
+  const recordEvent = useRecordStreamEvent();
 
   return useMutation({
     mutationFn: async (input: {
@@ -123,13 +144,24 @@ export function useWithdraw() {
         )
         .rpc();
 
-      return tx;
+      return { tx, stream: input.stream, amount: input.amount };
     },
-    onSuccess: async (_tx, vars) => {
+    onSuccess: async (result) => {
       await queryClient.invalidateQueries({
-        queryKey: ["stream", vars.stream.toBase58()],
+        queryKey: ["stream", result.stream.toBase58()],
       });
       await queryClient.invalidateQueries({ queryKey: ["streams"] });
+
+      if (wallet) {
+        recordEvent.mutate({
+          streamId: result.stream.toBase58(),
+          eventType: "withdrawn",
+          actorAddress: wallet.publicKey.toBase58(),
+          amount: result.amount.toString(),
+          txSignature: result.tx,
+          blockTime: Math.floor(Date.now() / 1000),
+        });
+      }
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Transaction failed");
@@ -141,6 +173,7 @@ export function useCancel() {
   const queryClient = useQueryClient();
   const wallet = useAnchorSigner();
   const { connection } = useConnection();
+  const recordEvent = useRecordStreamEvent();
 
   return useMutation({
     mutationFn: async (input: {
@@ -169,13 +202,23 @@ export function useCancel() {
         )
         .rpc();
 
-      return tx;
+      return { tx, stream: input.stream };
     },
-    onSuccess: async (_tx, vars) => {
+    onSuccess: async (result) => {
       await queryClient.invalidateQueries({
-        queryKey: ["stream", vars.stream.toBase58()],
+        queryKey: ["stream", result.stream.toBase58()],
       });
       await queryClient.invalidateQueries({ queryKey: ["streams"] });
+
+      if (wallet) {
+        recordEvent.mutate({
+          streamId: result.stream.toBase58(),
+          eventType: "cancelled",
+          actorAddress: wallet.publicKey.toBase58(),
+          txSignature: result.tx,
+          blockTime: Math.floor(Date.now() / 1000),
+        });
+      }
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Transaction failed");
@@ -187,6 +230,7 @@ export function useCreateMilestoneStream() {
   const queryClient = useQueryClient();
   const wallet = useAnchorSigner();
   const { connection } = useConnection();
+  const recordStream = useRecordStream();
 
   return useMutation({
     mutationFn: async (input: {
@@ -228,11 +272,26 @@ export function useCreateMilestoneStream() {
         )
         .rpc();
 
-      return tx;
+      return { tx, streamPda, vaultPda, milestoneAuthority: input.milestoneAuthority, amount: input.amount, input };
     },
-    onSuccess: async () => {
+    onSuccess: async (result) => {
       await queryClient.invalidateQueries({ queryKey: ["milestoneStreams"] });
       await queryClient.invalidateQueries({ queryKey: ["creatorConfig"] });
+
+      if (wallet) {
+        recordStream.mutate({
+          id: result.streamPda.toBase58(),
+          type: "milestone",
+          creatorAddress: wallet.publicKey.toBase58(),
+          recipientAddress: result.input.recipient.toBase58(),
+          mintAddress: result.input.mint.toBase58(),
+          vaultAddress: result.vaultPda.toBase58(),
+          amount: result.amount.toString(),
+          milestoneAuthority: result.milestoneAuthority.toBase58(),
+          creationTx: result.tx,
+          createdAt: Math.floor(Date.now() / 1000),
+        });
+      }
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Transaction failed");
@@ -244,6 +303,7 @@ export function useTriggerMilestone() {
   const queryClient = useQueryClient();
   const wallet = useAnchorSigner();
   const { connection } = useConnection();
+  const recordEvent = useRecordStreamEvent();
 
   return useMutation({
     mutationFn: async (stream: web3.PublicKey) => {
@@ -255,13 +315,23 @@ export function useTriggerMilestone() {
         .accountsPartial(getTriggerMilestoneAccounts(wallet.publicKey, stream))
         .rpc();
 
-      return tx;
+      return { tx, stream };
     },
-    onSuccess: async (_tx, stream) => {
+    onSuccess: async (result) => {
       await queryClient.invalidateQueries({
-        queryKey: ["milestoneStream", stream.toBase58()],
+        queryKey: ["milestoneStream", result.stream.toBase58()],
       });
       await queryClient.invalidateQueries({ queryKey: ["milestoneStreams"] });
+
+      if (wallet) {
+        recordEvent.mutate({
+          streamId: result.stream.toBase58(),
+          eventType: "milestone_triggered",
+          actorAddress: wallet.publicKey.toBase58(),
+          txSignature: result.tx,
+          blockTime: Math.floor(Date.now() / 1000),
+        });
+      }
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Transaction failed");
@@ -273,6 +343,7 @@ export function useWithdrawMilestone() {
   const queryClient = useQueryClient();
   const wallet = useAnchorSigner();
   const { connection } = useConnection();
+  const recordEvent = useRecordStreamEvent();
 
   return useMutation({
     mutationFn: async (input: {
@@ -299,13 +370,23 @@ export function useWithdrawMilestone() {
         )
         .rpc();
 
-      return tx;
+      return { tx, stream: input.stream };
     },
-    onSuccess: async (_tx, vars) => {
+    onSuccess: async (result) => {
       await queryClient.invalidateQueries({
-        queryKey: ["milestoneStream", vars.stream.toBase58()],
+        queryKey: ["milestoneStream", result.stream.toBase58()],
       });
       await queryClient.invalidateQueries({ queryKey: ["milestoneStreams"] });
+
+      if (wallet) {
+        recordEvent.mutate({
+          streamId: result.stream.toBase58(),
+          eventType: "completed",
+          actorAddress: wallet.publicKey.toBase58(),
+          txSignature: result.tx,
+          blockTime: Math.floor(Date.now() / 1000),
+        });
+      }
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Transaction failed");
@@ -317,6 +398,7 @@ export function useCancelMilestone() {
   const queryClient = useQueryClient();
   const wallet = useAnchorSigner();
   const { connection } = useConnection();
+  const recordEvent = useRecordStreamEvent();
 
   return useMutation({
     mutationFn: async (input: {
@@ -341,13 +423,23 @@ export function useCancelMilestone() {
         )
         .rpc();
 
-      return tx;
+      return { tx, stream: input.stream };
     },
-    onSuccess: async (_tx, vars) => {
+    onSuccess: async (result) => {
       await queryClient.invalidateQueries({
-        queryKey: ["milestoneStream", vars.stream.toBase58()],
+        queryKey: ["milestoneStream", result.stream.toBase58()],
       });
       await queryClient.invalidateQueries({ queryKey: ["milestoneStreams"] });
+
+      if (wallet) {
+        recordEvent.mutate({
+          streamId: result.stream.toBase58(),
+          eventType: "cancelled",
+          actorAddress: wallet.publicKey.toBase58(),
+          txSignature: result.tx,
+          blockTime: Math.floor(Date.now() / 1000),
+        });
+      }
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Transaction failed");
