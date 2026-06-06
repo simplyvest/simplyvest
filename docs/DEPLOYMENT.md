@@ -1,6 +1,6 @@
 # Deployment — Solana Token Distribution Protocol
 
-Building, testing, and deploying the Solana program and web frontend.
+Building, testing, and deploying the Solana program, API, and web frontend.
 
 ## Contents
 
@@ -8,9 +8,10 @@ Building, testing, and deploying the Solana program and web frontend.
 2. [Building](#building)
 3. [Testing](#testing)
 4. [Program deployment](#program-deployment)
-5. [Frontend deployment](#frontend-deployment)
-6. [CI/CD](#cicd)
-7. [Browser compatibility](#browser-compatibility)
+5. [API deployment](#api-deployment)
+6. [Frontend deployment](#frontend-deployment)
+7. [CI/CD](#cicd)
+8. [Browser compatibility](#browser-compatibility)
 
 ---
 
@@ -20,6 +21,7 @@ Building, testing, and deploying the Solana program and web frontend.
   |- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v3.1.12
 - [Anchor CLI](https://www.anchor-lang.com/docs/installation) — v0.32.1
 - [Node.js](https://nodejs.org/) v18+ + [pnpm](https://pnpm.io/) (install: `corepack enable && corepack prepare pnpm@latest --activate`)
+- [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/) — for API deployment (installed as devDependency)
 
 ---
 
@@ -63,6 +65,12 @@ pnpm test
 # Or just the program tests using anchor
 cd apps/solana-tdp-anchor
 anchor test
+
+# Web app unit + storybook tests
+pnpm --filter @solana-tdp/web test:ci
+
+# Typecheck everything
+pnpm check:ts:all
 ```
 
 ### Test files
@@ -97,6 +105,65 @@ Program ID: [`6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk`](https://explorer.so
 | **Network**    | Solana Devnet                                                                                                                                     |
 | **Program ID** | [`6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk`](https://explorer.solana.com/address/6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk?cluster=devnet) |
 | **Explorer**   | [Solana Explorer (devnet)](https://explorer.solana.com/?cluster=devnet)                                                                           |
+
+---
+
+## API deployment
+
+The API (`apps/api`) is a Cloudflare Worker with D1 database.
+
+### One-time setup
+
+1. Create D1 database:
+   ```bash
+   cd apps/api
+   npx wrangler d1 create simplyvest-db
+   ```
+2. Copy the `database_id` from output into `wrangler.toml`
+3. Set secrets:
+   ```bash
+   npx wrangler secret put PRIVY_APP_ID
+   npx wrangler secret put PRIVY_APP_SECRET
+   ```
+4. Apply migrations:
+   ```bash
+   pnpm db:migrate:remote
+   ```
+
+### Deploy
+
+```bash
+pnpm deploy:api
+```
+
+### Local development
+
+```bash
+pnpm dev:api          # Start API on localhost:8787
+pnpm dev:web          # Start web app on localhost:5173
+pnpm dev              # Start both in parallel
+
+pnpm db:generate      # Generate new migration from schema changes
+pnpm db:migrate       # Apply migrations to local D1
+pnpm db:reset         # Drop all tables (local only)
+```
+
+### API endpoints
+
+| Method | Path | Auth | Purpose |
+|--------|------|------|---------|
+| `POST` | `/api/streams` | — | Record new stream |
+| `GET` | `/api/streams` | — | List streams |
+| `GET` | `/api/streams/:id` | — | Get stream + events |
+| `POST` | `/api/streams/:id/events` | — | Record stream event |
+| `POST` | `/api/users/me` | JWT | Create/update profile |
+| `GET` | `/api/users/me` | JWT | Get own profile |
+| `GET` | `/api/users/:id` | — | Get public profile |
+| `POST` | `/api/orgs` | JWT | Create organization |
+| `GET` | `/api/orgs/:id` | — | Get org + members |
+| `POST` | `/api/orgs/:id/members` | JWT | Add member |
+| `POST` | `/api/reconcile` | JWT | Trigger reconciliation |
+| `POST` | `/api/waitlist` | — | Legacy waitlist |
 
 ---
 
