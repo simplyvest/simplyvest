@@ -6,6 +6,7 @@ compatibility_date = "2025-05-01"
 binding = "DB"
 database_name = "simplyvest-db"
 database_id = "local-dev-d1"
+migrations_dir = "src/db/migrations"
 
 [vars]
 GOOGLE_SHEET_NAME = "Sheet1"
