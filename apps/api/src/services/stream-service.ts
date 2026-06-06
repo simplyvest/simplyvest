@@ -1,4 +1,4 @@
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, type SQL } from "drizzle-orm";
 
 import type { Db } from "../db";
 import { streams, streamEvents } from "../db/schema";
@@ -118,12 +118,12 @@ export function createStreamService(db: Db) {
     },
 
     async listStreams(filters: StreamFilters) {
-      const conditions = [];
+      const conditions: SQL[] = [];
       if (filters.creatorAddress) conditions.push(eq(streams.creatorAddress, filters.creatorAddress));
       if (filters.recipientAddress) conditions.push(eq(streams.recipientAddress, filters.recipientAddress));
       if (filters.orgId) conditions.push(eq(streams.orgId, filters.orgId));
-      if (filters.status) conditions.push(eq(streams.status, filters.status));
-      if (filters.type) conditions.push(eq(streams.type, filters.type));
+      if (filters.status) conditions.push(eq(streams.status, filters.status as "active" | "completed" | "cancelled" | "orphaned"));
+      if (filters.type) conditions.push(eq(streams.type, filters.type as "time" | "milestone"));
 
       const query =
         conditions.length > 0

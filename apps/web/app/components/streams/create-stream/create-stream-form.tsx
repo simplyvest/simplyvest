@@ -104,8 +104,8 @@ export function CreateStreamForm() {
 
   if (createStream.isSuccess || createMilestoneStream.isSuccess) {
     const txSignature = createStream.isSuccess
-      ? createStream.data
-      : (createMilestoneStream.data ?? "");
+      ? createStream.data.tx
+      : (createMilestoneStream.data?.tx ?? "");
     return <StreamCreationSuccess txSignature={txSignature} onReset={resetForm} />;
   }
 

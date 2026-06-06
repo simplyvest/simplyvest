@@ -26,24 +26,18 @@ export const organizations = sqliteTable("organizations", {
     .$defaultFn(() => new Date()),
 });
 
-export const orgMembers = sqliteTable(
-  "org_members",
-  {
-    orgId: text("org_id")
-      .notNull()
-      .references(() => organizations.id, { onDelete: "cascade" }),
-    userId: text("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    role: text("role", { enum: ["owner", "admin", "member"] }).notNull(),
-    joinedAt: integer("joined_at", { mode: "timestamp" })
-      .notNull()
-      .$defaultFn(() => new Date()),
-  },
-  (t) => ({
-    pk: [t.orgId, t.userId],
-  }),
-);
+export const orgMembers = sqliteTable("org_members", {
+  orgId: text("org_id")
+    .notNull()
+    .references(() => organizations.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  role: text("role", { enum: ["owner", "admin", "member"] }).notNull(),
+  joinedAt: integer("joined_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+});
 
 export const streams = sqliteTable(
   "streams",
@@ -55,11 +49,11 @@ export const streams = sqliteTable(
     mintAddress: text("mint_address").notNull(),
     vaultAddress: text("vault_address").notNull(),
     amount: text("amount").notNull(),
-    orgId: text("org_id").references(() => organizations.id),
+    orgId: text("org_id"),
 
-    startTime: integer("start_time"),
-    endTime: integer("end_time"),
-    cliffTime: integer("cliff_time"),
+    startTime: integer("start_time", { mode: "number" }),
+    endTime: integer("end_time", { mode: "number" }),
+    cliffTime: integer("cliff_time", { mode: "number" }),
 
     milestoneAuthority: text("milestone_authority"),
     milestoneReached: integer("milestone_reached", { mode: "boolean" }).default(false),
@@ -70,12 +64,12 @@ export const streams = sqliteTable(
     amountWithdrawn: text("amount_withdrawn").default("0"),
 
     creationTx: text("creation_tx").notNull(),
-    createdAt: integer("created_at").notNull(),
-    closedAt: integer("closed_at"),
+    createdAt: integer("created_at", { mode: "number" }).notNull(),
+    closedAt: integer("closed_at", { mode: "number" }),
     closeTx: text("close_tx"),
 
-    lastSyncedAt: integer("last_synced_at"),
-    syncVersion: integer("sync_version").default(0),
+    lastSyncedAt: integer("last_synced_at", { mode: "number" }),
+    syncVersion: integer("sync_version", { mode: "number" }).default(0),
   },
   (t) => ({
     creatorIdx: index("idx_streams_creator").on(t.creatorAddress),
@@ -88,7 +82,7 @@ export const streams = sqliteTable(
 export const streamEvents = sqliteTable(
   "stream_events",
   {
-    id: integer("id").primaryKey({ autoIncrement: true }),
+    id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
     streamId: text("stream_id")
       .notNull()
       .references(() => streams.id),
@@ -98,7 +92,7 @@ export const streamEvents = sqliteTable(
     actorAddress: text("actor_address").notNull(),
     amount: text("amount"),
     txSignature: text("tx_signature").notNull(),
-    blockTime: integer("block_time").notNull(),
+    blockTime: integer("block_time", { mode: "number" }).notNull(),
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
       .$defaultFn(() => new Date()),
