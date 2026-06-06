@@ -1,0 +1,107 @@
+name: Anchor Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  SOLANA_VERSION: "3.1.12"
+  ANCHOR_VERSION: "0.32.1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+
+jobs:
+  anchor:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: apps/solana-tdp-anchor
+    env:
+      CARGO_TARGET_DIR: ${{ github.workspace }}/apps/solana-tdp-anchor/target
+      RUSTC_WRAPPER: sccache
+      SCCACHE_GHA_ENABLED: "true"
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.2.2
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          pnpm config set store-dir ~/.pnpm-store
+          echo "store-path=~/.pnpm-store" >> $GITHUB_OUTPUT
+
+      - name: Cache Solana + Anchor
+        id: cache-solana
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.local/share/solana/
+            ~/.local/share/anchor/
+          key: solana-anchor-${{ runner.os }}-${{ env.SOLANA_VERSION }}-${{ env.ANCHOR_VERSION }}
+
+      - name: Install Solana CLI
+        if: steps.cache-solana.outputs.cache-hit != 'true'
+        run: sh -c "$(curl -sSfL https://release.anza.xyz/v${{ env.SOLANA_VERSION }}/install)"
+
+      - name: Install Anchor CLI
+        if: steps.cache-solana.outputs.cache-hit != 'true'
+        run: |
+          curl -sL "https://github.com/solana-foundation/anchor/releases/download/v${{ env.ANCHOR_VERSION }}/anchor-${{ env.ANCHOR_VERSION }}-x86_64-unknown-linux-gnu" -o /tmp/anchor
+          chmod +x /tmp/anchor
+          mkdir -p ~/.local/share/anchor
+          mv /tmp/anchor ~/.local/share/anchor/anchor
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "apps/solana-tdp-anchor/programs/solana-tdp -> ../../target"
+          key: solana-${{ env.SOLANA_VERSION }}
+          cache-on-failure: true
+
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.9
+
+      - name: Set up PATH
+        run: |
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+          echo "$HOME/.local/share/anchor" >> $GITHUB_PATH
+
+      - name: Generate keypair
+        run: solana-keygen new --no-bip39-passphrase --silent -f
+
+      - name: Cache pnpm store
+        uses: actions/cache@v5
+        with:
+          path: ${{ steps.pnpm-cache.outputs.store-path }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - run: pnpm install --frozen-lockfile --prefer-offline
+        working-directory: .
+
+      - name: Build program (BPF)
+        run: anchor build
+
+      - name: Stage program binary
+        run: |
+          if [ ! -f target/deploy/solana_tdp.so ] && [ -f programs/solana-tdp/target/deploy/solana_tdp.so ]; then
+            mkdir -p target/deploy && cp programs/solana-tdp/target/deploy/solana_tdp.so target/deploy/
+          fi
+          ls -la target/deploy/solana_tdp.so
+
+      - name: Build SDK
+        run: |
+          pnpm sdk:sync
+          pnpm sdk:build
+        working-directory: .
+
+      - name: Run tests
+        run: anchor test --skip-build

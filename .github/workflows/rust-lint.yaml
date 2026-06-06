@@ -1,0 +1,34 @@
+name: Rust Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  SOLANA_VERSION: "3.1.12"
+
+jobs:
+  lint-rust:
+    runs-on: ubuntu-24.04
+    env:
+      CARGO_TARGET_DIR: ${{ github.workspace }}/apps/solana-tdp-anchor/target
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "apps/solana-tdp-anchor/programs/solana-tdp -> ../../target"
+          key: solana-${{ env.SOLANA_VERSION }}
+      - name: Check Rust formatting
+        run: cargo fmt --check
+        working-directory: apps/solana-tdp-anchor/programs/solana-tdp
+      - name: Clippy
+        run: cargo clippy --all-targets --locked -- -D warnings
+        working-directory: apps/solana-tdp-anchor/programs/solana-tdp
