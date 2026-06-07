@@ -10,6 +10,8 @@ interface DateTimePickerProps {
   placeholder?: string;
   minDate?: Date;
   disabled?: boolean;
+  /** When true, prevents selecting dates/times in the past */
+  disablePast?: boolean;
 }
 
 export function DateTimePicker({
@@ -18,8 +20,16 @@ export function DateTimePicker({
   placeholder = "Select date and time",
   minDate,
   disabled,
+  disablePast,
 }: DateTimePickerProps) {
   const selected = value ? new Date(value) : null;
+  const now = new Date();
+
+  const effectiveMinDate = disablePast
+    ? new Date(Math.max(now.getTime(), minDate?.getTime() ?? 0))
+    : minDate;
+
+  const isToday = (date: Date) => date.toDateString() === now.toDateString();
 
   const handleChange = (date: Date | null) => {
     if (!date) {
@@ -43,13 +53,19 @@ export function DateTimePicker({
       timeIntervals={15}
       dateFormat="MMM d, yyyy h:mm aa"
       placeholderText={placeholder}
-      minDate={minDate}
+      minDate={effectiveMinDate}
+      minTime={
+        disablePast && selected && isToday(selected)
+          ? new Date(now.getTime() + 15 * 60 * 1000)
+          : undefined
+      }
+      maxTime={undefined}
       disabled={disabled}
       calendarClassName="!bg-bg1 !border-border !rounded-xl !shadow-lg"
       dayClassName={(date) =>
         cn(
           "hover:!bg-sol/10 !rounded-lg",
-          date.toDateString() === new Date().toDateString() && "!bg-sol/5",
+          date.toDateString() === now.toDateString() && "!bg-sol/5",
         )
       }
       popperClassName="!z-50"

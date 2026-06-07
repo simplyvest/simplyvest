@@ -23,6 +23,7 @@ export function TimeFields({
           value={startTime}
           onChange={onStartTimeChange}
           placeholder="Select start time"
+          disablePast
         />
       </Field>
 
