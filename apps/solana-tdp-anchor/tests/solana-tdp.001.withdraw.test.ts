@@ -433,6 +433,9 @@ describe("Feature 1: withdraw", () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, end } =
       await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 10, 400, 0);
 
+    const recipientBefore = svmTokenBalance(recipientToken);
+    expect(recipientBefore).toBe(BigInt(0));
+
     // First withdrawal at 50% elapsed
     warp(210);
     const half = Math.floor((amount * 200) / 400);
@@ -452,12 +455,13 @@ describe("Feature 1: withdraw", () => {
       .signers([recipient])
       .rpc();
 
+    // Verify on-chain state after first withdrawal
     const streamAfterFirst = await program.account.streamAccount.fetch(streamPDA);
     expect(Number(streamAfterFirst.amountWithdrawn)).toBe(half);
     expect(svmTokenBalance(vaultPDA)).toBe(BigInt(amount - half));
+    expect(svmTokenBalance(recipientToken)).toBe(BigInt(half));
 
     // Second withdrawal — warp past end, withdraw the rest
-    const recipientBefore = svmTokenBalance(recipientToken);
     warp(end - clockNow(svm) + 10); // past end_time
     const remaining = amount - half;
     await program.methods
@@ -498,7 +502,9 @@ describe("Feature 1: withdraw", () => {
       const data = Buffer.from(streamAcc.data);
       expect(data.every((b: number) => b === 0)).toBe(true);
     }
-    expect(svmTokenBalance(recipientToken)).toBe(recipientBefore + BigInt(remaining));
+
+    // Verify recipient received ALL tokens (half from first + remaining from second)
+    expect(svmTokenBalance(recipientToken)).toBe(BigInt(amount));
   });
 
   it("rejects withdraw by third party", async () => {
