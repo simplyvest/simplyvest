@@ -433,8 +433,7 @@ describe("Feature 1: withdraw", () => {
     const { sender, recipient, mint, recipientToken, vaultPDA, streamPDA, amount, end } =
       await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 10, 400, 0);
 
-    const recipientBefore = svmTokenBalance(recipientToken);
-    expect(recipientBefore).toBe(BigInt(0));
+    expect(svmTokenBalance(recipientToken)).toBe(BigInt(0));
 
     // First withdrawal at 50% elapsed
     warp(210);
@@ -461,11 +460,21 @@ describe("Feature 1: withdraw", () => {
     expect(svmTokenBalance(vaultPDA)).toBe(BigInt(amount - half));
     expect(svmTokenBalance(recipientToken)).toBe(BigInt(half));
 
-    // Second withdrawal — warp past end, withdraw the rest
+    // Second withdrawal — warp past end, use real on-chain vault balance
     warp(end - clockNow(svm) + 10); // past end_time
-    const remaining = amount - half;
+    const vaultBalance = Number(svmTokenBalance(vaultPDA));
+
+    // Verify vault balance matches claimable from stream state
+    const streamAfterWarp = await program.account.streamAccount.fetch(streamPDA);
+    const claimable = Number(streamAfterWarp.amount) - Number(streamAfterWarp.amountWithdrawn);
+    expect(vaultBalance).toBe(claimable);
+
+    // LiteSVM limitation: withdrawing the exact remaining amount fails because
+    // it triggers account closure (vault + stream), which LiteSVM can't handle
+    // in a single transaction after a partial withdrawal.
+    // Workaround: withdraw all but 1 token, then withdraw the last token.
     await program.methods
-      .withdraw({ amount: new BN(remaining - 1) })
+      .withdraw({ amount: new BN(vaultBalance - 1) })
       .accountsPartial(
         getWithdrawAccounts(
           recipient.publicKey,
@@ -479,7 +488,6 @@ describe("Feature 1: withdraw", () => {
       .signers([recipient])
       .rpc();
 
-    // Final withdrawal of last token
     await program.methods
       .withdraw({ amount: new BN(1) })
       .accountsPartial(
@@ -503,7 +511,7 @@ describe("Feature 1: withdraw", () => {
       expect(data.every((b: number) => b === 0)).toBe(true);
     }
 
-    // Verify recipient received ALL tokens (half from first + remaining from second)
+    // Verify recipient received ALL tokens
     expect(svmTokenBalance(recipientToken)).toBe(BigInt(amount));
   });
 
