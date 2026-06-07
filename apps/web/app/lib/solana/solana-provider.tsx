@@ -1,15 +1,10 @@
 import { PrivyProvider, usePrivy } from "@privy-io/react-auth";
-import { toSolanaWalletConnectors, useSolanaLedgerPlugin, useWallets } from "@privy-io/react-auth/solana";
+import { toSolanaWalletConnectors, useWallets } from "@privy-io/react-auth/solana";
 import * as React from "react";
 
 import { trackEvent } from "@/utils/analytics";
 
 import { ConnectionContext, connection } from "./connection-context";
-
-function LedgerSetup() {
-  useSolanaLedgerPlugin();
-  return null;
-}
 
 function LoginTracker() {
   const { authenticated, user } = usePrivy();
@@ -63,7 +58,6 @@ export function SolanaProvider({ children }: { children: React.ReactNode }) {
       }}
     >
       <ConnectionContext.Provider value={connection}>
-        <LedgerSetup />
         <LoginTracker />
         {children}
       </ConnectionContext.Provider>
