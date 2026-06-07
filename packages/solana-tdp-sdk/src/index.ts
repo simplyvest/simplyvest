@@ -6,6 +6,7 @@ export * from "./vesting";
 export * from "./decode";
 export * from "./fetch";
 export * from "./metadata";
+export * from "./program";
 export * from "./types/runtime";
 export * from "./types/solana_tdp";
 import type { SolanaTdp } from "./types/solana_tdp";
