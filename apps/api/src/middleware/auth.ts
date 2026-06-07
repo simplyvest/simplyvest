@@ -1,7 +1,5 @@
 import type { Context, Next } from "hono";
 
-import type { Env } from "../../env";
-
 interface PrivyJwksKey {
   kty: string;
   kid: string;
@@ -32,6 +30,7 @@ async function getJwks(appId: string): Promise<PrivyJwksKey[]> {
     throw new Error("Failed to fetch Privy JWKS");
   }
 
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   const data = (await res.json()) as { keys: PrivyJwksKey[] };
   jwksCache = { keys: data.keys, fetchedAt: Date.now() };
   return jwksCache.keys;
@@ -48,15 +47,15 @@ function base64UrlToBase64(str: string): string {
 }
 
 async function importKey(jwk: PrivyJwksKey): Promise<CryptoKey> {
-  if (jwk.kty === "EC" && jwk.crv === "P-256") {
+  if (jwk.kty === "EC" && jwk.crv === "P-256" && jwk.x && jwk.y) {
     // ES256 (ECDSA P-256)
     return crypto.subtle.importKey(
       "jwk",
       {
         kty: jwk.kty,
         crv: jwk.crv,
-        x: base64UrlToBase64(jwk.x!),
-        y: base64UrlToBase64(jwk.y!),
+        x: base64UrlToBase64(jwk.x),
+        y: base64UrlToBase64(jwk.y),
         ext: true,
       },
       { name: "ECDSA", namedCurve: "P-256" },
@@ -65,12 +64,15 @@ async function importKey(jwk: PrivyJwksKey): Promise<CryptoKey> {
     );
   }
   // RS256 (RSA) fallback
+  if (!jwk.n || !jwk.e) {
+    throw new Error("Invalid JWK: missing n or e for RSA key");
+  }
   return crypto.subtle.importKey(
     "jwk",
     {
       kty: jwk.kty,
-      n: base64UrlToBase64(jwk.n!),
-      e: base64UrlToBase64(jwk.e!),
+      n: base64UrlToBase64(jwk.n),
+      e: base64UrlToBase64(jwk.e),
       alg: jwk.alg,
       ext: true,
     },
@@ -93,6 +95,7 @@ async function verifyJwt(
   const [headerB64, payloadB64, signatureB64] = parts;
 
   // Decode header to get kid
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   const header = JSON.parse(atob(base64UrlToBase64(headerB64))) as {
     alg: string;
     kid: string;
@@ -135,6 +138,7 @@ async function verifyJwt(
   }
 
   // Decode payload
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   const payload = JSON.parse(atob(base64UrlToBase64(payloadB64))) as {
     sub: string;
     iss: string;
@@ -162,6 +166,7 @@ async function verifyJwt(
   return payload;
 }
 
+// oxlint-disable-next-line typescript/consistent-return
 export async function authMiddleware(c: Context, next: Next) {
   const authHeader = c.req.header("Authorization");
   if (!authHeader?.startsWith("Bearer ")) {

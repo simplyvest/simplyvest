@@ -50,6 +50,6 @@ export function rateLimit(opts: { windowMs: number; max: number }) {
       return c.json({ error: "Too many requests" }, 429);
     }
 
-    await next();
+    return next();
   };
 }

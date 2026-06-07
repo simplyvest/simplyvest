@@ -59,6 +59,7 @@ export function useCreateStream() {
   const { publicKey } = useAuth();
   const { wallets } = useWallets();
   const { connection } = useConnection();
+  // oxlint-disable-next-line typescript/unbound-method
   const { signAndSendTransaction } = useSignAndSendTransaction();
   const recordStream = useRecordStream();
 
@@ -145,6 +146,7 @@ export function useWithdraw() {
   const { publicKey } = useAuth();
   const { wallets } = useWallets();
   const { connection } = useConnection();
+  // oxlint-disable-next-line typescript/unbound-method
   const { signAndSendTransaction } = useSignAndSendTransaction();
   const recordEvent = useRecordStreamEvent();
 
@@ -204,6 +206,7 @@ export function useCancel() {
   const { publicKey } = useAuth();
   const { wallets } = useWallets();
   const { connection } = useConnection();
+  // oxlint-disable-next-line typescript/unbound-method
   const { signAndSendTransaction } = useSignAndSendTransaction();
   const recordEvent = useRecordStreamEvent();
 
@@ -262,6 +265,7 @@ export function useCreateMilestoneStream() {
   const { publicKey } = useAuth();
   const { wallets } = useWallets();
   const { connection } = useConnection();
+  // oxlint-disable-next-line typescript/unbound-method
   const { signAndSendTransaction } = useSignAndSendTransaction();
   const recordStream = useRecordStream();
 
@@ -347,6 +351,7 @@ export function useTriggerMilestone() {
   const { publicKey } = useAuth();
   const { wallets } = useWallets();
   const { connection } = useConnection();
+  // oxlint-disable-next-line typescript/unbound-method
   const { signAndSendTransaction } = useSignAndSendTransaction();
   const recordEvent = useRecordStreamEvent();
 
@@ -396,6 +401,7 @@ export function useWithdrawMilestone() {
   const { publicKey } = useAuth();
   const { wallets } = useWallets();
   const { connection } = useConnection();
+  // oxlint-disable-next-line typescript/unbound-method
   const { signAndSendTransaction } = useSignAndSendTransaction();
   const recordEvent = useRecordStreamEvent();
 
@@ -453,6 +459,7 @@ export function useCancelMilestone() {
   const { publicKey } = useAuth();
   const { wallets } = useWallets();
   const { connection } = useConnection();
+  // oxlint-disable-next-line typescript/unbound-method
   const { signAndSendTransaction } = useSignAndSendTransaction();
   const recordEvent = useRecordStreamEvent();
 

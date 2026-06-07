@@ -1,5 +1,6 @@
 import { PrivyProvider, usePrivy } from "@privy-io/react-auth";
 import { toSolanaWalletConnectors, useWallets } from "@privy-io/react-auth/solana";
+import { createSolanaRpc, createSolanaRpcSubscriptions } from "@solana/kit";
 import * as React from "react";
 
 import { trackEvent } from "@/utils/analytics";
@@ -40,6 +41,8 @@ export function SolanaProvider({ children }: { children: React.ReactNode }) {
     throw new Error("Missing VITE_PRIVY_APP_ID. Add it to your .env file.");
   }
 
+  const rpcUrl = import.meta.env.VITE_SOLANA_RPC_URL || "https://api.devnet.solana.com";
+
   return (
     <PrivyProvider
       appId={appId}
@@ -55,16 +58,19 @@ export function SolanaProvider({ children }: { children: React.ReactNode }) {
         externalWallets: {
           solana: { connectors: toSolanaWalletConnectors() },
         },
+        // oxlint-disable-next-line typescript/no-unsafe-type-assertion
         solana: {
           rpcs: {
             "solana:mainnet": {
-              rpc: "https://api.mainnet-beta.solana.com",
+              rpc: createSolanaRpc("https://api.mainnet-beta.solana.com"),
+              rpcSubscriptions: createSolanaRpcSubscriptions("wss://api.mainnet-beta.solana.com"),
             },
             "solana:devnet": {
-              rpc: import.meta.env.VITE_SOLANA_RPC_URL || "https://api.devnet.solana.com",
+              rpc: createSolanaRpc(rpcUrl),
+              rpcSubscriptions: createSolanaRpcSubscriptions(rpcUrl.replace("https", "wss")),
             },
           },
-        },
+        } as never,
       }}
     >
       <ConnectionContext.Provider value={connection}>

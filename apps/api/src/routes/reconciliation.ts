@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 
 import type { Env } from "../../env";
-import { authMiddleware, getUserId } from "../middleware/auth";
+import { authMiddleware } from "../middleware/auth";
 import { createDb } from "../db";
 import { createReconcilerService } from "../services/reconciler";
 

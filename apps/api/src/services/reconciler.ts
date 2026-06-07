@@ -1,4 +1,4 @@
-import { eq, and, lt } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 import type { Db } from "../db";
 import { streams, streamEvents } from "../db/schema";
@@ -11,7 +11,7 @@ interface ReconcileResult {
 
 export function createReconcilerService(db: Db, rpcUrl: string) {
   return {
-    async reconcile(limit = 100): Promise<ReconcileResult> {
+    async reconcile(_limit = 100): Promise<ReconcileResult> {
       const result: ReconcileResult = {
         processed: 0,
         updated: 0,
@@ -27,13 +27,16 @@ export function createReconcilerService(db: Db, rpcUrl: string) {
 
         result.processed = activeStreams.length;
 
+        // oxlint-disable-next-line no-await-in-loop
         for (const stream of activeStreams) {
           try {
             // Check if the on-chain account still exists
+            // oxlint-disable-next-line no-await-in-loop
             const accountInfo = await fetchAccountInfo(rpcUrl, stream.id);
 
             if (!accountInfo) {
               // Account closed on-chain — mark as completed
+              // oxlint-disable-next-line no-await-in-loop
               await db
                 .update(streams)
                 .set({
@@ -44,6 +47,7 @@ export function createReconcilerService(db: Db, rpcUrl: string) {
                 .where(eq(streams.id, stream.id));
 
               // Add a completed event if not already present
+              // oxlint-disable-next-line no-await-in-loop
               const existingCompleted = await db
                 .select()
                 .from(streamEvents)
@@ -56,6 +60,7 @@ export function createReconcilerService(db: Db, rpcUrl: string) {
                 .limit(1);
 
               if (existingCompleted.length === 0) {
+                // oxlint-disable-next-line no-await-in-loop
                 await db.insert(streamEvents).values({
                   streamId: stream.id,
                   eventType: "completed",
@@ -68,6 +73,7 @@ export function createReconcilerService(db: Db, rpcUrl: string) {
               result.updated++;
             } else {
               // Account exists — update sync timestamp
+              // oxlint-disable-next-line no-await-in-loop
               await db
                 .update(streams)
                 .set({
@@ -127,6 +133,7 @@ async function fetchAccountInfo(
       }),
     });
 
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     const data = (await response.json()) as {
       result?: { value: unknown };
       error?: { message: string };

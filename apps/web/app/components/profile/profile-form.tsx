@@ -49,6 +49,7 @@ export function ProfileForm() {
         displayName: authUser?.email?.split("@")[0],
       });
     }
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, profile, publicKey]);
 
   // Update form fields when profile loads

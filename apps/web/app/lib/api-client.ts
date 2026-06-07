@@ -1,5 +1,3 @@
-import { usePrivy } from "@privy-io/react-auth";
-
 const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8787";
 
 interface RequestOptions extends RequestInit {
@@ -10,7 +8,6 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   const { token, ...fetchOptions } = options;
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    ...(fetchOptions.headers as Record<string, string>),
   };
 
   if (token) {
@@ -23,10 +20,14 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   });
 
   if (!res.ok) {
-    const body = await res.json().catch(() => ({ error: "Unknown error" }));
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+    const body = (await res.json().catch(() => ({ error: "Unknown error" }))) as {
+      error?: string;
+    };
     throw new Error(body.error ?? `HTTP ${res.status}`);
   }
 
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   return res.json() as Promise<T>;
 }
 

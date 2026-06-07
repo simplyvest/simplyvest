@@ -71,12 +71,12 @@ export const streams = sqliteTable(
     lastSyncedAt: integer("last_synced_at", { mode: "number" }),
     syncVersion: integer("sync_version", { mode: "number" }).default(0),
   },
-  (t) => ({
-    creatorIdx: index("idx_streams_creator").on(t.creatorAddress),
-    recipientIdx: index("idx_streams_recipient").on(t.recipientAddress),
-    orgIdx: index("idx_streams_org").on(t.orgId),
-    statusIdx: index("idx_streams_status").on(t.status),
-  }),
+  (t) => [
+    index("idx_streams_creator").on(t.creatorAddress),
+    index("idx_streams_recipient").on(t.recipientAddress),
+    index("idx_streams_org").on(t.orgId),
+    index("idx_streams_status").on(t.status),
+  ],
 );
 
 export const streamEvents = sqliteTable(
@@ -97,9 +97,9 @@ export const streamEvents = sqliteTable(
       .notNull()
       .$defaultFn(() => new Date()),
   },
-  (t) => ({
-    streamIdx: index("idx_events_stream").on(t.streamId),
-    typeIdx: index("idx_events_type").on(t.eventType),
-    dedupIdx: uniqueIndex("idx_events_dedup").on(t.streamId, t.eventType, t.txSignature),
-  }),
+  (t) => [
+    index("idx_events_stream").on(t.streamId),
+    index("idx_events_type").on(t.eventType),
+    uniqueIndex("idx_events_dedup").on(t.streamId, t.eventType, t.txSignature),
+  ],
 );

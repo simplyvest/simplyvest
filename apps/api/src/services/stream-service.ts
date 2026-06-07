@@ -122,7 +122,9 @@ export function createStreamService(db: Db) {
       if (filters.creatorAddress) conditions.push(eq(streams.creatorAddress, filters.creatorAddress));
       if (filters.recipientAddress) conditions.push(eq(streams.recipientAddress, filters.recipientAddress));
       if (filters.orgId) conditions.push(eq(streams.orgId, filters.orgId));
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
       if (filters.status) conditions.push(eq(streams.status, filters.status as "active" | "completed" | "cancelled" | "orphaned"));
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
       if (filters.type) conditions.push(eq(streams.type, filters.type as "time" | "milestone"));
 
       const query =

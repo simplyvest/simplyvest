@@ -25,7 +25,7 @@ export function useAnchorSigner(): Wallet | null {
       } else {
         // For legacy Transaction, serialize without requiring signatures
         serialized = new Uint8Array(
-          (tx as Transaction).serialize({
+          (tx).serialize({
             requireAllSignatures: false,
             verifySignatures: false,
           }),
