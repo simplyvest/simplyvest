@@ -57,6 +57,9 @@ export function SolanaProvider({ children }: { children: React.ReactNode }) {
         },
         solana: {
           rpcs: {
+            "solana:mainnet": {
+              rpc: "https://api.mainnet-beta.solana.com",
+            },
             "solana:devnet": {
               rpc: import.meta.env.VITE_SOLANA_RPC_URL || "https://api.devnet.solana.com",
             },
