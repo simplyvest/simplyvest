@@ -2,11 +2,11 @@ import { usePrivy, type WalletWithMetadata } from "@privy-io/react-auth";
 import { useExportWallet } from "@privy-io/react-auth/solana";
 import { useState, useEffect } from "react";
 
-import { useAuth } from "@/lib/solana/use-auth";
-import { useUserProfile, useCreateProfile, useUpdateProfile } from "@/hooks/use-api";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { useUserProfile, useCreateProfile, useUpdateProfile } from "@/hooks/use-api";
+import { useAuth } from "@/lib/solana/use-auth";
 
 function ExportWalletButton() {
   const { ready, authenticated, user } = usePrivy();
@@ -83,11 +83,6 @@ export function ProfileForm() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold text-text">Profile</h3>
-        <p className="text-sm text-muted">Manage your account details</p>
-      </div>
-
       <div className="space-y-4">
         <div className="rounded-lg bg-bg2 p-4">
           <p className="text-xs text-dim">Wallet Address</p>
@@ -133,7 +128,8 @@ export function ProfileForm() {
       <div className="border-t border-border pt-6">
         <h4 className="text-sm font-medium text-text">Wallet</h4>
         <p className="mt-1 text-xs text-muted">
-          Export your embedded wallet private key to use with other wallets like Phantom or MetaMask.
+          Export your embedded wallet private key to use with other wallets like Phantom or
+          MetaMask.
         </p>
         <div className="mt-3">
           <ExportWalletButton />
