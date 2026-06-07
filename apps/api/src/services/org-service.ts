@@ -88,12 +88,43 @@ export function createOrgService(db: Db) {
       return result[0] ?? null;
     },
 
+    async findOrCreateUserByWallet(walletAddress: string): Promise<string> {
+      // Look up existing user by wallet address
+      const existing = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.walletAddress, walletAddress))
+        .limit(1);
+
+      if (existing[0]) {
+        return existing[0].id;
+      }
+
+      // Create a placeholder user for this wallet
+      const id = `wallet:${walletAddress}`;
+      await db
+        .insert(users)
+        .values({
+          id,
+          walletAddress,
+        })
+        .onConflictDoNothing();
+
+      return id;
+    },
+
     async addMember(input: AddMemberInput) {
+      // Resolve userId - if it looks like a wallet address, find/create the user
+      let userId = input.userId;
+      if (!userId.startsWith("did:privy:") && !userId.startsWith("wallet:")) {
+        userId = await this.findOrCreateUserByWallet(input.userId);
+      }
+
       const result = await db
         .insert(orgMembers)
         .values({
           orgId: input.orgId,
-          userId: input.userId,
+          userId,
           role: input.role,
         })
         .onConflictDoNothing()
