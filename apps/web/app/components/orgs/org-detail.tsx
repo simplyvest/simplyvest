@@ -1,13 +1,13 @@
+import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { LuArrowLeft } from "react-icons/lu";
-import { Link } from "@tanstack/react-router";
 
-import { useOrg, useUserOrgs } from "@/hooks/use-api";
 import { Button } from "@/components/ui/button";
+import { useOrg, useUserOrgs } from "@/hooks/use-api";
 
-import { MemberList } from "./member-list";
 import { AddMemberForm } from "./add-member-form";
 import { EditOrgForm } from "./edit-org-form";
+import { MemberList } from "./member-list";
 
 interface OrgDetailProps {
   orgId: string;
@@ -34,7 +34,10 @@ export function OrgDetail({ orgId }: OrgDetailProps) {
     return (
       <div className="rounded-xl border border-border bg-bg1 p-8 text-center">
         <p className="text-sm text-muted">Organization not found</p>
-        <Link to="/app/organizations" className="mt-2 inline-block text-sm text-sol hover:underline no-underline">
+        <Link
+          to="/app/organizations"
+          className="mt-2 inline-block text-sm text-sol hover:underline no-underline"
+        >
           Back to organizations
         </Link>
       </div>
@@ -55,14 +58,13 @@ export function OrgDetail({ orgId }: OrgDetailProps) {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-text">{org.name}</h1>
-            <p className="mt-1 text-sm text-dim">/{org.slug} · <span className="capitalize">{currentUserRole ?? "viewer"}</span></p>
+            {org.description && <p className="mt-1 text-sm text-muted">{org.description}</p>}
+            <p className="mt-1 text-sm text-dim">
+              /{org.slug} · <span className="capitalize">{currentUserRole ?? "viewer"}</span>
+            </p>
           </div>
           {(currentUserRole === "owner" || currentUserRole === "admin") && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setEditing((e) => !e)}
-            >
+            <Button variant="outline" size="sm" onClick={() => setEditing((e) => !e)}>
               {editing ? "Close" : "Edit"}
             </Button>
           )}
@@ -74,6 +76,7 @@ export function OrgDetail({ orgId }: OrgDetailProps) {
           orgId={orgId}
           currentName={org.name}
           currentSlug={org.slug}
+          currentDescription={org.description}
           onSuccess={() => setEditing(false)}
         />
       )}
@@ -82,11 +85,7 @@ export function OrgDetail({ orgId }: OrgDetailProps) {
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-semibold text-text">Members</h2>
         </div>
-        <MemberList
-          orgId={orgId}
-          members={org.members}
-          currentUserRole={currentUserRole}
-        />
+        <MemberList orgId={orgId} members={org.members} currentUserRole={currentUserRole} />
       </div>
 
       {(currentUserRole === "owner" || currentUserRole === "admin") && (

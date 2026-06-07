@@ -180,6 +180,7 @@ interface Organization {
   id: string;
   name: string;
   slug: string;
+  description: string | null;
   createdBy: string;
   createdAt: Date;
 }
@@ -203,6 +204,7 @@ interface OrgWithMembers extends Organization {
 interface CreateOrgInput {
   name: string;
   slug: string;
+  description?: string;
 }
 
 // Organization hooks
@@ -239,7 +241,7 @@ export function useUpdateOrg(orgId: string) {
   const { getAccessToken } = usePrivy();
 
   return useMutation({
-    mutationFn: async (input: { name: string }) => {
+    mutationFn: async (input: { name?: string; description?: string | null }) => {
       const token = await getAccessToken();
       if (!token) throw new Error("Not authenticated");
       return api.put<Organization>(`/api/orgs/${orgId}`, input, token);

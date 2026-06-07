@@ -1,11 +1,11 @@
 import { useState } from "react";
 
+import { isValidPubkey } from "@/components/streams/create-stream/utils";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { useAddOrgMember } from "@/hooks/use-api";
-import { isValidPubkey } from "@/components/streams/create-stream/utils";
 
 interface AddMemberFormProps {
   orgId: string;
@@ -20,7 +20,8 @@ export function AddMemberForm({ orgId, currentUserRole }: AddMemberFormProps) {
   const walletError = wallet && !isValidPubkey(wallet) ? "Invalid wallet address" : "";
   const canSubmit = wallet && !walletError && !addMember.isPending;
 
-  const handleSubmit = () => {
+  const handleSubmit: React.SubmitEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
     if (!canSubmit) return;
     addMember.mutate(
       { orgId, userId: wallet, role },
@@ -34,7 +35,7 @@ export function AddMemberForm({ orgId, currentUserRole }: AddMemberFormProps) {
   };
 
   return (
-    <div className="rounded-lg border border-border bg-bg1 p-4">
+    <form onSubmit={handleSubmit} className="rounded-lg border border-border bg-bg1 p-4">
       <h4 className="text-sm font-medium text-text mb-3">Add Member</h4>
       <div className="flex gap-3">
         <div className="flex-1">
@@ -58,7 +59,7 @@ export function AddMemberForm({ orgId, currentUserRole }: AddMemberFormProps) {
             {currentUserRole === "owner" && <option value="admin">Admin</option>}
           </Select>
         </div>
-        <Button onClick={handleSubmit} disabled={!canSubmit} className="self-start">
+        <Button type="submit" disabled={!canSubmit} className="self-start">
           {addMember.isPending ? "Adding..." : "Add"}
         </Button>
       </div>
@@ -67,6 +68,6 @@ export function AddMemberForm({ orgId, currentUserRole }: AddMemberFormProps) {
           {addMember.error instanceof Error ? addMember.error.message : "Failed to add member"}
         </p>
       )}
-    </div>
+    </form>
   );
 }

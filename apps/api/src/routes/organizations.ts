@@ -1,8 +1,9 @@
 import { Hono } from "hono";
 
 import type { Env } from "../../env";
-import { authMiddleware, getUserId } from "../middleware/auth";
+
 import { createDb } from "../db";
+import { authMiddleware, getUserId } from "../middleware/auth";
 import { createOrgService } from "../services/org-service";
 
 export const orgRoutes = new Hono<{ Bindings: Env }>();
@@ -27,6 +28,7 @@ orgRoutes.post("/", authMiddleware, async (c) => {
   const org = await service.createOrg({
     name: body.name,
     slug: body.slug,
+    description: body.description,
     createdBy: userId,
   });
 
@@ -64,7 +66,11 @@ orgRoutes.put("/:id", authMiddleware, async (c) => {
     return c.json({ error: "Forbidden" }, 403);
   }
 
-  const org = await service.updateOrg(orgId, { name: body.name });
+  const updateInput: { name?: string; description?: string | null } = {};
+  if (body.name !== undefined) updateInput.name = body.name;
+  if (body.description !== undefined) updateInput.description = body.description;
+
+  const org = await service.updateOrg(orgId, updateInput);
   if (!org) {
     return c.json({ error: "Organization not found" }, 404);
   }

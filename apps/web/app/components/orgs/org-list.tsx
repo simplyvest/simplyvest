@@ -27,6 +27,7 @@ export function OrgList() {
           id={org.id}
           name={org.name}
           slug={org.slug}
+          description={org.description}
           role={org.role}
         />
       ))}

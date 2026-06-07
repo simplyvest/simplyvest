@@ -25,6 +25,7 @@ export function CreateOrgModal({ open, onClose, onSuccess }: CreateOrgModalProps
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [slugEdited, setSlugEdited] = useState(false);
+  const [description, setDescription] = useState("");
 
   if (!open) return null;
 
@@ -35,16 +36,18 @@ export function CreateOrgModal({ open, onClose, onSuccess }: CreateOrgModalProps
 
   const canSubmit = name && slug && !slugError && !createOrg.isPending;
 
-  const handleNameBlur = () => {
+  const handleNameChange = (value: string) => {
+    setName(value);
     if (!slugEdited) {
-      setSlug(slugify(name));
+      setSlug(slugify(value));
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit: React.SubmitEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
     if (!canSubmit) return;
     createOrg.mutate(
-      { name, slug },
+      { name, slug, description: description || undefined },
       {
         onSuccess: (org) => {
           handleClose();
@@ -58,6 +61,7 @@ export function CreateOrgModal({ open, onClose, onSuccess }: CreateOrgModalProps
     setName("");
     setSlug("");
     setSlugEdited(false);
+    setDescription("");
     onClose();
   };
 
@@ -65,18 +69,18 @@ export function CreateOrgModal({ open, onClose, onSuccess }: CreateOrgModalProps
     <ModalOverlay onClose={handleClose}>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-text">Create Organization</h2>
-        <Button variant="ghost" size="icon" onClick={handleClose} aria-label="Close">
+        <Button variant="ghost" size="icon" onClick={handleClose} aria-label="Close" type="button">
           <LuX className="h-4 w-4" />
         </Button>
       </div>
 
-      <div className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <Field label="Name" required>
           <Input
             value={name}
-            onChange={(e) => setName(e.target.value)}
-            onBlur={handleNameBlur}
+            onChange={(e) => handleNameChange(e.target.value)}
             placeholder="My Organization"
+            autoFocus
           />
         </Field>
 
@@ -89,6 +93,15 @@ export function CreateOrgModal({ open, onClose, onSuccess }: CreateOrgModalProps
             }}
             placeholder="my-organization"
           />
+          {!slugEdited && slug && <p className="mt-1 text-xs text-dim">Auto-generated from name</p>}
+        </Field>
+
+        <Field label="Description">
+          <Input
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="What does this organization do?"
+          />
         </Field>
 
         {createOrg.isError && (
@@ -98,14 +111,14 @@ export function CreateOrgModal({ open, onClose, onSuccess }: CreateOrgModalProps
         )}
 
         <div className="flex gap-3 pt-2">
-          <Button variant="default" onClick={handleSubmit} disabled={!canSubmit} className="flex-1">
+          <Button type="submit" variant="default" disabled={!canSubmit} className="flex-1">
             {createOrg.isPending ? "Creating..." : "Create Organization"}
           </Button>
-          <Button variant="ghost" onClick={handleClose}>
+          <Button type="button" variant="ghost" onClick={handleClose}>
             Cancel
           </Button>
         </div>
-      </div>
+      </form>
     </ModalOverlay>
   );
 }

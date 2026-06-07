@@ -18,6 +18,7 @@ export const organizations = sqliteTable("organizations", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   slug: text("slug").unique().notNull(),
+  description: text("description"),
   createdBy: text("created_by")
     .notNull()
     .references(() => users.id),

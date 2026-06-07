@@ -2,11 +2,13 @@ import { eq, and } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 
 import type { Db } from "../db";
+
 import { organizations, orgMembers, users } from "../db/schema";
 
 export interface CreateOrgInput {
   name: string;
   slug: string;
+  description?: string;
   createdBy: string;
 }
 
@@ -26,6 +28,7 @@ export function createOrgService(db: Db) {
           id,
           name: input.name,
           slug: input.slug,
+          description: input.description ?? null,
           createdBy: input.createdBy,
         })
         .returning();
@@ -43,11 +46,7 @@ export function createOrgService(db: Db) {
     },
 
     async getOrgById(id: string) {
-      const result = await db
-        .select()
-        .from(organizations)
-        .where(eq(organizations.id, id))
-        .limit(1);
+      const result = await db.select().from(organizations).where(eq(organizations.id, id)).limit(1);
       return result[0] ?? null;
     },
 
@@ -79,7 +78,7 @@ export function createOrgService(db: Db) {
       return { ...org, members };
     },
 
-    async updateOrg(id: string, input: { name?: string }) {
+    async updateOrg(id: string, input: { name?: string; description?: string | null }) {
       const result = await db
         .update(organizations)
         .set(input)
@@ -125,6 +124,7 @@ export function createOrgService(db: Db) {
           id: organizations.id,
           name: organizations.name,
           slug: organizations.slug,
+          description: organizations.description,
           createdAt: organizations.createdAt,
           role: orgMembers.role,
         })

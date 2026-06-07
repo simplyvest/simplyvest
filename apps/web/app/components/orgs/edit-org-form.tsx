@@ -9,19 +9,29 @@ interface EditOrgFormProps {
   orgId: string;
   currentName: string;
   currentSlug: string;
+  currentDescription?: string | null;
   onSuccess?: () => void;
 }
 
-export function EditOrgForm({ orgId, currentName, currentSlug, onSuccess }: EditOrgFormProps) {
+export function EditOrgForm({
+  orgId,
+  currentName,
+  currentSlug,
+  currentDescription,
+  onSuccess,
+}: EditOrgFormProps) {
   const updateOrg = useUpdateOrg(orgId);
   const [name, setName] = useState(currentName);
+  const [description, setDescription] = useState(currentDescription ?? "");
 
-  const canSubmit = name && name !== currentName && !updateOrg.isPending;
+  const hasChanges = name !== currentName || description !== (currentDescription ?? "");
+  const canSubmit = name && hasChanges && !updateOrg.isPending;
 
-  const handleSubmit = () => {
+  const handleSubmit: React.SubmitEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
     if (!canSubmit) return;
     updateOrg.mutate(
-      { name },
+      { name, description: description || null },
       {
         onSuccess: () => {
           onSuccess?.();
@@ -31,7 +41,7 @@ export function EditOrgForm({ orgId, currentName, currentSlug, onSuccess }: Edit
   };
 
   return (
-    <div className="rounded-lg border border-border bg-bg1 p-4">
+    <form onSubmit={handleSubmit} className="rounded-lg border border-border bg-bg1 p-4">
       <h4 className="text-sm font-medium text-text mb-3">Organization Settings</h4>
       <div className="space-y-3">
         <Field label="Name">
@@ -40,17 +50,24 @@ export function EditOrgForm({ orgId, currentName, currentSlug, onSuccess }: Edit
         <Field label="Slug">
           <Input value={currentSlug} disabled />
         </Field>
+        <Field label="Description">
+          <Input
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="What does this organization do?"
+          />
+        </Field>
         {updateOrg.isError && (
           <p className="text-xs text-warn">
             {updateOrg.error instanceof Error ? updateOrg.error.message : "Failed to update"}
           </p>
         )}
         <div className="flex gap-2">
-          <Button onClick={handleSubmit} disabled={!canSubmit} size="sm">
+          <Button type="submit" disabled={!canSubmit} size="sm">
             {updateOrg.isPending ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       </div>
-    </div>
+    </form>
   );
 }
