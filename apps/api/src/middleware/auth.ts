@@ -7,8 +7,11 @@ interface PrivyJwksKey {
   kid: string;
   use: string;
   alg: string;
-  n: string;
-  e: string;
+  crv?: string;
+  x?: string;
+  y?: string;
+  n?: string;
+  e?: string;
 }
 
 interface JwksCache {
@@ -19,19 +22,19 @@ interface JwksCache {
 let jwksCache: JwksCache | null = null;
 const JWKS_CACHE_TTL = 3600_000; // 1 hour
 
-async function getJwks(): Promise<PrivyJwksKey[]> {
+async function getJwks(appId: string): Promise<PrivyJwksKey[]> {
   if (jwksCache && Date.now() - jwksCache.fetchedAt < JWKS_CACHE_TTL) {
     return jwksCache.keys;
   }
 
-  const res = await fetch("https://auth.privy.io/.well-known/jwks.json");
+  const res = await fetch(`https://auth.privy.io/api/v1/apps/${appId}/jwks.json`);
   if (!res.ok) {
     throw new Error("Failed to fetch Privy JWKS");
   }
 
   const data = (await res.json()) as { keys: PrivyJwksKey[] };
   jwksCache = { keys: data.keys, fetchedAt: Date.now() };
-  return data.keys;
+  return jwksCache.keys;
 }
 
 function base64UrlDecode(str: string): Uint8Array {
@@ -44,13 +47,30 @@ function base64UrlToBase64(str: string): string {
   return str.replace(/-/g, "+").replace(/_/g, "/");
 }
 
-async function importRsaKey(jwk: PrivyJwksKey): Promise<CryptoKey> {
+async function importKey(jwk: PrivyJwksKey): Promise<CryptoKey> {
+  if (jwk.kty === "EC" && jwk.crv === "P-256") {
+    // ES256 (ECDSA P-256)
+    return crypto.subtle.importKey(
+      "jwk",
+      {
+        kty: jwk.kty,
+        crv: jwk.crv,
+        x: base64UrlToBase64(jwk.x!),
+        y: base64UrlToBase64(jwk.y!),
+        ext: true,
+      },
+      { name: "ECDSA", namedCurve: "P-256" },
+      false,
+      ["verify"],
+    );
+  }
+  // RS256 (RSA) fallback
   return crypto.subtle.importKey(
     "jwk",
     {
       kty: jwk.kty,
-      n: base64UrlToBase64(jwk.n),
-      e: base64UrlToBase64(jwk.e),
+      n: base64UrlToBase64(jwk.n!),
+      e: base64UrlToBase64(jwk.e!),
       alg: jwk.alg,
       ext: true,
     },
@@ -79,7 +99,7 @@ async function verifyJwt(
     typ: string;
   };
 
-  if (header.alg !== "RS256") {
+  if (header.alg !== "RS256" && header.alg !== "ES256") {
     throw new Error(`Unsupported algorithm: ${header.alg}`);
   }
 
@@ -90,11 +110,26 @@ async function verifyJwt(
   }
 
   // Verify signature
-  const cryptoKey = await importRsaKey(key);
+  const cryptoKey = await importKey(key);
   const signedData = new TextEncoder().encode(`${headerB64}.${payloadB64}`);
   const signature = base64UrlDecode(signatureB64);
 
-  const valid = await crypto.subtle.verify("RSASSA-PKCS1-v1_5", cryptoKey, signature, signedData);
+  let valid: boolean;
+  if (header.alg === "ES256") {
+    valid = await crypto.subtle.verify(
+      { name: "ECDSA", hash: "SHA-256" },
+      cryptoKey,
+      signature,
+      signedData,
+    );
+  } else {
+    valid = await crypto.subtle.verify(
+      "RSASSA-PKCS1-v1_5",
+      cryptoKey,
+      signature,
+      signedData,
+    );
+  }
   if (!valid) {
     throw new Error("Invalid JWT signature");
   }
@@ -136,8 +171,11 @@ export async function authMiddleware(c: Context, next: Next) {
   const token = authHeader.slice(7);
 
   try {
-    const keys = await getJwks();
-    const claims = await verifyJwt(token, keys, c.env.PRIVY_APP_ID);
+    const appId = c.env.PRIVY_APP_ID;
+    if (!appId) throw new Error("PRIVY_APP_ID not configured");
+
+    const keys = await getJwks(appId);
+    const claims = await verifyJwt(token, keys, appId);
 
     // Attach user ID to context
     c.set("userId", claims.sub);
@@ -145,6 +183,7 @@ export async function authMiddleware(c: Context, next: Next) {
     await next();
   } catch (err) {
     const message = err instanceof Error ? err.message : "Token verification failed";
+    console.error("[Auth]", message, err);
     return c.json({ error: message }, 401);
   }
 }
