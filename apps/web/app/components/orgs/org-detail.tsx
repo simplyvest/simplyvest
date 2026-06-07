@@ -3,7 +3,8 @@ import { useState } from "react";
 import { LuArrowLeft } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
-import { useOrg, useUserOrgs } from "@/hooks/use-api";
+import { useOrg } from "@/hooks/use-api";
+import { useAuth } from "@/lib/solana/use-auth";
 
 import { AddMemberForm } from "./add-member-form";
 import { EditOrgForm } from "./edit-org-form";
@@ -15,11 +16,10 @@ interface OrgDetailProps {
 
 export function OrgDetail({ orgId }: OrgDetailProps) {
   const { data: org, isLoading, error } = useOrg(orgId);
-  const { data: userOrgs } = useUserOrgs();
+  const { publicKey } = useAuth();
   const [editing, setEditing] = useState(false);
 
-  const userOrg = userOrgs?.find((o) => o.id === orgId);
-  const currentUserRole = userOrg?.role;
+  const currentUserRole = org?.members.find((m) => m.walletAddress === publicKey?.toBase58())?.role;
 
   if (isLoading) {
     return (
