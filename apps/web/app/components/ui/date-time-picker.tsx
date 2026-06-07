@@ -4,6 +4,14 @@ import "react-datepicker/dist/react-datepicker.css";
 import "@/styles/datepicker.css";
 import { cn } from "@/utils/cn";
 
+function isSameDay(a: Date, b: Date) {
+  return a.toDateString() === b.toDateString();
+}
+
+function isToday(date: Date) {
+  return date.toDateString() === new Date().toDateString();
+}
+
 interface DateTimePickerProps {
   value: string;
   onChange: (value: string) => void;
@@ -29,8 +37,6 @@ export function DateTimePicker({
     ? new Date(Math.max(now.getTime(), minDate?.getTime() ?? 0))
     : minDate;
 
-  const isToday = (date: Date) => date.toDateString() === now.toDateString();
-
   const handleChange = (date: Date | null) => {
     if (!date) {
       onChange("");
@@ -45,15 +51,27 @@ export function DateTimePicker({
   };
 
   const filterPassedTime = (time: Date) => {
-    if (!disablePast) return true;
-    if (!selected || !isToday(selected)) return true;
-    const hour = time.getHours();
-    const minute = time.getMinutes();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-    if (hour > currentHour) return true;
-    if (hour === currentHour && minute > currentMinute) return true;
-    return false;
+    // Filter past times when on today and disablePast is true
+    if (disablePast && isToday(time)) {
+      const hour = time.getHours();
+      const minute = time.getMinutes();
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+      if (hour < currentHour) return false;
+      if (hour === currentHour && minute <= currentMinute) return false;
+    }
+
+    // Filter times before minDate when on the same day as minDate
+    if (minDate && selected && isSameDay(selected, minDate)) {
+      const hour = time.getHours();
+      const minute = time.getMinutes();
+      const minHour = minDate.getHours();
+      const minMinute = minDate.getMinutes();
+      if (hour < minHour) return false;
+      if (hour === minHour && minute <= minMinute) return false;
+    }
+
+    return true;
   };
 
   return (

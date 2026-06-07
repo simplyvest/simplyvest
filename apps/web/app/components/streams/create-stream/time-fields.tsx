@@ -33,6 +33,7 @@ export function TimeFields({
           onChange={onEndTimeChange}
           placeholder="Select end time"
           minDate={startTime ? new Date(startTime) : undefined}
+          disablePast
         />
       </Field>
 
@@ -42,6 +43,7 @@ export function TimeFields({
           onChange={onCliffTimeChange}
           placeholder="Select cliff time"
           minDate={startTime ? new Date(startTime) : undefined}
+          disablePast
         />
       </Field>
     </div>
