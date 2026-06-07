@@ -58,6 +58,9 @@ function computeStats(
 
   for (const s of streams) {
     const isCreator = s.account.creator.toBase58() === walletAddress;
+    const isRecipient = s.account.recipient.toBase58() === walletAddress;
+    if (!isCreator && !isRecipient) continue;
+
     const status = getStatus(s.account);
 
     if (isCreator) stats.created++;
@@ -82,6 +85,8 @@ function computeStats(
 
   for (const s of milestoneStreams) {
     const isCreator = s.account.creator.toBase58() === walletAddress;
+    const isRecipient = s.account.recipient.toBase58() === walletAddress;
+    if (!isCreator && !isRecipient) continue;
 
     if (isCreator) stats.created++;
     else stats.received++;
@@ -126,6 +131,7 @@ function StatCard({
 
 function AnalyticsPage() {
   const { publicKey } = useAuth();
+  // Fetch all streams — computeStats filters to user's streams (as creator or recipient)
   const { data: streams, isLoading: streamsLoading } = useStreams();
   const { data: milestoneStreams, isLoading: milestoneLoading } = useMilestoneStreams();
 
