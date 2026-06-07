@@ -44,6 +44,18 @@ export function DateTimePicker({
     onChange(`${year}-${month}-${day}T${hours}:${minutes}`);
   };
 
+  const filterPassedTime = (time: Date) => {
+    if (!disablePast) return true;
+    if (!selected || !isToday(selected)) return true;
+    const hour = time.getHours();
+    const minute = time.getMinutes();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    if (hour > currentHour) return true;
+    if (hour === currentHour && minute > currentMinute) return true;
+    return false;
+  };
+
   return (
     <DatePicker
       selected={selected}
@@ -54,12 +66,7 @@ export function DateTimePicker({
       dateFormat="MMM d, yyyy h:mm aa"
       placeholderText={placeholder}
       minDate={effectiveMinDate}
-      minTime={
-        disablePast && selected && isToday(selected)
-          ? new Date(now.getTime() + 15 * 60 * 1000)
-          : undefined
-      }
-      maxTime={undefined}
+      filterTime={filterPassedTime}
       disabled={disabled}
       calendarClassName="!bg-bg1 !border-border !rounded-xl !shadow-lg"
       dayClassName={(date) =>
