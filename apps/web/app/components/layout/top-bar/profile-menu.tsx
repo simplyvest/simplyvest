@@ -1,4 +1,5 @@
 import { useLogout } from "@privy-io/react-auth";
+import { useNavigate } from "@tanstack/react-router";
 import * as React from "react";
 import { LuLogOut } from "react-icons/lu";
 
@@ -7,6 +8,7 @@ import { useAuth } from "@/lib/solana/use-auth";
 export function ProfileMenu() {
   const { user, publicKey } = useAuth();
   const { logout } = useLogout();
+  const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
 
@@ -20,7 +22,12 @@ export function ProfileMenu() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const displayName = user?.email ?? user?.google ?? (publicKey ? `${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}` : "User");
+  const displayName =
+    user?.email ??
+    user?.google ??
+    (publicKey
+      ? `${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}`
+      : "User");
   const initial = (user?.email ?? user?.google ?? "U").charAt(0).toUpperCase();
 
   return (
@@ -42,7 +49,7 @@ export function ProfileMenu() {
             type="button"
             onClick={() => {
               setOpen(false);
-              void logout();
+              void logout().then(() => void navigate({ to: "/" }));
             }}
             className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-muted transition-colors hover:bg-bg2 hover:text-text"
           >
