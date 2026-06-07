@@ -1,7 +1,6 @@
-import { useAuth } from "@/lib/solana/use-auth";
-import { createRoute } from "@tanstack/react-router";
+import { createRoute, Outlet, useRouterState } from "@tanstack/react-router";
 
-import { CreateStreamForm } from "@/components/streams/create-stream/create-stream-form";
+import { CreateTypeSelector } from "@/components/streams/create-stream/create-type-selector";
 
 import { Route as AppRoute } from "./app";
 
@@ -12,25 +11,17 @@ export const Route = createRoute({
 });
 
 function CreatePage() {
-  const { connected } = useAuth();
-
-  if (!connected) {
-    return (
-      <div className="flex h-40 items-center justify-center rounded-xl border border-border bg-bg1">
-        <p className="text-sm text-muted">Connect your wallet to create a stream</p>
-      </div>
-    );
-  }
+  const location = useRouterState().location;
+  const isExactCreate = location.pathname === "/app/create";
 
   return (
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight text-text">Create Stream</h1>
-        <p className="mt-1 text-sm text-muted">Lock tokens in a vesting stream for a recipient</p>
+        <p className="mt-1 text-sm text-muted">Choose a stream type to get started</p>
       </div>
-      <div>
-        <CreateStreamForm />
-      </div>
+      <Outlet />
+      {isExactCreate && <CreateTypeSelector />}
     </div>
   );
 }
