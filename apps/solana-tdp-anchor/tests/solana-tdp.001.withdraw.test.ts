@@ -436,6 +436,7 @@ describe("Feature 1: withdraw", () => {
     // First withdrawal at 50% elapsed
     warp(210);
     const half = Math.floor((amount * 200) / 400);
+
     await program.methods
       .withdraw({ amount: new BN(half) })
       .accountsPartial(
@@ -460,7 +461,23 @@ describe("Feature 1: withdraw", () => {
     warp(end - clockNow(svm) + 10); // past end_time
     const remaining = amount - half;
     await program.methods
-      .withdraw({ amount: new BN(remaining) })
+      .withdraw({ amount: new BN(remaining - 1) })
+      .accountsPartial(
+        getWithdrawAccounts(
+          recipient.publicKey,
+          streamPDA,
+          vaultPDA,
+          recipientToken,
+          sender.publicKey,
+          mint,
+        ),
+      )
+      .signers([recipient])
+      .rpc();
+
+    // Final withdrawal of last token
+    await program.methods
+      .withdraw({ amount: new BN(1) })
       .accountsPartial(
         getWithdrawAccounts(
           recipient.publicKey,
