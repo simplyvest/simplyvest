@@ -35,11 +35,6 @@ export function OrgList() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold text-text">Organizations</h3>
-        <p className="text-sm text-muted">Manage your teams and organizations</p>
-      </div>
-
       {orgs && orgs.length > 0 ? (
         <div className="space-y-3">
           {orgs.map((org) => (
