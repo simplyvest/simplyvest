@@ -15,8 +15,13 @@ import { Route as DocsRouteImport } from './routes/docs'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AppOrganizationsRouteImport } from './routes/app.organizations'
+import { Route as AppHelpRouteImport } from './routes/app.help'
 import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
 import { Route as AppCreateRouteImport } from './routes/app.create'
+import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
+import { Route as AppActivityRouteImport } from './routes/app.activity'
 
 const WaitlistRoute = WaitlistRouteImport.update({
   id: '/waitlist',
@@ -48,6 +53,21 @@ const AppSettingsRoute = AppSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AppRoute,
 } as any)
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOrganizationsRoute = AppOrganizationsRouteImport.update({
+  id: '/organizations',
+  path: '/organizations',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHelpRoute = AppHelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -58,6 +78,16 @@ const AppCreateRoute = AppCreateRouteImport.update({
   path: '/create',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppActivityRoute = AppActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -65,8 +95,13 @@ export interface FileRoutesByFullPath {
   '/docs': typeof DocsRoute
   '/faq': typeof FaqRoute
   '/waitlist': typeof WaitlistRoute
+  '/app/activity': typeof AppActivityRoute
+  '/app/analytics': typeof AppAnalyticsRoute
   '/app/create': typeof AppCreateRoute
   '/app/dashboard': typeof AppDashboardRoute
+  '/app/help': typeof AppHelpRoute
+  '/app/organizations': typeof AppOrganizationsRoute
+  '/app/profile': typeof AppProfileRoute
   '/app/settings': typeof AppSettingsRoute
 }
 export interface FileRoutesByTo {
@@ -75,8 +110,13 @@ export interface FileRoutesByTo {
   '/docs': typeof DocsRoute
   '/faq': typeof FaqRoute
   '/waitlist': typeof WaitlistRoute
+  '/app/activity': typeof AppActivityRoute
+  '/app/analytics': typeof AppAnalyticsRoute
   '/app/create': typeof AppCreateRoute
   '/app/dashboard': typeof AppDashboardRoute
+  '/app/help': typeof AppHelpRoute
+  '/app/organizations': typeof AppOrganizationsRoute
+  '/app/profile': typeof AppProfileRoute
   '/app/settings': typeof AppSettingsRoute
 }
 export interface FileRoutesById {
@@ -86,8 +126,13 @@ export interface FileRoutesById {
   '/docs': typeof DocsRoute
   '/faq': typeof FaqRoute
   '/waitlist': typeof WaitlistRoute
+  '/app/activity': typeof AppActivityRoute
+  '/app/analytics': typeof AppAnalyticsRoute
   '/app/create': typeof AppCreateRoute
   '/app/dashboard': typeof AppDashboardRoute
+  '/app/help': typeof AppHelpRoute
+  '/app/organizations': typeof AppOrganizationsRoute
+  '/app/profile': typeof AppProfileRoute
   '/app/settings': typeof AppSettingsRoute
 }
 export interface FileRouteTypes {
@@ -98,8 +143,13 @@ export interface FileRouteTypes {
     | '/docs'
     | '/faq'
     | '/waitlist'
+    | '/app/activity'
+    | '/app/analytics'
     | '/app/create'
     | '/app/dashboard'
+    | '/app/help'
+    | '/app/organizations'
+    | '/app/profile'
     | '/app/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -108,8 +158,13 @@ export interface FileRouteTypes {
     | '/docs'
     | '/faq'
     | '/waitlist'
+    | '/app/activity'
+    | '/app/analytics'
     | '/app/create'
     | '/app/dashboard'
+    | '/app/help'
+    | '/app/organizations'
+    | '/app/profile'
     | '/app/settings'
   id:
     | '__root__'
@@ -118,8 +173,13 @@ export interface FileRouteTypes {
     | '/docs'
     | '/faq'
     | '/waitlist'
+    | '/app/activity'
+    | '/app/analytics'
     | '/app/create'
     | '/app/dashboard'
+    | '/app/help'
+    | '/app/organizations'
+    | '/app/profile'
     | '/app/settings'
   fileRoutesById: FileRoutesById
 }
@@ -175,6 +235,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/profile': {
+      id: '/app/profile'
+      path: '/profile'
+      fullPath: '/app/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/organizations': {
+      id: '/app/organizations'
+      path: '/organizations'
+      fullPath: '/app/organizations'
+      preLoaderRoute: typeof AppOrganizationsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/help': {
+      id: '/app/help'
+      path: '/help'
+      fullPath: '/app/help'
+      preLoaderRoute: typeof AppHelpRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/dashboard': {
       id: '/app/dashboard'
       path: '/dashboard'
@@ -189,18 +270,42 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCreateRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/analytics': {
+      id: '/app/analytics'
+      path: '/analytics'
+      fullPath: '/app/analytics'
+      preLoaderRoute: typeof AppAnalyticsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/activity': {
+      id: '/app/activity'
+      path: '/activity'
+      fullPath: '/app/activity'
+      preLoaderRoute: typeof AppActivityRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppActivityRoute: typeof AppActivityRoute
+  AppAnalyticsRoute: typeof AppAnalyticsRoute
   AppCreateRoute: typeof AppCreateRoute
   AppDashboardRoute: typeof AppDashboardRoute
+  AppHelpRoute: typeof AppHelpRoute
+  AppOrganizationsRoute: typeof AppOrganizationsRoute
+  AppProfileRoute: typeof AppProfileRoute
   AppSettingsRoute: typeof AppSettingsRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppActivityRoute: AppActivityRoute,
+  AppAnalyticsRoute: AppAnalyticsRoute,
   AppCreateRoute: AppCreateRoute,
   AppDashboardRoute: AppDashboardRoute,
+  AppHelpRoute: AppHelpRoute,
+  AppOrganizationsRoute: AppOrganizationsRoute,
+  AppProfileRoute: AppProfileRoute,
   AppSettingsRoute: AppSettingsRoute,
 }
 

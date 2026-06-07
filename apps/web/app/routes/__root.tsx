@@ -42,6 +42,7 @@ export const Route = createRootRoute({
 function RootComponent() {
   const routerState = useRouterState();
   const location = routerState.location;
+  const isApp = location.pathname.startsWith("/app");
 
   React.useEffect(() => {
     trackPageView(location.pathname);
@@ -60,13 +61,13 @@ function RootComponent() {
                 Skip to main content
               </a>
 
-              <Navbar />
+              {!isApp && <Navbar />}
 
               <main id="main-content" className="flex-1">
                 <Outlet />
               </main>
 
-              <Footer />
+              {!isApp && <Footer />}
 
               {DEV && (
                 <TanStackDevtools
