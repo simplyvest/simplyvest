@@ -306,10 +306,7 @@ export function useRemoveOrgMember() {
     mutationFn: async ({ orgId, userId }: { orgId: string; userId: string }) => {
       const token = await getAccessToken();
       if (!token) throw new Error("Not authenticated");
-      return api.get(`/api/orgs/${orgId}/members/${userId}`, {
-        method: "DELETE" as string,
-        token,
-      });
+      return api.delete(`/api/orgs/${orgId}/members/${userId}`, token);
     },
     onSuccess: (_data, variables) => {
       void queryClient.invalidateQueries({ queryKey: ["org", variables.orgId] });
