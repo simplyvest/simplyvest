@@ -1,10 +1,11 @@
 import { fetchTokenMetadata } from "@solana-tdp/sdk";
 import type { TokenMetadata } from "@solana-tdp/sdk";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { useAuth } from "@/lib/solana/use-auth";
-import { useConnection } from "@/lib/solana/use-connection";
 import { PublicKey } from "@solana/web3.js";
 import { useState, useEffect } from "react";
+
+import { useAuth } from "@/lib/solana/use-auth";
+import { useConnection } from "@/lib/solana/use-connection";
 
 interface TokenInfo {
   mint: PublicKey;
@@ -63,7 +64,9 @@ export function useOwnedTokens(): {
             return Object.assign(t, { meta });
           });
           setTokens(list);
-        } catch {}
+        } catch (e) {
+          console.error("Failed to load tokens", e);
+        }
         if (!cancelled) setLoading(false);
       })();
     }

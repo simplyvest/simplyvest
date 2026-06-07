@@ -140,7 +140,7 @@ apps/
 │   │   │   ├── marketing/       # Landing page sections
 │   │   │   └── ui/              # Generic UI primitives
 │   │   ├── hooks/
-│   │   │   ├── use-transactions.ts  # On-chain mutations
+│   │   │   ├── tx/                  # On-chain transaction hooks (use-create-stream, use-withdraw, etc.)
 │   │   │   ├── use-stream.ts        # On-chain queries
 │   │   │   ├── use-api.ts           # API hooks (streams, users, orgs)
 │   │   │   └── use-program.ts       # Anchor program instance
@@ -198,35 +198,35 @@ test = "jest"
 
 ## API Stack
 
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| Framework | Hono | Lightweight web framework for CF Workers |
-| ORM | Drizzle ORM | Type-safe SQL queries, migrations |
-| Database | Cloudflare D1 | SQLite at the edge |
-| Auth | Privy JWT | JWKS-based token verification |
+| Layer     | Technology    | Purpose                                  |
+| --------- | ------------- | ---------------------------------------- |
+| Framework | Hono          | Lightweight web framework for CF Workers |
+| ORM       | Drizzle ORM   | Type-safe SQL queries, migrations        |
+| Database  | Cloudflare D1 | SQLite at the edge                       |
+| Auth      | Privy JWT     | JWKS-based token verification            |
 
 ### Database tables
 
-| Table | Purpose |
-|-------|---------|
-| `users` | User profiles (linked to Privy DID) |
-| `organizations` | Team/org metadata |
-| `org_members` | Many-to-many: users ↔ orgs with roles |
-| `streams` | Stream records (includes closed streams) |
+| Table           | Purpose                                                                          |
+| --------------- | -------------------------------------------------------------------------------- |
+| `users`         | User profiles (linked to Privy DID)                                              |
+| `organizations` | Team/org metadata                                                                |
+| `org_members`   | Many-to-many: users ↔ orgs with roles                                            |
+| `streams`       | Stream records (includes closed streams)                                         |
 | `stream_events` | Immutable event log per stream (unique on stream_id + event_type + tx_signature) |
 
 ### Middleware
 
-| Middleware | Purpose |
-|-----------|---------|
-| `cors.ts` | CORS restricted to localhost + simplyvest.pages.dev + simplyvest.xyz |
-| `auth.ts` | Privy JWT verification via JWKS (cached 1hr) |
+| Middleware      | Purpose                                                                       |
+| --------------- | ----------------------------------------------------------------------------- |
+| `cors.ts`       | CORS restricted to localhost + simplyvest.pages.dev + simplyvest.xyz          |
+| `auth.ts`       | Privy JWT verification via JWKS (cached 1hr)                                  |
 | `rate-limit.ts` | In-memory per-IP rate limiting (30/min streams, 20/min users, 5/min waitlist) |
 
 ### Scheduled tasks
 
-| Trigger | Frequency | Purpose |
-|---------|-----------|---------|
+| Trigger        | Frequency        | Purpose                           |
+| -------------- | ---------------- | --------------------------------- |
 | Reconciliation | Every 15 minutes | Sync missed on-chain events to D1 |
 
 ### API commands
