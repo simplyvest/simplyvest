@@ -1,5 +1,5 @@
+import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { Field } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 
 export function TimeFields({
   startTime,
@@ -19,26 +19,28 @@ export function TimeFields({
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
       <Field label="Start Date/Time" required>
-        <Input
-          type="datetime-local"
+        <DateTimePicker
           value={startTime}
-          onChange={(e) => onStartTimeChange(e.target.value)}
+          onChange={onStartTimeChange}
+          placeholder="Select start time"
         />
       </Field>
 
       <Field label="End Date/Time" required>
-        <Input
-          type="datetime-local"
+        <DateTimePicker
           value={endTime}
-          onChange={(e) => onEndTimeChange(e.target.value)}
+          onChange={onEndTimeChange}
+          placeholder="Select end time"
+          minDate={startTime ? new Date(startTime) : undefined}
         />
       </Field>
 
       <Field label="Cliff Date/Time (optional)">
-        <Input
-          type="datetime-local"
+        <DateTimePicker
           value={cliffTime}
-          onChange={(e) => onCliffTimeChange(e.target.value)}
+          onChange={onCliffTimeChange}
+          placeholder="Select cliff time"
+          minDate={startTime ? new Date(startTime) : undefined}
         />
       </Field>
     </div>

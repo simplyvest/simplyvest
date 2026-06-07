@@ -14,14 +14,17 @@ function CreatePage() {
   const location = useRouterState().location;
   const isExactCreate = location.pathname === "/app/create";
 
+  if (!isExactCreate) {
+    return <Outlet />;
+  }
+
   return (
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight text-text">Create Stream</h1>
         <p className="mt-1 text-sm text-muted">Choose a stream type to get started</p>
       </div>
-      <Outlet />
-      {isExactCreate && <CreateTypeSelector />}
+      <CreateTypeSelector />
     </div>
   );
 }
