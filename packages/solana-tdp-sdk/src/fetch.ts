@@ -2,10 +2,10 @@ import { utils } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 import type { Connection } from "@solana/web3.js";
 
-import type { StreamAccount, MilestoneStreamAccount } from "./types/runtime";
+import type { StreamAccount, MilestoneStreamAccount, CreatorConfig } from "./types/runtime";
 
 import { PROGRAM_ID, DISCRIMINATORS, ACCOUNT_SIZES } from "./constants";
-import { decodeStreamAccount, decodeMilestoneStreamAccount } from "./decode";
+import { decodeStreamAccount, decodeMilestoneStreamAccount, decodeCreatorConfig } from "./decode";
 
 function encodeDiscriminator(bytes: readonly number[]): string {
   return utils.bytes.bs58.encode(Buffer.from(bytes));
@@ -155,4 +155,52 @@ export async function fetchMilestoneStreamsByRecipient(
       }
     })
     .filter((x): x is NonNullable<typeof x> => x != null);
+}
+
+export async function fetchStream(
+  connection: Connection,
+  streamPda: PublicKey,
+): Promise<{ publicKey: PublicKey; account: StreamAccount } | null> {
+  const info = await connection.getAccountInfo(streamPda, "confirmed");
+  if (!info) return null;
+
+  try {
+    return { publicKey: streamPda, account: decodeStreamAccount(info.data) };
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchMilestoneStream(
+  connection: Connection,
+  streamPda: PublicKey,
+): Promise<{ publicKey: PublicKey; account: MilestoneStreamAccount } | null> {
+  const info = await connection.getAccountInfo(streamPda, "confirmed");
+  if (!info) return null;
+
+  try {
+    return { publicKey: streamPda, account: decodeMilestoneStreamAccount(info.data) };
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchCreatorConfig(
+  connection: Connection,
+  creator: PublicKey,
+  programId: PublicKey = PROGRAM_ID,
+): Promise<CreatorConfig | null> {
+  const [pda] = PublicKey.findProgramAddressSync(
+    [Buffer.from("creator_config"), creator.toBuffer()],
+    programId,
+  );
+
+  const info = await connection.getAccountInfo(pda, "confirmed");
+  if (!info) return null;
+
+  try {
+    return decodeCreatorConfig(info.data);
+  } catch {
+    return null;
+  }
 }

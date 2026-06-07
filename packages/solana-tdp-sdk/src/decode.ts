@@ -1,7 +1,7 @@
 import { BorshAccountsCoder } from "@coral-xyz/anchor";
 import type { Idl } from "@coral-xyz/anchor";
 
-import type { StreamAccount, MilestoneStreamAccount } from "./types/runtime";
+import type { StreamAccount, MilestoneStreamAccount, CreatorConfig } from "./types/runtime";
 
 import SolanaTdpIdl from "./idl/solana_tdp.json";
 
@@ -33,4 +33,10 @@ export function decodeMilestoneStreamAccount(data: Buffer): MilestoneStreamAccou
   // TODO: look into proper typing — same Borsh decode limitation as above
   // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   return mapToCamelCase(raw as Record<string, unknown>) as unknown as MilestoneStreamAccount;
+}
+
+export function decodeCreatorConfig(data: Buffer): CreatorConfig {
+  const raw = coder.decode("CreatorConfig", data);
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+  return mapToCamelCase(raw as Record<string, unknown>) as unknown as CreatorConfig;
 }
