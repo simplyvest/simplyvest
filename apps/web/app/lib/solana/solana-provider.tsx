@@ -41,16 +41,14 @@ export function SolanaProvider({ children }: { children: React.ReactNode }) {
   const appId = import.meta.env.VITE_PRIVY_APP_ID;
   const clientId = import.meta.env.VITE_PRIVY_CLIENT_ID;
 
-  if (!appId || !clientId) {
-    throw new Error(
-      "Missing VITE_PRIVY_APP_ID or VITE_PRIVY_CLIENT_ID. Add them to your .env file.",
-    );
+  if (!appId) {
+    throw new Error("Missing VITE_PRIVY_APP_ID. Add it to your .env file.");
   }
 
   return (
     <PrivyProvider
       appId={appId}
-      clientId={clientId}
+      clientId={clientId || undefined}
       config={{
         appearance: {
           walletChainType: "solana-only",
