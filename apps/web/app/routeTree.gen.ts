@@ -22,6 +22,7 @@ import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
 import { Route as AppCreateRouteImport } from './routes/app.create'
 import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
 import { Route as AppActivityRouteImport } from './routes/app.activity'
+import { Route as AppOrganizationsOrgIdRouteImport } from './routes/app.organizations.$orgId'
 import { Route as AppCreateMilestoneRouteImport } from './routes/app.create.milestone'
 import { Route as AppCreateLinearRouteImport } from './routes/app.create.linear'
 import { Route as AppCreateCliffRouteImport } from './routes/app.create.cliff'
@@ -91,6 +92,11 @@ const AppActivityRoute = AppActivityRouteImport.update({
   path: '/activity',
   getParentRoute: () => AppRoute,
 } as any)
+const AppOrganizationsOrgIdRoute = AppOrganizationsOrgIdRouteImport.update({
+  id: '/$orgId',
+  path: '/$orgId',
+  getParentRoute: () => AppOrganizationsRoute,
+} as any)
 const AppCreateMilestoneRoute = AppCreateMilestoneRouteImport.update({
   id: '/milestone',
   path: '/milestone',
@@ -118,12 +124,13 @@ export interface FileRoutesByFullPath {
   '/app/create': typeof AppCreateRouteWithChildren
   '/app/dashboard': typeof AppDashboardRoute
   '/app/help': typeof AppHelpRoute
-  '/app/organizations': typeof AppOrganizationsRoute
+  '/app/organizations': typeof AppOrganizationsRouteWithChildren
   '/app/profile': typeof AppProfileRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/create/cliff': typeof AppCreateCliffRoute
   '/app/create/linear': typeof AppCreateLinearRoute
   '/app/create/milestone': typeof AppCreateMilestoneRoute
+  '/app/organizations/$orgId': typeof AppOrganizationsOrgIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -136,12 +143,13 @@ export interface FileRoutesByTo {
   '/app/create': typeof AppCreateRouteWithChildren
   '/app/dashboard': typeof AppDashboardRoute
   '/app/help': typeof AppHelpRoute
-  '/app/organizations': typeof AppOrganizationsRoute
+  '/app/organizations': typeof AppOrganizationsRouteWithChildren
   '/app/profile': typeof AppProfileRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/create/cliff': typeof AppCreateCliffRoute
   '/app/create/linear': typeof AppCreateLinearRoute
   '/app/create/milestone': typeof AppCreateMilestoneRoute
+  '/app/organizations/$orgId': typeof AppOrganizationsOrgIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -155,12 +163,13 @@ export interface FileRoutesById {
   '/app/create': typeof AppCreateRouteWithChildren
   '/app/dashboard': typeof AppDashboardRoute
   '/app/help': typeof AppHelpRoute
-  '/app/organizations': typeof AppOrganizationsRoute
+  '/app/organizations': typeof AppOrganizationsRouteWithChildren
   '/app/profile': typeof AppProfileRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/create/cliff': typeof AppCreateCliffRoute
   '/app/create/linear': typeof AppCreateLinearRoute
   '/app/create/milestone': typeof AppCreateMilestoneRoute
+  '/app/organizations/$orgId': typeof AppOrganizationsOrgIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/app/create/cliff'
     | '/app/create/linear'
     | '/app/create/milestone'
+    | '/app/organizations/$orgId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/app/create/cliff'
     | '/app/create/linear'
     | '/app/create/milestone'
+    | '/app/organizations/$orgId'
   id:
     | '__root__'
     | '/'
@@ -217,6 +228,7 @@ export interface FileRouteTypes {
     | '/app/create/cliff'
     | '/app/create/linear'
     | '/app/create/milestone'
+    | '/app/organizations/$orgId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -320,6 +332,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppActivityRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/organizations/$orgId': {
+      id: '/app/organizations/$orgId'
+      path: '/$orgId'
+      fullPath: '/app/organizations/$orgId'
+      preLoaderRoute: typeof AppOrganizationsOrgIdRouteImport
+      parentRoute: typeof AppOrganizationsRoute
+    }
     '/app/create/milestone': {
       id: '/app/create/milestone'
       path: '/milestone'
@@ -360,13 +379,24 @@ const AppCreateRouteWithChildren = AppCreateRoute._addFileChildren(
   AppCreateRouteChildren,
 )
 
+interface AppOrganizationsRouteChildren {
+  AppOrganizationsOrgIdRoute: typeof AppOrganizationsOrgIdRoute
+}
+
+const AppOrganizationsRouteChildren: AppOrganizationsRouteChildren = {
+  AppOrganizationsOrgIdRoute: AppOrganizationsOrgIdRoute,
+}
+
+const AppOrganizationsRouteWithChildren =
+  AppOrganizationsRoute._addFileChildren(AppOrganizationsRouteChildren)
+
 interface AppRouteChildren {
   AppActivityRoute: typeof AppActivityRoute
   AppAnalyticsRoute: typeof AppAnalyticsRoute
   AppCreateRoute: typeof AppCreateRouteWithChildren
   AppDashboardRoute: typeof AppDashboardRoute
   AppHelpRoute: typeof AppHelpRoute
-  AppOrganizationsRoute: typeof AppOrganizationsRoute
+  AppOrganizationsRoute: typeof AppOrganizationsRouteWithChildren
   AppProfileRoute: typeof AppProfileRoute
   AppSettingsRoute: typeof AppSettingsRoute
 }
@@ -377,7 +407,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppCreateRoute: AppCreateRouteWithChildren,
   AppDashboardRoute: AppDashboardRoute,
   AppHelpRoute: AppHelpRoute,
-  AppOrganizationsRoute: AppOrganizationsRoute,
+  AppOrganizationsRoute: AppOrganizationsRouteWithChildren,
   AppProfileRoute: AppProfileRoute,
   AppSettingsRoute: AppSettingsRoute,
 }

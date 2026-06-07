@@ -234,6 +234,27 @@ export function useOrg(id: string) {
   });
 }
 
+export function useUpdateOrg(orgId: string) {
+  const queryClient = useQueryClient();
+  const { getAccessToken } = usePrivy();
+
+  return useMutation({
+    mutationFn: async (input: { name: string }) => {
+      const token = await getAccessToken();
+      if (!token) throw new Error("Not authenticated");
+      return api.put<Organization>(`/api/orgs/${orgId}`, input, token);
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["org", orgId] });
+      void queryClient.invalidateQueries({ queryKey: ["user-orgs"] });
+      toast.success("Organization updated");
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to update organization");
+    },
+  });
+}
+
 export function useUserOrgs() {
   const { getAccessToken } = usePrivy();
 
