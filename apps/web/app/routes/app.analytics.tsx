@@ -31,7 +31,8 @@ interface Stats {
   active: number;
   completed: number;
   cancelled: number;
-  totalValue: BN;
+  allocated: BN;
+  vesting: BN;
   withdrawn: BN;
   claimable: BN;
 }
@@ -47,7 +48,8 @@ function computeStats(
     active: 0,
     completed: 0,
     cancelled: 0,
-    totalValue: new BN(0),
+    allocated: new BN(0),
+    vesting: new BN(0),
     withdrawn: new BN(0),
     claimable: new BN(0),
   };
@@ -65,8 +67,12 @@ function computeStats(
     else if (status === "completed") stats.completed++;
     else if (status === "cancelled") stats.cancelled++;
 
-    stats.totalValue = stats.totalValue.add(s.account.amount);
+    stats.allocated = stats.allocated.add(s.account.amount);
     stats.withdrawn = stats.withdrawn.add(s.account.amountWithdrawn);
+
+    if (status === "active") {
+      stats.vesting = stats.vesting.add(s.account.amount.sub(s.account.amountWithdrawn));
+    }
 
     if (isCreator) {
       const claim = getClaimable(s.account, clockTime);
@@ -83,8 +89,12 @@ function computeStats(
     if (s.account.milestoneReached) stats.completed++;
     else stats.active++;
 
-    stats.totalValue = stats.totalValue.add(s.account.amount);
+    stats.allocated = stats.allocated.add(s.account.amount);
     stats.withdrawn = stats.withdrawn.add(s.account.amountWithdrawn);
+
+    if (!s.account.milestoneReached) {
+      stats.vesting = stats.vesting.add(s.account.amount.sub(s.account.amountWithdrawn));
+    }
   }
 
   return stats;
@@ -149,28 +159,28 @@ function AnalyticsPage() {
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard
-              label="Total Value Locked"
-              value={formatSol(stats.totalValue, 6)}
+              label="Currently Vesting"
+              value={formatSol(stats.vesting, 6)}
               icon={LuLock}
               color="text-sol"
             />
             <StatCard
-              label="Total Withdrawn"
+              label="Already Claimed"
               value={formatSol(stats.withdrawn, 6)}
               icon={LuArrowDownLeft}
               color="text-sol2"
             />
             <StatCard
-              label="Streams Created"
-              value={String(stats.created)}
+              label="Total Allocated"
+              value={formatSol(stats.allocated, 6)}
               icon={LuArrowUpRight}
-              color="text-sol"
+              color="text-sol3"
             />
             <StatCard
-              label="Streams Received"
-              value={String(stats.received)}
-              icon={LuArrowDownLeft}
-              color="text-sol3"
+              label="Streams"
+              value={`${stats.created + stats.received}`}
+              icon={LuClock}
+              color="text-muted"
             />
           </div>
 
@@ -198,7 +208,7 @@ function AnalyticsPage() {
             </div>
           </div>
 
-          {stats.created > 0 && (
+          {stats.created + stats.received > 0 && (
             <div className="rounded-xl border border-border bg-bg1 p-5">
               <h3 className="text-sm font-medium text-text mb-4">Stream Summary</h3>
               <div className="space-y-3">
@@ -217,14 +227,20 @@ function AnalyticsPage() {
                   <span className="text-sm font-medium text-text">{stats.received}</span>
                 </div>
                 <div className="border-t border-border pt-3 flex items-center justify-between">
-                  <span className="text-sm font-medium text-muted">Total value</span>
+                  <span className="text-sm font-medium text-muted">Total allocated</span>
                   <span className="text-sm font-bold text-text">
-                    {formatSol(stats.totalValue, 6)} tokens
+                    {formatSol(stats.allocated, 6)} tokens
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted">Already withdrawn</span>
-                  <span className="text-sm font-medium text-text">
+                  <span className="text-sm text-muted">Currently vesting</span>
+                  <span className="text-sm font-medium text-sol">
+                    {formatSol(stats.vesting, 6)} tokens
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted">Already claimed</span>
+                  <span className="text-sm font-medium text-sol2">
                     {formatSol(stats.withdrawn, 6)} tokens
                   </span>
                 </div>
