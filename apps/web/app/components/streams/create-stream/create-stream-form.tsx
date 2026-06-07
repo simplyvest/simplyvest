@@ -7,7 +7,8 @@ import { TokenSelector } from "@/components/tokens/token-selector/token-selector
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useCreateStream, useCreateMilestoneStream } from "@/hooks/use-transactions";
+import { useCreateStream } from "@/hooks/tx/use-create-stream";
+import { useCreateMilestoneStream } from "@/hooks/tx/use-create-milestone-stream";
 
 import { StreamCreationSuccess } from "./stream-creation-success";
 import { StreamTypeToggle } from "./stream-type-toggle";

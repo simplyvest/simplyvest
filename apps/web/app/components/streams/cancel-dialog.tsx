@@ -8,7 +8,7 @@ import { useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import { ModalOverlay } from "@/components/ui/modal-overlay";
-import { useCancel } from "@/hooks/use-transactions";
+import { useCancel } from "@/hooks/tx/use-cancel";
 import { formatSol } from "@/utils/format";
 
 export function CancelDialog({

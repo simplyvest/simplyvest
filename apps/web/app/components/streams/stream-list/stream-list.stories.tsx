@@ -26,14 +26,14 @@ vi.mock("@/hooks/use-stream", () => ({
   useMilestoneStreams: () => ({ data: [], isLoading: false }),
 }));
 
-vi.mock("@/hooks/use-transactions", () => ({
+vi.mock("@/hooks/tx/use-trigger-milestone", () => ({
   useTriggerMilestone: () => ({ mutateAsync: fn(), isPending: false }),
+}));
+vi.mock("@/hooks/tx/use-withdraw-milestone", () => ({
   useWithdrawMilestone: () => ({ mutateAsync: fn(), isPending: false }),
+}));
+vi.mock("@/hooks/tx/use-cancel-milestone", () => ({
   useCancelMilestone: () => ({ mutateAsync: fn(), isPending: false }),
-  useCancel: () => ({ mutate: fn(), isPending: false, isError: false, error: null }),
-  useWithdraw: () => ({ mutateAsync: fn(), isPending: false }),
-  useCreateStream: () => ({ mutateAsync: fn(), isPending: false, isSuccess: false }),
-  useCreateMilestoneStream: () => ({ mutateAsync: fn(), isPending: false, isSuccess: false }),
 }));
 
 vi.mock("@solana/web3.js", () => ({

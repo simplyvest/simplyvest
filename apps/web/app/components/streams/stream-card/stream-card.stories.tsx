@@ -32,7 +32,7 @@ vi.mock("@/lib/solana/use-auth", () => {
   };
 });
 
-vi.mock("@/hooks/use-transactions", () => ({
+vi.mock("@/hooks/tx/use-withdraw", () => ({
   useWithdraw: () => ({
     mutate: fn(),
     mutateAsync: fn().mockResolvedValue(undefined),

@@ -6,11 +6,9 @@ import { PublicKey } from "@solana/web3.js";
 import { useState } from "react";
 
 import { useStreams, useMilestoneStreams } from "@/hooks/use-stream";
-import {
-  useTriggerMilestone,
-  useWithdrawMilestone,
-  useCancelMilestone,
-} from "@/hooks/use-transactions";
+import { useTriggerMilestone } from "@/hooks/tx/use-trigger-milestone";
+import { useWithdrawMilestone } from "@/hooks/tx/use-withdraw-milestone";
+import { useCancelMilestone } from "@/hooks/tx/use-cancel-milestone";
 
 import { CancelDialog } from "../cancel-dialog";
 import { StreamCard } from "../stream-card/stream-card";

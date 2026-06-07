@@ -14,7 +14,7 @@ vi.mock("@/lib/solana/use-auth", () => ({
   useAuth: () => createMockUseAuth(),
 }));
 
-vi.mock("@/hooks/use-transactions", () => ({
+vi.mock("@/hooks/tx/use-create-stream", () => ({
   useCreateStream: () => ({
     mutateAsync: fn().mockResolvedValue("mock_tx_sig"),
     mutate: fn(),
@@ -24,6 +24,8 @@ vi.mock("@/hooks/use-transactions", () => ({
     error: null,
     data: undefined,
   }),
+}));
+vi.mock("@/hooks/tx/use-create-milestone-stream", () => ({
   useCreateMilestoneStream: () => ({
     mutateAsync: fn().mockResolvedValue("mock_tx_sig"),
     mutate: fn(),

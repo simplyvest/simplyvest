@@ -25,7 +25,7 @@ const cancelState = {
   error: null as Error | null,
 };
 
-vi.mock("@/hooks/use-transactions", () => ({
+vi.mock("@/hooks/tx/use-cancel", () => ({
   useCancel: () => cancelState,
 }));
 

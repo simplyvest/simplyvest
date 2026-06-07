@@ -7,7 +7,7 @@ import { PublicKey } from "@solana/web3.js";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useWithdraw } from "@/hooks/use-transactions";
+import { useWithdraw } from "@/hooks/tx/use-withdraw";
 import { formatSol, formatDuration } from "@/utils/format";
 
 import { StreamProgressBar } from "./stream-progress-bar";
