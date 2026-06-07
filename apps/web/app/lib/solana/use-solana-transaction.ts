@@ -2,7 +2,8 @@ import { useSignAndSendTransaction, useWallets } from "@privy-io/react-auth/sola
 import { Transaction } from "@solana/web3.js";
 import type { Connection, PublicKey, TransactionInstruction } from "@solana/web3.js";
 
-const SOLANA_CHAIN = (import.meta.env.VITE_SOLANA_CHAIN ?? "solana:devnet") as string;
+const envChain = import.meta.env.VITE_SOLANA_CHAIN;
+const SOLANA_CHAIN: string = typeof envChain === "string" ? envChain : "solana:devnet";
 
 interface SendTxResult {
   signature: string;
