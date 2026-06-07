@@ -4,8 +4,8 @@ import { isValidPubkey } from "@/components/streams/create-stream/utils";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { useAddOrgMember } from "@/hooks/use-api";
+import { cn } from "@/utils/cn";
 
 interface AddMemberFormProps {
   orgId: string;
@@ -37,7 +37,7 @@ export function AddMemberForm({ orgId, currentUserRole }: AddMemberFormProps) {
   return (
     <form onSubmit={handleSubmit} className="rounded-lg border border-border bg-bg1 p-4">
       <h4 className="text-sm font-medium text-text mb-3">Add Member</h4>
-      <div className="flex gap-3">
+      <div className="flex gap-3 items-end">
         <div className="flex-1">
           <Field label="Wallet Address" error={walletError}>
             <Input
@@ -47,19 +47,31 @@ export function AddMemberForm({ orgId, currentUserRole }: AddMemberFormProps) {
             />
           </Field>
         </div>
-        <div className="w-32">
-          <Select
-            value={role}
-            onChange={(e) => {
-              const v = e.target.value;
-              if (v === "admin" || v === "member") setRole(v);
-            }}
+        <div className="flex gap-1 rounded-lg border border-border p-0.5">
+          <button
+            type="button"
+            onClick={() => setRole("member")}
+            className={cn(
+              "rounded-md px-3 py-1.5 text-xs font-medium transition-all",
+              role === "member" ? "bg-sol text-white shadow-sm" : "text-muted hover:text-text",
+            )}
           >
-            <option value="member">Member</option>
-            {currentUserRole === "owner" && <option value="admin">Admin</option>}
-          </Select>
+            Member
+          </button>
+          {currentUserRole === "owner" && (
+            <button
+              type="button"
+              onClick={() => setRole("admin")}
+              className={cn(
+                "rounded-md px-3 py-1.5 text-xs font-medium transition-all",
+                role === "admin" ? "bg-sol text-white shadow-sm" : "text-muted hover:text-text",
+              )}
+            >
+              Admin
+            </button>
+          )}
         </div>
-        <Button type="submit" disabled={!canSubmit} className="self-start">
+        <Button type="submit" disabled={!canSubmit}>
           {addMember.isPending ? "Adding..." : "Add"}
         </Button>
       </div>

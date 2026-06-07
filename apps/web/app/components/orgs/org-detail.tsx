@@ -81,16 +81,16 @@ export function OrgDetail({ orgId }: OrgDetailProps) {
         />
       )}
 
+      {(currentUserRole === "owner" || currentUserRole === "admin") && (
+        <AddMemberForm orgId={orgId} currentUserRole={currentUserRole} />
+      )}
+
       <div>
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-semibold text-text">Members</h2>
         </div>
         <MemberList orgId={orgId} members={org.members} currentUserRole={currentUserRole} />
       </div>
-
-      {(currentUserRole === "owner" || currentUserRole === "admin") && (
-        <AddMemberForm orgId={orgId} currentUserRole={currentUserRole} />
-      )}
     </div>
   );
 }
