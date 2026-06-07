@@ -4,15 +4,10 @@ import type { Connection } from "@solana/web3.js";
 
 import type { StreamAccount, MilestoneStreamAccount } from "./types/runtime";
 
+import { PROGRAM_ID, DISCRIMINATORS, ACCOUNT_SIZES } from "./constants";
 import { decodeStreamAccount, decodeMilestoneStreamAccount } from "./decode";
-import SolanaTdpIdl from "./idl/solana_tdp.json";
 
-const PROGRAM_ID = new PublicKey(SolanaTdpIdl.address);
-
-const STREAM_DISCRIMINATOR = [243, 60, 164, 106, 199, 192, 110, 53];
-const MILESTONE_DISCRIMINATOR = [32, 129, 16, 253, 73, 199, 39, 42];
-
-function encodeDiscriminator(bytes: number[]): string {
+function encodeDiscriminator(bytes: readonly number[]): string {
   return utils.bytes.bs58.encode(Buffer.from(bytes));
 }
 
@@ -23,8 +18,8 @@ export async function fetchStreams(
   const raw = await connection.getProgramAccounts(programId, {
     commitment: "confirmed",
     filters: [
-      { memcmp: { offset: 0, bytes: encodeDiscriminator(STREAM_DISCRIMINATOR) } },
-      { dataSize: 187 },
+      { memcmp: { offset: 0, bytes: encodeDiscriminator(DISCRIMINATORS.StreamAccount) } },
+      { dataSize: ACCOUNT_SIZES.StreamAccount },
     ],
   });
 
@@ -46,8 +41,8 @@ export async function fetchMilestoneStreams(
   const raw = await connection.getProgramAccounts(programId, {
     commitment: "confirmed",
     filters: [
-      { memcmp: { offset: 0, bytes: encodeDiscriminator(MILESTONE_DISCRIMINATOR) } },
-      { dataSize: 196 },
+      { memcmp: { offset: 0, bytes: encodeDiscriminator(DISCRIMINATORS.MilestoneStreamAccount) } },
+      { dataSize: ACCOUNT_SIZES.MilestoneStreamAccount },
     ],
   });
 
