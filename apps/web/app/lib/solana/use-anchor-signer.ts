@@ -18,11 +18,26 @@ export function useAnchorSigner(): Wallet | null {
     const signTransaction = async <T extends Transaction | VersionedTransaction>(
       tx: T,
     ): Promise<T> => {
-      const serialized = tx.serialize();
+      // Serialize without requiring signatures (transaction isn't signed yet)
+      let serialized: Uint8Array;
+      if ("version" in tx) {
+        serialized = tx.serialize();
+      } else {
+        // For legacy Transaction, serialize without requiring signatures
+        serialized = new Uint8Array(
+          (tx as Transaction).serialize({
+            requireAllSignatures: false,
+            verifySignatures: false,
+          }),
+        );
+      }
+
       const { signedTransaction } = await privySignTransaction({
-        transaction: new Uint8Array(serialized),
+        transaction: serialized,
         wallet: solanaWallet,
       });
+
+      // Deserialize the signed transaction
       const buffer = Buffer.from(signedTransaction);
       if ("version" in tx) {
         // oxlint-disable-next-line typescript/no-unsafe-type-assertion

@@ -16,26 +16,53 @@ import {
   PROGRAM_ID,
 } from "@solana-tdp/sdk";
 import type { SolanaTdp } from "@solana-tdp/sdk";
-import { useAnchorSigner } from "@/lib/solana/use-anchor-signer";
+import { useSignAndSendTransaction, useWallets } from "@privy-io/react-auth/solana";
 import { useConnection } from "@/lib/solana/use-connection";
-import type { Connection } from "@solana/web3.js";
+import { useAuth } from "@/lib/solana/use-auth";
+import type { Connection, PublicKey } from "@solana/web3.js";
+import { Transaction } from "@solana/web3.js";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { useRecordStream, useRecordStreamEvent } from "./use-api";
 
-function buildProgram(connection: Connection, wallet: Wallet) {
-  const provider = new AnchorProvider(connection, wallet, {
+/** Build a read-only program (no signing) */
+function buildReadProgram(connection: Connection) {
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+  const dummyWallet = {
+    publicKey: PROGRAM_ID,
+    signTransaction: async <T>(tx: T) => tx,
+    signAllTransactions: async <T>(txs: T[]) => txs,
+  } as unknown as Wallet;
+  const provider = new AnchorProvider(connection, dummyWallet, {
     commitment: "confirmed",
   });
   return new Program<SolanaTdp>(SOLANA_TDP_PROGRAM_IDL, provider);
 }
 
+/** Build an unsigned transaction from an Anchor instruction */
+async function buildTx(
+  connection: Connection,
+  payer: PublicKey,
+  instruction: web3.TransactionInstruction,
+): Promise<Transaction> {
+  const { blockhash } = await connection.getLatestBlockhash();
+  const tx = new Transaction();
+  tx.recentBlockhash = blockhash;
+  tx.feePayer = payer;
+  tx.add(instruction);
+  return tx;
+}
+
 export function useCreateStream() {
   const queryClient = useQueryClient();
-  const wallet = useAnchorSigner();
+  const { publicKey } = useAuth();
+  const { wallets } = useWallets();
   const { connection } = useConnection();
+  const { signAndSendTransaction } = useSignAndSendTransaction();
   const recordStream = useRecordStream();
+
+  const solanaWallet = wallets[0] ?? null;
 
   return useMutation({
     mutationFn: async (input: {
@@ -47,23 +74,17 @@ export function useCreateStream() {
       cliffTime: number;
       senderToken: web3.PublicKey;
     }) => {
-      if (!wallet) throw new Error("Wallet not connected");
-      const program = buildProgram(connection, wallet);
+      if (!publicKey || !solanaWallet) throw new Error("Wallet not connected");
+      const program = buildReadProgram(connection);
 
-      const [creatorConfigPda] = getCreatorConfigPda(wallet.publicKey, PROGRAM_ID);
+      const [creatorConfigPda] = getCreatorConfigPda(publicKey, PROGRAM_ID);
       const creatorConfig = await program.account.creatorConfig.fetchNullable(creatorConfigPda);
       const vestingCount = creatorConfig?.vestingCount ?? new BN(0);
 
-      const [streamPda] = getStreamPda(
-        wallet.publicKey,
-        input.recipient,
-        input.mint,
-        vestingCount,
-        PROGRAM_ID,
-      );
+      const [streamPda] = getStreamPda(publicKey, input.recipient, input.mint, vestingCount, PROGRAM_ID);
       const [vaultPda] = getVaultPda(streamPda, PROGRAM_ID);
 
-      const tx = await program.methods
+      const instruction = await program.methods
         .createStream({
           amount: new BN(input.amount),
           startTime: new BN(input.startTime),
@@ -72,7 +93,7 @@ export function useCreateStream() {
         })
         .accountsPartial(
           getCreateStreamAccounts(
-            wallet.publicKey,
+            publicKey,
             input.recipient,
             input.mint,
             streamPda,
@@ -81,19 +102,26 @@ export function useCreateStream() {
             creatorConfigPda,
           ),
         )
-        .rpc();
+        .instruction();
 
-      return { tx, streamPda, vaultPda, input };
+      const tx = await buildTx(connection, publicKey, instruction);
+      const serialized = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
+      const { signature } = await signAndSendTransaction({
+        transaction: new Uint8Array(serialized),
+        wallet: solanaWallet,
+      });
+
+      return { tx: Buffer.from(signature).toString("base64"), streamPda, vaultPda, input };
     },
     onSuccess: async (result) => {
       await queryClient.invalidateQueries({ queryKey: ["streams"] });
       await queryClient.invalidateQueries({ queryKey: ["creatorConfig"] });
 
-      if (wallet) {
+      if (publicKey) {
         recordStream.mutate({
           id: result.streamPda.toBase58(),
           type: "time",
-          creatorAddress: wallet.publicKey.toBase58(),
+          creatorAddress: publicKey.toBase58(),
           recipientAddress: result.input.recipient.toBase58(),
           mintAddress: result.input.mint.toBase58(),
           vaultAddress: result.vaultPda.toBase58(),
@@ -114,9 +142,13 @@ export function useCreateStream() {
 
 export function useWithdraw() {
   const queryClient = useQueryClient();
-  const wallet = useAnchorSigner();
+  const { publicKey } = useAuth();
+  const { wallets } = useWallets();
   const { connection } = useConnection();
+  const { signAndSendTransaction } = useSignAndSendTransaction();
   const recordEvent = useRecordStreamEvent();
+
+  const solanaWallet = wallets[0] ?? null;
 
   return useMutation({
     mutationFn: async (input: {
@@ -127,36 +159,34 @@ export function useWithdraw() {
       recipientToken: web3.PublicKey;
       amount: number;
     }) => {
-      if (!wallet) throw new Error("Wallet not connected");
-      const program = buildProgram(connection, wallet);
+      if (!publicKey || !solanaWallet) throw new Error("Wallet not connected");
+      const program = buildReadProgram(connection);
 
-      const tx = await program.methods
+      const instruction = await program.methods
         .withdraw({ amount: new BN(input.amount) })
         .accountsPartial(
-          getWithdrawAccounts(
-            wallet.publicKey,
-            input.stream,
-            input.vault,
-            input.recipientToken,
-            input.sender,
-            input.mint,
-          ),
+          getWithdrawAccounts(publicKey, input.stream, input.vault, input.recipientToken, input.sender, input.mint),
         )
-        .rpc();
+        .instruction();
 
-      return { tx, stream: input.stream, amount: input.amount };
+      const tx = await buildTx(connection, publicKey, instruction);
+      const serialized = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
+      const { signature } = await signAndSendTransaction({
+        transaction: new Uint8Array(serialized),
+        wallet: solanaWallet,
+      });
+
+      return { tx: Buffer.from(signature).toString("base64"), stream: input.stream, amount: input.amount };
     },
     onSuccess: async (result) => {
-      await queryClient.invalidateQueries({
-        queryKey: ["stream", result.stream.toBase58()],
-      });
+      await queryClient.invalidateQueries({ queryKey: ["stream", result.stream.toBase58()] });
       await queryClient.invalidateQueries({ queryKey: ["streams"] });
 
-      if (wallet) {
+      if (publicKey) {
         recordEvent.mutate({
           streamId: result.stream.toBase58(),
           eventType: "withdrawn",
-          actorAddress: wallet.publicKey.toBase58(),
+          actorAddress: publicKey.toBase58(),
           amount: result.amount.toString(),
           txSignature: result.tx,
           blockTime: Math.floor(Date.now() / 1000),
@@ -171,9 +201,13 @@ export function useWithdraw() {
 
 export function useCancel() {
   const queryClient = useQueryClient();
-  const wallet = useAnchorSigner();
+  const { publicKey } = useAuth();
+  const { wallets } = useWallets();
   const { connection } = useConnection();
+  const { signAndSendTransaction } = useSignAndSendTransaction();
   const recordEvent = useRecordStreamEvent();
+
+  const solanaWallet = wallets[0] ?? null;
 
   return useMutation({
     mutationFn: async (input: {
@@ -184,37 +218,34 @@ export function useCancel() {
       recipientToken: web3.PublicKey;
       mint: web3.PublicKey;
     }) => {
-      if (!wallet) throw new Error("Wallet not connected");
-      const program = buildProgram(connection, wallet);
+      if (!publicKey || !solanaWallet) throw new Error("Wallet not connected");
+      const program = buildReadProgram(connection);
 
-      const tx = await program.methods
+      const instruction = await program.methods
         .cancel()
         .accountsPartial(
-          getCancelAccounts(
-            wallet.publicKey,
-            input.recipient,
-            input.stream,
-            input.vault,
-            input.senderToken,
-            input.recipientToken,
-            input.mint,
-          ),
+          getCancelAccounts(publicKey, input.recipient, input.stream, input.vault, input.senderToken, input.recipientToken, input.mint),
         )
-        .rpc();
+        .instruction();
 
-      return { tx, stream: input.stream };
+      const tx = await buildTx(connection, publicKey, instruction);
+      const serialized = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
+      const { signature } = await signAndSendTransaction({
+        transaction: new Uint8Array(serialized),
+        wallet: solanaWallet,
+      });
+
+      return { tx: Buffer.from(signature).toString("base64"), stream: input.stream };
     },
     onSuccess: async (result) => {
-      await queryClient.invalidateQueries({
-        queryKey: ["stream", result.stream.toBase58()],
-      });
+      await queryClient.invalidateQueries({ queryKey: ["stream", result.stream.toBase58()] });
       await queryClient.invalidateQueries({ queryKey: ["streams"] });
 
-      if (wallet) {
+      if (publicKey) {
         recordEvent.mutate({
           streamId: result.stream.toBase58(),
           eventType: "cancelled",
-          actorAddress: wallet.publicKey.toBase58(),
+          actorAddress: publicKey.toBase58(),
           txSignature: result.tx,
           blockTime: Math.floor(Date.now() / 1000),
         });
@@ -228,9 +259,13 @@ export function useCancel() {
 
 export function useCreateMilestoneStream() {
   const queryClient = useQueryClient();
-  const wallet = useAnchorSigner();
+  const { publicKey } = useAuth();
+  const { wallets } = useWallets();
   const { connection } = useConnection();
+  const { signAndSendTransaction } = useSignAndSendTransaction();
   const recordStream = useRecordStream();
+
+  const solanaWallet = wallets[0] ?? null;
 
   return useMutation({
     mutationFn: async (input: {
@@ -240,27 +275,21 @@ export function useCreateMilestoneStream() {
       amount: number;
       senderToken: web3.PublicKey;
     }) => {
-      if (!wallet) throw new Error("Wallet not connected");
-      const program = buildProgram(connection, wallet);
+      if (!publicKey || !solanaWallet) throw new Error("Wallet not connected");
+      const program = buildReadProgram(connection);
 
-      const [creatorConfigPda] = getCreatorConfigPda(wallet.publicKey, PROGRAM_ID);
+      const [creatorConfigPda] = getCreatorConfigPda(publicKey, PROGRAM_ID);
       const creatorConfig = await program.account.creatorConfig.fetchNullable(creatorConfigPda);
       const vestingCount = creatorConfig?.vestingCount ?? new BN(0);
 
-      const [streamPda] = getMilestoneStreamPda(
-        wallet.publicKey,
-        input.recipient,
-        input.mint,
-        vestingCount,
-        PROGRAM_ID,
-      );
+      const [streamPda] = getMilestoneStreamPda(publicKey, input.recipient, input.mint, vestingCount, PROGRAM_ID);
       const [vaultPda] = getVaultPda(streamPda, PROGRAM_ID);
 
-      const tx = await program.methods
+      const instruction = await program.methods
         .createMilestoneStream({ amount: new BN(input.amount) })
         .accountsPartial(
           getCreateMilestoneStreamAccounts(
-            wallet.publicKey,
+            publicKey,
             input.recipient,
             input.milestoneAuthority,
             creatorConfigPda,
@@ -270,19 +299,33 @@ export function useCreateMilestoneStream() {
             input.mint,
           ),
         )
-        .rpc();
+        .instruction();
 
-      return { tx, streamPda, vaultPda, milestoneAuthority: input.milestoneAuthority, amount: input.amount, input };
+      const tx = await buildTx(connection, publicKey, instruction);
+      const serialized = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
+      const { signature } = await signAndSendTransaction({
+        transaction: new Uint8Array(serialized),
+        wallet: solanaWallet,
+      });
+
+      return {
+        tx: Buffer.from(signature).toString("base64"),
+        streamPda,
+        vaultPda,
+        milestoneAuthority: input.milestoneAuthority,
+        amount: input.amount,
+        input,
+      };
     },
     onSuccess: async (result) => {
       await queryClient.invalidateQueries({ queryKey: ["milestoneStreams"] });
       await queryClient.invalidateQueries({ queryKey: ["creatorConfig"] });
 
-      if (wallet) {
+      if (publicKey) {
         recordStream.mutate({
           id: result.streamPda.toBase58(),
           type: "milestone",
-          creatorAddress: wallet.publicKey.toBase58(),
+          creatorAddress: publicKey.toBase58(),
           recipientAddress: result.input.recipient.toBase58(),
           mintAddress: result.input.mint.toBase58(),
           vaultAddress: result.vaultPda.toBase58(),
@@ -301,33 +344,42 @@ export function useCreateMilestoneStream() {
 
 export function useTriggerMilestone() {
   const queryClient = useQueryClient();
-  const wallet = useAnchorSigner();
+  const { publicKey } = useAuth();
+  const { wallets } = useWallets();
   const { connection } = useConnection();
+  const { signAndSendTransaction } = useSignAndSendTransaction();
   const recordEvent = useRecordStreamEvent();
+
+  const solanaWallet = wallets[0] ?? null;
 
   return useMutation({
     mutationFn: async (stream: web3.PublicKey) => {
-      if (!wallet) throw new Error("Wallet not connected");
-      const program = buildProgram(connection, wallet);
+      if (!publicKey || !solanaWallet) throw new Error("Wallet not connected");
+      const program = buildReadProgram(connection);
 
-      const tx = await program.methods
+      const instruction = await program.methods
         .triggerMilestone()
-        .accountsPartial(getTriggerMilestoneAccounts(wallet.publicKey, stream))
-        .rpc();
+        .accountsPartial(getTriggerMilestoneAccounts(publicKey, stream))
+        .instruction();
 
-      return { tx, stream };
+      const tx = await buildTx(connection, publicKey, instruction);
+      const serialized = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
+      const { signature } = await signAndSendTransaction({
+        transaction: new Uint8Array(serialized),
+        wallet: solanaWallet,
+      });
+
+      return { tx: Buffer.from(signature).toString("base64"), stream };
     },
     onSuccess: async (result) => {
-      await queryClient.invalidateQueries({
-        queryKey: ["milestoneStream", result.stream.toBase58()],
-      });
+      await queryClient.invalidateQueries({ queryKey: ["milestoneStream", result.stream.toBase58()] });
       await queryClient.invalidateQueries({ queryKey: ["milestoneStreams"] });
 
-      if (wallet) {
+      if (publicKey) {
         recordEvent.mutate({
           streamId: result.stream.toBase58(),
           eventType: "milestone_triggered",
-          actorAddress: wallet.publicKey.toBase58(),
+          actorAddress: publicKey.toBase58(),
           txSignature: result.tx,
           blockTime: Math.floor(Date.now() / 1000),
         });
@@ -341,9 +393,13 @@ export function useTriggerMilestone() {
 
 export function useWithdrawMilestone() {
   const queryClient = useQueryClient();
-  const wallet = useAnchorSigner();
+  const { publicKey } = useAuth();
+  const { wallets } = useWallets();
   const { connection } = useConnection();
+  const { signAndSendTransaction } = useSignAndSendTransaction();
   const recordEvent = useRecordStreamEvent();
+
+  const solanaWallet = wallets[0] ?? null;
 
   return useMutation({
     mutationFn: async (input: {
@@ -353,36 +409,34 @@ export function useWithdrawMilestone() {
       mint: web3.PublicKey;
       recipientToken: web3.PublicKey;
     }) => {
-      if (!wallet) throw new Error("Wallet not connected");
-      const program = buildProgram(connection, wallet);
+      if (!publicKey || !solanaWallet) throw new Error("Wallet not connected");
+      const program = buildReadProgram(connection);
 
-      const tx = await program.methods
+      const instruction = await program.methods
         .withdrawMilestone()
         .accountsPartial(
-          getWithdrawMilestoneAccounts(
-            wallet.publicKey,
-            input.stream,
-            input.vault,
-            input.recipientToken,
-            input.sender,
-            input.mint,
-          ),
+          getWithdrawMilestoneAccounts(publicKey, input.stream, input.vault, input.recipientToken, input.sender, input.mint),
         )
-        .rpc();
+        .instruction();
 
-      return { tx, stream: input.stream };
+      const tx = await buildTx(connection, publicKey, instruction);
+      const serialized = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
+      const { signature } = await signAndSendTransaction({
+        transaction: new Uint8Array(serialized),
+        wallet: solanaWallet,
+      });
+
+      return { tx: Buffer.from(signature).toString("base64"), stream: input.stream };
     },
     onSuccess: async (result) => {
-      await queryClient.invalidateQueries({
-        queryKey: ["milestoneStream", result.stream.toBase58()],
-      });
+      await queryClient.invalidateQueries({ queryKey: ["milestoneStream", result.stream.toBase58()] });
       await queryClient.invalidateQueries({ queryKey: ["milestoneStreams"] });
 
-      if (wallet) {
+      if (publicKey) {
         recordEvent.mutate({
           streamId: result.stream.toBase58(),
           eventType: "completed",
-          actorAddress: wallet.publicKey.toBase58(),
+          actorAddress: publicKey.toBase58(),
           txSignature: result.tx,
           blockTime: Math.floor(Date.now() / 1000),
         });
@@ -396,9 +450,13 @@ export function useWithdrawMilestone() {
 
 export function useCancelMilestone() {
   const queryClient = useQueryClient();
-  const wallet = useAnchorSigner();
+  const { publicKey } = useAuth();
+  const { wallets } = useWallets();
   const { connection } = useConnection();
+  const { signAndSendTransaction } = useSignAndSendTransaction();
   const recordEvent = useRecordStreamEvent();
+
+  const solanaWallet = wallets[0] ?? null;
 
   return useMutation({
     mutationFn: async (input: {
@@ -407,35 +465,34 @@ export function useCancelMilestone() {
       senderToken: web3.PublicKey;
       mint: web3.PublicKey;
     }) => {
-      if (!wallet) throw new Error("Wallet not connected");
-      const program = buildProgram(connection, wallet);
+      if (!publicKey || !solanaWallet) throw new Error("Wallet not connected");
+      const program = buildReadProgram(connection);
 
-      const tx = await program.methods
+      const instruction = await program.methods
         .cancelMilestone()
         .accountsPartial(
-          getCancelMilestoneAccounts(
-            wallet.publicKey,
-            input.stream,
-            input.vault,
-            input.senderToken,
-            input.mint,
-          ),
+          getCancelMilestoneAccounts(publicKey, input.stream, input.vault, input.senderToken, input.mint),
         )
-        .rpc();
+        .instruction();
 
-      return { tx, stream: input.stream };
+      const tx = await buildTx(connection, publicKey, instruction);
+      const serialized = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
+      const { signature } = await signAndSendTransaction({
+        transaction: new Uint8Array(serialized),
+        wallet: solanaWallet,
+      });
+
+      return { tx: Buffer.from(signature).toString("base64"), stream: input.stream };
     },
     onSuccess: async (result) => {
-      await queryClient.invalidateQueries({
-        queryKey: ["milestoneStream", result.stream.toBase58()],
-      });
+      await queryClient.invalidateQueries({ queryKey: ["milestoneStream", result.stream.toBase58()] });
       await queryClient.invalidateQueries({ queryKey: ["milestoneStreams"] });
 
-      if (wallet) {
+      if (publicKey) {
         recordEvent.mutate({
           streamId: result.stream.toBase58(),
           eventType: "cancelled",
-          actorAddress: wallet.publicKey.toBase58(),
+          actorAddress: publicKey.toBase58(),
           txSignature: result.tx,
           blockTime: Math.floor(Date.now() / 1000),
         });
