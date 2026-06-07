@@ -55,6 +55,13 @@ export function SolanaProvider({ children }: { children: React.ReactNode }) {
         externalWallets: {
           solana: { connectors: toSolanaWalletConnectors() },
         },
+        solana: {
+          rpcs: {
+            "solana:devnet": {
+              rpc: import.meta.env.VITE_SOLANA_RPC_URL || "https://api.devnet.solana.com",
+            },
+          },
+        },
       }}
     >
       <ConnectionContext.Provider value={connection}>
