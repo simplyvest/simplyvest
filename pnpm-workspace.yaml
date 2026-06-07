@@ -2,13 +2,13 @@ packages:
   - "apps/*"
   - "packages/*"
 allowBuilds:
-  '@reown/appkit': set this to true or false
+  '@reown/appkit': true
   "@stellar/stellar-sdk": true
   bigint-buffer: true
   blake-hash: true
   bufferutil: true
   esbuild: true
-  keccak: set this to true or false
+  keccak: true
   protobufjs: true
   sharp: true
   tiny-secp256k1: true

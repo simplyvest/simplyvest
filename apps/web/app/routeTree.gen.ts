@@ -8,160 +8,203 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as AppRouteImport } from "./routes/app";
-import { Route as AppCreateRouteImport } from "./routes/app.create";
-import { Route as AppDashboardRouteImport } from "./routes/app.dashboard";
-import { Route as DocsRouteImport } from "./routes/docs";
-import { Route as FaqRouteImport } from "./routes/faq";
-import { Route as IndexRouteImport } from "./routes/index";
-import { Route as WaitlistRouteImport } from "./routes/waitlist";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as WaitlistRouteImport } from './routes/waitlist'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as DocsRouteImport } from './routes/docs'
+import { Route as AppRouteImport } from './routes/app'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
+import { Route as AppCreateRouteImport } from './routes/app.create'
 
 const WaitlistRoute = WaitlistRouteImport.update({
-  id: "/waitlist",
-  path: "/waitlist",
+  id: '/waitlist',
+  path: '/waitlist',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const FaqRoute = FaqRouteImport.update({
-  id: "/faq",
-  path: "/faq",
+  id: '/faq',
+  path: '/faq',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const DocsRoute = DocsRouteImport.update({
-  id: "/docs",
-  path: "/docs",
+  id: '/docs',
+  path: '/docs',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const AppRoute = AppRouteImport.update({
-  id: "/app",
-  path: "/app",
+  id: '/app',
+  path: '/app',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDashboardRoute = AppDashboardRouteImport.update({
-  id: "/dashboard",
-  path: "/dashboard",
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => AppRoute,
-} as any);
+} as any)
 const AppCreateRoute = AppCreateRouteImport.update({
-  id: "/create",
-  path: "/create",
+  id: '/create',
+  path: '/create',
   getParentRoute: () => AppRoute,
-} as any);
+} as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "/app": typeof AppRouteWithChildren;
-  "/docs": typeof DocsRoute;
-  "/faq": typeof FaqRoute;
-  "/waitlist": typeof WaitlistRoute;
-  "/app/create": typeof AppCreateRoute;
-  "/app/dashboard": typeof AppDashboardRoute;
+  '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/docs': typeof DocsRoute
+  '/faq': typeof FaqRoute
+  '/waitlist': typeof WaitlistRoute
+  '/app/create': typeof AppCreateRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/settings': typeof AppSettingsRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "/app": typeof AppRouteWithChildren;
-  "/docs": typeof DocsRoute;
-  "/faq": typeof FaqRoute;
-  "/waitlist": typeof WaitlistRoute;
-  "/app/create": typeof AppCreateRoute;
-  "/app/dashboard": typeof AppDashboardRoute;
+  '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/docs': typeof DocsRoute
+  '/faq': typeof FaqRoute
+  '/waitlist': typeof WaitlistRoute
+  '/app/create': typeof AppCreateRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/settings': typeof AppSettingsRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  "/": typeof IndexRoute;
-  "/app": typeof AppRouteWithChildren;
-  "/docs": typeof DocsRoute;
-  "/faq": typeof FaqRoute;
-  "/waitlist": typeof WaitlistRoute;
-  "/app/create": typeof AppCreateRoute;
-  "/app/dashboard": typeof AppDashboardRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/docs': typeof DocsRoute
+  '/faq': typeof FaqRoute
+  '/waitlist': typeof WaitlistRoute
+  '/app/create': typeof AppCreateRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/settings': typeof AppSettingsRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/app" | "/docs" | "/faq" | "/waitlist" | "/app/create" | "/app/dashboard";
-  fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/app" | "/docs" | "/faq" | "/waitlist" | "/app/create" | "/app/dashboard";
-  id: "__root__" | "/" | "/app" | "/docs" | "/faq" | "/waitlist" | "/app/create" | "/app/dashboard";
-  fileRoutesById: FileRoutesById;
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/docs'
+    | '/faq'
+    | '/waitlist'
+    | '/app/create'
+    | '/app/dashboard'
+    | '/app/settings'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/app'
+    | '/docs'
+    | '/faq'
+    | '/waitlist'
+    | '/app/create'
+    | '/app/dashboard'
+    | '/app/settings'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/docs'
+    | '/faq'
+    | '/waitlist'
+    | '/app/create'
+    | '/app/dashboard'
+    | '/app/settings'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  AppRoute: typeof AppRouteWithChildren;
-  DocsRoute: typeof DocsRoute;
-  FaqRoute: typeof FaqRoute;
-  WaitlistRoute: typeof WaitlistRoute;
+  IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  DocsRoute: typeof DocsRoute
+  FaqRoute: typeof FaqRoute
+  WaitlistRoute: typeof WaitlistRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/waitlist": {
-      id: "/waitlist";
-      path: "/waitlist";
-      fullPath: "/waitlist";
-      preLoaderRoute: typeof WaitlistRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/faq": {
-      id: "/faq";
-      path: "/faq";
-      fullPath: "/faq";
-      preLoaderRoute: typeof FaqRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/docs": {
-      id: "/docs";
-      path: "/docs";
-      fullPath: "/docs";
-      preLoaderRoute: typeof DocsRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/app": {
-      id: "/app";
-      path: "/app";
-      fullPath: "/app";
-      preLoaderRoute: typeof AppRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/app/dashboard": {
-      id: "/app/dashboard";
-      path: "/dashboard";
-      fullPath: "/app/dashboard";
-      preLoaderRoute: typeof AppDashboardRouteImport;
-      parentRoute: typeof AppRoute;
-    };
-    "/app/create": {
-      id: "/app/create";
-      path: "/create";
-      fullPath: "/app/create";
-      preLoaderRoute: typeof AppCreateRouteImport;
-      parentRoute: typeof AppRoute;
-    };
+    '/waitlist': {
+      id: '/waitlist'
+      path: '/waitlist'
+      fullPath: '/waitlist'
+      preLoaderRoute: typeof WaitlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/settings': {
+      id: '/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/dashboard': {
+      id: '/app/dashboard'
+      path: '/dashboard'
+      fullPath: '/app/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/create': {
+      id: '/app/create'
+      path: '/create'
+      fullPath: '/app/create'
+      preLoaderRoute: typeof AppCreateRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
-  AppCreateRoute: typeof AppCreateRoute;
-  AppDashboardRoute: typeof AppDashboardRoute;
+  AppCreateRoute: typeof AppCreateRoute
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppSettingsRoute: typeof AppSettingsRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppCreateRoute: AppCreateRoute,
   AppDashboardRoute: AppDashboardRoute,
-};
+  AppSettingsRoute: AppSettingsRoute,
+}
 
-const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren);
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -169,7 +212,7 @@ const rootRouteChildren: RootRouteChildren = {
   DocsRoute: DocsRoute,
   FaqRoute: FaqRoute,
   WaitlistRoute: WaitlistRoute,
-};
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()

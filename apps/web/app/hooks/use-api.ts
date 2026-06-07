@@ -123,7 +123,15 @@ export function useUserProfile() {
     queryFn: async () => {
       const token = await getAccessToken();
       if (!token) throw new Error("Not authenticated");
-      return api.get<UserProfile>("/api/users/me", { token });
+      try {
+        return await api.get<UserProfile>("/api/users/me", { token });
+      } catch (err) {
+        // 404 means user hasn't been created yet — return null
+        if (err instanceof Error && err.message.includes("not found")) {
+          return null;
+        }
+        throw err;
+      }
     },
   });
 }

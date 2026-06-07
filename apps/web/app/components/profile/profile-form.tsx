@@ -1,9 +1,9 @@
 import { usePrivy, type WalletWithMetadata } from "@privy-io/react-auth";
 import { useExportWallet } from "@privy-io/react-auth/solana";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { useAuth } from "@/lib/solana/use-auth";
-import { useUserProfile, useUpdateProfile } from "@/hooks/use-api";
+import { useUserProfile, useCreateProfile, useUpdateProfile } from "@/hooks/use-api";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -34,12 +34,32 @@ function ExportWalletButton() {
 export function ProfileForm() {
   const { publicKey, user: authUser } = useAuth();
   const { data: profile, isLoading } = useUserProfile();
+  const createProfile = useCreateProfile();
   const updateProfile = useUpdateProfile();
 
   const [displayName, setDisplayName] = useState(profile?.displayName ?? "");
   const [email, setEmail] = useState(profile?.email ?? "");
 
-  if (isLoading) {
+  // Auto-create profile on first visit if it doesn't exist
+  useEffect(() => {
+    if (!isLoading && profile === null && publicKey && !createProfile.isPending) {
+      createProfile.mutate({
+        walletAddress: publicKey.toBase58(),
+        email: authUser?.email,
+        displayName: authUser?.email?.split("@")[0],
+      });
+    }
+  }, [isLoading, profile, publicKey]);
+
+  // Update form fields when profile loads
+  useEffect(() => {
+    if (profile) {
+      setDisplayName(profile.displayName ?? "");
+      setEmail(profile.email ?? "");
+    }
+  }, [profile]);
+
+  if (isLoading || createProfile.isPending) {
     return (
       <div className="space-y-4">
         <div className="h-10 animate-pulse rounded-lg bg-bg2" />
@@ -51,7 +71,7 @@ export function ProfileForm() {
   if (!profile) {
     return (
       <div className="rounded-xl border border-border bg-bg1 p-6 text-center">
-        <p className="text-sm text-muted">Profile not found. It will be created on first login.</p>
+        <p className="text-sm text-muted">Setting up your profile...</p>
       </div>
     );
   }
