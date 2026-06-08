@@ -8,397 +8,416 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as WaitlistRouteImport } from './routes/waitlist'
-import { Route as FaqRouteImport } from './routes/faq'
-import { Route as DocsRouteImport } from './routes/docs'
-import { Route as AppRouteImport } from './routes/app'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AppSettingsRouteImport } from './routes/app.settings'
-import { Route as AppProfileRouteImport } from './routes/app.profile'
-import { Route as AppOrganizationsRouteImport } from './routes/app.organizations'
-import { Route as AppHelpRouteImport } from './routes/app.help'
-import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
-import { Route as AppCreateRouteImport } from './routes/app.create'
-import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
-import { Route as AppActivityRouteImport } from './routes/app.activity'
-import { Route as AppOrganizationsOrgIdRouteImport } from './routes/app.organizations.$orgId'
-import { Route as AppCreateMilestoneRouteImport } from './routes/app.create.milestone'
-import { Route as AppCreateLinearRouteImport } from './routes/app.create.linear'
-import { Route as AppCreateCliffRouteImport } from './routes/app.create.cliff'
+import { Route as rootRouteImport } from "./routes/__root";
+import { Route as AppRouteImport } from "./routes/app";
+import { Route as AppActivityRouteImport } from "./routes/app.activity";
+import { Route as AppAnalyticsRouteImport } from "./routes/app.analytics";
+import { Route as AppCreateRouteImport } from "./routes/app.create";
+import { Route as AppCreateCliffRouteImport } from "./routes/app.create.cliff";
+import { Route as AppCreateLinearRouteImport } from "./routes/app.create.linear";
+import { Route as AppCreateMilestoneRouteImport } from "./routes/app.create.milestone";
+import { Route as AppDashboardRouteImport } from "./routes/app.dashboard";
+import { Route as AppHelpRouteImport } from "./routes/app.help";
+import { Route as AppOrganizationsRouteImport } from "./routes/app.organizations";
+import { Route as AppOrganizationsOrgIdRouteImport } from "./routes/app.organizations.$orgId";
+import { Route as AppProfileRouteImport } from "./routes/app.profile";
+import { Route as AppSettingsRouteImport } from "./routes/app.settings";
+import { Route as AppStreamsStreamPdaRouteImport } from "./routes/app.streams.$streamPda";
+import { Route as DocsRouteImport } from "./routes/docs";
+import { Route as FaqRouteImport } from "./routes/faq";
+import { Route as IndexRouteImport } from "./routes/index";
+import { Route as WaitlistRouteImport } from "./routes/waitlist";
 
 const WaitlistRoute = WaitlistRouteImport.update({
-  id: '/waitlist',
-  path: '/waitlist',
+  id: "/waitlist",
+  path: "/waitlist",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const FaqRoute = FaqRouteImport.update({
-  id: '/faq',
-  path: '/faq',
+  id: "/faq",
+  path: "/faq",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const DocsRoute = DocsRouteImport.update({
-  id: '/docs',
-  path: '/docs',
+  id: "/docs",
+  path: "/docs",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const AppRoute = AppRouteImport.update({
-  id: '/app',
-  path: '/app',
+  id: "/app",
+  path: "/app",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const AppSettingsRoute = AppSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
+  id: "/settings",
+  path: "/settings",
   getParentRoute: () => AppRoute,
-} as any)
+} as any);
 const AppProfileRoute = AppProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
+  id: "/profile",
+  path: "/profile",
   getParentRoute: () => AppRoute,
-} as any)
+} as any);
 const AppOrganizationsRoute = AppOrganizationsRouteImport.update({
-  id: '/organizations',
-  path: '/organizations',
+  id: "/organizations",
+  path: "/organizations",
   getParentRoute: () => AppRoute,
-} as any)
+} as any);
 const AppHelpRoute = AppHelpRouteImport.update({
-  id: '/help',
-  path: '/help',
+  id: "/help",
+  path: "/help",
   getParentRoute: () => AppRoute,
-} as any)
+} as any);
 const AppDashboardRoute = AppDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+  id: "/dashboard",
+  path: "/dashboard",
   getParentRoute: () => AppRoute,
-} as any)
+} as any);
 const AppCreateRoute = AppCreateRouteImport.update({
-  id: '/create',
-  path: '/create',
+  id: "/create",
+  path: "/create",
   getParentRoute: () => AppRoute,
-} as any)
+} as any);
 const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
+  id: "/analytics",
+  path: "/analytics",
   getParentRoute: () => AppRoute,
-} as any)
+} as any);
 const AppActivityRoute = AppActivityRouteImport.update({
-  id: '/activity',
-  path: '/activity',
+  id: "/activity",
+  path: "/activity",
   getParentRoute: () => AppRoute,
-} as any)
+} as any);
 const AppOrganizationsOrgIdRoute = AppOrganizationsOrgIdRouteImport.update({
-  id: '/$orgId',
-  path: '/$orgId',
+  id: "/$orgId",
+  path: "/$orgId",
   getParentRoute: () => AppOrganizationsRoute,
-} as any)
+} as any);
 const AppCreateMilestoneRoute = AppCreateMilestoneRouteImport.update({
-  id: '/milestone',
-  path: '/milestone',
+  id: "/milestone",
+  path: "/milestone",
   getParentRoute: () => AppCreateRoute,
-} as any)
+} as any);
 const AppCreateLinearRoute = AppCreateLinearRouteImport.update({
-  id: '/linear',
-  path: '/linear',
+  id: "/linear",
+  path: "/linear",
   getParentRoute: () => AppCreateRoute,
-} as any)
+} as any);
 const AppCreateCliffRoute = AppCreateCliffRouteImport.update({
-  id: '/cliff',
-  path: '/cliff',
+  id: "/cliff",
+  path: "/cliff",
   getParentRoute: () => AppCreateRoute,
-} as any)
+} as any);
+const AppStreamsStreamPdaRoute = AppStreamsStreamPdaRouteImport.update({
+  id: "/streams/$streamPda",
+  path: "/streams/$streamPda",
+  getParentRoute: () => AppRoute,
+} as any);
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/app': typeof AppRouteWithChildren
-  '/docs': typeof DocsRoute
-  '/faq': typeof FaqRoute
-  '/waitlist': typeof WaitlistRoute
-  '/app/activity': typeof AppActivityRoute
-  '/app/analytics': typeof AppAnalyticsRoute
-  '/app/create': typeof AppCreateRouteWithChildren
-  '/app/dashboard': typeof AppDashboardRoute
-  '/app/help': typeof AppHelpRoute
-  '/app/organizations': typeof AppOrganizationsRouteWithChildren
-  '/app/profile': typeof AppProfileRoute
-  '/app/settings': typeof AppSettingsRoute
-  '/app/create/cliff': typeof AppCreateCliffRoute
-  '/app/create/linear': typeof AppCreateLinearRoute
-  '/app/create/milestone': typeof AppCreateMilestoneRoute
-  '/app/organizations/$orgId': typeof AppOrganizationsOrgIdRoute
+  "/": typeof IndexRoute;
+  "/app": typeof AppRouteWithChildren;
+  "/docs": typeof DocsRoute;
+  "/faq": typeof FaqRoute;
+  "/waitlist": typeof WaitlistRoute;
+  "/app/activity": typeof AppActivityRoute;
+  "/app/analytics": typeof AppAnalyticsRoute;
+  "/app/create": typeof AppCreateRouteWithChildren;
+  "/app/dashboard": typeof AppDashboardRoute;
+  "/app/help": typeof AppHelpRoute;
+  "/app/organizations": typeof AppOrganizationsRouteWithChildren;
+  "/app/profile": typeof AppProfileRoute;
+  "/app/settings": typeof AppSettingsRoute;
+  "/app/create/cliff": typeof AppCreateCliffRoute;
+  "/app/create/linear": typeof AppCreateLinearRoute;
+  "/app/create/milestone": typeof AppCreateMilestoneRoute;
+  "/app/organizations/$orgId": typeof AppOrganizationsOrgIdRoute;
+  "/app/streams/$streamPda": typeof AppStreamsStreamPdaRoute;
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/app': typeof AppRouteWithChildren
-  '/docs': typeof DocsRoute
-  '/faq': typeof FaqRoute
-  '/waitlist': typeof WaitlistRoute
-  '/app/activity': typeof AppActivityRoute
-  '/app/analytics': typeof AppAnalyticsRoute
-  '/app/create': typeof AppCreateRouteWithChildren
-  '/app/dashboard': typeof AppDashboardRoute
-  '/app/help': typeof AppHelpRoute
-  '/app/organizations': typeof AppOrganizationsRouteWithChildren
-  '/app/profile': typeof AppProfileRoute
-  '/app/settings': typeof AppSettingsRoute
-  '/app/create/cliff': typeof AppCreateCliffRoute
-  '/app/create/linear': typeof AppCreateLinearRoute
-  '/app/create/milestone': typeof AppCreateMilestoneRoute
-  '/app/organizations/$orgId': typeof AppOrganizationsOrgIdRoute
+  "/": typeof IndexRoute;
+  "/app": typeof AppRouteWithChildren;
+  "/docs": typeof DocsRoute;
+  "/faq": typeof FaqRoute;
+  "/waitlist": typeof WaitlistRoute;
+  "/app/activity": typeof AppActivityRoute;
+  "/app/analytics": typeof AppAnalyticsRoute;
+  "/app/create": typeof AppCreateRouteWithChildren;
+  "/app/dashboard": typeof AppDashboardRoute;
+  "/app/help": typeof AppHelpRoute;
+  "/app/organizations": typeof AppOrganizationsRouteWithChildren;
+  "/app/profile": typeof AppProfileRoute;
+  "/app/settings": typeof AppSettingsRoute;
+  "/app/create/cliff": typeof AppCreateCliffRoute;
+  "/app/create/linear": typeof AppCreateLinearRoute;
+  "/app/create/milestone": typeof AppCreateMilestoneRoute;
+  "/app/organizations/$orgId": typeof AppOrganizationsOrgIdRoute;
+  "/app/streams/$streamPda": typeof AppStreamsStreamPdaRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/app': typeof AppRouteWithChildren
-  '/docs': typeof DocsRoute
-  '/faq': typeof FaqRoute
-  '/waitlist': typeof WaitlistRoute
-  '/app/activity': typeof AppActivityRoute
-  '/app/analytics': typeof AppAnalyticsRoute
-  '/app/create': typeof AppCreateRouteWithChildren
-  '/app/dashboard': typeof AppDashboardRoute
-  '/app/help': typeof AppHelpRoute
-  '/app/organizations': typeof AppOrganizationsRouteWithChildren
-  '/app/profile': typeof AppProfileRoute
-  '/app/settings': typeof AppSettingsRoute
-  '/app/create/cliff': typeof AppCreateCliffRoute
-  '/app/create/linear': typeof AppCreateLinearRoute
-  '/app/create/milestone': typeof AppCreateMilestoneRoute
-  '/app/organizations/$orgId': typeof AppOrganizationsOrgIdRoute
+  __root__: typeof rootRouteImport;
+  "/": typeof IndexRoute;
+  "/app": typeof AppRouteWithChildren;
+  "/docs": typeof DocsRoute;
+  "/faq": typeof FaqRoute;
+  "/waitlist": typeof WaitlistRoute;
+  "/app/activity": typeof AppActivityRoute;
+  "/app/analytics": typeof AppAnalyticsRoute;
+  "/app/create": typeof AppCreateRouteWithChildren;
+  "/app/dashboard": typeof AppDashboardRoute;
+  "/app/help": typeof AppHelpRoute;
+  "/app/organizations": typeof AppOrganizationsRouteWithChildren;
+  "/app/profile": typeof AppProfileRoute;
+  "/app/settings": typeof AppSettingsRoute;
+  "/app/create/cliff": typeof AppCreateCliffRoute;
+  "/app/create/linear": typeof AppCreateLinearRoute;
+  "/app/create/milestone": typeof AppCreateMilestoneRoute;
+  "/app/organizations/$orgId": typeof AppOrganizationsOrgIdRoute;
+  "/app/streams/$streamPda": typeof AppStreamsStreamPdaRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
+  fileRoutesByFullPath: FileRoutesByFullPath;
   fullPaths:
-    | '/'
-    | '/app'
-    | '/docs'
-    | '/faq'
-    | '/waitlist'
-    | '/app/activity'
-    | '/app/analytics'
-    | '/app/create'
-    | '/app/dashboard'
-    | '/app/help'
-    | '/app/organizations'
-    | '/app/profile'
-    | '/app/settings'
-    | '/app/create/cliff'
-    | '/app/create/linear'
-    | '/app/create/milestone'
-    | '/app/organizations/$orgId'
-  fileRoutesByTo: FileRoutesByTo
+    | "/"
+    | "/app"
+    | "/docs"
+    | "/faq"
+    | "/waitlist"
+    | "/app/activity"
+    | "/app/analytics"
+    | "/app/create"
+    | "/app/dashboard"
+    | "/app/help"
+    | "/app/organizations"
+    | "/app/profile"
+    | "/app/settings"
+    | "/app/create/cliff"
+    | "/app/create/linear"
+    | "/app/create/milestone"
+    | "/app/organizations/$orgId"
+    | "/app/streams/$streamPda";
+  fileRoutesByTo: FileRoutesByTo;
   to:
-    | '/'
-    | '/app'
-    | '/docs'
-    | '/faq'
-    | '/waitlist'
-    | '/app/activity'
-    | '/app/analytics'
-    | '/app/create'
-    | '/app/dashboard'
-    | '/app/help'
-    | '/app/organizations'
-    | '/app/profile'
-    | '/app/settings'
-    | '/app/create/cliff'
-    | '/app/create/linear'
-    | '/app/create/milestone'
-    | '/app/organizations/$orgId'
+    | "/"
+    | "/app"
+    | "/docs"
+    | "/faq"
+    | "/waitlist"
+    | "/app/activity"
+    | "/app/analytics"
+    | "/app/create"
+    | "/app/dashboard"
+    | "/app/help"
+    | "/app/organizations"
+    | "/app/profile"
+    | "/app/settings"
+    | "/app/create/cliff"
+    | "/app/create/linear"
+    | "/app/create/milestone"
+    | "/app/organizations/$orgId"
+    | "/app/streams/$streamPda";
   id:
-    | '__root__'
-    | '/'
-    | '/app'
-    | '/docs'
-    | '/faq'
-    | '/waitlist'
-    | '/app/activity'
-    | '/app/analytics'
-    | '/app/create'
-    | '/app/dashboard'
-    | '/app/help'
-    | '/app/organizations'
-    | '/app/profile'
-    | '/app/settings'
-    | '/app/create/cliff'
-    | '/app/create/linear'
-    | '/app/create/milestone'
-    | '/app/organizations/$orgId'
-  fileRoutesById: FileRoutesById
+    | "__root__"
+    | "/"
+    | "/app"
+    | "/docs"
+    | "/faq"
+    | "/waitlist"
+    | "/app/activity"
+    | "/app/analytics"
+    | "/app/create"
+    | "/app/dashboard"
+    | "/app/help"
+    | "/app/organizations"
+    | "/app/profile"
+    | "/app/settings"
+    | "/app/create/cliff"
+    | "/app/create/linear"
+    | "/app/create/milestone"
+    | "/app/organizations/$orgId"
+    | "/app/streams/$streamPda";
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AppRoute: typeof AppRouteWithChildren
-  DocsRoute: typeof DocsRoute
-  FaqRoute: typeof FaqRoute
-  WaitlistRoute: typeof WaitlistRoute
+  IndexRoute: typeof IndexRoute;
+  AppRoute: typeof AppRouteWithChildren;
+  DocsRoute: typeof DocsRoute;
+  FaqRoute: typeof FaqRoute;
+  WaitlistRoute: typeof WaitlistRoute;
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/waitlist': {
-      id: '/waitlist'
-      path: '/waitlist'
-      fullPath: '/waitlist'
-      preLoaderRoute: typeof WaitlistRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/faq': {
-      id: '/faq'
-      path: '/faq'
-      fullPath: '/faq'
-      preLoaderRoute: typeof FaqRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/docs': {
-      id: '/docs'
-      path: '/docs'
-      fullPath: '/docs'
-      preLoaderRoute: typeof DocsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/app': {
-      id: '/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/app/settings': {
-      id: '/app/settings'
-      path: '/settings'
-      fullPath: '/app/settings'
-      preLoaderRoute: typeof AppSettingsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/profile': {
-      id: '/app/profile'
-      path: '/profile'
-      fullPath: '/app/profile'
-      preLoaderRoute: typeof AppProfileRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/organizations': {
-      id: '/app/organizations'
-      path: '/organizations'
-      fullPath: '/app/organizations'
-      preLoaderRoute: typeof AppOrganizationsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/help': {
-      id: '/app/help'
-      path: '/help'
-      fullPath: '/app/help'
-      preLoaderRoute: typeof AppHelpRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/dashboard': {
-      id: '/app/dashboard'
-      path: '/dashboard'
-      fullPath: '/app/dashboard'
-      preLoaderRoute: typeof AppDashboardRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/create': {
-      id: '/app/create'
-      path: '/create'
-      fullPath: '/app/create'
-      preLoaderRoute: typeof AppCreateRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/analytics': {
-      id: '/app/analytics'
-      path: '/analytics'
-      fullPath: '/app/analytics'
-      preLoaderRoute: typeof AppAnalyticsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/activity': {
-      id: '/app/activity'
-      path: '/activity'
-      fullPath: '/app/activity'
-      preLoaderRoute: typeof AppActivityRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/organizations/$orgId': {
-      id: '/app/organizations/$orgId'
-      path: '/$orgId'
-      fullPath: '/app/organizations/$orgId'
-      preLoaderRoute: typeof AppOrganizationsOrgIdRouteImport
-      parentRoute: typeof AppOrganizationsRoute
-    }
-    '/app/create/milestone': {
-      id: '/app/create/milestone'
-      path: '/milestone'
-      fullPath: '/app/create/milestone'
-      preLoaderRoute: typeof AppCreateMilestoneRouteImport
-      parentRoute: typeof AppCreateRoute
-    }
-    '/app/create/linear': {
-      id: '/app/create/linear'
-      path: '/linear'
-      fullPath: '/app/create/linear'
-      preLoaderRoute: typeof AppCreateLinearRouteImport
-      parentRoute: typeof AppCreateRoute
-    }
-    '/app/create/cliff': {
-      id: '/app/create/cliff'
-      path: '/cliff'
-      fullPath: '/app/create/cliff'
-      preLoaderRoute: typeof AppCreateCliffRouteImport
-      parentRoute: typeof AppCreateRoute
-    }
+    "/waitlist": {
+      id: "/waitlist";
+      path: "/waitlist";
+      fullPath: "/waitlist";
+      preLoaderRoute: typeof WaitlistRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/faq": {
+      id: "/faq";
+      path: "/faq";
+      fullPath: "/faq";
+      preLoaderRoute: typeof FaqRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/docs": {
+      id: "/docs";
+      path: "/docs";
+      fullPath: "/docs";
+      preLoaderRoute: typeof DocsRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/app": {
+      id: "/app";
+      path: "/app";
+      fullPath: "/app";
+      preLoaderRoute: typeof AppRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/": {
+      id: "/";
+      path: "/";
+      fullPath: "/";
+      preLoaderRoute: typeof IndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/app/settings": {
+      id: "/app/settings";
+      path: "/settings";
+      fullPath: "/app/settings";
+      preLoaderRoute: typeof AppSettingsRouteImport;
+      parentRoute: typeof AppRoute;
+    };
+    "/app/profile": {
+      id: "/app/profile";
+      path: "/profile";
+      fullPath: "/app/profile";
+      preLoaderRoute: typeof AppProfileRouteImport;
+      parentRoute: typeof AppRoute;
+    };
+    "/app/organizations": {
+      id: "/app/organizations";
+      path: "/organizations";
+      fullPath: "/app/organizations";
+      preLoaderRoute: typeof AppOrganizationsRouteImport;
+      parentRoute: typeof AppRoute;
+    };
+    "/app/help": {
+      id: "/app/help";
+      path: "/help";
+      fullPath: "/app/help";
+      preLoaderRoute: typeof AppHelpRouteImport;
+      parentRoute: typeof AppRoute;
+    };
+    "/app/dashboard": {
+      id: "/app/dashboard";
+      path: "/dashboard";
+      fullPath: "/app/dashboard";
+      preLoaderRoute: typeof AppDashboardRouteImport;
+      parentRoute: typeof AppRoute;
+    };
+    "/app/create": {
+      id: "/app/create";
+      path: "/create";
+      fullPath: "/app/create";
+      preLoaderRoute: typeof AppCreateRouteImport;
+      parentRoute: typeof AppRoute;
+    };
+    "/app/analytics": {
+      id: "/app/analytics";
+      path: "/analytics";
+      fullPath: "/app/analytics";
+      preLoaderRoute: typeof AppAnalyticsRouteImport;
+      parentRoute: typeof AppRoute;
+    };
+    "/app/activity": {
+      id: "/app/activity";
+      path: "/activity";
+      fullPath: "/app/activity";
+      preLoaderRoute: typeof AppActivityRouteImport;
+      parentRoute: typeof AppRoute;
+    };
+    "/app/organizations/$orgId": {
+      id: "/app/organizations/$orgId";
+      path: "/$orgId";
+      fullPath: "/app/organizations/$orgId";
+      preLoaderRoute: typeof AppOrganizationsOrgIdRouteImport;
+      parentRoute: typeof AppOrganizationsRoute;
+    };
+    "/app/create/milestone": {
+      id: "/app/create/milestone";
+      path: "/milestone";
+      fullPath: "/app/create/milestone";
+      preLoaderRoute: typeof AppCreateMilestoneRouteImport;
+      parentRoute: typeof AppCreateRoute;
+    };
+    "/app/create/linear": {
+      id: "/app/create/linear";
+      path: "/linear";
+      fullPath: "/app/create/linear";
+      preLoaderRoute: typeof AppCreateLinearRouteImport;
+      parentRoute: typeof AppCreateRoute;
+    };
+    "/app/create/cliff": {
+      id: "/app/create/cliff";
+      path: "/cliff";
+      fullPath: "/app/create/cliff";
+      preLoaderRoute: typeof AppCreateCliffRouteImport;
+      parentRoute: typeof AppCreateRoute;
+    };
+    "/app/streams/$streamPda": {
+      id: "/app/streams/$streamPda";
+      path: "/streams/$streamPda";
+      fullPath: "/app/streams/$streamPda";
+      preLoaderRoute: typeof AppStreamsStreamPdaRouteImport;
+      parentRoute: typeof AppRoute;
+    };
   }
 }
 
 interface AppCreateRouteChildren {
-  AppCreateCliffRoute: typeof AppCreateCliffRoute
-  AppCreateLinearRoute: typeof AppCreateLinearRoute
-  AppCreateMilestoneRoute: typeof AppCreateMilestoneRoute
+  AppCreateCliffRoute: typeof AppCreateCliffRoute;
+  AppCreateLinearRoute: typeof AppCreateLinearRoute;
+  AppCreateMilestoneRoute: typeof AppCreateMilestoneRoute;
 }
 
 const AppCreateRouteChildren: AppCreateRouteChildren = {
   AppCreateCliffRoute: AppCreateCliffRoute,
   AppCreateLinearRoute: AppCreateLinearRoute,
   AppCreateMilestoneRoute: AppCreateMilestoneRoute,
-}
+};
 
-const AppCreateRouteWithChildren = AppCreateRoute._addFileChildren(
-  AppCreateRouteChildren,
-)
+const AppCreateRouteWithChildren = AppCreateRoute._addFileChildren(AppCreateRouteChildren);
 
 interface AppOrganizationsRouteChildren {
-  AppOrganizationsOrgIdRoute: typeof AppOrganizationsOrgIdRoute
+  AppOrganizationsOrgIdRoute: typeof AppOrganizationsOrgIdRoute;
 }
 
 const AppOrganizationsRouteChildren: AppOrganizationsRouteChildren = {
   AppOrganizationsOrgIdRoute: AppOrganizationsOrgIdRoute,
-}
+};
 
-const AppOrganizationsRouteWithChildren =
-  AppOrganizationsRoute._addFileChildren(AppOrganizationsRouteChildren)
+const AppOrganizationsRouteWithChildren = AppOrganizationsRoute._addFileChildren(
+  AppOrganizationsRouteChildren,
+);
 
 interface AppRouteChildren {
-  AppActivityRoute: typeof AppActivityRoute
-  AppAnalyticsRoute: typeof AppAnalyticsRoute
-  AppCreateRoute: typeof AppCreateRouteWithChildren
-  AppDashboardRoute: typeof AppDashboardRoute
-  AppHelpRoute: typeof AppHelpRoute
-  AppOrganizationsRoute: typeof AppOrganizationsRouteWithChildren
-  AppProfileRoute: typeof AppProfileRoute
-  AppSettingsRoute: typeof AppSettingsRoute
+  AppActivityRoute: typeof AppActivityRoute;
+  AppAnalyticsRoute: typeof AppAnalyticsRoute;
+  AppCreateRoute: typeof AppCreateRouteWithChildren;
+  AppDashboardRoute: typeof AppDashboardRoute;
+  AppHelpRoute: typeof AppHelpRoute;
+  AppOrganizationsRoute: typeof AppOrganizationsRouteWithChildren;
+  AppProfileRoute: typeof AppProfileRoute;
+  AppSettingsRoute: typeof AppSettingsRoute;
+  AppStreamsStreamPdaRoute: typeof AppStreamsStreamPdaRoute;
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -410,9 +429,10 @@ const AppRouteChildren: AppRouteChildren = {
   AppOrganizationsRoute: AppOrganizationsRouteWithChildren,
   AppProfileRoute: AppProfileRoute,
   AppSettingsRoute: AppSettingsRoute,
-}
+  AppStreamsStreamPdaRoute: AppStreamsStreamPdaRoute,
+};
 
-const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren);
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -420,7 +440,7 @@ const rootRouteChildren: RootRouteChildren = {
   DocsRoute: DocsRoute,
   FaqRoute: FaqRoute,
   WaitlistRoute: WaitlistRoute,
-}
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
