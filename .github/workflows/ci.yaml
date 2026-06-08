@@ -36,33 +36,16 @@ jobs:
   deploy-api:
     if: github.event_name == 'push'
     needs:
-      - format
-      - lint
-      - lint-rust
-      - typecheck-sdk
       - typecheck-api
-      - typecheck-web
-      - typecheck-anchor
-      - build-web
       - test-api
-      - test-web
-      - anchor
     uses: ./.github/workflows/deploy-api.yaml
     secrets: inherit
 
   deploy-web:
     if: github.event_name == 'push'
     needs:
-      - format
-      - lint
-      - lint-rust
-      - typecheck-sdk
-      - typecheck-api
       - typecheck-web
-      - typecheck-anchor
-      - build-web
-      - test-api
       - test-web
-      - anchor
+      - build-web
     uses: ./.github/workflows/deploy-web.yaml
     secrets: inherit
