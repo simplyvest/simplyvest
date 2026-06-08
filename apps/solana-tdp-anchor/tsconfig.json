@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "types": ["jest"],
-    "typeRoots": ["./node_modules/@types"],
+    "types": ["vitest/globals"],
     "lib": ["es2015"],
-    "module": "commonjs",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "skipLibCheck": true,
     "target": "es6",
     "esModuleInterop": true,
