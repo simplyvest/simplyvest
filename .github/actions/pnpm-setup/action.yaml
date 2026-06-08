@@ -21,14 +21,12 @@ runs:
     - name: Get pnpm store directory
       id: pnpm-cache
       shell: bash
-      run: |
-        pnpm config set store-dir ~/.pnpm-store
-        echo "store-path=~/.pnpm-store" >> $GITHUB_OUTPUT
+      run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
     - name: Cache pnpm store
       uses: actions/cache@v5
       with:
-        path: ${{ steps.pnpm-cache.outputs.store-path }}
-        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+        path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
         restore-keys: |
           ${{ runner.os }}-pnpm-store-
     - name: Install dependencies
