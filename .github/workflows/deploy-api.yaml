@@ -1,0 +1,21 @@
+name: Deploy API
+
+on:
+  workflow_call:
+
+jobs:
+  deploy-api:
+    # Does not use `needs` — protection is via branch protection rules
+    # on main. By the time code reaches main, all PR checks have passed.
+    runs-on: ubuntu-24.04
+    environment: main
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/pnpm-setup
+      - name: Apply D1 migrations
+        run: pnpm --filter @solana-tdp/api db:migrate:remote
+      - name: Deploy API Worker
+        run: pnpm --filter @solana-tdp/api run deploy

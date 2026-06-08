@@ -9,318 +9,43 @@ on:
 permissions:
   contents: read
 
-env:
-  SOLANA_VERSION: "3.1.12"
-  ANCHOR_VERSION: "0.32.1"
-  CARGO_INCREMENTAL: "0"
-  CARGO_PROFILE_TEST_DEBUG: "0"
-
 jobs:
-  typecheck-web:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 11.2.2
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: pnpm
-      - name: Cache pnpm store
-        uses: actions/cache@v5
-        with:
-          path: node_modules/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
-      - name: Build SDK
-        run: pnpm --filter @solana-tdp/sdk build
-      - name: TypeScript check (web)
-        run: pnpm --filter @solana-tdp/web check:ts
-
-  test-web:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 11.2.2
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: pnpm
-      - name: Cache pnpm store + Playwright
-        uses: actions/cache@v5
-        with:
-          path: |
-            node_modules/.pnpm
-            ~/.cache/ms-playwright
-          key: ${{ runner.os }}-pw-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pw-
-      - run: pnpm install --frozen-lockfile
-      - name: Build SDK
-        run: pnpm --filter @solana-tdp/sdk build
-      - name: Install Playwright browsers
-        run: pnpm --filter @solana-tdp/web exec playwright install chromium --with-deps
-      - name: Run tests (unit + storybook)
-        run: pnpm --filter @solana-tdp/web test:ci
-
-  typecheck-api:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 11.2.2
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: pnpm
-      - name: Cache pnpm store
-        uses: actions/cache@v5
-        with:
-          path: node_modules/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
-      - name: TypeScript check (api)
-        run: pnpm --filter @solana-tdp/api typecheck
-
-  typecheck-anchor-ts:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 11.2.2
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: pnpm
-      - name: Cache pnpm store
-        uses: actions/cache@v5
-        with:
-          path: node_modules/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
-      - name: Build SDK
-        run: pnpm --filter @solana-tdp/sdk build
-      - name: TypeScript check (anchor)
-        run: pnpm --filter @solana-tdp/anchor typecheck
-
-  lint:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 11.2.2
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: pnpm
-      - name: Cache pnpm store
-        uses: actions/cache@v5
-        with:
-          path: node_modules/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
-      - name: Build SDK
-        run: pnpm --filter @solana-tdp/sdk build
-      - name: Lint
-        run: pnpm exec oxlint .
-
   format:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 11.2.2
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: pnpm
-      - name: Cache pnpm store
-        uses: actions/cache@v5
-        with:
-          path: node_modules/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
-      - name: Format check
-        run: pnpm exec oxfmt --check .
-
+    uses: ./.github/workflows/format.yaml
+  lint:
+    uses: ./.github/workflows/lint.yaml
+  lint-rust:
+    uses: ./.github/workflows/rust-lint.yaml
+  typecheck-sdk:
+    uses: ./.github/workflows/typecheck-sdk.yaml
+  typecheck-api:
+    uses: ./.github/workflows/typecheck-api.yaml
+  typecheck-web:
+    uses: ./.github/workflows/typecheck-web.yaml
+  typecheck-anchor:
+    uses: ./.github/workflows/typecheck-anchor.yaml
   build-web:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 11.2.2
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: pnpm
-      - name: Cache pnpm store
-        uses: actions/cache@v5
-        with:
-          path: node_modules/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
-      - name: Build SDK
-        run: pnpm --filter @solana-tdp/sdk build
-      - name: Build web app
-        run: pnpm --filter @solana-tdp/web build
-        env:
-          VITE_GA_MEASUREMENT_ID: ${{ vars.VITE_GA_MEASUREMENT_ID }}
-
+    uses: ./.github/workflows/build-web.yaml
+  test-api:
+    uses: ./.github/workflows/test-api.yaml
+  test-web:
+    uses: ./.github/workflows/test-web.yaml
   anchor:
-    runs-on: ubuntu-24.04
-    defaults:
-      run:
-        working-directory: apps/solana-tdp-anchor
-    env:
-      CARGO_TARGET_DIR: ${{ github.workspace }}/apps/solana-tdp-anchor/target
-    steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 11.2.2
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: pnpm
-
-      - name: Cache Solana + Anchor
-        id: cache-solana
-        uses: actions/cache@v5
-        with:
-          path: |
-            ~/.local/share/solana/
-            ~/.local/share/anchor/
-          key: solana-anchor-${{ runner.os }}-${{ env.SOLANA_VERSION }}-${{ env.ANCHOR_VERSION }}
-
-      - name: Install Solana CLI
-        if: steps.cache-solana.outputs.cache-hit != 'true'
-        run: sh -c "$(curl -sSfL https://release.anza.xyz/v${{ env.SOLANA_VERSION }}/install)"
-
-      - name: Install Anchor CLI
-        if: steps.cache-solana.outputs.cache-hit != 'true'
-        run: |
-          curl -sL "https://github.com/solana-foundation/anchor/releases/download/v${{ env.ANCHOR_VERSION }}/anchor-${{ env.ANCHOR_VERSION }}-x86_64-unknown-linux-gnu" -o /tmp/anchor
-          chmod +x /tmp/anchor
-          mkdir -p ~/.local/share/anchor
-          mv /tmp/anchor ~/.local/share/anchor/anchor
-
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: "apps/solana-tdp-anchor/programs/solana-tdp -> ../../target"
-          key: solana-${{ env.SOLANA_VERSION }}
-          cache-on-failure: true
-
-      - name: Set up PATH
-        run: |
-          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
-          echo "$HOME/.local/share/anchor" >> $GITHUB_PATH
-
-      - name: Generate keypair
-        run: solana-keygen new --no-bip39-passphrase --silent -f
-
-      - name: Cache pnpm store
-        uses: actions/cache@v5
-        with:
-          path: node_modules/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
-        working-directory: .
-
-      - name: Check Rust formatting
-        run: cargo fmt --check
-        working-directory: apps/solana-tdp-anchor/programs/solana-tdp
-
-      - name: Clippy
-        run: cargo clippy --all-targets -- -D warnings
-        working-directory: apps/solana-tdp-anchor/programs/solana-tdp
-
-      - name: Build program (BPF)
-        run: anchor build
-
-      - name: Stage program binary
-        run: |
-          if [ ! -f target/deploy/solana_tdp.so ] && [ -f programs/solana-tdp/target/deploy/solana_tdp.so ]; then
-            mkdir -p target/deploy && cp programs/solana-tdp/target/deploy/solana_tdp.so target/deploy/
-          fi
-          ls -la target/deploy/solana_tdp.so
-
-      - name: Build SDK
-        run: |
-          pnpm sdk:sync
-          pnpm sdk:build
-        working-directory: .
-
-      - name: Run tests
-        run: anchor test --skip-build
-
-  deploy-web:
-    if: github.ref == 'refs/heads/main'
-    needs: [build-web, test-web]
-    runs-on: ubuntu-24.04
-    environment: main
-    env:
-      VITE_API_URL: ${{ vars.VITE_API_URL }}
-      VITE_GA_MEASUREMENT_ID: ${{ vars.VITE_GA_MEASUREMENT_ID }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-    steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 11.2.2
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: pnpm
-      - name: Cache pnpm store
-        uses: actions/cache@v5
-        with:
-          path: node_modules/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
-      - name: Build SDK
-        run: pnpm --filter @solana-tdp/sdk build
-      - name: Build web app
-        run: pnpm --filter @solana-tdp/web build
-      - name: Deploy to Cloudflare Pages
-        run: pnpm wrangler pages deploy apps/web/dist --project-name=simplyvest
+    uses: ./.github/workflows/anchor.yaml
 
   deploy-api:
-    if: github.ref == 'refs/heads/main'
-    needs: typecheck-api
-    runs-on: ubuntu-24.04
-    environment: main
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-    steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 11.2.2
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: pnpm
-      - name: Cache pnpm store
-        uses: actions/cache@v5
-        with:
-          path: node_modules/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
-      - name: Deploy API Worker
-        run: pnpm --filter @solana-tdp/api run deploy
+    if: github.event_name == 'push'
+    needs:
+      - typecheck-api
+      - test-api
+    uses: ./.github/workflows/deploy-api.yaml
+    secrets: inherit
+
+  deploy-web:
+    if: github.event_name == 'push'
+    needs:
+      - typecheck-web
+      - test-web
+      - build-web
+    uses: ./.github/workflows/deploy-web.yaml
+    secrets: inherit

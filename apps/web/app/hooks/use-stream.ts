@@ -1,5 +1,10 @@
-import { fetchStreams, fetchMilestoneStreams } from "@solana-tdp/sdk";
-import type { StreamAccount, MilestoneStreamAccount } from "@solana-tdp/sdk";
+import {
+  fetchStreams,
+  fetchStreamsByCreator,
+  fetchMilestoneStreams,
+  fetchMilestoneStreamsByCreator,
+  fetchCreatorConfig,
+} from "@solana-tdp/sdk";
 import type { PublicKey } from "@solana/web3.js";
 import { useQuery } from "@tanstack/react-query";
 
@@ -12,13 +17,10 @@ export function useStreams(sender?: PublicKey | null) {
     queryKey: ["streams", sender?.toBase58()],
     queryFn: async () => {
       const { connection } = program.provider;
-      const streams = await fetchStreams(connection, program.programId);
       if (sender) {
-        return streams.filter((s: { publicKey: PublicKey; account: StreamAccount }) =>
-          s.account.creator.equals(sender),
-        );
+        return fetchStreamsByCreator(connection, sender, program.programId);
       }
-      return streams;
+      return fetchStreams(connection, program.programId);
     },
     enabled: true,
     retry: 1,
@@ -32,13 +34,10 @@ export function useMilestoneStreams(creator?: PublicKey | null) {
     queryKey: ["milestoneStreams", creator?.toBase58()],
     queryFn: async () => {
       const { connection } = program.provider;
-      const streams = await fetchMilestoneStreams(connection, program.programId);
       if (creator) {
-        return streams.filter((s: { publicKey: PublicKey; account: MilestoneStreamAccount }) =>
-          s.account.creator.equals(creator),
-        );
+        return fetchMilestoneStreamsByCreator(connection, creator, program.programId);
       }
-      return streams;
+      return fetchMilestoneStreams(connection, program.programId);
     },
     enabled: true,
     retry: 1,
@@ -50,9 +49,10 @@ export function useCreatorConfig(creator: PublicKey | null) {
 
   return useQuery({
     queryKey: ["creatorConfig", creator?.toBase58()],
-    queryFn: () => {
+    queryFn: async () => {
       if (!creator) throw new Error("Creator public key is required");
-      return program.account.creatorConfig.fetchNullable(creator);
+      const { connection } = program.provider;
+      return fetchCreatorConfig(connection, creator, program.programId);
     },
     enabled: !!creator,
   });

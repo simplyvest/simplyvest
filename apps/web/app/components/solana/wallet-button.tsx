@@ -1,27 +1,25 @@
-import { useWallet } from "@solana/wallet-adapter-react";
-import { useWalletModal } from "@solana/wallet-adapter-react-ui";
+import { useLogin, useLogout } from "@privy-io/react-auth";
 import * as React from "react";
 import { createPortal } from "react-dom";
 
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/solana/use-auth";
 
-function DisconnectDialog({
-  address,
+function LogoutDialog({
+  identity,
   onConfirm,
   onDismiss,
 }: {
-  address: string;
+  identity: string;
   onConfirm: () => void;
   onDismiss: () => void;
 }) {
-  const full = address;
-  const short = `${full.slice(0, 4)}...${full.slice(-4)}`;
   const [dontAsk, setDontAsk] = React.useState(false);
 
   const handleConfirm = () => {
     if (dontAsk) {
       try {
-        localStorage.setItem("sv_skip_disconnect_warn", "1");
+        localStorage.setItem("sv_skip_logout_warn", "1");
       } catch {}
     }
     onConfirm();
@@ -36,13 +34,10 @@ function DisconnectDialog({
         className="mx-4 w-[480px] max-w-full rounded-2xl border border-purple-100 bg-white p-6 shadow-xl dark:border-purple-900/50 dark:bg-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="text-lg font-semibold text-text">Disconnect wallet</h3>
+        <h3 className="text-lg font-semibold text-text">Log out</h3>
         <p className="mt-2 text-sm text-muted">
-          You are connected as <span className="font-mono font-medium text-text">{short}</span>
+          You are logged in as <span className="font-medium text-text">{identity}</span>
         </p>
-        <div className="mt-3 flex items-center gap-2 rounded-lg bg-gray-100 dark:bg-slate-800 px-3 py-2.5 font-mono text-xs text-gray-900 dark:text-slate-100 truncate">
-          {full}
-        </div>
         <label className="mt-4 flex items-start gap-2 cursor-pointer">
           <input
             type="checkbox"
@@ -57,7 +52,7 @@ function DisconnectDialog({
             onClick={handleConfirm}
             className="flex-1 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-purple-500/25 hover:brightness-110 transition-all"
           >
-            Disconnect
+            Log out
           </button>
           <button
             onClick={onDismiss}
@@ -71,26 +66,39 @@ function DisconnectDialog({
   );
 }
 
-export function WalletButton() {
-  const wallet = useWallet();
-  const { setVisible } = useWalletModal();
-  const { publicKey, connected, connecting } = wallet;
+export function AuthButton() {
+  const { publicKey, connected, connecting, user } = useAuth();
+  const { login } = useLogin();
+  const { logout } = useLogout();
   const [showDialog, setShowDialog] = React.useState(false);
 
+  if (connecting) {
+    return (
+      <Button variant="outline-brand" size="sm" disabled>
+        Loading...
+      </Button>
+    );
+  }
+
   if (connected && publicKey) {
-    const full = publicKey.toBase58();
-    const short = `${full.slice(0, 4)}...${full.slice(-4)}`;
+    const identity =
+      user?.email ??
+      user?.google ??
+      (() => {
+        const full = publicKey.toBase58();
+        return `${full.slice(0, 4)}...${full.slice(-4)}`;
+      })();
 
     const handleClick = () => {
       const skip = (() => {
         try {
-          return localStorage.getItem("sv_skip_disconnect_warn");
+          return localStorage.getItem("sv_skip_logout_warn");
         } catch {
           return null;
         }
       })();
       if (skip === "1") {
-        void wallet.disconnect();
+        void logout();
       } else {
         setShowDialog(true);
       }
@@ -99,15 +107,15 @@ export function WalletButton() {
     return (
       <>
         <Button variant="outline-brand" size="sm" onClick={handleClick}>
-          {short}
+          {identity}
         </Button>
         {showDialog &&
           createPortal(
-            <DisconnectDialog
-              address={full}
+            <LogoutDialog
+              identity={identity}
               onConfirm={() => {
                 setShowDialog(false);
-                void wallet.disconnect();
+                void logout();
               }}
               onDismiss={() => setShowDialog(false)}
             />,
@@ -118,8 +126,12 @@ export function WalletButton() {
   }
 
   return (
-    <Button variant="brand" size="sm" onClick={() => setVisible(true)} disabled={connecting}>
-      {connecting ? "Connecting..." : "Connect Wallet"}
+    <Button
+      variant="brand"
+      size="sm"
+      onClick={() => login({ loginMethods: ["email", "google", "wallet"] })}
+    >
+      Log In
     </Button>
   );
 }

@@ -1,6 +1,6 @@
 # Deployment — Solana Token Distribution Protocol
 
-Building, testing, and deploying the Solana program and web frontend.
+Building, testing, and deploying the Solana program, API, and web frontend.
 
 ## Contents
 
@@ -8,9 +8,10 @@ Building, testing, and deploying the Solana program and web frontend.
 2. [Building](#building)
 3. [Testing](#testing)
 4. [Program deployment](#program-deployment)
-5. [Frontend deployment](#frontend-deployment)
-6. [CI/CD](#cicd)
-7. [Browser compatibility](#browser-compatibility)
+5. [API deployment](#api-deployment)
+6. [Frontend deployment](#frontend-deployment)
+7. [CI/CD](#cicd)
+8. [Browser compatibility](#browser-compatibility)
 
 ---
 
@@ -20,6 +21,7 @@ Building, testing, and deploying the Solana program and web frontend.
   |- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v3.1.12
 - [Anchor CLI](https://www.anchor-lang.com/docs/installation) — v0.32.1
 - [Node.js](https://nodejs.org/) v18+ + [pnpm](https://pnpm.io/) (install: `corepack enable && corepack prepare pnpm@latest --activate`)
+- [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/) — for API deployment (installed as devDependency)
 
 ---
 
@@ -63,6 +65,12 @@ pnpm test
 # Or just the program tests using anchor
 cd apps/solana-tdp-anchor
 anchor test
+
+# Web app unit + storybook tests
+pnpm --filter @solana-tdp/web test:ci
+
+# Typecheck everything
+pnpm check:ts:all
 ```
 
 ### Test files
@@ -97,6 +105,65 @@ Program ID: [`6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk`](https://explorer.so
 | **Network**    | Solana Devnet                                                                                                                                     |
 | **Program ID** | [`6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk`](https://explorer.solana.com/address/6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk?cluster=devnet) |
 | **Explorer**   | [Solana Explorer (devnet)](https://explorer.solana.com/?cluster=devnet)                                                                           |
+
+---
+
+## API deployment
+
+The API (`apps/api`) is a Cloudflare Worker with D1 database.
+
+### One-time setup
+
+1. Create D1 database:
+   ```bash
+   cd apps/api
+   npx wrangler d1 create simplyvest-db
+   ```
+2. Copy the `database_id` from output into `wrangler.toml`
+3. Set secrets:
+   ```bash
+   npx wrangler secret put PRIVY_APP_ID
+   npx wrangler secret put PRIVY_APP_SECRET
+   ```
+4. Apply migrations:
+   ```bash
+   pnpm db:migrate:remote
+   ```
+
+### Deploy
+
+```bash
+pnpm deploy:api
+```
+
+### Local development
+
+```bash
+pnpm dev:api          # Start API on localhost:8787
+pnpm dev:web          # Start web app on localhost:5173
+pnpm dev              # Start both in parallel
+
+pnpm db:generate      # Generate new migration from schema changes
+pnpm db:migrate       # Apply migrations to local D1
+pnpm db:reset         # Drop all tables (local only)
+```
+
+### API endpoints
+
+| Method | Path                      | Auth | Purpose                |
+| ------ | ------------------------- | ---- | ---------------------- |
+| `POST` | `/api/streams`            | —    | Record new stream      |
+| `GET`  | `/api/streams`            | —    | List streams           |
+| `GET`  | `/api/streams/:id`        | —    | Get stream + events    |
+| `POST` | `/api/streams/:id/events` | —    | Record stream event    |
+| `POST` | `/api/users/me`           | JWT  | Create/update profile  |
+| `GET`  | `/api/users/me`           | JWT  | Get own profile        |
+| `GET`  | `/api/users/:id`          | —    | Get public profile     |
+| `POST` | `/api/orgs`               | JWT  | Create organization    |
+| `GET`  | `/api/orgs/:id`           | —    | Get org + members      |
+| `POST` | `/api/orgs/:id/members`   | JWT  | Add member             |
+| `POST` | `/api/reconcile`          | JWT  | Trigger reconciliation |
+| `POST` | `/api/waitlist`           | —    | Legacy waitlist        |
 
 ---
 
@@ -141,23 +208,62 @@ SPA routing works out of the box — Cloudflare Pages auto-detects a client-side
 
 ## CI/CD
 
-The CI pipeline (`.github/workflows/ci.yaml`) runs on:
+Each job has its own workflow file in `.github/workflows/`:
 
-- Push to `main`
-- Pull requests targeting `main`
+| Workflow file           | Job                 | Triggers   | What it does                         |
+| ----------------------- | ------------------- | ---------- | ------------------------------------ |
+| `lint.yaml`             | lint                | PRs + main | JS/TS lint with oxlint               |
+| `format.yaml`           | format              | PRs + main | Format check with oxfmt              |
+| `typecheck-web.yaml`    | typecheck-web       | PRs + main | TypeScript check (web)               |
+| `typecheck-api.yaml`    | typecheck-api       | PRs + main | TypeScript check (API)               |
+| `typecheck-anchor.yaml` | typecheck-anchor-ts | PRs + main | TypeScript check (anchor)            |
+| `test-web.yaml`         | test-web            | PRs + main | Unit + Storybook browser tests       |
+| `build-web.yaml`        | build-web           | PRs + main | Production build of React frontend   |
+| `rust-lint.yaml`        | lint-rust           | PRs + main | cargo fmt + clippy                   |
+| `anchor.yaml`           | anchor              | PRs + main | Build Anchor program + LiteSVM tests |
+| `deploy-web.yaml`       | deploy-web          | main only  | Deploy to Cloudflare Pages           |
+| `deploy-api.yaml`       | deploy-api          | main only  | Deploy API Worker + D1 migrations    |
 
-| Job           | What it does                                             | Tooling needed                                                                         |
-| ------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `lint`        | JS/TS lint with oxlint                                   | Node 24, pnpm (cached)                                                                 |
-| `format`      | Format check with oxfmt                                  | Node 24, pnpm (cached)                                                                 |
-| `typecheck-*` | TypeScript check (web/api/anchor-ts)                     | Node 24, pnpm (cached), SDK build                                                      |
-| `test-web`    | Unit + Storybook browser tests with Vitest               | Node 24, pnpm (cached), Playwright Chromium                                            |
-| `anchor`      | Build Anchor program + run LiteSVM tests                 | Solana CLI + Anchor CLI (cached), Rust (cached via Swatinem/rust-cache), Node 24, pnpm |
-| `build-web`   | Production build of React frontend                       | Node 24, pnpm (cached), SDK build                                                      |
-| `deploy-web`  | Deploy to Cloudflare Pages (main only, blocked on tests) | Node 24, pnpm + Cloudflare secrets                                                     |
+### GitHub Actions Variables
 
-The `deploy-web` job uses `cloudflare/wrangler-action@v3` and runs only on
-push to `main`. Preview deploys for PRs are handled by Cloudflare's git integration.
+Set in **Settings → Secrets and variables → Actions → Variables** (repo level):
+
+| Variable                 | Value                                                       | Used by               |
+| ------------------------ | ----------------------------------------------------------- | --------------------- |
+| `VITE_API_URL`           | API worker URL (e.g., `https://simplyvest-api.workers.dev`) | deploy-web, build-web |
+| `VITE_PRIVY_APP_ID`      | Privy App ID                                                | deploy-web, build-web |
+| `VITE_PRIVY_CLIENT_ID`   | Privy Client ID                                             | deploy-web, build-web |
+| `VITE_GA_MEASUREMENT_ID` | Google Analytics ID                                         | deploy-web, build-web |
+| `VITE_SENTRY_DSN`        | Sentry DSN (optional)                                       | deploy-web            |
+
+### GitHub Actions Secrets
+
+Set in **Settings → Secrets and variables → Actions → Secrets** (environment `main`):
+
+| Secret                  | Value                                       | Used by                |
+| ----------------------- | ------------------------------------------- | ---------------------- |
+| `CLOUDFLARE_API_TOKEN`  | Cloudflare API token (Pages + Workers Edit) | deploy-web, deploy-api |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare Account ID                       | deploy-web, deploy-api |
+
+**Why environment-scoped?** The deploy jobs declare `environment: main`, so they can access these secrets. PR workflows don't have access — this prevents a malicious PR from leaking credentials.
+
+### Setting secrets/variables via CLI
+
+```bash
+# Variables (repo level)
+gh variable set VITE_API_URL --body "https://simplyvest-api.workers.dev"
+gh variable set VITE_PRIVY_APP_ID --body "your-app-id"
+gh variable set VITE_PRIVY_CLIENT_ID --body "your-client-id"
+gh variable set VITE_GA_MEASUREMENT_ID --body "G-XXXXXXXXXX"
+
+# Secrets (environment level)
+gh secret set CLOUDFLARE_API_TOKEN --env main
+gh secret set CLOUDFLARE_ACCOUNT_ID --env main
+
+# Verify
+gh variable list
+gh secret list --env main
+```
 
 ---
 

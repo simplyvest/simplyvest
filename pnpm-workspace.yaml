@@ -1,12 +1,15 @@
 packages:
   - "apps/*"
   - "packages/*"
+nodeOptions: "--disable-warning=DEP0205"
 allowBuilds:
+  "@reown/appkit": true
   "@stellar/stellar-sdk": true
   bigint-buffer: true
   blake-hash: true
   bufferutil: true
   esbuild: true
+  keccak: true
   protobufjs: true
   sharp: true
   tiny-secp256k1: true

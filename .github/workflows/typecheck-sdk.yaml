@@ -1,0 +1,13 @@
+name: Typecheck SDK
+
+on:
+  workflow_call:
+
+jobs:
+  typecheck-sdk:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/pnpm-setup
+      - name: TypeScript check (sdk)
+        run: pnpm --filter @solana-tdp/sdk typecheck

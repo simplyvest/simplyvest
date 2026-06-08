@@ -1,0 +1,13 @@
+name: Test API
+
+on:
+  workflow_call:
+
+jobs:
+  test-api:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/pnpm-setup
+      - name: Run API tests
+        run: pnpm --filter @solana-tdp/api test

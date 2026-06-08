@@ -1,12 +1,13 @@
 import { BN } from "@coral-xyz/anchor";
 
-import type { StreamAccount } from "./types/runtime";
+import type { StreamAccount, MilestoneStreamAccount } from "./types/runtime";
 
 export type StreamStatus = "active" | "completed" | "cancelled";
 
-export const getStatus = (stream: StreamAccount): StreamStatus => {
+export const getStatus = (stream: StreamAccount, clockTime: number): StreamStatus => {
   if (stream.cancelled) return "cancelled";
   if (stream.amountWithdrawn.eq(stream.amount)) return "completed";
+  if (new BN(clockTime).gte(stream.endTime)) return "completed";
   return "active";
 };
 
@@ -43,4 +44,23 @@ export const getVestedPercent = (stream: StreamAccount, clockTime: number): numb
 
   if (stream.amount.eq(new BN(0))) return 0;
   return totalVested.mul(new BN(100)).div(stream.amount).toNumber();
+};
+
+export type MilestoneStreamStatus = "active" | "completed" | "cancelled";
+
+export const getMilestoneStatus = (stream: MilestoneStreamAccount): MilestoneStreamStatus => {
+  if (stream.cancelled) return "cancelled";
+  if (stream.milestoneReached && stream.amountWithdrawn.eq(stream.amount)) return "completed";
+  return "active";
+};
+
+export const isMilestoneClaimable = (stream: MilestoneStreamAccount): boolean => {
+  if (stream.cancelled) return false;
+  if (!stream.milestoneReached) return false;
+  return stream.amount.sub(stream.amountWithdrawn).gt(new BN(0));
+};
+
+export const getMilestoneClaimable = (stream: MilestoneStreamAccount): BN => {
+  if (!isMilestoneClaimable(stream)) return new BN(0);
+  return stream.amount.sub(stream.amountWithdrawn);
 };

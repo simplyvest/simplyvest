@@ -1,0 +1,13 @@
+name: Typecheck API
+
+on:
+  workflow_call:
+
+jobs:
+  typecheck-api:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/pnpm-setup
+      - name: TypeScript check (api)
+        run: pnpm --filter @solana-tdp/api typecheck

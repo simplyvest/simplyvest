@@ -1,82 +1,44 @@
+import { Hono } from "hono";
+
 import type { Env } from "../env";
 
-import { getAccessToken, appendToSheet } from "./google-auth";
-import { isRecord } from "./utils";
+import { createDb } from "./db";
+import { cors } from "./middleware/cors";
+import { rateLimit } from "./middleware/rate-limit";
+import { orgRoutes } from "./routes/organizations";
+import { reconcileRoutes } from "./routes/reconciliation";
+import { streamRoutes } from "./routes/streams";
+import { userRoutes } from "./routes/users";
+import { waitlistRoutes } from "./routes/waitlist";
+import { createReconcilerService } from "./services/reconciler";
 
-interface WaitlistPayload {
-  name: string;
-  email: string;
-  telegram: string;
-  following: string;
-  interview: boolean;
-}
+const app = new Hono<{ Bindings: Env }>();
 
-function json(data: unknown, status = 200, origin = ""): Response {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (origin) {
-    headers["Access-Control-Allow-Origin"] = origin;
-  }
-  return new Response(JSON.stringify(data), { status, headers });
-}
+app.use("*", cors);
+
+// Rate limit write endpoints: 30 requests per minute per IP
+app.use("/api/streams", rateLimit({ windowMs: 60_000, max: 30 }));
+app.use("/api/streams/*/events", rateLimit({ windowMs: 60_000, max: 30 }));
+app.use("/api/users/*", rateLimit({ windowMs: 60_000, max: 20 }));
+app.use("/api/orgs", rateLimit({ windowMs: 60_000, max: 10 }));
+app.use("/api/orgs/*/members", rateLimit({ windowMs: 60_000, max: 20 }));
+app.use("/api/waitlist", rateLimit({ windowMs: 60_000, max: 5 }));
+
+app.route("/api/waitlist", waitlistRoutes);
+app.route("/api/streams", streamRoutes);
+app.route("/api/users", userRoutes);
+app.route("/api/orgs", orgRoutes);
+app.route("/api/reconcile", reconcileRoutes);
+
+app.notFound((c) => c.json({ error: "Not found" }, 404));
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    const origin = request.headers.get("Origin") ?? "";
-
-    if (request.method === "OPTIONS") {
-      return new Response(null, {
-        headers: {
-          "Access-Control-Allow-Origin": origin,
-          "Access-Control-Allow-Methods": "POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type",
-        },
-      });
-    }
-
-    if (request.method !== "POST") {
-      return json({ error: "Method not allowed" }, 405, origin);
-    }
-
-    let body: WaitlistPayload;
-    try {
-      const raw = await request.json();
-      if (!isRecord(raw)) {
-        return json({ error: "Invalid JSON body" }, 400, origin);
-      }
-      body = {
-        name: typeof raw.name === "string" ? raw.name : "",
-        email: typeof raw.email === "string" ? raw.email : "",
-        telegram: typeof raw.telegram === "string" ? raw.telegram : "",
-        following: typeof raw.following === "string" ? raw.following : "",
-        interview: typeof raw.interview === "boolean" ? raw.interview : false,
-      };
-    } catch {
-      return json({ error: "Invalid JSON body" }, 400, origin);
-    }
-
-    if (!body.name || !body.email || !body.telegram) {
-      return json({ error: "name, email, and telegram are required" }, 400, origin);
-    }
-
-    try {
-      const privateKey = env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n");
-      const token = await getAccessToken(env.GOOGLE_SERVICE_ACCOUNT_EMAIL, privateKey);
-
-      await appendToSheet(token, env.GOOGLE_SHEET_ID, env.GOOGLE_SHEET_NAME ?? "Sheet1", [
-        body.name,
-        body.email,
-        body.telegram,
-        body.following || "",
-        body.interview ? "Yes" : "No",
-        new Date().toISOString(),
-      ]);
-
-      return json({ ok: true }, 200, origin);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      return json({ error: message }, 500, origin);
-    }
+  fetch: app.fetch,
+  async scheduled(_event: ScheduledEvent, env: Env) {
+    const db = createDb(env.DB);
+    const rpcUrl = env.SOLANA_RPC_URL || "https://api.devnet.solana.com";
+    const reconciler = createReconcilerService(db, rpcUrl);
+    const result = await reconciler.reconcile(100);
+    console.log("[Reconcile]", JSON.stringify(result));
   },
 };

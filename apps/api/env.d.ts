@@ -3,4 +3,8 @@ export interface Env {
   GOOGLE_PRIVATE_KEY: string;
   GOOGLE_SHEET_ID: string;
   GOOGLE_SHEET_NAME?: string;
+  DB: D1Database;
+  SOLANA_RPC_URL?: string;
+  PRIVY_APP_ID?: string;
+  PRIVY_APP_SECRET?: string;
 }

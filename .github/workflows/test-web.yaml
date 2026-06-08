@@ -1,0 +1,24 @@
+name: Test Web
+
+on:
+  workflow_call:
+
+jobs:
+  test-web:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/pnpm-setup
+      - name: Cache Playwright browsers
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+      - name: Build SDK
+        run: pnpm --filter @solana-tdp/sdk build
+      - name: Install Playwright browsers
+        run: pnpm --filter @solana-tdp/web exec playwright install chromium --with-deps
+      - name: Run tests (unit + storybook)
+        run: pnpm --filter @solana-tdp/web test:ci

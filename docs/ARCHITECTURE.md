@@ -2,7 +2,7 @@
 
 This document describes the on-chain protocol architecture: account model, PDA seeds, program instructions, data flow, events, and error reference.
 
-_This document describes the planned protocol architecture. The implementation is in progress — details may change during development._
+_This document describes the on-chain protocol architecture._
 
 ## Contents
 

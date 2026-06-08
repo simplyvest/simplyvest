@@ -1,30 +1,35 @@
 import type { StoryObj } from "@storybook/tanstack-react";
-import BN from "bn.js";
 import { fn, expect } from "storybook/test";
 
 import { CancelDialog } from "./cancel-dialog";
 
 // -- mocks (hoisted by Vitest) --
 
-vi.mock("@solana/wallet-adapter-react", () => {
+vi.mock("@/lib/solana/use-auth", () => {
   const PK = "11111111111111111111111111111111";
   return {
-    useWallet: () => ({
+    useAuth: () => ({
       connected: true,
+      connecting: false,
       publicKey: { toBase58: () => PK, equals: () => false },
+      user: null,
     }),
-    useConnection: () => ({ connection: {} }),
   };
 });
 
-const cancelState = {
+const cancelState: {
+  mutate: ReturnType<typeof fn>;
+  isPending: boolean;
+  isError: boolean;
+  error: Error | null;
+} = {
   mutate: fn(),
   isPending: false,
   isError: false,
-  error: null as Error | null,
+  error: null,
 };
 
-vi.mock("@/hooks/use-transactions", () => ({
+vi.mock("@/hooks/tx/use-cancel", () => ({
   useCancel: () => cancelState,
 }));
 
@@ -48,10 +53,6 @@ vi.mock("@solana/spl-token", () => ({
 vi.mock("@solana-tdp/sdk", () => ({
   getVaultPda: () => [{ toBase58: () => "vault_pda_addr" }, 255],
   PROGRAM_ID: { toBase58: () => "TDP_PROGRAM_ID111111111111111111111111111111" },
-  formatAddress: (pk: { toBase58: () => string }) => {
-    const s = pk.toBase58();
-    return `${s.slice(0, 4)}...${s.slice(-4)}`;
-  },
 }));
 
 vi.mock("@/utils/format", () => ({
@@ -64,34 +65,39 @@ vi.mock("@/utils/format", () => ({
 // -- test data --
 
 const MOCK_STREAM = {
-  creator: { toBase58: () => "CREATOR_ADDR1111111111111111111111111" },
-  recipient: { toBase58: () => "RECIP_ADDR_1111111111111111111111111" },
-  mint: { toBase58: () => "MINT_ADDR___1111111111111111111111111" },
-  vault: { toBase58: () => "VAULT_ADDR__1111111111111111111111111" },
-  amount: new BN(1_000_000_000),
-  amountWithdrawn: new BN(250_000_000),
-  startTime: new BN(1700000000),
-  cliffTime: new BN(1700000000),
-  endTime: new BN(1800000000),
-  vestingCount: new BN(1),
-  cancelled: false,
-  bump: 255,
-  vaultBump: 255,
+  id: "7NX7RrJpvnXYsBgvGMjRpfLgHsJhMhYHkLqg2Qz3Vn2",
+  type: "time" as const,
+  creatorAddress: "11111111111111111111111111111111",
+  recipientAddress: "22222222222222222222222222222222",
+  mintAddress: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+  vaultAddress: "33333333333333333333333333333333",
+  amount: "1000000000",
+  amountWithdrawn: "250000000",
+  startTime: 1700000000,
+  endTime: 1800000000,
+  cliffTime: 1700000000,
+  tokenSymbol: "USDC",
+  tokenDecimals: 6,
+  creatorDisplayName: "Alice",
+  status: "active" as const,
+  milestoneReached: false,
+  closedAt: null,
+  closeTx: null,
+  creationTx: "5KtPn3Ex7rAbCdEfGhIjKlMnOpQrStUvWxYz1234567qz7P",
+  createdAt: 1700000000,
+  lastSyncedAt: null,
+  events: [],
 };
 
-const MOCK_PDA = {
-  toBase58: () => "PDA_ADDR_1111111111111111111111111111111",
-};
+const MOCK_PDA = { toBase58: () => "PDA_ADDR_1111111111111111111111111111111" };
 
 // -- meta --
 
 const meta = {
   component: CancelDialog,
   args: {
-    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-    stream: MOCK_STREAM as never,
-    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-    pda: MOCK_PDA as never,
+    stream: MOCK_STREAM,
+    pda: MOCK_PDA,
     onClose: fn(),
   },
 };
@@ -113,81 +119,60 @@ export const Default: Story = {
       ).toBeInTheDocument();
     });
 
-    await step("renders stream summary labels", async () => {
-      await expect(canvas.getByText("Stream")).toBeInTheDocument();
-      await expect(canvas.getByText("Recipient")).toBeInTheDocument();
+    await step("shows stream details", async () => {
       await expect(canvas.getByText("Total Amount")).toBeInTheDocument();
-      await expect(canvas.getByText("Withdrawn")).toBeInTheDocument();
-    });
-
-    await step("renders formatted amounts", async () => {
-      // 1_000_000_000 lamports / 10^6 = 1000.00
       await expect(canvas.getByText("1000.00")).toBeInTheDocument();
-      // 250_000_000 lamports / 10^6 = 250.00
-      await expect(canvas.getByText("250.00")).toBeInTheDocument();
     });
 
-    await step("renders Keep Stream button enabled", async () => {
-      const btn = canvas.getByRole("button", { name: /keep stream/i });
-      await expect(btn).toBeInTheDocument();
-      await expect(btn).not.toBeDisabled();
-    });
-
-    await step("renders Confirm Cancel button enabled", async () => {
-      const btn = canvas.getByRole("button", { name: /confirm cancel/i });
-      await expect(btn).toBeInTheDocument();
-      await expect(btn).not.toBeDisabled();
+    await step("shows action buttons", async () => {
+      await expect(canvas.getByRole("button", { name: /keep stream/i })).toBeInTheDocument();
+      await expect(canvas.getByRole("button", { name: /confirm cancel/i })).toBeInTheDocument();
     });
   },
 };
 
-export const Pending: Story = {
-  decorators: [
-    (Story) => {
-      cancelState.isPending = true;
+export const CancelPending: Story = {
+  args: {
+    onClose: fn(),
+  },
+  beforeEach: () => {
+    cancelState.isPending = true;
+    return () => {
+      cancelState.isPending = false;
+    };
+  },
+  play: async ({ canvas, step }) => {
+    await step("shows cancelling text on confirm button", async () => {
+      const btn = canvas.getByRole("button", { name: /cancelling/i });
+      await expect(btn).toBeDisabled();
+    });
+
+    await step("keep stream button is also disabled", async () => {
+      const btn = canvas.getByRole("button", { name: /keep stream/i });
+      await expect(btn).toBeDisabled();
+    });
+
+    await step("shows waiting message", async () => {
+      await expect(canvas.getByText(/Waiting for wallet approval/)).toBeInTheDocument();
+    });
+  },
+};
+
+export const CancelError: Story = {
+  args: {
+    onClose: fn(),
+  },
+  beforeEach: () => {
+    cancelState.isError = true;
+    cancelState.error = new Error("User rejected the transaction");
+    return () => {
       cancelState.isError = false;
       cancelState.error = null;
-      return <Story />;
-    },
-  ],
-  play: async ({ canvas, step }) => {
-    await step("shows Cancelling text on destructive button", async () => {
-      await expect(canvas.getByRole("button", { name: /cancelling/i })).toBeInTheDocument();
-    });
-
-    await step("Cancelling button is disabled", async () => {
-      await expect(canvas.getByRole("button", { name: /cancelling/i })).toBeDisabled();
-    });
-
-    await step("Keep Stream button is disabled", async () => {
-      await expect(canvas.getByRole("button", { name: /keep stream/i })).toBeDisabled();
-    });
-
-    await step("shows wallet approval waiting message", async () => {
-      await expect(
-        canvas.getByText(/Waiting for wallet approval and confirmation/),
-      ).toBeInTheDocument();
-    });
+    };
   },
-};
-
-export const WithError: Story = {
-  decorators: [
-    (Story) => {
-      cancelState.isPending = false;
-      cancelState.isError = true;
-      cancelState.error = new Error("Transaction failed: user rejected");
-      return <Story />;
-    },
-  ],
   play: async ({ canvas, step }) => {
     await step("shows error message", async () => {
-      await expect(canvas.getByText("Transaction failed: user rejected")).toBeInTheDocument();
-    });
-
-    await step("buttons remain enabled after error", async () => {
-      await expect(canvas.getByRole("button", { name: /keep stream/i })).not.toBeDisabled();
-      await expect(canvas.getByRole("button", { name: /confirm cancel/i })).not.toBeDisabled();
+      await expect(canvas.getByText("User rejected the transaction")).toBeInTheDocument();
     });
   },
 };

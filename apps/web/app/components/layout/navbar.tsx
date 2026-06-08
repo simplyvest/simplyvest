@@ -1,8 +1,6 @@
-import { useWallet } from "@solana/wallet-adapter-react";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import * as React from "react";
 
-import { WalletButton } from "@/components/solana/wallet-button";
 import { LinkButton } from "@/components/ui/link-button";
 
 import { HamburgerButton } from "./navbar/hamburger-button";
@@ -10,25 +8,15 @@ import { MobileMenu } from "./navbar/mobile-menu";
 import { NavLinks } from "./navbar/nav-links";
 import { ThemeToggle } from "./navbar/theme-toggle";
 
-const publicLinks = [
+const links = [
   { to: "/", label: "Home" },
   { to: "/docs", label: "Docs" },
   { to: "/faq", label: "FAQ" },
   { to: "/waitlist", label: "Waitlist" },
 ];
 
-const appLinks = [
-  { to: "/app/dashboard", label: "Dashboard" },
-  { to: "/app/create", label: "Create Stream" },
-];
-
 export function Navbar() {
-  const { publicKey } = useWallet();
-  const { location } = useRouterState();
   const [mobileOpen, setMobileOpen] = React.useState(false);
-
-  const isApp = location.pathname.startsWith("/app") && !!publicKey;
-  const links = isApp ? appLinks : publicLinks;
 
   return (
     <nav className="fixed top-0 inset-x-0 z-50 px-6 pt-4">
@@ -42,23 +30,16 @@ export function Navbar() {
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-6">
             <NavLinks links={links} />
-            {!isApp && (
-              <LinkButton to="/app" variant="brand" size="sm" className="rounded-xl px-4">
-                Beta App
-              </LinkButton>
-            )}
-            <div className="flex items-center gap-2">
-              {isApp && <WalletButton />}
-              <ThemeToggle />
-            </div>
+            <LinkButton to="/app" variant="brand" size="sm" className="rounded-xl px-4">
+              Beta App
+            </LinkButton>
+            <ThemeToggle />
           </div>
 
           <HamburgerButton open={mobileOpen} onClick={() => setMobileOpen((o) => !o)} />
         </div>
 
-        {mobileOpen && (
-          <MobileMenu links={links} isApp={isApp} onClose={() => setMobileOpen(false)} />
-        )}
+        {mobileOpen && <MobileMenu links={links} onClose={() => setMobileOpen(false)} />}
       </div>
     </nav>
   );

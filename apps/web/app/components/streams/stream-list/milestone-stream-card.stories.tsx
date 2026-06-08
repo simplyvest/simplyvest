@@ -1,28 +1,36 @@
 import type { StoryObj } from "@storybook/tanstack-react";
 import { fn, expect } from "storybook/test";
 
-import { createMockPublicKey } from "../../../__tests__/story-mocks";
+import type { StreamWithEvents } from "@/hooks/use-api";
+
 import { MilestoneStreamCard } from "./milestone-stream-card";
 
-const mockPk = (base58: string) => createMockPublicKey(base58);
+vi.mock("@solana/web3.js", () => ({
+  // oxlint-disable-next-line typescript/no-extraneous-class
+  PublicKey: class {},
+}));
 
-const baseItem = {
-  publicKey: mockPk("StreamPdaKey1111111111111111111111111111"),
-  account: {
-    creator: mockPk("11111111111111111111111111111111"),
-    recipient: mockPk("22222222222222222222222222222222"),
-    mint: mockPk("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
-    vault: mockPk("VaultPda_1111111111111111111111111111111"),
-    milestoneAuthority: mockPk("MilestoneAuth1111111111111111111111111"),
-    amount: { toString: () => "5000000" },
-    amountWithdrawn: { toString: () => "0" },
-    milestones: [],
-    milestoneReached: false,
-    cancelled: false,
-    vestingCount: 1,
-    bump: 255,
-    vaultBump: 255,
-  },
+const baseStream: StreamWithEvents = {
+  id: "7NX7RrJpvnXYsBgvGMjRpfLgHsJhMhYHkLqg2Qz3Vn2",
+  type: "milestone",
+  creatorAddress: "11111111111111111111111111111111",
+  recipientAddress: "22222222222222222222222222222222",
+  mintAddress: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+  vaultAddress: "Vault1111111111111111111111111111111111",
+  amount: "5000000",
+  milestoneAuthority: "33333333333333333333333333333333",
+  creationTx: "5KtPn3Ex7rAbCdEfGhIjKlMnOpQrStUvWxYz1234567qz7P",
+  createdAt: 1700000000,
+  tokenSymbol: "USDC",
+  tokenDecimals: 6,
+  creatorDisplayName: "Alice",
+  status: "active",
+  amountWithdrawn: "0",
+  milestoneReached: false,
+  closedAt: null,
+  closeTx: null,
+  lastSyncedAt: null,
+  events: [],
 };
 
 const baseArgs = {
@@ -34,12 +42,10 @@ const baseArgs = {
   withdrawPending: false,
 };
 
-// oxlint-disable-next-line typescript/no-unsafe-type-assertion
 const meta = {
   component: MilestoneStreamCard,
   args: {
-    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-    item: baseItem as never,
+    stream: baseStream,
     ...baseArgs,
     role: "created",
     isRecipient: false,
@@ -53,9 +59,6 @@ export const CreatedActive: Story = {
   play: async ({ canvas, step }) => {
     await step("renders active badge", async () => {
       await expect(canvas.getByText("active")).toBeInTheDocument();
-    });
-    await step("renders milestone stream label", async () => {
-      await expect(canvas.getByText("Milestone stream")).toBeInTheDocument();
     });
     await step("renders Cancel button for creator", async () => {
       await expect(canvas.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
@@ -81,11 +84,10 @@ export const CreatedCancelPending: Story = {
 
 export const MilestoneReachedCreator: Story = {
   args: {
-    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-    item: {
-      ...baseItem,
-      account: { ...baseItem.account, milestoneReached: true },
-    } as never,
+    stream: {
+      ...baseStream,
+      milestoneReached: true,
+    },
     canTrigger: true,
   },
   play: async ({ canvas, step }) => {
@@ -103,11 +105,10 @@ export const MilestoneReachedCreator: Story = {
 
 export const MilestoneReachedRecipient: Story = {
   args: {
-    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-    item: {
-      ...baseItem,
-      account: { ...baseItem.account, milestoneReached: true },
-    } as never,
+    stream: {
+      ...baseStream,
+      milestoneReached: true,
+    },
     role: "received",
     isRecipient: true,
     canTrigger: false,

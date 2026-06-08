@@ -9,6 +9,7 @@ Tools, dependencies, and code conventions for Solana TDP.
 3. [Dependencies](#dependencies)
 4. [Repository layout](#repository-layout)
 5. [Code conventions](#code-conventions)
+6. [API Stack](#api-stack)
 
 ---
 
@@ -81,6 +82,30 @@ Monorepo managed by pnpm workspaces.
 
 ```
 apps/
+├── api/                           # Cloudflare Worker API (Hono + D1)
+│   ├── src/
+│   │   ├── index.ts               # Hono app entry
+│   │   ├── middleware/
+│   │   │   ├── auth.ts            # Privy JWT verification
+│   │   │   └── cors.ts            # CORS config
+│   │   ├── routes/
+│   │   │   ├── streams.ts         # Stream recording endpoints
+│   │   │   ├── users.ts           # User profile endpoints
+│   │   │   ├── organizations.ts   # Org CRUD + members
+│   │   │   ├── reconciliation.ts  # On-chain reconciliation
+│   │   │   └── waitlist.ts        # Legacy waitlist endpoint
+│   │   ├── services/
+│   │   │   ├── stream-service.ts  # Stream business logic
+│   │   │   ├── user-service.ts    # User profile logic
+│   │   │   ├── org-service.ts     # Org CRUD logic
+│   │   │   └── reconciler.ts      # Reconciliation logic
+│   │   └── db/
+│   │       ├── schema.ts          # Drizzle schema
+│   │       ├── index.ts           # DB client
+│   │       └── migrations/        # D1 migrations
+│   ├── drizzle.config.ts          # Drizzle Kit config
+│   ├── wrangler.toml              # CF Worker config + D1 binding
+│   └── env.d.ts                   # Env type definitions
 ├── solana-tdp-anchor/
 │   ├── programs/solana-tdp/src/
 │   │   ├── lib.rs              # Program entry + declare_id!
@@ -105,9 +130,27 @@ apps/
 │       ├── helpers.ts
 │       ├── utils.ts
 │       └── jest-sequencer.js
-├── web/                         # React frontend
+├── web/                         # React frontend (Vite + TanStack Router)
+│   ├── app/
+│   │   ├── components/
+│   │   │   ├── solana/          # Wallet/auth components
+│   │   │   ├── streams/         # Stream management UI
+│   │   │   ├── tokens/          # Token selector
+│   │   │   ├── layout/          # Navbar, footer
+│   │   │   ├── marketing/       # Landing page sections
+│   │   │   └── ui/              # Generic UI primitives
+│   │   ├── hooks/
+│   │   │   ├── tx/                  # On-chain transaction hooks (use-create-stream, use-withdraw, etc.)
+│   │   │   ├── use-stream.ts        # On-chain queries
+│   │   │   ├── use-api.ts           # API hooks (streams, users, orgs)
+│   │   │   └── use-program.ts       # Anchor program instance
+│   │   ├── lib/
+│   │   │   ├── solana/          # Privy-backed hooks (useAuth, useAnchorSigner, useConnection)
+│   │   │   └── api-client.ts    # HTTP client for API
+│   │   └── routes/
+│   └── package.json
 packages/
-└── solana-tdp-sdk/              # TypeScript SDK (future)
+└── solana-tdp-sdk/              # TypeScript SDK (Anchor IDL + helpers)
 ```
 
 ### File rules
@@ -127,6 +170,8 @@ packages/
 | PDA seeds         | Lowercase static strings             | `"stream"`, not `"VestingSchedule"`    |
 | Instruction files | Match instruction name exactly       | `create_stream.rs`                     |
 | TypeScript hooks  | Kebab-case                           | `use-vesting-schedule.ts`              |
+| API routes        | Hono router per domain               | `routes/streams.ts`                    |
+| DB schema         | Drizzle ORM, camelCase columns       | `creatorAddress` not `creator_address` |
 
 ### Test numbering
 
@@ -147,4 +192,51 @@ cluster = "localnet"
 
 [scripts]
 test = "jest"
+```
+
+---
+
+## API Stack
+
+| Layer     | Technology    | Purpose                                  |
+| --------- | ------------- | ---------------------------------------- |
+| Framework | Hono          | Lightweight web framework for CF Workers |
+| ORM       | Drizzle ORM   | Type-safe SQL queries, migrations        |
+| Database  | Cloudflare D1 | SQLite at the edge                       |
+| Auth      | Privy JWT     | JWKS-based token verification            |
+
+### Database tables
+
+| Table           | Purpose                                                                          |
+| --------------- | -------------------------------------------------------------------------------- |
+| `users`         | User profiles (linked to Privy DID)                                              |
+| `organizations` | Team/org metadata                                                                |
+| `org_members`   | Many-to-many: users ↔ orgs with roles                                            |
+| `streams`       | Stream records (includes closed streams)                                         |
+| `stream_events` | Immutable event log per stream (unique on stream_id + event_type + tx_signature) |
+
+### Middleware
+
+| Middleware      | Purpose                                                                       |
+| --------------- | ----------------------------------------------------------------------------- |
+| `cors.ts`       | CORS restricted to localhost + simplyvest.pages.dev + simplyvest.xyz          |
+| `auth.ts`       | Privy JWT verification via JWKS (cached 1hr)                                  |
+| `rate-limit.ts` | In-memory per-IP rate limiting (30/min streams, 20/min users, 5/min waitlist) |
+
+### Scheduled tasks
+
+| Trigger        | Frequency        | Purpose                           |
+| -------------- | ---------------- | --------------------------------- |
+| Reconciliation | Every 15 minutes | Sync missed on-chain events to D1 |
+
+### API commands
+
+```bash
+pnpm dev:api          # Start API worker locally (localhost:8787)
+pnpm db:generate      # Generate Drizzle migrations
+pnpm db:migrate       # Apply migrations (local D1)
+pnpm db:migrate:remote # Apply migrations (remote D1)
+pnpm db:reset         # Drop all tables (local)
+pnpm deploy:api       # Deploy API worker to Cloudflare
+pnpm --filter @solana-tdp/api test  # Run API tests
 ```

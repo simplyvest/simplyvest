@@ -52,17 +52,17 @@ export const Prefilled: Story = {
   play: async ({ canvas, step }) => {
     await step("start date is pre-filled", async () => {
       const startInput = canvas.getByLabelText(/start date/i);
-      await expect(startInput).toHaveValue("2026-06-10T10:00");
+      await expect(startInput).toHaveValue("Jun 10, 2026 10:00 AM");
     });
 
     await step("end date is pre-filled", async () => {
       const endInput = canvas.getByLabelText(/end date/i);
-      await expect(endInput).toHaveValue("2026-12-10T10:00");
+      await expect(endInput).toHaveValue("Dec 10, 2026 10:00 AM");
     });
 
     await step("cliff date is pre-filled", async () => {
       const cliffInput = canvas.getByLabelText(/cliff date/i);
-      await expect(cliffInput).toHaveValue("2026-09-10T10:00");
+      await expect(cliffInput).toHaveValue("Sep 10, 2026 10:00 AM");
     });
   },
 };

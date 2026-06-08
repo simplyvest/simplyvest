@@ -1,0 +1,13 @@
+name: Format
+
+on:
+  workflow_call:
+
+jobs:
+  format:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/pnpm-setup
+      - name: Format check
+        run: pnpm exec oxfmt --check .

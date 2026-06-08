@@ -12,7 +12,6 @@ const meta = {
       { to: "/docs", label: "Docs" },
       { to: "/faq", label: "FAQ" },
     ],
-    isApp: false,
     onClose: fn(),
   },
 } satisfies Meta<typeof MobileMenu>;

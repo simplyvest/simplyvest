@@ -1,0 +1,15 @@
+name: Typecheck Anchor TS
+
+on:
+  workflow_call:
+
+jobs:
+  typecheck-anchor-ts:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/pnpm-setup
+      - name: Build SDK
+        run: pnpm --filter @solana-tdp/sdk build
+      - name: TypeScript check (anchor)
+        run: pnpm --filter @solana-tdp/anchor typecheck

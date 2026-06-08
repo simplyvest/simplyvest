@@ -2,7 +2,14 @@ name = "simplyvest-api"
 main = "src/index.ts"
 compatibility_date = "2025-05-01"
 
+[[d1_databases]]
+binding = "DB"
+database_name = "simplyvest-db"
+database_id = "649bfa09-ea76-43ed-99d8-bec8fd95a27e"
+migrations_dir = "src/db/migrations"
+
+[triggers]
+crons = ["*/15 * * * *"]
+
 [vars]
 GOOGLE_SHEET_NAME = "Sheet1"
-
-

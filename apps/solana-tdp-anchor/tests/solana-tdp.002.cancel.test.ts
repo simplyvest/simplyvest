@@ -1,6 +1,7 @@
 import { getCancelAccounts, findEvent } from "@solana-tdp/sdk";
 
 import { createStreamFixture } from "./fixtures";
+import { clockNow } from "./helpers";
 import { setupTest, SetupTest, svmParseEvents } from "./utils";
 
 describe("Feature 2: cancel", () => {
@@ -123,6 +124,30 @@ describe("Feature 2: cancel", () => {
     const { sender, recipient, mint, senderToken, recipientToken, vaultPDA, streamPDA } =
       await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 10, 300, 10);
     warp(600); // well past end
+
+    await expect(
+      program.methods
+        .cancel()
+        .accountsPartial(
+          getCancelAccounts(
+            sender.publicKey,
+            recipient.publicKey,
+            streamPDA,
+            vaultPDA,
+            senderToken,
+            recipientToken,
+            mint,
+          ),
+        )
+        .signers([sender])
+        .rpc(),
+    ).rejects.toThrow();
+  });
+
+  it("rejects cancel at exactly end_time", async () => {
+    const { sender, recipient, mint, senderToken, recipientToken, vaultPDA, streamPDA, end } =
+      await createStreamFixture({ program, provider, svmAirdrop, svm }, 1_000_000, 10, 300, 10);
+    warp(end - clockNow(svm)); // exactly at end_time
 
     await expect(
       program.methods

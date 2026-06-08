@@ -29,12 +29,20 @@ export async function fetchTokenMetadata(
     let offset = 1 + 32 + 32;
     const nameLen = data.readUInt32LE(offset);
     offset += 4;
-    const name = data.subarray(offset, offset + nameLen).toString("utf8");
+    const name = data
+      .subarray(offset, offset + nameLen)
+      .toString("utf8")
+      .split("\0")
+      .join("");
     offset += nameLen;
 
     const symbolLen = data.readUInt32LE(offset);
     offset += 4;
-    const symbol = data.subarray(offset, offset + symbolLen).toString("utf8");
+    const symbol = data
+      .subarray(offset, offset + symbolLen)
+      .toString("utf8")
+      .split("\0")
+      .join("");
 
     return { name, symbol };
   } catch {

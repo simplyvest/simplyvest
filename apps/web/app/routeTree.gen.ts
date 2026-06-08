@@ -10,8 +10,19 @@
 
 import { Route as rootRouteImport } from "./routes/__root";
 import { Route as AppRouteImport } from "./routes/app";
+import { Route as AppActivityRouteImport } from "./routes/app.activity";
+import { Route as AppAnalyticsRouteImport } from "./routes/app.analytics";
 import { Route as AppCreateRouteImport } from "./routes/app.create";
+import { Route as AppCreateCliffRouteImport } from "./routes/app.create.cliff";
+import { Route as AppCreateLinearRouteImport } from "./routes/app.create.linear";
+import { Route as AppCreateMilestoneRouteImport } from "./routes/app.create.milestone";
 import { Route as AppDashboardRouteImport } from "./routes/app.dashboard";
+import { Route as AppHelpRouteImport } from "./routes/app.help";
+import { Route as AppOrganizationsRouteImport } from "./routes/app.organizations";
+import { Route as AppOrganizationsOrgIdRouteImport } from "./routes/app.organizations.$orgId";
+import { Route as AppProfileRouteImport } from "./routes/app.profile";
+import { Route as AppSettingsRouteImport } from "./routes/app.settings";
+import { Route as AppStreamsStreamPdaRouteImport } from "./routes/app.streams.$streamPda";
 import { Route as DocsRouteImport } from "./routes/docs";
 import { Route as FaqRouteImport } from "./routes/faq";
 import { Route as IndexRouteImport } from "./routes/index";
@@ -42,6 +53,26 @@ const IndexRoute = IndexRouteImport.update({
   path: "/",
   getParentRoute: () => rootRouteImport,
 } as any);
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: "/settings",
+  path: "/settings",
+  getParentRoute: () => AppRoute,
+} as any);
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: "/profile",
+  path: "/profile",
+  getParentRoute: () => AppRoute,
+} as any);
+const AppOrganizationsRoute = AppOrganizationsRouteImport.update({
+  id: "/organizations",
+  path: "/organizations",
+  getParentRoute: () => AppRoute,
+} as any);
+const AppHelpRoute = AppHelpRouteImport.update({
+  id: "/help",
+  path: "/help",
+  getParentRoute: () => AppRoute,
+} as any);
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: "/dashboard",
   path: "/dashboard",
@@ -52,6 +83,41 @@ const AppCreateRoute = AppCreateRouteImport.update({
   path: "/create",
   getParentRoute: () => AppRoute,
 } as any);
+const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
+  id: "/analytics",
+  path: "/analytics",
+  getParentRoute: () => AppRoute,
+} as any);
+const AppActivityRoute = AppActivityRouteImport.update({
+  id: "/activity",
+  path: "/activity",
+  getParentRoute: () => AppRoute,
+} as any);
+const AppStreamsStreamPdaRoute = AppStreamsStreamPdaRouteImport.update({
+  id: "/streams/$streamPda",
+  path: "/streams/$streamPda",
+  getParentRoute: () => AppRoute,
+} as any);
+const AppOrganizationsOrgIdRoute = AppOrganizationsOrgIdRouteImport.update({
+  id: "/$orgId",
+  path: "/$orgId",
+  getParentRoute: () => AppOrganizationsRoute,
+} as any);
+const AppCreateMilestoneRoute = AppCreateMilestoneRouteImport.update({
+  id: "/milestone",
+  path: "/milestone",
+  getParentRoute: () => AppCreateRoute,
+} as any);
+const AppCreateLinearRoute = AppCreateLinearRouteImport.update({
+  id: "/linear",
+  path: "/linear",
+  getParentRoute: () => AppCreateRoute,
+} as any);
+const AppCreateCliffRoute = AppCreateCliffRouteImport.update({
+  id: "/cliff",
+  path: "/cliff",
+  getParentRoute: () => AppCreateRoute,
+} as any);
 
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute;
@@ -59,8 +125,19 @@ export interface FileRoutesByFullPath {
   "/docs": typeof DocsRoute;
   "/faq": typeof FaqRoute;
   "/waitlist": typeof WaitlistRoute;
-  "/app/create": typeof AppCreateRoute;
+  "/app/activity": typeof AppActivityRoute;
+  "/app/analytics": typeof AppAnalyticsRoute;
+  "/app/create": typeof AppCreateRouteWithChildren;
   "/app/dashboard": typeof AppDashboardRoute;
+  "/app/help": typeof AppHelpRoute;
+  "/app/organizations": typeof AppOrganizationsRouteWithChildren;
+  "/app/profile": typeof AppProfileRoute;
+  "/app/settings": typeof AppSettingsRoute;
+  "/app/create/cliff": typeof AppCreateCliffRoute;
+  "/app/create/linear": typeof AppCreateLinearRoute;
+  "/app/create/milestone": typeof AppCreateMilestoneRoute;
+  "/app/organizations/$orgId": typeof AppOrganizationsOrgIdRoute;
+  "/app/streams/$streamPda": typeof AppStreamsStreamPdaRoute;
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute;
@@ -68,8 +145,19 @@ export interface FileRoutesByTo {
   "/docs": typeof DocsRoute;
   "/faq": typeof FaqRoute;
   "/waitlist": typeof WaitlistRoute;
-  "/app/create": typeof AppCreateRoute;
+  "/app/activity": typeof AppActivityRoute;
+  "/app/analytics": typeof AppAnalyticsRoute;
+  "/app/create": typeof AppCreateRouteWithChildren;
   "/app/dashboard": typeof AppDashboardRoute;
+  "/app/help": typeof AppHelpRoute;
+  "/app/organizations": typeof AppOrganizationsRouteWithChildren;
+  "/app/profile": typeof AppProfileRoute;
+  "/app/settings": typeof AppSettingsRoute;
+  "/app/create/cliff": typeof AppCreateCliffRoute;
+  "/app/create/linear": typeof AppCreateLinearRoute;
+  "/app/create/milestone": typeof AppCreateMilestoneRoute;
+  "/app/organizations/$orgId": typeof AppOrganizationsOrgIdRoute;
+  "/app/streams/$streamPda": typeof AppStreamsStreamPdaRoute;
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
@@ -78,15 +166,81 @@ export interface FileRoutesById {
   "/docs": typeof DocsRoute;
   "/faq": typeof FaqRoute;
   "/waitlist": typeof WaitlistRoute;
-  "/app/create": typeof AppCreateRoute;
+  "/app/activity": typeof AppActivityRoute;
+  "/app/analytics": typeof AppAnalyticsRoute;
+  "/app/create": typeof AppCreateRouteWithChildren;
   "/app/dashboard": typeof AppDashboardRoute;
+  "/app/help": typeof AppHelpRoute;
+  "/app/organizations": typeof AppOrganizationsRouteWithChildren;
+  "/app/profile": typeof AppProfileRoute;
+  "/app/settings": typeof AppSettingsRoute;
+  "/app/create/cliff": typeof AppCreateCliffRoute;
+  "/app/create/linear": typeof AppCreateLinearRoute;
+  "/app/create/milestone": typeof AppCreateMilestoneRoute;
+  "/app/organizations/$orgId": typeof AppOrganizationsOrgIdRoute;
+  "/app/streams/$streamPda": typeof AppStreamsStreamPdaRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/app" | "/docs" | "/faq" | "/waitlist" | "/app/create" | "/app/dashboard";
+  fullPaths:
+    | "/"
+    | "/app"
+    | "/docs"
+    | "/faq"
+    | "/waitlist"
+    | "/app/activity"
+    | "/app/analytics"
+    | "/app/create"
+    | "/app/dashboard"
+    | "/app/help"
+    | "/app/organizations"
+    | "/app/profile"
+    | "/app/settings"
+    | "/app/create/cliff"
+    | "/app/create/linear"
+    | "/app/create/milestone"
+    | "/app/organizations/$orgId"
+    | "/app/streams/$streamPda";
   fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/app" | "/docs" | "/faq" | "/waitlist" | "/app/create" | "/app/dashboard";
-  id: "__root__" | "/" | "/app" | "/docs" | "/faq" | "/waitlist" | "/app/create" | "/app/dashboard";
+  to:
+    | "/"
+    | "/app"
+    | "/docs"
+    | "/faq"
+    | "/waitlist"
+    | "/app/activity"
+    | "/app/analytics"
+    | "/app/create"
+    | "/app/dashboard"
+    | "/app/help"
+    | "/app/organizations"
+    | "/app/profile"
+    | "/app/settings"
+    | "/app/create/cliff"
+    | "/app/create/linear"
+    | "/app/create/milestone"
+    | "/app/organizations/$orgId"
+    | "/app/streams/$streamPda";
+  id:
+    | "__root__"
+    | "/"
+    | "/app"
+    | "/docs"
+    | "/faq"
+    | "/waitlist"
+    | "/app/activity"
+    | "/app/analytics"
+    | "/app/create"
+    | "/app/dashboard"
+    | "/app/help"
+    | "/app/organizations"
+    | "/app/profile"
+    | "/app/settings"
+    | "/app/create/cliff"
+    | "/app/create/linear"
+    | "/app/create/milestone"
+    | "/app/organizations/$orgId"
+    | "/app/streams/$streamPda";
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
@@ -134,6 +288,34 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof IndexRouteImport;
       parentRoute: typeof rootRouteImport;
     };
+    "/app/settings": {
+      id: "/app/settings";
+      path: "/settings";
+      fullPath: "/app/settings";
+      preLoaderRoute: typeof AppSettingsRouteImport;
+      parentRoute: typeof AppRoute;
+    };
+    "/app/profile": {
+      id: "/app/profile";
+      path: "/profile";
+      fullPath: "/app/profile";
+      preLoaderRoute: typeof AppProfileRouteImport;
+      parentRoute: typeof AppRoute;
+    };
+    "/app/organizations": {
+      id: "/app/organizations";
+      path: "/organizations";
+      fullPath: "/app/organizations";
+      preLoaderRoute: typeof AppOrganizationsRouteImport;
+      parentRoute: typeof AppRoute;
+    };
+    "/app/help": {
+      id: "/app/help";
+      path: "/help";
+      fullPath: "/app/help";
+      preLoaderRoute: typeof AppHelpRouteImport;
+      parentRoute: typeof AppRoute;
+    };
     "/app/dashboard": {
       id: "/app/dashboard";
       path: "/dashboard";
@@ -148,17 +330,106 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof AppCreateRouteImport;
       parentRoute: typeof AppRoute;
     };
+    "/app/analytics": {
+      id: "/app/analytics";
+      path: "/analytics";
+      fullPath: "/app/analytics";
+      preLoaderRoute: typeof AppAnalyticsRouteImport;
+      parentRoute: typeof AppRoute;
+    };
+    "/app/activity": {
+      id: "/app/activity";
+      path: "/activity";
+      fullPath: "/app/activity";
+      preLoaderRoute: typeof AppActivityRouteImport;
+      parentRoute: typeof AppRoute;
+    };
+    "/app/streams/$streamPda": {
+      id: "/app/streams/$streamPda";
+      path: "/streams/$streamPda";
+      fullPath: "/app/streams/$streamPda";
+      preLoaderRoute: typeof AppStreamsStreamPdaRouteImport;
+      parentRoute: typeof AppRoute;
+    };
+    "/app/organizations/$orgId": {
+      id: "/app/organizations/$orgId";
+      path: "/$orgId";
+      fullPath: "/app/organizations/$orgId";
+      preLoaderRoute: typeof AppOrganizationsOrgIdRouteImport;
+      parentRoute: typeof AppOrganizationsRoute;
+    };
+    "/app/create/milestone": {
+      id: "/app/create/milestone";
+      path: "/milestone";
+      fullPath: "/app/create/milestone";
+      preLoaderRoute: typeof AppCreateMilestoneRouteImport;
+      parentRoute: typeof AppCreateRoute;
+    };
+    "/app/create/linear": {
+      id: "/app/create/linear";
+      path: "/linear";
+      fullPath: "/app/create/linear";
+      preLoaderRoute: typeof AppCreateLinearRouteImport;
+      parentRoute: typeof AppCreateRoute;
+    };
+    "/app/create/cliff": {
+      id: "/app/create/cliff";
+      path: "/cliff";
+      fullPath: "/app/create/cliff";
+      preLoaderRoute: typeof AppCreateCliffRouteImport;
+      parentRoute: typeof AppCreateRoute;
+    };
   }
 }
 
+interface AppCreateRouteChildren {
+  AppCreateCliffRoute: typeof AppCreateCliffRoute;
+  AppCreateLinearRoute: typeof AppCreateLinearRoute;
+  AppCreateMilestoneRoute: typeof AppCreateMilestoneRoute;
+}
+
+const AppCreateRouteChildren: AppCreateRouteChildren = {
+  AppCreateCliffRoute: AppCreateCliffRoute,
+  AppCreateLinearRoute: AppCreateLinearRoute,
+  AppCreateMilestoneRoute: AppCreateMilestoneRoute,
+};
+
+const AppCreateRouteWithChildren = AppCreateRoute._addFileChildren(AppCreateRouteChildren);
+
+interface AppOrganizationsRouteChildren {
+  AppOrganizationsOrgIdRoute: typeof AppOrganizationsOrgIdRoute;
+}
+
+const AppOrganizationsRouteChildren: AppOrganizationsRouteChildren = {
+  AppOrganizationsOrgIdRoute: AppOrganizationsOrgIdRoute,
+};
+
+const AppOrganizationsRouteWithChildren = AppOrganizationsRoute._addFileChildren(
+  AppOrganizationsRouteChildren,
+);
+
 interface AppRouteChildren {
-  AppCreateRoute: typeof AppCreateRoute;
+  AppActivityRoute: typeof AppActivityRoute;
+  AppAnalyticsRoute: typeof AppAnalyticsRoute;
+  AppCreateRoute: typeof AppCreateRouteWithChildren;
   AppDashboardRoute: typeof AppDashboardRoute;
+  AppHelpRoute: typeof AppHelpRoute;
+  AppOrganizationsRoute: typeof AppOrganizationsRouteWithChildren;
+  AppProfileRoute: typeof AppProfileRoute;
+  AppSettingsRoute: typeof AppSettingsRoute;
+  AppStreamsStreamPdaRoute: typeof AppStreamsStreamPdaRoute;
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppCreateRoute: AppCreateRoute,
+  AppActivityRoute: AppActivityRoute,
+  AppAnalyticsRoute: AppAnalyticsRoute,
+  AppCreateRoute: AppCreateRouteWithChildren,
   AppDashboardRoute: AppDashboardRoute,
+  AppHelpRoute: AppHelpRoute,
+  AppOrganizationsRoute: AppOrganizationsRouteWithChildren,
+  AppProfileRoute: AppProfileRoute,
+  AppSettingsRoute: AppSettingsRoute,
+  AppStreamsStreamPdaRoute: AppStreamsStreamPdaRoute,
 };
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren);
