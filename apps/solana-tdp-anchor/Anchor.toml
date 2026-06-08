@@ -19,7 +19,7 @@ cluster = "localnet"
 wallet = "./keypairs/devnet-wallet.json"
 
 [scripts]
-test = "vitest run"
+test = "pnpm exec vitest run"
 
 [test]
 startup_wait = 20000
