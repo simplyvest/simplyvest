@@ -11,8 +11,6 @@ export function CancelButton({ detail }: { detail: StreamDetail }) {
   if (detail.status !== "active") return null;
   if (detail.streamType === "milestone") return null;
 
-  // After guard: detail is TimeStreamDetail, so onChainAccount is StreamAccount
-  const account = detail.onChainAccount;
   const pda = new PublicKey(detail.pda);
 
   return (
@@ -20,7 +18,7 @@ export function CancelButton({ detail }: { detail: StreamDetail }) {
       <Button variant="destructive" onClick={() => setOpen(true)}>
         Cancel Stream
       </Button>
-      {open && <CancelDialog stream={account} pda={pda} onClose={() => setOpen(false)} />}
+      {open && <CancelDialog stream={detail.raw} pda={pda} onClose={() => setOpen(false)} />}
     </>
   );
 }

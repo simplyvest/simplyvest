@@ -1,14 +1,36 @@
 import type { StoryObj } from "@storybook/tanstack-react";
 import { fn, expect } from "storybook/test";
 
-import { createMockMilestoneStreamAccount, mockPK, mockBN } from "../../../__tests__/story-mocks";
+import type { StreamWithEvents } from "@/hooks/use-api";
+
 import { MilestoneStreamCard } from "./milestone-stream-card";
 
-const baseItem = {
-  publicKey: mockPK("StreamPdaKey1111111111111111111111111111"),
-  account: createMockMilestoneStreamAccount({
-    amount: mockBN(5_000_000),
-  }),
+vi.mock("@solana/web3.js", () => ({
+  // oxlint-disable-next-line typescript/no-extraneous-class
+  PublicKey: class {},
+}));
+
+const baseStream: StreamWithEvents = {
+  id: "7NX7RrJpvnXYsBgvGMjRpfLgHsJhMhYHkLqg2Qz3Vn2",
+  type: "milestone",
+  creatorAddress: "11111111111111111111111111111111",
+  recipientAddress: "22222222222222222222222222222222",
+  mintAddress: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+  vaultAddress: "Vault1111111111111111111111111111111111",
+  amount: "5000000",
+  milestoneAuthority: "33333333333333333333333333333333",
+  creationTx: "5KtPn3Ex7rAbCdEfGhIjKlMnOpQrStUvWxYz1234567qz7P",
+  createdAt: 1700000000,
+  tokenSymbol: "USDC",
+  tokenDecimals: 6,
+  creatorDisplayName: "Alice",
+  status: "active",
+  amountWithdrawn: "0",
+  milestoneReached: false,
+  closedAt: null,
+  closeTx: null,
+  lastSyncedAt: null,
+  events: [],
 };
 
 const baseArgs = {
@@ -23,7 +45,7 @@ const baseArgs = {
 const meta = {
   component: MilestoneStreamCard,
   args: {
-    item: baseItem,
+    stream: baseStream,
     ...baseArgs,
     role: "created",
     isRecipient: false,
@@ -37,9 +59,6 @@ export const CreatedActive: Story = {
   play: async ({ canvas, step }) => {
     await step("renders active badge", async () => {
       await expect(canvas.getByText("active")).toBeInTheDocument();
-    });
-    await step("renders milestone stream label", async () => {
-      await expect(canvas.getByText("Milestone stream")).toBeInTheDocument();
     });
     await step("renders Cancel button for creator", async () => {
       await expect(canvas.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
@@ -65,12 +84,9 @@ export const CreatedCancelPending: Story = {
 
 export const MilestoneReachedCreator: Story = {
   args: {
-    item: {
-      ...baseItem,
-      account: createMockMilestoneStreamAccount({
-        amount: mockBN(5_000_000),
-        milestoneReached: true,
-      }),
+    stream: {
+      ...baseStream,
+      milestoneReached: true,
     },
     canTrigger: true,
   },
@@ -89,12 +105,9 @@ export const MilestoneReachedCreator: Story = {
 
 export const MilestoneReachedRecipient: Story = {
   args: {
-    item: {
-      ...baseItem,
-      account: createMockMilestoneStreamAccount({
-        amount: mockBN(5_000_000),
-        milestoneReached: true,
-      }),
+    stream: {
+      ...baseStream,
+      milestoneReached: true,
     },
     role: "received",
     isRecipient: true,

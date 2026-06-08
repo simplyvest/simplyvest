@@ -21,14 +21,14 @@ export function ClaimButton({ detail }: { detail: StreamDetail }) {
     if (!publicKey) return;
     const pda = new PublicKey(detail.pda);
     const [vaultPda] = getVaultPda(pda, PROGRAM_ID);
-    const recipientToken = getAssociatedTokenAddressSync(new PublicKey(detail.mint), publicKey);
-    const account = detail.onChainAccount;
+    const mintPk = new PublicKey(detail.mint);
+    const recipientToken = getAssociatedTokenAddressSync(mintPk, publicKey);
 
     withdraw.mutate({
       stream: pda,
       vault: vaultPda,
-      sender: account.creator,
-      mint: account.mint,
+      sender: new PublicKey(detail.creator),
+      mint: mintPk,
       recipientToken,
       amount: claimable,
     });

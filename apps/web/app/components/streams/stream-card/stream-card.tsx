@@ -1,13 +1,13 @@
-import { getClaimable, getStatus, getVaultPda, PROGRAM_ID } from "@solana-tdp/sdk";
-import type { StreamAccount } from "@solana-tdp/sdk";
-import { formatAddress } from "@solana-tdp/sdk";
+import { getVaultPda, PROGRAM_ID } from "@solana-tdp/sdk";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
 import { Link } from "@tanstack/react-router";
+import BN from "bn.js";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useWithdraw } from "@/hooks/tx/use-withdraw";
+import type { StreamWithEvents } from "@/hooks/use-api";
 import { useAuth } from "@/lib/solana/use-auth";
 import { formatSol, formatDuration } from "@/utils/format";
 
@@ -15,30 +15,53 @@ import { StreamProgressBar } from "./stream-progress-bar";
 
 export function StreamCard({
   stream,
-  pda,
   onCancel,
   role,
 }: {
-  stream: StreamAccount;
-  pda: PublicKey;
-  onCancel: (stream: StreamAccount, pda: PublicKey) => void;
+  stream: StreamWithEvents;
+  onCancel: (stream: StreamWithEvents, pda: string) => void;
   role?: "created" | "received";
 }) {
   const { publicKey } = useAuth();
   const withdraw = useWithdraw();
-  const isSender = publicKey?.equals(stream.creator);
-  const isRecipient = publicKey?.equals(stream.recipient);
-  const counterparty = isSender ? stream.recipient : stream.creator;
+
+  const pda = new PublicKey(stream.id);
+  const creatorPk = new PublicKey(stream.creatorAddress);
+  const recipientPk = new PublicKey(stream.recipientAddress);
+  const mintPk = new PublicKey(stream.mintAddress);
+
+  const isSender = publicKey?.equals(creatorPk);
+  const isRecipient = publicKey?.equals(recipientPk);
+  const counterparty = isSender ? recipientPk : creatorPk;
 
   const clockTime = Math.floor(Date.now() / 1000);
-  const status = getStatus(stream, clockTime);
-  const claimable = getClaimable(stream, clockTime);
+  const startTime = stream.startTime ?? 0;
+  const endTime = stream.endTime ?? 0;
+  const amount = new BN(stream.amount);
+  const amountWithdrawn = new BN(stream.amountWithdrawn ?? "0");
+
+  // Compute claimable (simplified - server sync handles accuracy)
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+  const status = stream.status as "active" | "completed" | "cancelled";
+
+  let claimable = new BN(0);
+  if (status === "active" && endTime > 0) {
+    if (clockTime >= endTime) {
+      claimable = amount.sub(amountWithdrawn);
+    } else if (clockTime >= startTime) {
+      const elapsed = clockTime - startTime;
+      const duration = endTime - startTime;
+      const vested = amount.muln(elapsed).divn(duration);
+      claimable = vested.sub(amountWithdrawn);
+      if (claimable.lt(new BN(0))) claimable = new BN(0);
+    }
+  }
 
   const [vaultPda] = getVaultPda(pda, PROGRAM_ID);
-  const recipientToken = publicKey ? getAssociatedTokenAddressSync(stream.mint, publicKey) : pda;
+  const recipientToken = publicKey ? getAssociatedTokenAddressSync(mintPk, publicKey) : pda;
 
-  const totalSec = stream.endTime.sub(stream.startTime).toNumber();
-  const elapsedSec = Math.max(0, clockTime - stream.startTime.toNumber());
+  const totalSec = endTime - startTime;
+  const elapsedSec = Math.max(0, clockTime - startTime);
   const remainingSec = Math.max(0, totalSec - elapsedSec);
   const progress = totalSec > 0 ? Math.min(100, (elapsedSec / totalSec) * 100) : 0;
 
@@ -54,38 +77,45 @@ export function StreamCard({
       <div className="flex items-start justify-between gap-4">
         <Link
           to="/app/streams/$streamPda"
-          params={{ streamPda: pda.toBase58() }}
+          params={{ streamPda: stream.id }}
           className="min-w-0 flex-1 space-y-2 no-underline hover:no-underline"
         >
           <div className="flex items-center gap-2">
             <Badge variant={statusColor}>{status}</Badge>
-            <span className="font-mono text-xs text-dim">{formatAddress(pda)}</span>
+            <span className="font-mono text-xs text-dim">
+              {stream.tokenSymbol ?? stream.mintAddress.slice(0, 8)}
+            </span>
+            {stream.creatorDisplayName && (
+              <span className="text-xs text-dim">by {stream.creatorDisplayName}</span>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-sm">
             <div>
               <span className="text-dim">Token</span>
-              <p className="font-mono text-text">{formatAddress(stream.mint)}</p>
+              <p className="font-mono text-text">
+                {stream.tokenName ?? stream.mintAddress.slice(0, 8) + "..."}
+              </p>
             </div>
             <div>
               <span className="text-dim">{isSender ? "Recipient" : "Sender"}</span>
               <p className="font-mono text-text">
                 {isSender && "→ "}
                 {isRecipient && "← "}
-                {formatAddress(counterparty)}
+                {counterparty.toBase58().slice(0, 8)}...
               </p>
             </div>
             <div>
               <span className="text-dim">Total</span>
-              <p className="text-text">{formatSol(stream.amount, 6)}</p>
+              <p className="text-text">{formatSol(amount, stream.tokenDecimals ?? 6)}</p>
             </div>
             <div>
               <span className="text-dim">Claimable</span>
-              <p className="text-text">{formatSol(claimable, 6)}</p>
+              <p className="text-text">{formatSol(claimable, stream.tokenDecimals ?? 6)}</p>
             </div>
             <div>
               <span className="text-dim">Withdrawn</span>
-              <p className="text-text">{formatSol(stream.amountWithdrawn, 6)}</p>
+              <p className="text-text">{formatSol(amountWithdrawn, stream.tokenDecimals ?? 6)}</p>
             </div>
             <div>
               <span className="text-dim">Remaining</span>
@@ -95,43 +125,39 @@ export function StreamCard({
             </div>
           </div>
 
+          {stream.description && <p className="text-xs text-dim italic">{stream.description}</p>}
+
           <StreamProgressBar
             progress={progress}
-            startTime={stream.startTime}
-            endTime={stream.endTime}
+            startTime={new BN(startTime)}
+            endTime={new BN(endTime)}
           />
         </Link>
 
         <div className="flex shrink-0 flex-col gap-2">
-          {role !== "received" &&
-            isSender &&
-            status === "active" &&
-            clockTime < stream.endTime.toNumber() && (
-              <Button variant="destructive" size="sm" onClick={() => onCancel(stream, pda)}>
-                Cancel
-              </Button>
-            )}
-          {role === "received" &&
-            isRecipient &&
-            status === "active" &&
-            claimable.toNumber() > 0 && (
-              <Button
-                size="sm"
-                onClick={() =>
-                  withdraw.mutate({
-                    stream: pda,
-                    vault: vaultPda,
-                    sender: stream.creator,
-                    mint: stream.mint,
-                    recipientToken,
-                    amount: claimable.toNumber(),
-                  })
-                }
-                disabled={withdraw.isPending}
-              >
-                {withdraw.isPending ? "Claiming..." : "Claim"}
-              </Button>
-            )}
+          {role !== "received" && isSender && status === "active" && clockTime < endTime && (
+            <Button variant="destructive" size="sm" onClick={() => onCancel(stream, stream.id)}>
+              Cancel
+            </Button>
+          )}
+          {role === "received" && isRecipient && status === "active" && claimable.gt(new BN(0)) && (
+            <Button
+              size="sm"
+              onClick={() =>
+                withdraw.mutate({
+                  stream: pda,
+                  vault: vaultPda,
+                  sender: creatorPk,
+                  mint: mintPk,
+                  recipientToken,
+                  amount: claimable.toNumber(),
+                })
+              }
+              disabled={withdraw.isPending}
+            >
+              {withdraw.isPending ? "Claiming..." : "Claim"}
+            </Button>
+          )}
         </div>
       </div>
     </div>

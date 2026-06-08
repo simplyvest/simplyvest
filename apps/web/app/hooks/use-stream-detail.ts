@@ -1,26 +1,12 @@
-import {
-  fetchStream,
-  fetchMilestoneStream,
-  getClaimable,
-  getStatus,
-  getVestedPercent,
-  getMilestoneStatus,
-  getMilestoneClaimable,
-} from "@solana-tdp/sdk";
-import type { StreamAccount, MilestoneStreamAccount } from "@solana-tdp/sdk";
-import { PublicKey } from "@solana/web3.js";
-import { useQuery } from "@tanstack/react-query";
 import BN from "bn.js";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 
-import { useConnection } from "@/lib/solana/use-connection";
-
-import { useStreamEvents } from "./use-stream-events";
+import { useApiStream, useStreamSync, type StreamWithEvents } from "@/hooks/use-api";
 
 type StreamType = "linear" | "cliff" | "milestone";
 type StreamStatus = "active" | "completed" | "cancelled";
 
-interface StreamDetailBase {
+interface StreamDetail {
   pda: string;
   apiType: "time" | "milestone";
   creator: string;
@@ -43,129 +29,117 @@ interface StreamDetailBase {
   status: StreamStatus;
   claimable: BN;
   vestedPercent: number;
+  streamType: StreamType;
+
+  // Metadata
+  tokenName?: string;
+  tokenSymbol?: string;
+  tokenDecimals?: number;
+  creatorDisplayName?: string;
+  description?: string;
+
+  // Raw API data for components that need it
+  raw: StreamWithEvents;
 }
 
-interface TimeStreamDetail extends StreamDetailBase {
-  streamType: "linear" | "cliff";
-  onChainAccount: StreamAccount;
-}
+function computeDetailFromApi(api: StreamWithEvents): StreamDetail {
+  const clockTime = Math.floor(Date.now() / 1000);
+  const startTime = api.startTime ?? 0;
+  const endTime = api.endTime ?? 0;
+  const cliffTime = api.cliffTime ?? 0;
+  const amount = new BN(api.amount);
+  const amountWithdrawn = new BN(api.amountWithdrawn ?? "0");
+  const cancelled = api.status === "cancelled";
+  const milestoneReached = api.milestoneReached ?? false;
 
-interface MilestoneStreamDetail extends StreamDetailBase {
-  streamType: "milestone";
-  onChainAccount: MilestoneStreamAccount;
-}
+  // Determine stream type
+  const streamType: StreamType =
+    api.type === "milestone" ? "milestone" : cliffTime > startTime ? "cliff" : "linear";
 
-type StreamDetail = TimeStreamDetail | MilestoneStreamDetail;
+  // Compute status
+  let status: StreamStatus;
+  if (cancelled) status = "cancelled";
+  else if (api.status === "completed") status = "completed";
+  else if (endTime > 0 && clockTime >= endTime) status = "completed";
+  else status = "active";
 
-export function useStreamDetail(pda: string | undefined) {
-  const { connection } = useConnection();
-  const apiQuery = useStreamEvents(pda ?? "");
+  // Compute claimable
+  let claimable = new BN(0);
+  let vestedPercent = 0;
 
-  const onChainQuery = useQuery({
-    queryKey: ["stream-onchain", pda],
-    queryFn: async () => {
-      if (!pda) return null;
-      const pubkey = new PublicKey(pda);
-
-      const timeStream = await fetchStream(connection, pubkey);
-      if (timeStream) {
-        return {
-          type: "time" as const,
-          account: timeStream.account,
-          publicKey: timeStream.publicKey,
-        };
-      }
-
-      const milestoneStream = await fetchMilestoneStream(connection, pubkey);
-      if (milestoneStream) {
-        return {
-          type: "milestone" as const,
-          account: milestoneStream.account,
-          publicKey: milestoneStream.publicKey,
-        };
-      }
-
-      return null;
-    },
-    enabled: !!pda,
-    retry: 1,
-  });
-
-  const detail = useMemo<StreamDetail | null>(() => {
-    if (!apiQuery.data || !onChainQuery.data) return null;
-
-    const api = apiQuery.data;
-    const onChain = onChainQuery.data;
-    const clockTime = Math.floor(Date.now() / 1000);
-
-    const base = {
-      pda: api.id,
-      apiType: api.type,
-      creator: api.creatorAddress,
-      recipient: api.recipientAddress,
-      mint: api.mintAddress,
-      vault: api.vaultAddress,
-      amount: api.amount,
-      startTime: api.startTime ?? undefined,
-      endTime: api.endTime ?? undefined,
-      cliffTime: api.cliffTime ?? undefined,
-      milestoneAuthority: api.milestoneAuthority ?? undefined,
-      creationTx: api.creationTx,
-      orgId: api.orgId,
-      createdAt: api.createdAt,
-    };
-
-    if (onChain.type === "milestone") {
-      const account = onChain.account;
-      const milestoneReached = account.milestoneReached;
-      const status = getMilestoneStatus(account);
-      const claimable = getMilestoneClaimable(account);
-      const vestedPercent = milestoneReached
-        ? account.amountWithdrawn.gte(account.amount)
-          ? 100
-          : Number(account.amountWithdrawn.muln(100).div(account.amount))
-        : 0;
-
-      return {
-        ...base,
-        amountWithdrawn: account.amountWithdrawn.toString(),
-        cancelled: account.cancelled,
-        milestoneReached,
-        streamType: "milestone",
-        status,
-        claimable,
-        vestedPercent,
-        onChainAccount: account,
-      } satisfies MilestoneStreamDetail;
+  if (streamType === "milestone") {
+    if (milestoneReached && !cancelled) {
+      claimable = amount.sub(amountWithdrawn);
+      if (claimable.lt(new BN(0))) claimable = new BN(0);
+      vestedPercent = amount.gt(new BN(0)) ? amountWithdrawn.muln(100).div(amount).toNumber() : 0;
     }
-
-    const account = onChain.account;
-    const streamType = account.cliffTime.gt(account.startTime) ? "cliff" : "linear";
-    const status = getStatus(account, clockTime);
-    const claimable = getClaimable(account, clockTime);
-    const vestedPercent = getVestedPercent(account, clockTime);
-
-    return {
-      ...base,
-      amountWithdrawn: account.amountWithdrawn.toString(),
-      cancelled: account.cancelled,
-      milestoneReached: false,
-      streamType,
-      status,
-      claimable,
-      vestedPercent,
-      onChainAccount: account,
-    } satisfies TimeStreamDetail;
-  }, [apiQuery.data, onChainQuery.data]);
+  } else if (status === "active" && endTime > 0) {
+    if (clockTime >= endTime) {
+      claimable = amount.sub(amountWithdrawn);
+      vestedPercent = 100;
+    } else if (clockTime >= startTime) {
+      const elapsed = clockTime - startTime;
+      const duration = endTime - startTime;
+      const vested = amount.muln(elapsed).divn(duration);
+      claimable = vested.sub(amountWithdrawn);
+      if (claimable.lt(new BN(0))) claimable = new BN(0);
+      vestedPercent = amount.gt(new BN(0)) ? vested.muln(100).div(amount).toNumber() : 0;
+    }
+  }
 
   return {
-    detail,
-    isLoading: apiQuery.isLoading || onChainQuery.isLoading,
-    isError: apiQuery.isError || onChainQuery.isError,
-    error: apiQuery.error ?? onChainQuery.error,
-    apiQuery,
-    onChainQuery,
+    pda: api.id,
+    apiType: api.type,
+    creator: api.creatorAddress,
+    recipient: api.recipientAddress,
+    mint: api.mintAddress,
+    vault: api.vaultAddress,
+    amount: api.amount,
+    startTime: api.startTime,
+    endTime: api.endTime,
+    cliffTime: api.cliffTime,
+    milestoneAuthority: api.milestoneAuthority,
+    creationTx: api.creationTx,
+    orgId: api.orgId,
+    createdAt: api.createdAt,
+    amountWithdrawn: api.amountWithdrawn ?? "0",
+    cancelled,
+    milestoneReached,
+    status,
+    claimable,
+    vestedPercent,
+    streamType,
+    tokenName: api.tokenName,
+    tokenSymbol: api.tokenSymbol,
+    tokenDecimals: api.tokenDecimals,
+    creatorDisplayName: api.creatorDisplayName,
+    description: api.description,
+    raw: api,
   };
 }
 
-export type { StreamDetail, TimeStreamDetail, MilestoneStreamDetail, StreamType, StreamStatus };
+export function useStreamDetail(pda: string | undefined) {
+  const { data: apiData, isLoading, isError, error } = useApiStream(pda ?? "");
+  const sync = useStreamSync();
+
+  // Trigger sync on mount for active streams
+  useEffect(() => {
+    if (apiData?.status === "active") {
+      sync.mutate(apiData.id);
+    }
+  }, [apiData?.id, apiData?.status, sync]);
+
+  const detail = useMemo<StreamDetail | null>(() => {
+    if (!apiData) return null;
+    return computeDetailFromApi(apiData);
+  }, [apiData]);
+
+  return {
+    detail,
+    isLoading,
+    isError,
+    error,
+  };
+}
+
+export type { StreamDetail, StreamType, StreamStatus };

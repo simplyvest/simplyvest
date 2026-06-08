@@ -1,12 +1,11 @@
 import { getVaultPda, PROGRAM_ID } from "@solana-tdp/sdk";
-import type { StreamAccount, MilestoneStreamAccount } from "@solana-tdp/sdk";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { useTriggerMilestone } from "@/hooks/tx/use-trigger-milestone";
 import { useWithdrawMilestone } from "@/hooks/tx/use-withdraw-milestone";
-import { useStreams, useMilestoneStreams } from "@/hooks/use-stream";
+import { useApiStreams, useStreamSync, type StreamWithEvents } from "@/hooks/use-api";
 import { useAuth } from "@/lib/solana/use-auth";
 
 import { CancelDialog } from "../cancel-dialog";
@@ -14,24 +13,14 @@ import { CancelMilestoneDialog } from "../cancel-milestone-dialog";
 import { StreamCard } from "../stream-card/stream-card";
 import { MilestoneStreamCard } from "./milestone-stream-card";
 
-interface StreamItem {
-  publicKey: PublicKey;
-  account: StreamAccount;
-}
-
-interface MilestoneStreamItem {
-  publicKey: PublicKey;
-  account: MilestoneStreamAccount;
-}
-
 interface SelectedStream {
-  stream: StreamAccount;
-  pda: PublicKey;
+  stream: StreamWithEvents;
+  pda: string;
 }
 
 interface SelectedMilestoneStream {
-  stream: MilestoneStreamAccount;
-  pda: PublicKey;
+  stream: StreamWithEvents;
+  pda: string;
 }
 
 export function StreamList({ role }: { role: "created" | "received" }) {
@@ -40,29 +29,27 @@ export function StreamList({ role }: { role: "created" | "received" }) {
   const [selectedMilestone, setSelectedMilestone] = useState<SelectedMilestoneStream | null>(null);
   const triggerMilestone = useTriggerMilestone();
   const withdrawMilestone = useWithdrawMilestone();
+  const sync = useStreamSync();
 
-  const { data: streams, isLoading: streamsLoading } = useStreams();
-  const { data: milestoneStreams, isLoading: milestoneLoading } = useMilestoneStreams();
+  const walletAddress = publicKey?.toBase58();
+  const { data: streams, isLoading } = useApiStreams({
+    creator: role === "created" ? walletAddress : undefined,
+    recipient: role === "received" ? walletAddress : undefined,
+  });
 
-  const isLoading = streamsLoading || milestoneLoading;
+  // Background sync for active stale streams
+  useEffect(() => {
+    if (!streams) return;
+    const now = Math.floor(Date.now() / 1000);
+    const stale = streams.filter(
+      (s) => s.status === "active" && (!s.lastSyncedAt || now - s.lastSyncedAt > 60),
+    );
+    // Sync max 5 streams at a time to avoid hammering
+    stale.slice(0, 5).forEach((s) => sync.mutate(s.id));
+  }, [streams, sync]);
 
-  const createdStreams = (streams ?? []).filter((s: StreamItem) =>
-    publicKey?.equals(s.account.creator),
-  );
-  const receivedStreams = (streams ?? []).filter((s: StreamItem) =>
-    publicKey?.equals(s.account.recipient),
-  );
-
-  const createdMilestoneStreams = (milestoneStreams ?? []).filter((s: MilestoneStreamItem) =>
-    publicKey?.equals(s.account.creator),
-  );
-  const receivedMilestoneStreams = (milestoneStreams ?? []).filter((s: MilestoneStreamItem) =>
-    publicKey?.equals(s.account.recipient),
-  );
-
-  const relevantStreams = role === "created" ? createdStreams : receivedStreams;
-  const relevantMilestoneStreams =
-    role === "created" ? createdMilestoneStreams : receivedMilestoneStreams;
+  const timeStreams = (streams ?? []).filter((s) => s.type === "time");
+  const milestoneStreams = (streams ?? []).filter((s) => s.type === "milestone");
 
   if (!publicKey) {
     return (
@@ -82,7 +69,7 @@ export function StreamList({ role }: { role: "created" | "received" }) {
     );
   }
 
-  if (relevantStreams.length === 0 && relevantMilestoneStreams.length === 0) {
+  if (timeStreams.length === 0 && milestoneStreams.length === 0) {
     return (
       <div className="flex h-40 items-center justify-center rounded-xl border border-border bg-bg1">
         <div className="text-center">
@@ -100,7 +87,7 @@ export function StreamList({ role }: { role: "created" | "received" }) {
       {selected && (
         <CancelDialog
           stream={selected.stream}
-          pda={selected.pda}
+          pda={new PublicKey(selected.pda)}
           onClose={() => setSelected(null)}
         />
       )}
@@ -108,45 +95,49 @@ export function StreamList({ role }: { role: "created" | "received" }) {
       {selectedMilestone && (
         <CancelMilestoneDialog
           stream={selectedMilestone.stream}
-          pda={selectedMilestone.pda}
+          pda={new PublicKey(selectedMilestone.pda)}
           onClose={() => setSelectedMilestone(null)}
         />
       )}
 
       <div className="space-y-3">
-        {relevantStreams.map((s) => (
+        {timeStreams.map((s) => (
           <StreamCard
-            key={s.publicKey.toBase58()}
-            stream={s.account}
-            pda={s.publicKey}
+            key={s.id}
+            stream={s}
             role={role}
             onCancel={(stream, pda) => setSelected({ stream, pda })}
           />
         ))}
 
-        {relevantMilestoneStreams.map((s) => {
-          const canTrigger = role === "created" && !s.account.milestoneReached;
-          const isRecipient = publicKey?.equals(s.account.recipient);
+        {milestoneStreams.map((s) => {
+          const canTrigger = role === "created" && !s.milestoneReached;
+          const isRecipient = walletAddress === s.recipientAddress;
           return (
             <MilestoneStreamCard
-              key={s.publicKey.toBase58()}
-              item={s}
+              key={s.id}
+              stream={s}
               role={role}
-              isRecipient={isRecipient ?? false}
+              isRecipient={isRecipient}
               canTrigger={canTrigger}
-              onTrigger={() => triggerMilestone.mutate(s.publicKey)}
-              onCancel={() => setSelectedMilestone({ stream: s.account, pda: s.publicKey })}
+              onTrigger={() => {
+                const pda = new PublicKey(s.id);
+                triggerMilestone.mutate(pda);
+              }}
+              onCancel={() => setSelectedMilestone({ stream: s, pda: s.id })}
               onClaim={() => {
-                const [vaultPda] = getVaultPda(s.publicKey, PROGRAM_ID);
-                const recipientToken = getAssociatedTokenAddressSync(
-                  s.account.mint,
-                  s.account.recipient,
-                );
+                const pda = new PublicKey(s.id);
+                const mintPk = new PublicKey(s.mintAddress);
+                const creatorPk = new PublicKey(s.creatorAddress);
+                const [vaultPda] = getVaultPda(pda, PROGRAM_ID);
+                const recipientToken = publicKey
+                  ? getAssociatedTokenAddressSync(mintPk, publicKey)
+                  : pda;
                 withdrawMilestone.mutate({
-                  stream: s.publicKey,
+                  stream: pda,
                   vault: vaultPda,
-                  sender: s.account.creator,
-                  mint: s.account.mint,
+                  sender: creatorPk,
+                  mint: mintPk,
                   recipientToken,
                 });
               }}

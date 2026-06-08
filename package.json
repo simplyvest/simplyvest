@@ -30,6 +30,7 @@
     "prepare": "git config core.hooksPath .hooks"
   },
   "devDependencies": {
+    "@typescript/native-preview": "7.0.0-dev.20260421.2",
     "nano-staged": "^1.0.2",
     "oxfmt": "^0.51.0",
     "oxlint": "^1.66.0",
