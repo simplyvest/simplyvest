@@ -100,6 +100,21 @@ streamRoutes.get("/:id", async (c) => {
   return c.json(stream);
 });
 
+streamRoutes.post("/:id/sync", async (c) => {
+  const db = createDb(c.env.DB);
+  const service = createStreamService(db);
+  const streamId = c.req.param("id");
+  const rpcUrl = c.env.SOLANA_RPC_URL ?? "https://api.devnet.solana.com";
+
+  const stream = await service.getStreamById(streamId);
+  if (!stream) {
+    return c.json({ error: "Stream not found" }, 404);
+  }
+
+  const synced = await service.syncStream(streamId, rpcUrl);
+  return c.json(synced);
+});
+
 streamRoutes.post("/:id/events", async (c) => {
   const body = await c.req.json();
   const db = createDb(c.env.DB);

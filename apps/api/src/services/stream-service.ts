@@ -116,6 +116,67 @@ export function createStreamService(db: Db) {
       await db.update(streams).set({ milestoneReached: true }).where(eq(streams.id, streamId));
     },
 
+    async syncStream(streamId: string, rpcUrl?: string) {
+      const stream = await this.getStreamById(streamId);
+      if (!stream) return null;
+
+      const now = Math.floor(Date.now() / 1000);
+
+      // Skip if synced within 60 seconds
+      if (stream.lastSyncedAt && now - stream.lastSyncedAt < 60) {
+        return stream;
+      }
+
+      // If no RPC URL, just update timestamp
+      if (!rpcUrl) {
+        await db.update(streams).set({ lastSyncedAt: now }).where(eq(streams.id, streamId));
+        return this.getStreamById(streamId);
+      }
+
+      // Fetch on-chain state
+      try {
+        const response = await fetch(rpcUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jsonrpc: "2.0",
+            id: 1,
+            method: "getAccountInfo",
+            params: [streamId, { commitment: "confirmed" }],
+          }),
+        });
+
+        // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+        const data = (await response.json()) as { result?: { value: unknown } };
+        const accountExists = data.result?.value != null;
+
+        if (!accountExists && stream.status === "active") {
+          // Account closed - mark as completed
+          await db
+            .update(streams)
+            .set({
+              status: "completed",
+              lastSyncedAt: now,
+              closedAt: now,
+            })
+            .where(eq(streams.id, streamId));
+        } else if (accountExists) {
+          // Account exists - decode and update state
+          // For now, just update sync time
+          // TODO: Decode account data to get amountWithdrawn, milestoneReached
+          await db.update(streams).set({ lastSyncedAt: now }).where(eq(streams.id, streamId));
+        } else {
+          // Just update sync time
+          await db.update(streams).set({ lastSyncedAt: now }).where(eq(streams.id, streamId));
+        }
+      } catch {
+        // On error, still update sync time to avoid hammering
+        await db.update(streams).set({ lastSyncedAt: now }).where(eq(streams.id, streamId));
+      }
+
+      return this.getStreamById(streamId);
+    },
+
     async getStreamById(streamId: string) {
       const result = await db.select().from(streams).where(eq(streams.id, streamId)).limit(1);
       return result[0] ?? null;
