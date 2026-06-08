@@ -38,6 +38,9 @@ export function useSolanaTransaction() {
       transaction: new Uint8Array(serialized),
       wallet: solanaWallet,
       chain: SOLANA_CHAIN,
+      options: {
+        sponsor: true,
+      },
     });
 
     return { signature: Buffer.from(signature).toString("base64") };
