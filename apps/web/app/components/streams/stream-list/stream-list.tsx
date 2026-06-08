@@ -1,11 +1,11 @@
 import { getVaultPda, PROGRAM_ID } from "@solana-tdp/sdk";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import { useTriggerMilestone } from "@/hooks/tx/use-trigger-milestone";
 import { useWithdrawMilestone } from "@/hooks/tx/use-withdraw-milestone";
-import { useApiStreams, useStreamSync, type StreamWithEvents } from "@/hooks/use-api";
+import { useApiStreams, type StreamWithEvents } from "@/hooks/use-api";
 import { useAuth } from "@/lib/solana/use-auth";
 
 import { CancelDialog } from "../cancel-dialog";
@@ -29,24 +29,15 @@ export function StreamList({ role }: { role: "created" | "received" }) {
   const [selectedMilestone, setSelectedMilestone] = useState<SelectedMilestoneStream | null>(null);
   const triggerMilestone = useTriggerMilestone();
   const withdrawMilestone = useWithdrawMilestone();
-  const sync = useStreamSync();
 
   const walletAddress = publicKey?.toBase58();
-  const { data: streams, isLoading } = useApiStreams({
-    creator: role === "created" ? walletAddress : undefined,
-    recipient: role === "received" ? walletAddress : undefined,
-  });
-
-  // Background sync for active stale streams
-  useEffect(() => {
-    if (!streams) return;
-    const now = Math.floor(Date.now() / 1000);
-    const stale = streams.filter(
-      (s) => s.status === "active" && (!s.lastSyncedAt || now - s.lastSyncedAt > 60),
-    );
-    // Sync max 5 streams at a time to avoid hammering
-    stale.slice(0, 5).forEach((s) => sync.mutate(s.id));
-  }, [streams, sync]);
+  const { data: streams, isLoading } = useApiStreams(
+    {
+      creator: role === "created" ? walletAddress : undefined,
+      recipient: role === "received" ? walletAddress : undefined,
+    },
+    { syncStale: true },
+  );
 
   const timeStreams = (streams ?? []).filter((s) => s.type === "time");
   const milestoneStreams = (streams ?? []).filter((s) => s.type === "milestone");

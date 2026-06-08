@@ -1,5 +1,6 @@
 import { usePrivy } from "@privy-io/react-auth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRef } from "react";
 import { toast } from "sonner";
 
 import { api } from "@/lib/api-client";
@@ -90,13 +91,16 @@ export function useStreamSync() {
   });
 }
 
-export function useApiStreams(filters: {
-  creator?: string;
-  recipient?: string;
-  org?: string;
-  status?: string;
-  type?: string;
-}) {
+export function useApiStreams(
+  filters: {
+    creator?: string;
+    recipient?: string;
+    org?: string;
+    status?: string;
+    type?: string;
+  },
+  opts?: { syncStale?: boolean },
+) {
   const params = new URLSearchParams();
   if (filters.creator) params.set("creator", filters.creator);
   if (filters.recipient) params.set("recipient", filters.recipient);
@@ -106,19 +110,46 @@ export function useApiStreams(filters: {
 
   const qs = params.toString();
   const path = `/api/streams${qs ? `?${qs}` : ""}`;
+  const sync = opts?.syncStale ? useStreamSync() : null;
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ["api-streams", filters],
     queryFn: () => api.get<StreamWithEvents[]>(path),
+    staleTime: 30_000,
   });
+
+  // Sync stale active streams after initial data load
+  const didSync = useRef(false);
+  if (sync && query.data && !didSync.current) {
+    didSync.current = true;
+    const now = Math.floor(Date.now() / 1000);
+    for (const s of query.data) {
+      if (s.status === "active" && (!s.lastSyncedAt || now - s.lastSyncedAt > 60)) {
+        sync.mutate(s.id);
+      }
+    }
+  }
+
+  return query;
 }
 
 export function useApiStream(id: string) {
-  return useQuery({
+  const sync = useStreamSync();
+  const didSync = useRef(false);
+
+  const query = useQuery({
     queryKey: ["api-stream", id],
     queryFn: () => api.get<StreamWithEvents>(`/api/streams/${id}`),
     enabled: !!id,
   });
+
+  // Sync once on mount for active streams
+  if (query.data && !didSync.current && query.data.status === "active") {
+    didSync.current = true;
+    sync.mutate(query.data.id);
+  }
+
+  return query;
 }
 
 // User profile types

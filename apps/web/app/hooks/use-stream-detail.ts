@@ -1,7 +1,7 @@
 import BN from "bn.js";
-import { useMemo, useEffect } from "react";
+import { useMemo } from "react";
 
-import { useApiStream, useStreamSync, type StreamWithEvents } from "@/hooks/use-api";
+import { useApiStream, type StreamWithEvents } from "@/hooks/use-api";
 
 type StreamType = "linear" | "cliff" | "milestone";
 type StreamStatus = "active" | "completed" | "cancelled";
@@ -120,14 +120,6 @@ function computeDetailFromApi(api: StreamWithEvents): StreamDetail {
 
 export function useStreamDetail(pda: string | undefined) {
   const { data: apiData, isLoading, isError, error } = useApiStream(pda ?? "");
-  const sync = useStreamSync();
-
-  // Trigger sync on mount for active streams
-  useEffect(() => {
-    if (apiData?.status === "active") {
-      sync.mutate(apiData.id);
-    }
-  }, [apiData?.id, apiData?.status, sync]);
 
   const detail = useMemo<StreamDetail | null>(() => {
     if (!apiData) return null;
