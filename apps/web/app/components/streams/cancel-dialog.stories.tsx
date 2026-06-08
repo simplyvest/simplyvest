@@ -1,8 +1,6 @@
 import type { StoryObj } from "@storybook/tanstack-react";
 import { fn, expect } from "storybook/test";
 
-import { createMockStreamAccount, mockPK, mockBN } from "@/__tests__/story-mocks";
-
 import { CancelDialog } from "./cancel-dialog";
 
 // -- mocks (hoisted by Vitest) --
@@ -55,10 +53,6 @@ vi.mock("@solana/spl-token", () => ({
 vi.mock("@solana-tdp/sdk", () => ({
   getVaultPda: () => [{ toBase58: () => "vault_pda_addr" }, 255],
   PROGRAM_ID: { toBase58: () => "TDP_PROGRAM_ID111111111111111111111111111111" },
-  formatAddress: (pk: { toBase58: () => string }) => {
-    const s = pk.toBase58();
-    return `${s.slice(0, 4)}...${s.slice(-4)}`;
-  },
 }));
 
 vi.mock("@/utils/format", () => ({
@@ -70,15 +64,32 @@ vi.mock("@/utils/format", () => ({
 
 // -- test data --
 
-const MOCK_STREAM = createMockStreamAccount({
-  amount: mockBN(1_000_000_000),
-  amountWithdrawn: mockBN(250_000_000),
-  startTime: mockBN(1700000000),
-  cliffTime: mockBN(1700000000),
-  endTime: mockBN(1800000000),
-});
+const MOCK_STREAM = {
+  id: "7NX7RrJpvnXYsBgvGMjRpfLgHsJhMhYHkLqg2Qz3Vn2",
+  type: "time" as const,
+  creatorAddress: "11111111111111111111111111111111",
+  recipientAddress: "22222222222222222222222222222222",
+  mintAddress: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+  vaultAddress: "33333333333333333333333333333333",
+  amount: "1000000000",
+  amountWithdrawn: "250000000",
+  startTime: 1700000000,
+  endTime: 1800000000,
+  cliffTime: 1700000000,
+  tokenSymbol: "USDC",
+  tokenDecimals: 6,
+  creatorDisplayName: "Alice",
+  status: "active" as const,
+  milestoneReached: false,
+  closedAt: null,
+  closeTx: null,
+  creationTx: "5KtPn3Ex7rAbCdEfGhIjKlMnOpQrStUvWxYz1234567qz7P",
+  createdAt: 1700000000,
+  lastSyncedAt: null,
+  events: [],
+};
 
-const MOCK_PDA = mockPK("PDA_ADDR_1111111111111111111111111111111");
+const MOCK_PDA = { toBase58: () => "PDA_ADDR_1111111111111111111111111111111" };
 
 // -- meta --
 
@@ -110,7 +121,7 @@ export const Default: Story = {
 
     await step("shows stream details", async () => {
       await expect(canvas.getByText("Total Amount")).toBeInTheDocument();
-      await expect(canvas.getByText("1.00")).toBeInTheDocument();
+      await expect(canvas.getByText("1000.00")).toBeInTheDocument();
     });
 
     await step("shows action buttons", async () => {
