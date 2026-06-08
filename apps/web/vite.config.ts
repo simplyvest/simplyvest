@@ -19,6 +19,13 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  build: {
+    rollupOptions: {
+      onLog(level, log) {
+        if (log.code === "INVALID_ANNOTATION") return;
+      },
+    },
+  },
   resolve: {
     tsconfigPaths: true,
     alias: {
