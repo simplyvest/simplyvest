@@ -1,8 +1,9 @@
 import { fetchTokenMetadata, formatTokenLabel } from "@solana-tdp/sdk";
-import { useConnection } from "@/lib/solana/use-connection";
 import type { Connection } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
-import { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+
+import { useConnection } from "@/lib/solana/use-connection";
 
 export interface TokenInfoState {
   label: string | null;
@@ -12,66 +13,38 @@ export interface TokenInfoState {
 
 const MINT_RE = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 
-/** Read the decimals field from an SPL Token mint account. */
 async function getMintDecimals(connection: Connection, mintAddr: PublicKey): Promise<number> {
   const info = await connection.getAccountInfo(mintAddr, { commitment: "confirmed" });
   if (!info || !info.data || info.data.length < 46) throw new Error("Invalid mint");
-  // Mint layout: mintAuthorityOption(4) + mintAuthority(32) + supply(8) + decimals(1)
-  return info.data[44]; // uint8 at fixed offset
+  return info.data[44];
 }
 
-/**
- * Debounced token metadata resolver.
- * Returns label (e.g. "USDC — 6 decimals"), error, or loading state.
- */
 export function useTokenInfo(mintAddress: string): TokenInfoState {
   const { connection } = useConnection();
-  const [state, setState] = useState<TokenInfoState>({
-    label: null,
-    error: null,
-    loading: false,
+  const addr = mintAddress.trim();
+  const isValid = !!addr && MINT_RE.test(addr);
+
+  const query = useQuery({
+    queryKey: ["token-info", addr, connection.rpcEndpoint],
+    queryFn: async () => {
+      const mint = new PublicKey(addr);
+      const [meta, decimals] = await Promise.all([
+        fetchTokenMetadata(connection, mint),
+        getMintDecimals(connection, mint),
+      ]);
+      const name = formatTokenLabel(meta, mint);
+      return `${name} — ${decimals} decimals`;
+    },
+    enabled: isValid,
+    staleTime: 60_000,
   });
-  const cancelledRef = useRef(false);
 
-  useEffect(() => {
-    const addr = mintAddress.trim();
+  if (!addr) return { label: null, error: null, loading: false };
+  if (!MINT_RE.test(addr)) return { label: null, error: "Invalid mint address", loading: false };
 
-    // Empty — reset
-    if (!addr) {
-      setState({ label: null, error: null, loading: false });
-      return () => {};
-    }
-
-    // Invalid format
-    if (!MINT_RE.test(addr)) {
-      setState({ label: null, error: "Invalid mint address", loading: false });
-      return () => {};
-    }
-
-    cancelledRef.current = false;
-    setState((s) => ({ ...s, loading: true, error: null }));
-
-    const timer = setTimeout(async () => {
-      try {
-        const mint = new PublicKey(addr);
-        const [meta, decimals] = await Promise.all([
-          fetchTokenMetadata(connection, mint),
-          getMintDecimals(connection, mint),
-        ]);
-        if (cancelledRef.current) return;
-        const name = formatTokenLabel(meta, mint);
-        setState({ label: `${name} — ${decimals} decimals`, error: null, loading: false });
-      } catch {
-        if (cancelledRef.current) return;
-        setState({ label: null, error: "Token not found", loading: false });
-      }
-    }, 500);
-
-    return () => {
-      cancelledRef.current = true;
-      clearTimeout(timer);
-    };
-  }, [mintAddress, connection]);
-
-  return state;
+  return {
+    label: query.data ?? null,
+    error: query.isError ? "Token not found" : null,
+    loading: query.isLoading,
+  };
 }
