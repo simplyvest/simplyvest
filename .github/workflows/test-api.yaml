@@ -1,13 +1,7 @@
 name: Test API
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-permissions:
-  contents: read
+  workflow_call:
 
 jobs:
   test-api:

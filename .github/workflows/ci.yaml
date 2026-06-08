@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    uses: ./.github/workflows/format.yaml
+  lint:
+    uses: ./.github/workflows/lint.yaml
+  lint-rust:
+    uses: ./.github/workflows/rust-lint.yaml
+  typecheck-sdk:
+    uses: ./.github/workflows/typecheck-sdk.yaml
+  typecheck-api:
+    uses: ./.github/workflows/typecheck-api.yaml
+  typecheck-web:
+    uses: ./.github/workflows/typecheck-web.yaml
+  typecheck-anchor:
+    uses: ./.github/workflows/typecheck-anchor.yaml
+  build-web:
+    uses: ./.github/workflows/build-web.yaml
+  test-api:
+    uses: ./.github/workflows/test-api.yaml
+  test-web:
+    uses: ./.github/workflows/test-web.yaml
+  anchor:
+    uses: ./.github/workflows/anchor.yaml

@@ -1,13 +1,7 @@
 name: Typecheck Web
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-permissions:
-  contents: read
+  workflow_call:
 
 jobs:
   typecheck-web:
