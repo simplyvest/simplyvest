@@ -1,6 +1,8 @@
 import type { StoryObj } from "@storybook/tanstack-react";
 import { fn, expect } from "storybook/test";
 
+import { createMockStreamAccount, mockPK, mockBN } from "@/__tests__/story-mocks";
+
 import { StreamCard } from "./stream-card";
 
 // -- mocks (hoisted by Vitest) --
@@ -44,8 +46,7 @@ vi.mock("@solana/spl-token", () => ({
   getAssociatedTokenAddressSync: () => ({ toBase58: () => "mock_ata" }),
 }));
 
-// oxlint-disable-next-line typescript/no-unsafe-type-assertion
-const CLAIMABLE_BN = { toNumber: () => 550_000_000_000 } as never;
+const CLAIMABLE_BN = mockBN(550_000_000_000);
 
 vi.mock("@solana-tdp/sdk", () => ({
   getStatus: () => "active",
@@ -64,35 +65,11 @@ const WALLET_PK = "11111111111111111111111111111111";
 const CREATOR_PK = WALLET_PK;
 const RECIPIENT_PK = "22222222222222222222222222222222";
 
-const mockPK = (base58: string) => ({ toBase58: () => base58 });
-
-const mockBN = (n: number) => ({
-  toNumber: () => n,
-  valueOf: () => n,
-  sub: (other: { toNumber?: () => number }) => mockBN(n - (other?.toNumber?.() ?? 0)),
-});
-
-const baseStream = {
-  creator: mockPK(CREATOR_PK),
-  recipient: mockPK(RECIPIENT_PK),
-  mint: mockPK("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
-  vault: mockPK("33333333333333333333333333333333"),
-  amount: mockBN(1_000_000_000_000),
-  amountWithdrawn: mockBN(250_000_000_000),
-  startTime: mockBN(1_700_000_000),
-  cliffTime: mockBN(1_700_000_000),
-  endTime: mockBN(1_800_000_000),
-  vestingCount: mockBN(0),
-  cancelled: false,
-  bump: 255,
-  vaultBump: 255,
-};
-
-const streamForReceived = {
-  ...baseStream,
+const baseStream = createMockStreamAccount();
+const streamForReceived = createMockStreamAccount({
   creator: mockPK(RECIPIENT_PK),
   recipient: mockPK(CREATOR_PK),
-};
+});
 
 // -- meta --
 
@@ -123,8 +100,7 @@ export const Created: Story = {
 
 export const Received: Story = {
   args: {
-    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-    stream: streamForReceived as never,
+    stream: streamForReceived,
     role: "received",
     onCancel: fn(),
   },

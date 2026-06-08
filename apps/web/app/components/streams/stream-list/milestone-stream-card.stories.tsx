@@ -1,28 +1,14 @@
 import type { StoryObj } from "@storybook/tanstack-react";
 import { fn, expect } from "storybook/test";
 
-import { createMockPublicKey } from "../../../__tests__/story-mocks";
+import { createMockMilestoneStreamAccount, mockPK, mockBN } from "../../../__tests__/story-mocks";
 import { MilestoneStreamCard } from "./milestone-stream-card";
 
-const mockPk = (base58: string) => createMockPublicKey(base58);
-
 const baseItem = {
-  publicKey: mockPk("StreamPdaKey1111111111111111111111111111"),
-  account: {
-    creator: mockPk("11111111111111111111111111111111"),
-    recipient: mockPk("22222222222222222222222222222222"),
-    mint: mockPk("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
-    vault: mockPk("VaultPda_1111111111111111111111111111111"),
-    milestoneAuthority: mockPk("MilestoneAuth1111111111111111111111111"),
-    amount: { toString: () => "5000000" },
-    amountWithdrawn: { toString: () => "0" },
-    milestones: [],
-    milestoneReached: false,
-    cancelled: false,
-    vestingCount: 1,
-    bump: 255,
-    vaultBump: 255,
-  },
+  publicKey: mockPK("StreamPdaKey1111111111111111111111111111"),
+  account: createMockMilestoneStreamAccount({
+    amount: mockBN(5_000_000),
+  }),
 };
 
 const baseArgs = {
@@ -34,12 +20,10 @@ const baseArgs = {
   withdrawPending: false,
 };
 
-// oxlint-disable-next-line typescript/no-unsafe-type-assertion
 const meta = {
   component: MilestoneStreamCard,
   args: {
-    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-    item: baseItem as never,
+    item: baseItem,
     ...baseArgs,
     role: "created",
     isRecipient: false,
@@ -81,11 +65,13 @@ export const CreatedCancelPending: Story = {
 
 export const MilestoneReachedCreator: Story = {
   args: {
-    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     item: {
       ...baseItem,
-      account: { ...baseItem.account, milestoneReached: true },
-    } as never,
+      account: createMockMilestoneStreamAccount({
+        amount: mockBN(5_000_000),
+        milestoneReached: true,
+      }),
+    },
     canTrigger: true,
   },
   play: async ({ canvas, step }) => {
@@ -103,11 +89,13 @@ export const MilestoneReachedCreator: Story = {
 
 export const MilestoneReachedRecipient: Story = {
   args: {
-    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     item: {
       ...baseItem,
-      account: { ...baseItem.account, milestoneReached: true },
-    } as never,
+      account: createMockMilestoneStreamAccount({
+        amount: mockBN(5_000_000),
+        milestoneReached: true,
+      }),
+    },
     role: "received",
     isRecipient: true,
     canTrigger: false,

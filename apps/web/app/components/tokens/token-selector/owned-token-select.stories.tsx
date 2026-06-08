@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import { fn, userEvent, expect } from "storybook/test";
 
-import type { TokenInfo } from "./use-owned-tokens";
-
+import { createMockTokenInfo } from "../../../__tests__/story-mocks";
 import { OwnedTokenSelect } from "./owned-token-select";
 
 // Mock Solana dependencies to avoid pulling in @solana/web3.js
@@ -22,22 +21,22 @@ vi.mock("./use-owned-tokens", () => ({
   mintToAddress: (mint: { toBase58(): string } | null) => mint?.toBase58() ?? "",
 }));
 
-/** Lightweight stubs — only `toBase58()` is called by formatTokenLabel / mintToAddress. */
+// Different PublicKey types: @solana-tdp/sdk vs @solana/web3.js (same shape)
 // oxlint-disable-next-line typescript/no-unsafe-type-assertion
 const mockTokens = [
-  {
-    mint: { toBase58: () => "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" },
+  createMockTokenInfo({
+    mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
     balance: 100_000_000n,
-    address: { toBase58: () => "11111111111111111111111111111111" },
+    address: "11111111111111111111111111111111",
     meta: { name: "USD Coin", symbol: "USDC" },
-  },
-  {
-    mint: { toBase58: () => "So11111111111111111111111111111111111111112" },
+  }),
+  createMockTokenInfo({
+    mint: "So11111111111111111111111111111111111111112",
     balance: 5_050_000_000n,
-    address: { toBase58: () => "SysvarRent111111111111111111111111111111111" },
+    address: "SysvarRent111111111111111111111111111111111",
     meta: { name: "Wrapped SOL", symbol: "SOL" },
-  },
-] as never as TokenInfo[];
+  }),
+] as unknown as import("./use-owned-tokens").TokenInfo[];
 
 const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
 
