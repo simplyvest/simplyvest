@@ -38,7 +38,6 @@ jobs:
     needs:
       - typecheck-api
       - test-api
-    environment: main
     uses: ./.github/workflows/deploy-api.yaml
     secrets: inherit
 
@@ -48,6 +47,5 @@ jobs:
       - typecheck-web
       - test-web
       - build-web
-    environment: main
     uses: ./.github/workflows/deploy-web.yaml
     secrets: inherit
