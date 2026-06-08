@@ -1,11 +1,7 @@
 name: Deploy API
 
 on:
-  push:
-    branches: [main]
-
-permissions:
-  contents: read
+  workflow_call:
 
 jobs:
   deploy-api:
