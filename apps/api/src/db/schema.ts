@@ -58,11 +58,16 @@ export const streams = sqliteTable(
 
     milestoneAuthority: text("milestone_authority"),
     milestoneReached: integer("milestone_reached", { mode: "boolean" }).default(false),
+    creatorDisplayName: text("creator_display_name"),
+    description: text("description"),
 
     status: text("status", { enum: ["active", "completed", "cancelled", "orphaned"] })
       .notNull()
       .default("active"),
     amountWithdrawn: text("amount_withdrawn").default("0"),
+    tokenName: text("token_name"),
+    tokenSymbol: text("token_symbol"),
+    tokenDecimals: integer("token_decimals"),
 
     creationTx: text("creation_tx").notNull(),
     createdAt: integer("created_at", { mode: "number" }).notNull(),
