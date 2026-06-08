@@ -2,12 +2,13 @@ import { getClaimable, getStatus, getVaultPda, PROGRAM_ID } from "@solana-tdp/sd
 import type { StreamAccount } from "@solana-tdp/sdk";
 import { formatAddress } from "@solana-tdp/sdk";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
-import { useAuth } from "@/lib/solana/use-auth";
 import { PublicKey } from "@solana/web3.js";
+import { Link } from "@tanstack/react-router";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useWithdraw } from "@/hooks/tx/use-withdraw";
+import { useAuth } from "@/lib/solana/use-auth";
 import { formatSol, formatDuration } from "@/utils/format";
 
 import { StreamProgressBar } from "./stream-progress-bar";
@@ -51,7 +52,11 @@ export function StreamCard({
   return (
     <div className="rounded-xl border border-border bg-bg1 px-5 py-4 transition-colors hover:border-border2">
       <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0 flex-1 space-y-2">
+        <Link
+          to="/app/streams/$streamPda"
+          params={{ streamPda: pda.toBase58() }}
+          className="min-w-0 flex-1 space-y-2 no-underline hover:no-underline"
+        >
           <div className="flex items-center gap-2">
             <Badge variant={statusColor}>{status}</Badge>
             <span className="font-mono text-xs text-dim">{formatAddress(pda)}</span>
@@ -95,7 +100,7 @@ export function StreamCard({
             startTime={stream.startTime}
             endTime={stream.endTime}
           />
-        </div>
+        </Link>
 
         <div className="flex shrink-0 flex-col gap-2">
           {role !== "received" &&

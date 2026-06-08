@@ -1,6 +1,7 @@
 import type { MilestoneStreamAccount } from "@solana-tdp/sdk";
 import { formatAddress } from "@solana-tdp/sdk";
 import type { PublicKey } from "@solana/web3.js";
+import { Link } from "@tanstack/react-router";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -37,7 +38,11 @@ export function MilestoneStreamCard({
   return (
     <div className="rounded-xl border border-border bg-bg1 px-5 py-4">
       <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0 flex-1 space-y-1">
+        <Link
+          to="/app/streams/$streamPda"
+          params={{ streamPda: item.publicKey.toBase58() }}
+          className="min-w-0 flex-1 space-y-1 no-underline hover:no-underline"
+        >
           <div className="flex items-center gap-2">
             <Badge variant={item.account.milestoneReached ? "sol2" : "sol"}>
               {item.account.milestoneReached ? "completed" : "active"}
@@ -48,7 +53,7 @@ export function MilestoneStreamCard({
             {formatAddress(item.account.recipient)} — {item.account.amount.toString()} tokens
           </p>
           <p className="text-xs text-dim">Claimed: {formatSol(item.account.amountWithdrawn, 6)}</p>
-        </div>
+        </Link>
         <div className="flex shrink-0 flex-col gap-2">
           {canTrigger && (
             <Button size="sm" onClick={onTrigger} disabled={triggerPending}>
