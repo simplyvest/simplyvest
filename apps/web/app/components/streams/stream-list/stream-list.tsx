@@ -31,13 +31,10 @@ export function StreamList({ role }: { role: "created" | "received" }) {
   const withdrawMilestone = useWithdrawMilestone();
 
   const walletAddress = publicKey?.toBase58();
-  const { data: streams, isLoading } = useApiStreams(
-    {
-      creator: role === "created" ? walletAddress : undefined,
-      recipient: role === "received" ? walletAddress : undefined,
-    },
-    { syncStale: true },
-  );
+  const { data: streams, isLoading } = useApiStreams({
+    creator: role === "created" ? walletAddress : undefined,
+    recipient: role === "received" ? walletAddress : undefined,
+  });
 
   const timeStreams = (streams ?? []).filter((s) => s.type === "time");
   const milestoneStreams = (streams ?? []).filter((s) => s.type === "milestone");
