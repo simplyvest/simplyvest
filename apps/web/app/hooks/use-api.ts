@@ -4,6 +4,8 @@ import { toast } from "sonner";
 
 import { api } from "@/lib/api-client";
 
+type StreamStatus = "active" | "completed" | "cancelled" | "orphaned";
+
 interface StreamRecord {
   id: string;
   type: "time" | "milestone";
@@ -36,7 +38,7 @@ interface StreamEventRecord {
 }
 
 interface StreamWithEvents extends StreamRecord {
-  status: string;
+  status: StreamStatus;
   amountWithdrawn: string;
   milestoneReached: boolean;
   closedAt: number | null;
