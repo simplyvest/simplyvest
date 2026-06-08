@@ -5,7 +5,11 @@ import type { Env } from "../../env";
 
 import { createDb } from "../db";
 import { users } from "../db/schema";
-import { createStreamService } from "../services/stream-service";
+import {
+  createStreamService,
+  type StreamStatus,
+  type StreamType,
+} from "../services/stream-service";
 
 export const streamRoutes = new Hono<{ Bindings: Env }>();
 
@@ -95,12 +99,9 @@ streamRoutes.get("/", async (c) => {
     recipientAddress: c.req.query("recipient") ?? undefined,
     orgId: c.req.query("org") ?? undefined,
     // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-    status:
-      statusParam && validStatuses[statusParam]
-        ? (statusParam as "active" | "completed" | "cancelled" | "orphaned")
-        : undefined,
+    status: statusParam && validStatuses[statusParam] ? (statusParam as StreamStatus) : undefined,
     // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-    type: typeParam && validTypes[typeParam] ? (typeParam as "time" | "milestone") : undefined,
+    type: typeParam && validTypes[typeParam] ? (typeParam as StreamType) : undefined,
   };
 
   const result = await service.listStreams(filters);

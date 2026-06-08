@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useWithdraw } from "@/hooks/tx/use-withdraw";
 import type { StreamWithEvents } from "@/hooks/use-api";
+import type { StreamStatus } from "@/hooks/use-stream-detail";
 import { useAuth } from "@/lib/solana/use-auth";
 import { formatSol, formatDuration } from "@/utils/format";
 
@@ -40,9 +41,8 @@ export function StreamCard({
   const amount = new BN(stream.amount);
   const amountWithdrawn = new BN(stream.amountWithdrawn ?? "0");
 
-  // Compute claimable (simplified - server sync handles accuracy)
   // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-  const status = stream.status as "active" | "completed" | "cancelled";
+  const status = stream.status as StreamStatus;
 
   let claimable = new BN(0);
   if (status === "active" && endTime > 0) {

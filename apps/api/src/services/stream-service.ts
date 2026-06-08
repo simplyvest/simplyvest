@@ -4,9 +4,13 @@ import type { Db } from "../db";
 
 import { streams, streamEvents } from "../db/schema";
 
+export type StreamStatus = "active" | "completed" | "cancelled" | "orphaned";
+export type StreamType = "time" | "milestone";
+export type EventType = "created" | "withdrawn" | "milestone_triggered" | "completed" | "cancelled";
+
 export interface CreateStreamInput {
   id: string;
-  type: "time" | "milestone";
+  type: StreamType;
   creatorAddress: string;
   recipientAddress: string;
   mintAddress: string;
@@ -29,7 +33,7 @@ export interface CreateStreamInput {
 
 export interface CreateEventInput {
   streamId: string;
-  eventType: "created" | "withdrawn" | "milestone_triggered" | "completed" | "cancelled";
+  eventType: EventType;
   actorAddress: string;
   amount?: string;
   txSignature: string;
@@ -40,8 +44,8 @@ export interface StreamFilters {
   creatorAddress?: string;
   recipientAddress?: string;
   orgId?: string;
-  status?: "active" | "completed" | "cancelled" | "orphaned";
-  type?: "time" | "milestone";
+  status?: StreamStatus;
+  type?: StreamType;
 }
 
 export function createStreamService(db: Db) {
@@ -93,11 +97,7 @@ export function createStreamService(db: Db) {
       return result[0];
     },
 
-    async updateStreamStatus(
-      streamId: string,
-      status: "active" | "completed" | "cancelled" | "orphaned",
-      closeTx?: string,
-    ) {
+    async updateStreamStatus(streamId: string, status: StreamStatus, closeTx?: string) {
       await db
         .update(streams)
         .set({
