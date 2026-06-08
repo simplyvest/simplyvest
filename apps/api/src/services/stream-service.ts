@@ -1,6 +1,7 @@
 import { eq, and, desc, type SQL } from "drizzle-orm";
 
 import type { Db } from "../db";
+
 import { streams, streamEvents } from "../db/schema";
 
 export interface CreateStreamInput {
@@ -95,12 +96,16 @@ export function createStreamService(db: Db) {
         .where(eq(streams.id, streamId));
     },
 
+    async updateStreamAmountWithdrawn(streamId: string, amountWithdrawn: string) {
+      await db.update(streams).set({ amountWithdrawn }).where(eq(streams.id, streamId));
+    },
+
+    async updateMilestoneReached(streamId: string) {
+      await db.update(streams).set({ milestoneReached: true }).where(eq(streams.id, streamId));
+    },
+
     async getStreamById(streamId: string) {
-      const result = await db
-        .select()
-        .from(streams)
-        .where(eq(streams.id, streamId))
-        .limit(1);
+      const result = await db.select().from(streams).where(eq(streams.id, streamId)).limit(1);
       return result[0] ?? null;
     },
 
@@ -119,17 +124,25 @@ export function createStreamService(db: Db) {
 
     async listStreams(filters: StreamFilters) {
       const conditions: SQL[] = [];
-      if (filters.creatorAddress) conditions.push(eq(streams.creatorAddress, filters.creatorAddress));
-      if (filters.recipientAddress) conditions.push(eq(streams.recipientAddress, filters.recipientAddress));
+      if (filters.creatorAddress)
+        conditions.push(eq(streams.creatorAddress, filters.creatorAddress));
+      if (filters.recipientAddress)
+        conditions.push(eq(streams.recipientAddress, filters.recipientAddress));
       if (filters.orgId) conditions.push(eq(streams.orgId, filters.orgId));
       // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-      if (filters.status) conditions.push(eq(streams.status, filters.status as "active" | "completed" | "cancelled" | "orphaned"));
+      if (filters.status)
+        conditions.push(
+          eq(streams.status, filters.status as "active" | "completed" | "cancelled" | "orphaned"),
+        );
       // oxlint-disable-next-line typescript/no-unsafe-type-assertion
       if (filters.type) conditions.push(eq(streams.type, filters.type as "time" | "milestone"));
 
       const query =
         conditions.length > 0
-          ? db.select().from(streams).where(and(...conditions))
+          ? db
+              .select()
+              .from(streams)
+              .where(and(...conditions))
           : db.select().from(streams);
 
       return query.orderBy(desc(streams.createdAt));

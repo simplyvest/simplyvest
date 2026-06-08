@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 
 import type { Env } from "../../env";
+
 import { createDb } from "../db";
 import { createStreamService } from "../services/stream-service";
 
@@ -11,7 +12,17 @@ streamRoutes.post("/", async (c) => {
   const db = createDb(c.env.DB);
   const service = createStreamService(db);
 
-  const required = ["id", "type", "creatorAddress", "recipientAddress", "mintAddress", "vaultAddress", "amount", "creationTx", "createdAt"];
+  const required = [
+    "id",
+    "type",
+    "creatorAddress",
+    "recipientAddress",
+    "mintAddress",
+    "vaultAddress",
+    "amount",
+    "creationTx",
+    "createdAt",
+  ];
   for (const field of required) {
     if (!body[field]) {
       return c.json({ error: `Missing required field: ${field}` }, 400);
@@ -98,7 +109,20 @@ streamRoutes.post("/:id/events", async (c) => {
   });
 
   if (body.eventType === "completed" || body.eventType === "cancelled") {
-    await service.updateStreamStatus(streamId, body.eventType, body.txSignature);
+    await service.updateStreamStatus(
+      streamId,
+      body.eventType === "completed" ? "completed" : "cancelled",
+      body.txSignature,
+    );
+  } else if (body.eventType === "withdrawn" && body.amount) {
+    const current = await service.getStreamById(streamId);
+    if (current) {
+      const prev = BigInt(current.amountWithdrawn ?? "0");
+      const withdrawn = BigInt(body.amount);
+      await service.updateStreamAmountWithdrawn(streamId, (prev + withdrawn).toString());
+    }
+  } else if (body.eventType === "milestone_triggered") {
+    await service.updateMilestoneReached(streamId);
   }
 
   return c.json(event, 201);
