@@ -19,11 +19,16 @@ vi.mock("@/lib/solana/use-auth", () => {
   };
 });
 
-const cancelState = {
+const cancelState: {
+  mutate: ReturnType<typeof fn>;
+  isPending: boolean;
+  isError: boolean;
+  error: Error | null;
+} = {
   mutate: fn(),
   isPending: false,
   isError: false,
-  error: null as Error | null,
+  error: null,
 };
 
 vi.mock("@/hooks/tx/use-cancel", () => ({
