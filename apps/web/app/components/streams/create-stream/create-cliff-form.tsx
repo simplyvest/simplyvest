@@ -2,12 +2,12 @@ import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
 import { useState, useMemo } from "react";
 
-import { useAuth } from "@/lib/solana/use-auth";
 import { TokenSelector } from "@/components/tokens/token-selector/token-selector";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useCreateStream } from "@/hooks/tx/use-create-stream";
+import { useAuth } from "@/lib/solana/use-auth";
 
 import { StreamCreationSuccess } from "./stream-creation-success";
 import { TimeFields } from "./time-fields";
@@ -34,8 +34,7 @@ export function CreateCliffForm() {
     const end = toUnixSec(form.endTime);
     const cliff = toUnixSec(form.cliffTime);
     if (start && end && end <= start) e.push("End time must be after start time");
-    if (start && start <= Math.floor(Date.now() / 1000))
-      e.push("Start time must be in the future");
+    if (start && start <= Math.floor(Date.now() / 1000)) e.push("Start time must be in the future");
     if (end && start && end - start < 60) e.push("Duration must be at least 60 seconds");
     if (cliff && start && cliff < start) e.push("Cliff must be after or equal to start");
     if (cliff && end && cliff >= end) e.push("Cliff must be before end time");
@@ -75,7 +74,13 @@ export function CreateCliffForm() {
     setForm((f) => ({ ...f, [field]: val }));
 
   if (createStream.isSuccess) {
-    return <StreamCreationSuccess txSignature={createStream.data.tx} onReset={resetForm} />;
+    return (
+      <StreamCreationSuccess
+        txSignature={createStream.data.tx}
+        streamPda={createStream.data.streamPda.toBase58()}
+        onReset={resetForm}
+      />
+    );
   }
 
   return (

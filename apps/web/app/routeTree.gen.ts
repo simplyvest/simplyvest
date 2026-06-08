@@ -93,6 +93,11 @@ const AppActivityRoute = AppActivityRouteImport.update({
   path: "/activity",
   getParentRoute: () => AppRoute,
 } as any);
+const AppStreamsStreamPdaRoute = AppStreamsStreamPdaRouteImport.update({
+  id: "/streams/$streamPda",
+  path: "/streams/$streamPda",
+  getParentRoute: () => AppRoute,
+} as any);
 const AppOrganizationsOrgIdRoute = AppOrganizationsOrgIdRouteImport.update({
   id: "/$orgId",
   path: "/$orgId",
@@ -112,11 +117,6 @@ const AppCreateCliffRoute = AppCreateCliffRouteImport.update({
   id: "/cliff",
   path: "/cliff",
   getParentRoute: () => AppCreateRoute,
-} as any);
-const AppStreamsStreamPdaRoute = AppStreamsStreamPdaRouteImport.update({
-  id: "/streams/$streamPda",
-  path: "/streams/$streamPda",
-  getParentRoute: () => AppRoute,
 } as any);
 
 export interface FileRoutesByFullPath {
@@ -344,6 +344,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof AppActivityRouteImport;
       parentRoute: typeof AppRoute;
     };
+    "/app/streams/$streamPda": {
+      id: "/app/streams/$streamPda";
+      path: "/streams/$streamPda";
+      fullPath: "/app/streams/$streamPda";
+      preLoaderRoute: typeof AppStreamsStreamPdaRouteImport;
+      parentRoute: typeof AppRoute;
+    };
     "/app/organizations/$orgId": {
       id: "/app/organizations/$orgId";
       path: "/$orgId";
@@ -371,13 +378,6 @@ declare module "@tanstack/react-router" {
       fullPath: "/app/create/cliff";
       preLoaderRoute: typeof AppCreateCliffRouteImport;
       parentRoute: typeof AppCreateRoute;
-    };
-    "/app/streams/$streamPda": {
-      id: "/app/streams/$streamPda";
-      path: "/streams/$streamPda";
-      fullPath: "/app/streams/$streamPda";
-      preLoaderRoute: typeof AppStreamsStreamPdaRouteImport;
-      parentRoute: typeof AppRoute;
     };
   }
 }

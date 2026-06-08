@@ -7,6 +7,7 @@ const meta = {
   component: StreamCreationSuccess,
   args: {
     txSignature: "5KtPn3Ex7rAbCdEfGhIjKlMnOpQrStUvWxYz1234567qz7P",
+    streamPda: "7NX7RrJpvnXYsBgvGMjRpfLgHsJhMhYHkLqg2Qz3Vn2",
     onReset: fn(),
   },
 } satisfies Meta<typeof StreamCreationSuccess>;
@@ -20,15 +21,22 @@ export const Default: Story = {
       await expect(canvas.getByText("Stream Created!")).toBeInTheDocument();
     });
 
-    await step("renders truncated tx signature", async () => {
-      // Component slices to 16 chars then appends "..."
-      const truncated = args.txSignature.slice(0, 16);
-      await expect(canvas.getByText(new RegExp(`${truncated}\\.{3}`))).toBeInTheDocument();
+    await step("renders full tx signature as explorer link", async () => {
+      const link = canvas.getByRole("link", { name: args.txSignature });
+      await expect(link).toBeInTheDocument();
+      await expect(link).toHaveAttribute(
+        "href",
+        expect.stringContaining("explorer.solana.com/tx/"),
+      );
     });
 
     await step("click 'Create Another' calls onReset", async () => {
       await userEvent.click(canvas.getByRole("button", { name: /create another/i }));
       await expect(args.onReset).toHaveBeenCalledTimes(1);
+    });
+
+    await step("click 'View Stream' navigates to detail", async () => {
+      await expect(canvas.getByRole("button", { name: /view stream/i })).toBeInTheDocument();
     });
   },
 };

@@ -2,12 +2,12 @@ import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
 import { useState, useMemo } from "react";
 
-import { useAuth } from "@/lib/solana/use-auth";
 import { TokenSelector } from "@/components/tokens/token-selector/token-selector";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useCreateMilestoneStream } from "@/hooks/tx/use-create-milestone-stream";
+import { useAuth } from "@/lib/solana/use-auth";
 
 import { StreamCreationSuccess } from "./stream-creation-success";
 import { isValidPubkey } from "./utils";
@@ -59,6 +59,7 @@ export function CreateMilestoneForm() {
     return (
       <StreamCreationSuccess
         txSignature={createMilestoneStream.data.tx}
+        streamPda={createMilestoneStream.data.streamPda.toBase58()}
         onReset={resetForm}
       />
     );
@@ -88,7 +89,8 @@ export function CreateMilestoneForm() {
       </Field>
 
       <p className="text-xs text-muted">
-        Milestones are configured after creation. You (the creator) are set as the milestone authority.
+        Milestones are configured after creation. You (the creator) are set as the milestone
+        authority.
       </p>
 
       {errors.length > 0 && (
@@ -110,12 +112,7 @@ export function CreateMilestoneForm() {
       )}
 
       <div className="flex gap-3">
-        <Button
-          variant="default"
-          onClick={handleSubmit}
-          disabled={!canSubmit}
-          className="flex-1"
-        >
+        <Button variant="default" onClick={handleSubmit} disabled={!canSubmit} className="flex-1">
           {createMilestoneStream.isPending ? "Confirming..." : "Create Milestone Stream"}
         </Button>
         <Button variant="ghost" onClick={resetForm}>

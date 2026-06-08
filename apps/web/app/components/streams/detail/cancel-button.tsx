@@ -11,6 +11,9 @@ export function CancelButton({ detail }: { detail: StreamDetail }) {
   if (detail.status !== "active") return null;
   if (detail.streamType === "milestone") return null;
 
+  // On-chain rejects cancel if now >= end_time
+  if (detail.endTime && Math.floor(Date.now() / 1000) >= detail.endTime) return null;
+
   // After guard: detail is TimeStreamDetail, so onChainAccount is StreamAccount
   const account = detail.onChainAccount;
   const pda = new PublicKey(detail.pda);
