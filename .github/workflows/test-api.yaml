@@ -1,4 +1,4 @@
-name: Typecheck API
+name: Test API
 
 on:
   push:
@@ -10,10 +10,10 @@ permissions:
   contents: read
 
 jobs:
-  typecheck-api:
+  test-api:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/pnpm-setup
-      - name: TypeScript check (api)
-        run: pnpm --filter @solana-tdp/api typecheck
+      - name: Run API tests
+        run: pnpm --filter @solana-tdp/api test

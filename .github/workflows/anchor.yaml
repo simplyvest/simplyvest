@@ -27,17 +27,6 @@ jobs:
       SCCACHE_GHA_ENABLED: "true"
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 11.2.2
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        run: |
-          pnpm config set store-dir ~/.pnpm-store
-          echo "store-path=~/.pnpm-store" >> $GITHUB_OUTPUT
 
       - name: Cache Solana + Anchor
         id: cache-solana
@@ -77,15 +66,7 @@ jobs:
       - name: Generate keypair
         run: solana-keygen new --no-bip39-passphrase --silent -f
 
-      - name: Cache pnpm store
-        uses: actions/cache@v5
-        with:
-          path: ${{ steps.pnpm-cache.outputs.store-path }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-      - run: pnpm install --frozen-lockfile --prefer-offline
-        working-directory: .
+      - uses: ./.github/actions/pnpm-setup
 
       - name: Build program (BPF)
         run: anchor build

@@ -13,6 +13,7 @@
   },
   "scripts": {
     "build": "tsgo",
+    "typecheck": "tsgo --noEmit",
     "sync:idl": "cp ../../apps/solana-tdp-anchor/target/idl/solana_tdp.json src/idl/solana_tdp.json",
     "sync:types": "cp ../../apps/solana-tdp-anchor/target/types/solana_tdp.ts src/types/solana_tdp.ts",
     "sync": "pnpm sync:idl && pnpm sync:types"

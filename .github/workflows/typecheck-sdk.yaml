@@ -1,4 +1,4 @@
-name: Typecheck API
+name: Typecheck SDK
 
 on:
   push:
@@ -10,10 +10,10 @@ permissions:
   contents: read
 
 jobs:
-  typecheck-api:
+  typecheck-sdk:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/pnpm-setup
-      - name: TypeScript check (api)
-        run: pnpm --filter @solana-tdp/api typecheck
+      - name: TypeScript check (sdk)
+        run: pnpm --filter @solana-tdp/sdk typecheck

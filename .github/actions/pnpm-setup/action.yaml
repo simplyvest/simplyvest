@@ -1,0 +1,36 @@
+name: pnpm setup
+description: Install pnpm, Node.js, and dependencies with caching
+
+inputs:
+  node-version:
+    description: Node.js version
+    default: "24"
+  pnpm-version:
+    description: pnpm version
+    default: "11.2.2"
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v6
+      with:
+        version: ${{ inputs.pnpm-version }}
+    - uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.node-version }}
+    - name: Get pnpm store directory
+      id: pnpm-cache
+      shell: bash
+      run: |
+        pnpm config set store-dir ~/.pnpm-store
+        echo "store-path=~/.pnpm-store" >> $GITHUB_OUTPUT
+    - name: Cache pnpm store
+      uses: actions/cache@v5
+      with:
+        path: ${{ steps.pnpm-cache.outputs.store-path }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile --prefer-offline

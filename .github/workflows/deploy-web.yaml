@@ -9,7 +9,8 @@ permissions:
 
 jobs:
   deploy-web:
-    needs: []  # Add job dependencies as needed
+    # Does not use `needs` — protection is via branch protection rules
+    # on main. By the time code reaches main, all PR checks have passed.
     runs-on: ubuntu-24.04
     environment: main
     env:
@@ -19,27 +20,10 @@ jobs:
       VITE_PRIVY_CLIENT_ID: ${{ vars.VITE_PRIVY_CLIENT_ID }}
       VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 11.2.2
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        run: |
-          pnpm config set store-dir ~/.pnpm-store
-          echo "store-path=~/.pnpm-store" >> $GITHUB_OUTPUT
-      - name: Cache pnpm store
-        uses: actions/cache@v5
-        with:
-          path: ${{ steps.pnpm-cache.outputs.store-path }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-      - run: pnpm install --frozen-lockfile --prefer-offline
+      - uses: ./.github/actions/pnpm-setup
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
       - name: Build web app
