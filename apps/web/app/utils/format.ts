@@ -1,9 +1,11 @@
 import BN from "bn.js";
 export const formatSol = (lamports: BN | number | bigint, decimals = 9): string => {
   const n = typeof lamports === "number" ? lamports : Number(lamports);
+  const precision = Math.max(0, Math.min(20, Math.round(decimals)));
+  const minFrac = Math.min(2, precision);
   return (n / 10 ** decimals).toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: decimals,
+    minimumFractionDigits: minFrac,
+    maximumFractionDigits: precision,
   });
 };
 
