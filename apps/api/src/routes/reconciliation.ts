@@ -1,8 +1,9 @@
 import { Hono } from "hono";
 
 import type { Env } from "../../env";
-import { authMiddleware } from "../middleware/auth";
+
 import { createDb } from "../db";
+import { authMiddleware } from "../middleware/auth";
 import { createReconcilerService } from "../services/reconciler";
 
 export const reconcileRoutes = new Hono<{ Bindings: Env }>();

@@ -39,9 +39,7 @@ export function Navbar() {
           <HamburgerButton open={mobileOpen} onClick={() => setMobileOpen((o) => !o)} />
         </div>
 
-        {mobileOpen && (
-          <MobileMenu links={links} onClose={() => setMobileOpen(false)} />
-        )}
+        {mobileOpen && <MobileMenu links={links} onClose={() => setMobileOpen(false)} />}
       </div>
     </nav>
   );

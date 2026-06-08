@@ -1,6 +1,8 @@
 import { Hono } from "hono";
 
 import type { Env } from "../env";
+
+import { createDb } from "./db";
 import { cors } from "./middleware/cors";
 import { rateLimit } from "./middleware/rate-limit";
 import { orgRoutes } from "./routes/organizations";
@@ -8,7 +10,6 @@ import { reconcileRoutes } from "./routes/reconciliation";
 import { streamRoutes } from "./routes/streams";
 import { userRoutes } from "./routes/users";
 import { waitlistRoutes } from "./routes/waitlist";
-import { createDb } from "./db";
 import { createReconcilerService } from "./services/reconciler";
 
 const app = new Hono<{ Bindings: Env }>();

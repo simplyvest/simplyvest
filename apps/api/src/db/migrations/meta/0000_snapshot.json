@@ -42,12 +42,8 @@
           "name": "org_members_org_id_organizations_id_fk",
           "tableFrom": "org_members",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "org_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["org_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -55,12 +51,8 @@
           "name": "org_members_user_id_users_id_fk",
           "tableFrom": "org_members",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -111,9 +103,7 @@
       "indexes": {
         "organizations_slug_unique": {
           "name": "organizations_slug_unique",
-          "columns": [
-            "slug"
-          ],
+          "columns": ["slug"],
           "isUnique": true
         }
       },
@@ -122,12 +112,8 @@
           "name": "organizations_created_by_users_id_fk",
           "tableFrom": "organizations",
           "tableTo": "users",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -199,25 +185,17 @@
       "indexes": {
         "idx_events_stream": {
           "name": "idx_events_stream",
-          "columns": [
-            "stream_id"
-          ],
+          "columns": ["stream_id"],
           "isUnique": false
         },
         "idx_events_type": {
           "name": "idx_events_type",
-          "columns": [
-            "event_type"
-          ],
+          "columns": ["event_type"],
           "isUnique": false
         },
         "idx_events_dedup": {
           "name": "idx_events_dedup",
-          "columns": [
-            "stream_id",
-            "event_type",
-            "tx_signature"
-          ],
+          "columns": ["stream_id", "event_type", "tx_signature"],
           "isUnique": true
         }
       },
@@ -226,12 +204,8 @@
           "name": "stream_events_stream_id_streams_id_fk",
           "tableFrom": "stream_events",
           "tableTo": "streams",
-          "columnsFrom": [
-            "stream_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["stream_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -398,30 +372,22 @@
       "indexes": {
         "idx_streams_creator": {
           "name": "idx_streams_creator",
-          "columns": [
-            "creator_address"
-          ],
+          "columns": ["creator_address"],
           "isUnique": false
         },
         "idx_streams_recipient": {
           "name": "idx_streams_recipient",
-          "columns": [
-            "recipient_address"
-          ],
+          "columns": ["recipient_address"],
           "isUnique": false
         },
         "idx_streams_org": {
           "name": "idx_streams_org",
-          "columns": [
-            "org_id"
-          ],
+          "columns": ["org_id"],
           "isUnique": false
         },
         "idx_streams_status": {
           "name": "idx_streams_status",
-          "columns": [
-            "status"
-          ],
+          "columns": ["status"],
           "isUnique": false
         }
       },
@@ -486,9 +452,7 @@
       "indexes": {
         "users_wallet_address_unique": {
           "name": "users_wallet_address_unique",
-          "columns": [
-            "wallet_address"
-          ],
+          "columns": ["wallet_address"],
           "isUnique": true
         }
       },

@@ -150,20 +150,20 @@ pnpm db:reset         # Drop all tables (local only)
 
 ### API endpoints
 
-| Method | Path | Auth | Purpose |
-|--------|------|------|---------|
-| `POST` | `/api/streams` | — | Record new stream |
-| `GET` | `/api/streams` | — | List streams |
-| `GET` | `/api/streams/:id` | — | Get stream + events |
-| `POST` | `/api/streams/:id/events` | — | Record stream event |
-| `POST` | `/api/users/me` | JWT | Create/update profile |
-| `GET` | `/api/users/me` | JWT | Get own profile |
-| `GET` | `/api/users/:id` | — | Get public profile |
-| `POST` | `/api/orgs` | JWT | Create organization |
-| `GET` | `/api/orgs/:id` | — | Get org + members |
-| `POST` | `/api/orgs/:id/members` | JWT | Add member |
-| `POST` | `/api/reconcile` | JWT | Trigger reconciliation |
-| `POST` | `/api/waitlist` | — | Legacy waitlist |
+| Method | Path                      | Auth | Purpose                |
+| ------ | ------------------------- | ---- | ---------------------- |
+| `POST` | `/api/streams`            | —    | Record new stream      |
+| `GET`  | `/api/streams`            | —    | List streams           |
+| `GET`  | `/api/streams/:id`        | —    | Get stream + events    |
+| `POST` | `/api/streams/:id/events` | —    | Record stream event    |
+| `POST` | `/api/users/me`           | JWT  | Create/update profile  |
+| `GET`  | `/api/users/me`           | JWT  | Get own profile        |
+| `GET`  | `/api/users/:id`          | —    | Get public profile     |
+| `POST` | `/api/orgs`               | JWT  | Create organization    |
+| `GET`  | `/api/orgs/:id`           | —    | Get org + members      |
+| `POST` | `/api/orgs/:id/members`   | JWT  | Add member             |
+| `POST` | `/api/reconcile`          | JWT  | Trigger reconciliation |
+| `POST` | `/api/waitlist`           | —    | Legacy waitlist        |
 
 ---
 
@@ -210,40 +210,40 @@ SPA routing works out of the box — Cloudflare Pages auto-detects a client-side
 
 Each job has its own workflow file in `.github/workflows/`:
 
-| Workflow file | Job | Triggers | What it does |
-|---------------|-----|----------|--------------|
-| `lint.yaml` | lint | PRs + main | JS/TS lint with oxlint |
-| `format.yaml` | format | PRs + main | Format check with oxfmt |
-| `typecheck-web.yaml` | typecheck-web | PRs + main | TypeScript check (web) |
-| `typecheck-api.yaml` | typecheck-api | PRs + main | TypeScript check (API) |
-| `typecheck-anchor.yaml` | typecheck-anchor-ts | PRs + main | TypeScript check (anchor) |
-| `test-web.yaml` | test-web | PRs + main | Unit + Storybook browser tests |
-| `build-web.yaml` | build-web | PRs + main | Production build of React frontend |
-| `rust-lint.yaml` | lint-rust | PRs + main | cargo fmt + clippy |
-| `anchor.yaml` | anchor | PRs + main | Build Anchor program + LiteSVM tests |
-| `deploy-web.yaml` | deploy-web | main only | Deploy to Cloudflare Pages |
-| `deploy-api.yaml` | deploy-api | main only | Deploy API Worker + D1 migrations |
+| Workflow file           | Job                 | Triggers   | What it does                         |
+| ----------------------- | ------------------- | ---------- | ------------------------------------ |
+| `lint.yaml`             | lint                | PRs + main | JS/TS lint with oxlint               |
+| `format.yaml`           | format              | PRs + main | Format check with oxfmt              |
+| `typecheck-web.yaml`    | typecheck-web       | PRs + main | TypeScript check (web)               |
+| `typecheck-api.yaml`    | typecheck-api       | PRs + main | TypeScript check (API)               |
+| `typecheck-anchor.yaml` | typecheck-anchor-ts | PRs + main | TypeScript check (anchor)            |
+| `test-web.yaml`         | test-web            | PRs + main | Unit + Storybook browser tests       |
+| `build-web.yaml`        | build-web           | PRs + main | Production build of React frontend   |
+| `rust-lint.yaml`        | lint-rust           | PRs + main | cargo fmt + clippy                   |
+| `anchor.yaml`           | anchor              | PRs + main | Build Anchor program + LiteSVM tests |
+| `deploy-web.yaml`       | deploy-web          | main only  | Deploy to Cloudflare Pages           |
+| `deploy-api.yaml`       | deploy-api          | main only  | Deploy API Worker + D1 migrations    |
 
 ### GitHub Actions Variables
 
 Set in **Settings → Secrets and variables → Actions → Variables** (repo level):
 
-| Variable | Value | Used by |
-|----------|-------|---------|
-| `VITE_API_URL` | API worker URL (e.g., `https://simplyvest-api.workers.dev`) | deploy-web, build-web |
-| `VITE_PRIVY_APP_ID` | Privy App ID | deploy-web, build-web |
-| `VITE_PRIVY_CLIENT_ID` | Privy Client ID | deploy-web, build-web |
-| `VITE_GA_MEASUREMENT_ID` | Google Analytics ID | deploy-web, build-web |
-| `VITE_SENTRY_DSN` | Sentry DSN (optional) | deploy-web |
+| Variable                 | Value                                                       | Used by               |
+| ------------------------ | ----------------------------------------------------------- | --------------------- |
+| `VITE_API_URL`           | API worker URL (e.g., `https://simplyvest-api.workers.dev`) | deploy-web, build-web |
+| `VITE_PRIVY_APP_ID`      | Privy App ID                                                | deploy-web, build-web |
+| `VITE_PRIVY_CLIENT_ID`   | Privy Client ID                                             | deploy-web, build-web |
+| `VITE_GA_MEASUREMENT_ID` | Google Analytics ID                                         | deploy-web, build-web |
+| `VITE_SENTRY_DSN`        | Sentry DSN (optional)                                       | deploy-web            |
 
 ### GitHub Actions Secrets
 
 Set in **Settings → Secrets and variables → Actions → Secrets** (environment `main`):
 
-| Secret | Value | Used by |
-|--------|-------|---------|
-| `CLOUDFLARE_API_TOKEN` | Cloudflare API token (Pages + Workers Edit) | deploy-web, deploy-api |
-| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare Account ID | deploy-web, deploy-api |
+| Secret                  | Value                                       | Used by                |
+| ----------------------- | ------------------------------------------- | ---------------------- |
+| `CLOUDFLARE_API_TOKEN`  | Cloudflare API token (Pages + Workers Edit) | deploy-web, deploy-api |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare Account ID                       | deploy-web, deploy-api |
 
 **Why environment-scoped?** The deploy jobs declare `environment: main`, so they can access these secrets. PR workflows don't have access — this prevents a malicious PR from leaking credentials.
 

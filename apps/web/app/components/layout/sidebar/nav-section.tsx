@@ -8,9 +8,5 @@ interface NavSectionProps {
 }
 
 export function NavSection({ children, collapsed }: NavSectionProps) {
-  return (
-    <div className={cn("flex flex-col gap-1", collapsed && "items-center")}>
-      {children}
-    </div>
-  );
+  return <div className={cn("flex flex-col gap-1", collapsed && "items-center")}>{children}</div>;
 }

@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 
 import type { Db } from "../db";
+
 import { users } from "../db/schema";
 
 export interface CreateUserInput {

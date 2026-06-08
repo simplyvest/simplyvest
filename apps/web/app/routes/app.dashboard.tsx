@@ -1,8 +1,8 @@
-import { useAuth } from "@/lib/solana/use-auth";
 import { createRoute } from "@tanstack/react-router";
 import { Link, useSearch } from "@tanstack/react-router";
 
 import { StreamList } from "@/components/streams/stream-list/stream-list";
+import { useAuth } from "@/lib/solana/use-auth";
 import { cn } from "@/utils/cn";
 
 import { Route as AppRoute } from "./app";

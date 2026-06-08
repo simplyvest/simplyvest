@@ -1,5 +1,5 @@
-import { useContext } from "react";
 import type { Connection } from "@solana/web3.js";
+import { useContext } from "react";
 
 import { ConnectionContext } from "./connection-context";
 

@@ -2,8 +2,8 @@ import { useLogin, useLogout } from "@privy-io/react-auth";
 import * as React from "react";
 import { createPortal } from "react-dom";
 
-import { useAuth } from "@/lib/solana/use-auth";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/solana/use-auth";
 
 function LogoutDialog({
   identity,
@@ -126,7 +126,11 @@ export function AuthButton() {
   }
 
   return (
-    <Button variant="brand" size="sm" onClick={() => login({ loginMethods: ["email", "google", "wallet"] })}>
+    <Button
+      variant="brand"
+      size="sm"
+      onClick={() => login({ loginMethods: ["email", "google", "wallet"] })}
+    >
       Log In
     </Button>
   );

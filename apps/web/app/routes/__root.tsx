@@ -6,9 +6,9 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import * as React from "react";
 import { Toaster } from "sonner";
 
-import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { SolanaProvider } from "@/lib/solana/solana-provider";
 import { ThemeProvider } from "@/lib/theme";
 import { trackPageView } from "@/utils/analytics";

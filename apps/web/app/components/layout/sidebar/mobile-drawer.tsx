@@ -2,10 +2,10 @@ import { LuX } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
 
+import { sidebarLinks } from "./links";
 import { NavItem } from "./nav-item";
 import { NavSection } from "./nav-section";
 import { SidebarBottom } from "./sidebar-bottom";
-import { sidebarLinks } from "./links";
 
 interface MobileDrawerProps {
   open: boolean;
@@ -17,10 +17,7 @@ export function MobileDrawer({ open, onClose }: MobileDrawerProps) {
 
   return (
     <>
-      <div
-        className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm" onClick={onClose} />
       <div className="fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-bg1 border-r border-border p-4">
         <div className="flex items-center justify-between mb-4">
           <span className="text-sm font-semibold text-text">Navigation</span>

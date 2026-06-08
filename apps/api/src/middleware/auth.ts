@@ -126,12 +126,7 @@ async function verifyJwt(
       signedData,
     );
   } else {
-    valid = await crypto.subtle.verify(
-      "RSASSA-PKCS1-v1_5",
-      cryptoKey,
-      signature,
-      signedData,
-    );
+    valid = await crypto.subtle.verify("RSASSA-PKCS1-v1_5", cryptoKey, signature, signedData);
   }
   if (!valid) {
     throw new Error("Invalid JWT signature");

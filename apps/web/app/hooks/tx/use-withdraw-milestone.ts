@@ -1,9 +1,10 @@
 import type { PublicKey } from "@solana/web3.js";
-import { useConnection } from "@/lib/solana/use-connection";
-import { useAuth } from "@/lib/solana/use-auth";
-import { useSolanaTransaction } from "@/lib/solana/use-solana-transaction";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+
+import { useAuth } from "@/lib/solana/use-auth";
+import { useConnection } from "@/lib/solana/use-connection";
+import { useSolanaTransaction } from "@/lib/solana/use-solana-transaction";
 
 import { useRecordStreamEvent } from "../use-api";
 import { buildReadProgram, getWithdrawMilestoneAccounts } from "./shared";
@@ -29,7 +30,14 @@ export function useWithdrawMilestone() {
       const instruction = await program.methods
         .withdrawMilestone()
         .accountsPartial(
-          getWithdrawMilestoneAccounts(publicKey, input.stream, input.vault, input.recipientToken, input.sender, input.mint),
+          getWithdrawMilestoneAccounts(
+            publicKey,
+            input.stream,
+            input.vault,
+            input.recipientToken,
+            input.sender,
+            input.mint,
+          ),
         )
         .instruction();
 
@@ -37,7 +45,9 @@ export function useWithdrawMilestone() {
       return { tx: signature, stream: input.stream };
     },
     onSuccess: async (result) => {
-      await queryClient.invalidateQueries({ queryKey: ["milestoneStream", result.stream.toBase58()] });
+      await queryClient.invalidateQueries({
+        queryKey: ["milestoneStream", result.stream.toBase58()],
+      });
       await queryClient.invalidateQueries({ queryKey: ["milestoneStreams"] });
       if (publicKey) {
         recordEvent.mutate({

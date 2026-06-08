@@ -8,13 +8,7 @@ interface NavLinkItem {
   label: string;
 }
 
-export function MobileMenu({
-  links,
-  onClose,
-}: {
-  links: NavLinkItem[];
-  onClose: () => void;
-}) {
+export function MobileMenu({ links, onClose }: { links: NavLinkItem[]; onClose: () => void }) {
   return (
     <div className="md:hidden mt-4 flex flex-col gap-3 border-t border-gray-200 dark:border-slate-700 pt-4 pb-2">
       <NavLinks links={links} onClick={onClose} />

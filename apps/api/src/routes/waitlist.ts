@@ -1,13 +1,20 @@
 import { Hono } from "hono";
 
 import type { Env } from "../../env";
+
 import { getAccessToken, appendToSheet } from "../google-auth";
 import { isRecord } from "../utils";
 
 export const waitlistRoutes = new Hono<{ Bindings: Env }>();
 
 waitlistRoutes.post("/", async (c) => {
-  let body: { name: string; email: string; telegram: string; following: string; interview: boolean };
+  let body: {
+    name: string;
+    email: string;
+    telegram: string;
+    following: string;
+    interview: boolean;
+  };
   try {
     const raw = await c.req.json();
     if (!isRecord(raw)) {

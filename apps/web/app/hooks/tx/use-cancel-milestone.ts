@@ -1,9 +1,10 @@
 import type { PublicKey } from "@solana/web3.js";
-import { useConnection } from "@/lib/solana/use-connection";
-import { useAuth } from "@/lib/solana/use-auth";
-import { useSolanaTransaction } from "@/lib/solana/use-solana-transaction";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+
+import { useAuth } from "@/lib/solana/use-auth";
+import { useConnection } from "@/lib/solana/use-connection";
+import { useSolanaTransaction } from "@/lib/solana/use-solana-transaction";
 
 import { useRecordStreamEvent } from "../use-api";
 import { buildReadProgram, getCancelMilestoneAccounts } from "./shared";
@@ -28,7 +29,13 @@ export function useCancelMilestone() {
       const instruction = await program.methods
         .cancelMilestone()
         .accountsPartial(
-          getCancelMilestoneAccounts(publicKey, input.stream, input.vault, input.senderToken, input.mint),
+          getCancelMilestoneAccounts(
+            publicKey,
+            input.stream,
+            input.vault,
+            input.senderToken,
+            input.mint,
+          ),
         )
         .instruction();
 
@@ -36,7 +43,9 @@ export function useCancelMilestone() {
       return { tx: signature, stream: input.stream };
     },
     onSuccess: async (result) => {
-      await queryClient.invalidateQueries({ queryKey: ["milestoneStream", result.stream.toBase58()] });
+      await queryClient.invalidateQueries({
+        queryKey: ["milestoneStream", result.stream.toBase58()],
+      });
       await queryClient.invalidateQueries({ queryKey: ["milestoneStreams"] });
       if (publicKey) {
         recordEvent.mutate({

@@ -8,8 +8,8 @@ import {
   LuPanelLeftOpen,
 } from "react-icons/lu";
 
-import { cn } from "@/utils/cn";
 import { useTheme } from "@/lib/theme";
+import { cn } from "@/utils/cn";
 
 interface SidebarBottomProps {
   collapsed?: boolean;
@@ -81,7 +81,9 @@ export function SidebarBottom({ collapsed, onToggleCollapse }: SidebarBottomProp
         ) : (
           <LuMoon className="h-4 w-4 shrink-0" />
         )}
-        {!collapsed && <span className="truncate">{resolved === "dark" ? "Light mode" : "Dark mode"}</span>}
+        {!collapsed && (
+          <span className="truncate">{resolved === "dark" ? "Light mode" : "Dark mode"}</span>
+        )}
       </button>
 
       <button

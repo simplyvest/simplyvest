@@ -14,10 +14,7 @@ export function ChainBadge() {
       )}
     >
       <span
-        className={cn(
-          "h-1.5 w-1.5 rounded-full",
-          isDevnet ? "bg-amber-500" : "bg-emerald-500",
-        )}
+        className={cn("h-1.5 w-1.5 rounded-full", isDevnet ? "bg-amber-500" : "bg-emerald-500")}
       />
       {isDevnet ? "Devnet" : "Mainnet"}
     </span>

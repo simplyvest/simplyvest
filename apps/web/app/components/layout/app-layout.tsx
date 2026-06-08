@@ -2,12 +2,12 @@ import { useLogin } from "@privy-io/react-auth";
 import { Outlet } from "@tanstack/react-router";
 import * as React from "react";
 
-import { useAuth } from "@/lib/solana/use-auth";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/solana/use-auth";
 
-import { TopBar } from "./top-bar";
 import { Sidebar } from "./sidebar";
 import { MobileDrawer } from "./sidebar/mobile-drawer";
+import { TopBar } from "./top-bar";
 
 const STORAGE_KEY = "sidebar-collapsed";
 

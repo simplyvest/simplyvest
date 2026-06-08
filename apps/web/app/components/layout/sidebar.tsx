@@ -1,9 +1,9 @@
 import { cn } from "@/utils/cn";
 
+import { sidebarLinks } from "./sidebar/links";
 import { NavItem } from "./sidebar/nav-item";
 import { NavSection } from "./sidebar/nav-section";
 import { SidebarBottom } from "./sidebar/sidebar-bottom";
-import { sidebarLinks } from "./sidebar/links";
 
 interface SidebarProps {
   collapsed: boolean;

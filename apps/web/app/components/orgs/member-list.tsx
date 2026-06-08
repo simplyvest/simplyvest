@@ -37,7 +37,8 @@ export function MemberList({ orgId, members, currentUserId, currentUserRole }: M
         >
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-text">
-              {member.displayName ?? `${member.walletAddress.slice(0, 6)}...${member.walletAddress.slice(-4)}`}
+              {member.displayName ??
+                `${member.walletAddress.slice(0, 6)}...${member.walletAddress.slice(-4)}`}
             </p>
             <p className="truncate text-xs text-dim">{member.walletAddress}</p>
           </div>

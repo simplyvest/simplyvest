@@ -1,6 +1,7 @@
 import { eq, and } from "drizzle-orm";
 
 import type { Db } from "../db";
+
 import { streams, streamEvents } from "../db/schema";
 
 interface ReconcileResult {
@@ -20,10 +21,7 @@ export function createReconcilerService(db: Db, rpcUrl: string) {
 
       try {
         // Get active streams that haven't been synced recently
-        const activeStreams = await db
-          .select()
-          .from(streams)
-          .where(eq(streams.status, "active"));
+        const activeStreams = await db.select().from(streams).where(eq(streams.status, "active"));
 
         result.processed = activeStreams.length;
 

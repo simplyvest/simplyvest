@@ -1,8 +1,9 @@
 import { Hono } from "hono";
 
 import type { Env } from "../../env";
-import { authMiddleware, getUserId } from "../middleware/auth";
+
 import { createDb } from "../db";
+import { authMiddleware, getUserId } from "../middleware/auth";
 import { createUserService } from "../services/user-service";
 
 export const userRoutes = new Hono<{ Bindings: Env }>();

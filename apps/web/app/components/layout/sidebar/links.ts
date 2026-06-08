@@ -1,10 +1,4 @@
-import {
-  LuLayoutDashboard,
-  LuCirclePlus,
-  LuBuilding2,
-  LuClock,
-  LuChartBar,
-} from "react-icons/lu";
+import { LuLayoutDashboard, LuCirclePlus, LuBuilding2, LuClock, LuChartBar } from "react-icons/lu";
 
 export interface SidebarLink {
   to: string;
