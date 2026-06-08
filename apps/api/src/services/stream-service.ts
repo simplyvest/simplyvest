@@ -129,9 +129,9 @@ export function createStreamService(db: Db) {
       if (filters.recipientAddress)
         conditions.push(eq(streams.recipientAddress, filters.recipientAddress));
       if (filters.orgId) conditions.push(eq(streams.orgId, filters.orgId));
-      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
       if (filters.status)
         conditions.push(
+          // oxlint-disable-next-line typescript/no-unsafe-type-assertion
           eq(streams.status, filters.status as "active" | "completed" | "cancelled" | "orphaned"),
         );
       // oxlint-disable-next-line typescript/no-unsafe-type-assertion
