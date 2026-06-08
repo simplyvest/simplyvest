@@ -1,8 +1,10 @@
+import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 
 import type { Env } from "../../env";
 
 import { createDb } from "../db";
+import { users } from "../db/schema";
 import { createStreamService } from "../services/stream-service";
 
 export const streamRoutes = new Hono<{ Bindings: Env }>();
@@ -29,6 +31,17 @@ streamRoutes.post("/", async (c) => {
     }
   }
 
+  // Auto-populate creatorDisplayName if not provided
+  let creatorDisplayName = body.creatorDisplayName;
+  if (!creatorDisplayName) {
+    const user = await db
+      .select()
+      .from(users)
+      .where(eq(users.walletAddress, body.creatorAddress))
+      .limit(1);
+    creatorDisplayName = user[0]?.displayName ?? null;
+  }
+
   const stream = await service.createStream({
     id: body.id,
     type: body.type,
@@ -44,6 +57,12 @@ streamRoutes.post("/", async (c) => {
     milestoneAuthority: body.milestoneAuthority,
     creationTx: body.creationTx,
     createdAt: body.createdAt,
+    // New metadata fields
+    tokenName: body.tokenName,
+    tokenSymbol: body.tokenSymbol,
+    tokenDecimals: body.tokenDecimals,
+    creatorDisplayName,
+    description: body.description,
   });
 
   if (!stream) {
