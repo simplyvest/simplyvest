@@ -19,6 +19,12 @@ export interface CreateStreamInput {
   milestoneAuthority?: string;
   creationTx: string;
   createdAt: number;
+  // New metadata fields
+  tokenName?: string;
+  tokenSymbol?: string;
+  tokenDecimals?: number;
+  creatorDisplayName?: string;
+  description?: string;
 }
 
 export interface CreateEventInput {
@@ -58,6 +64,12 @@ export function createStreamService(db: Db) {
           milestoneAuthority: input.milestoneAuthority ?? null,
           creationTx: input.creationTx,
           createdAt: input.createdAt,
+          // New metadata fields
+          tokenName: input.tokenName ?? null,
+          tokenSymbol: input.tokenSymbol ?? null,
+          tokenDecimals: input.tokenDecimals ?? null,
+          creatorDisplayName: input.creatorDisplayName ?? null,
+          description: input.description ?? null,
         })
         .onConflictDoNothing()
         .returning();
