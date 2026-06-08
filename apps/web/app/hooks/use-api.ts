@@ -19,6 +19,12 @@ interface StreamRecord {
   milestoneAuthority?: string;
   creationTx: string;
   createdAt: number;
+  // New metadata fields
+  tokenName?: string;
+  tokenSymbol?: string;
+  tokenDecimals?: number;
+  creatorDisplayName?: string;
+  description?: string;
 }
 
 interface StreamEventRecord {
@@ -32,10 +38,14 @@ interface StreamEventRecord {
 interface StreamWithEvents extends StreamRecord {
   status: string;
   amountWithdrawn: string;
+  milestoneReached: boolean;
   closedAt: number | null;
   closeTx: string | null;
+  lastSyncedAt: number | null;
   events: StreamEventRecord[];
 }
+
+export type { StreamRecord, StreamEventRecord, StreamWithEvents };
 
 export function useRecordStream() {
   const queryClient = useQueryClient();
@@ -62,6 +72,18 @@ export function useRecordStreamEvent() {
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Failed to record event");
+    },
+  });
+}
+
+export function useStreamSync() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (streamId: string) => api.post(`/api/streams/${streamId}/sync`, {}),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["api-streams"] });
+      void queryClient.invalidateQueries({ queryKey: ["api-stream"] });
     },
   });
 }
