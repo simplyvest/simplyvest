@@ -61,7 +61,7 @@ function computeStats(
     const isRecipient = s.account.recipient.toBase58() === walletAddress;
     if (!isCreator && !isRecipient) continue;
 
-    const status = getStatus(s.account);
+    const status = getStatus(s.account, clockTime);
 
     if (isCreator) stats.created++;
     else stats.received++;

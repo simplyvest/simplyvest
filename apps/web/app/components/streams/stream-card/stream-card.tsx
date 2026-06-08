@@ -31,7 +31,7 @@ export function StreamCard({
   const counterparty = isSender ? stream.recipient : stream.creator;
 
   const clockTime = Math.floor(Date.now() / 1000);
-  const status = getStatus(stream);
+  const status = getStatus(stream, clockTime);
   const claimable = getClaimable(stream, clockTime);
 
   const [vaultPda] = getVaultPda(pda, PROGRAM_ID);

@@ -4,9 +4,10 @@ import type { StreamAccount, MilestoneStreamAccount } from "./types/runtime";
 
 export type StreamStatus = "active" | "completed" | "cancelled";
 
-export const getStatus = (stream: StreamAccount): StreamStatus => {
+export const getStatus = (stream: StreamAccount, clockTime: number): StreamStatus => {
   if (stream.cancelled) return "cancelled";
   if (stream.amountWithdrawn.eq(stream.amount)) return "completed";
+  if (new BN(clockTime).gte(stream.endTime)) return "completed";
   return "active";
 };
 

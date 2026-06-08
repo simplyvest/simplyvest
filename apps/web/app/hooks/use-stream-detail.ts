@@ -141,7 +141,7 @@ export function useStreamDetail(pda: string | undefined) {
 
     const account = onChain.account;
     const streamType = account.cliffTime.gt(account.startTime) ? "cliff" : "linear";
-    const status = getStatus(account);
+    const status = getStatus(account, clockTime);
     const claimable = getClaimable(account, clockTime);
     const vestedPercent = getVestedPercent(account, clockTime);
 
