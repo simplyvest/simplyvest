@@ -57,12 +57,31 @@ streamRoutes.get("/", async (c) => {
   const db = createDb(c.env.DB);
   const service = createStreamService(db);
 
+  const statusParam = c.req.query("status");
+  const typeParam = c.req.query("type");
+
+  const validStatuses: Record<string, boolean> = {
+    active: true,
+    completed: true,
+    cancelled: true,
+    orphaned: true,
+  };
+  const validTypes: Record<string, boolean> = {
+    time: true,
+    milestone: true,
+  };
+
   const filters = {
     creatorAddress: c.req.query("creator") ?? undefined,
     recipientAddress: c.req.query("recipient") ?? undefined,
     orgId: c.req.query("org") ?? undefined,
-    status: c.req.query("status") ?? undefined,
-    type: c.req.query("type") ?? undefined,
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+    status:
+      statusParam && validStatuses[statusParam]
+        ? (statusParam as "active" | "completed" | "cancelled" | "orphaned")
+        : undefined,
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+    type: typeParam && validTypes[typeParam] ? (typeParam as "time" | "milestone") : undefined,
   };
 
   const result = await service.listStreams(filters);

@@ -1,5 +1,4 @@
 import { getVaultPda, PROGRAM_ID } from "@solana-tdp/sdk";
-import type { StreamAccount } from "@solana-tdp/sdk";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
 
@@ -23,8 +22,7 @@ export function ClaimButton({ detail }: { detail: StreamDetail }) {
     const pda = new PublicKey(detail.pda);
     const [vaultPda] = getVaultPda(pda, PROGRAM_ID);
     const recipientToken = getAssociatedTokenAddressSync(new PublicKey(detail.mint), publicKey);
-    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-    const account = detail.onChainAccount as StreamAccount;
+    const account = detail.onChainAccount;
 
     withdraw.mutate({
       stream: pda,

@@ -41,10 +41,8 @@ describe("Footer", () => {
     // findAllByText returns both the <a>GitHub</a> company link AND the <title>GitHub</title> inside the SVG icon
     const allGithubLinks = await screen.findAllByText("GitHub");
     const githubLink = allGithubLinks.find((el) => el.tagName === "A");
-    expect(githubLink).toBeDefined();
-    // Non-null assertion is safe: guarded by expect(githubLink).toBeDefined() above
-    // oxlint-disable-next-line typescript/no-non-null-assertion
-    const link = githubLink!;
+    if (!githubLink) throw new Error("GitHub link not found");
+    const link = githubLink;
     expect(link.closest("a")).toHaveAttribute("href", "https://github.com/simplyvest/simplyvest");
     expect(link.closest("a")).toHaveAttribute("target", "_blank");
     expect(link.closest("a")).toHaveAttribute("rel", "noopener noreferrer");

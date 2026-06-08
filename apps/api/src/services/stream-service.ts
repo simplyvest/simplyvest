@@ -34,8 +34,8 @@ export interface StreamFilters {
   creatorAddress?: string;
   recipientAddress?: string;
   orgId?: string;
-  status?: string;
-  type?: string;
+  status?: "active" | "completed" | "cancelled" | "orphaned";
+  type?: "time" | "milestone";
 }
 
 export function createStreamService(db: Db) {
@@ -129,13 +129,8 @@ export function createStreamService(db: Db) {
       if (filters.recipientAddress)
         conditions.push(eq(streams.recipientAddress, filters.recipientAddress));
       if (filters.orgId) conditions.push(eq(streams.orgId, filters.orgId));
-      if (filters.status)
-        conditions.push(
-          // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-          eq(streams.status, filters.status as "active" | "completed" | "cancelled" | "orphaned"),
-        );
-      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-      if (filters.type) conditions.push(eq(streams.type, filters.type as "time" | "milestone"));
+      if (filters.status) conditions.push(eq(streams.status, filters.status));
+      if (filters.type) conditions.push(eq(streams.type, filters.type));
 
       const query =
         conditions.length > 0

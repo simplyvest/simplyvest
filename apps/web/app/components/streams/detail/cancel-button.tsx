@@ -1,4 +1,3 @@
-import type { StreamAccount } from "@solana-tdp/sdk";
 import { PublicKey } from "@solana/web3.js";
 import { useState } from "react";
 
@@ -10,9 +9,10 @@ export function CancelButton({ detail }: { detail: StreamDetail }) {
   const [open, setOpen] = useState(false);
 
   if (detail.status !== "active") return null;
+  if (detail.streamType === "milestone") return null;
 
-  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-  const account = detail.onChainAccount as StreamAccount;
+  // After guard: detail is TimeStreamDetail, so onChainAccount is StreamAccount
+  const account = detail.onChainAccount;
   const pda = new PublicKey(detail.pda);
 
   return (

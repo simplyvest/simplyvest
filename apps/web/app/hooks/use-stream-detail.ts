@@ -20,7 +20,7 @@ import { useStreamEvents } from "./use-stream-events";
 type StreamType = "linear" | "cliff" | "milestone";
 type StreamStatus = "active" | "completed" | "cancelled";
 
-interface StreamDetail {
+interface StreamDetailBase {
   pda: string;
   apiType: "time" | "milestone";
   creator: string;
@@ -40,13 +40,22 @@ interface StreamDetail {
   cancelled: boolean;
   milestoneReached: boolean;
 
-  streamType: StreamType;
   status: StreamStatus;
   claimable: BN;
   vestedPercent: number;
-
-  onChainAccount: StreamAccount | MilestoneStreamAccount | null;
 }
+
+interface TimeStreamDetail extends StreamDetailBase {
+  streamType: "linear" | "cliff";
+  onChainAccount: StreamAccount;
+}
+
+interface MilestoneStreamDetail extends StreamDetailBase {
+  streamType: "milestone";
+  onChainAccount: MilestoneStreamAccount;
+}
+
+type StreamDetail = TimeStreamDetail | MilestoneStreamDetail;
 
 export function useStreamDetail(pda: string | undefined) {
   const { connection } = useConnection();
@@ -89,49 +98,7 @@ export function useStreamDetail(pda: string | undefined) {
     const onChain = onChainQuery.data;
     const clockTime = Math.floor(Date.now() / 1000);
 
-    const account = onChain.account;
-
-    let streamType: StreamType;
-    if (onChain.type === "milestone") {
-      streamType = "milestone";
-    } else {
-      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-      const timeAccount = account as StreamAccount;
-      streamType = timeAccount.cliffTime.gt(timeAccount.startTime) ? "cliff" : "linear";
-    }
-
-    let status: StreamStatus;
-    let claimable: BN;
-    let vestedPercent: number;
-    let cancelled: boolean;
-    let milestoneReached: boolean;
-    let amountWithdrawn: string;
-
-    if (streamType === "milestone") {
-      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-      const msAccount = account as MilestoneStreamAccount;
-      status = getMilestoneStatus(msAccount);
-      claimable = getMilestoneClaimable(msAccount);
-      milestoneReached = msAccount.milestoneReached;
-      cancelled = msAccount.cancelled;
-      amountWithdrawn = msAccount.amountWithdrawn.toString();
-      vestedPercent = milestoneReached
-        ? msAccount.amountWithdrawn.gte(msAccount.amount)
-          ? 100
-          : Number(msAccount.amountWithdrawn.muln(100).div(msAccount.amount))
-        : 0;
-    } else {
-      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-      const timeAccount = account as StreamAccount;
-      status = getStatus(timeAccount);
-      claimable = getClaimable(timeAccount, clockTime);
-      cancelled = timeAccount.cancelled;
-      milestoneReached = false;
-      amountWithdrawn = timeAccount.amountWithdrawn.toString();
-      vestedPercent = getVestedPercent(timeAccount, clockTime);
-    }
-
-    return {
+    const base = {
       pda: api.id,
       apiType: api.type,
       creator: api.creatorAddress,
@@ -146,15 +113,49 @@ export function useStreamDetail(pda: string | undefined) {
       creationTx: api.creationTx,
       orgId: api.orgId,
       createdAt: api.createdAt,
-      amountWithdrawn,
-      cancelled,
-      milestoneReached,
+    };
+
+    if (onChain.type === "milestone") {
+      const account = onChain.account;
+      const milestoneReached = account.milestoneReached;
+      const status = getMilestoneStatus(account);
+      const claimable = getMilestoneClaimable(account);
+      const vestedPercent = milestoneReached
+        ? account.amountWithdrawn.gte(account.amount)
+          ? 100
+          : Number(account.amountWithdrawn.muln(100).div(account.amount))
+        : 0;
+
+      return {
+        ...base,
+        amountWithdrawn: account.amountWithdrawn.toString(),
+        cancelled: account.cancelled,
+        milestoneReached,
+        streamType: "milestone",
+        status,
+        claimable,
+        vestedPercent,
+        onChainAccount: account,
+      } satisfies MilestoneStreamDetail;
+    }
+
+    const account = onChain.account;
+    const streamType = account.cliffTime.gt(account.startTime) ? "cliff" : "linear";
+    const status = getStatus(account);
+    const claimable = getClaimable(account, clockTime);
+    const vestedPercent = getVestedPercent(account, clockTime);
+
+    return {
+      ...base,
+      amountWithdrawn: account.amountWithdrawn.toString(),
+      cancelled: account.cancelled,
+      milestoneReached: false,
       streamType,
       status,
       claimable,
       vestedPercent,
       onChainAccount: account,
-    };
+    } satisfies TimeStreamDetail;
   }, [apiQuery.data, onChainQuery.data]);
 
   return {
@@ -167,4 +168,4 @@ export function useStreamDetail(pda: string | undefined) {
   };
 }
 
-export type { StreamDetail, StreamType, StreamStatus };
+export type { StreamDetail, TimeStreamDetail, MilestoneStreamDetail, StreamType, StreamStatus };
