@@ -3,7 +3,11 @@ import { Hono } from "hono";
 import type { Env } from "../../env";
 
 import { createDb } from "../db";
-import { createTokenService } from "../services/token-service";
+import {
+  createTokenService,
+  createPlatformToken,
+  uploadMetadataJson,
+} from "../services/token-service";
 
 const IMAGE_MAX_SIZE = 2_097_152; // 2MB
 const ALLOWED_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/svg+xml"]);
@@ -62,19 +66,21 @@ tokenRoutes.post("/metadata", async (c) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  const body = await c.req.json<{ name: string; symbol: string; imageUrl: string }>();
-  if (!body.name || !body.symbol || !body.imageUrl) {
-    return c.json({ error: "Missing required fields: name, symbol, imageUrl" }, 400);
+  const body = await c.req.json<{ name: string; symbol: string; imageUrl?: string }>();
+  if (!body.name || !body.symbol) {
+    return c.json({ error: "Missing required fields: name, symbol" }, 400);
   }
 
-  const json = JSON.stringify({
+  const metadata: { name: string; symbol: string; image?: string } = {
     name: body.name,
     symbol: body.symbol,
-    image: body.imageUrl,
-  });
+  };
+  if (body.imageUrl) {
+    metadata.image = body.imageUrl;
+  }
 
   const key = `tokens/${crypto.randomUUID()}.json`;
-  await c.env.TOKEN_ASSETS.put(key, json, {
+  await c.env.TOKEN_ASSETS.put(key, JSON.stringify(metadata), {
     httpMetadata: { contentType: "application/json" },
   });
 
@@ -160,4 +166,72 @@ tokenRoutes.get("/preferences", async (c) => {
 
   const prefs = await service.getPreferences(creator);
   return c.json(prefs);
+});
+
+tokenRoutes.post("/create-platform", async (c) => {
+  const authHeader = c.req.header("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  const body = await c.req.json<{
+    name: string;
+    symbol: string;
+    decimals: number;
+    amount: string;
+    creatorAddress: string;
+    imageUrl?: string;
+  }>();
+
+  const required = ["name", "symbol", "decimals", "amount", "creatorAddress"] as const;
+  for (const field of required) {
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+    if (!(body as Record<string, unknown>)[field]) {
+      return c.json({ error: `Missing required field: ${field}` }, 400);
+    }
+  }
+
+  const rpcUrl = c.env.SOLANA_RPC_URL ?? "https://api.devnet.solana.com";
+
+  // Upload metadata if needed
+  let metadataUri = "";
+  if (body.imageUrl || body.name) {
+    metadataUri = await uploadMetadataJson(
+      body.name,
+      body.symbol,
+      body.imageUrl,
+      c.env.TOKEN_ASSETS,
+      c.req.url,
+    );
+  }
+
+  try {
+    const result = await createPlatformToken({
+      secretKeyJson: c.env.PLATFORM_SECRET_KEY,
+      rpcUrl,
+      name: body.name,
+      symbol: body.symbol,
+      decimals: body.decimals,
+      amount: body.amount,
+      creatorAddress: body.creatorAddress,
+      metadataUri,
+    });
+
+    const db = createDb(c.env.DB);
+    const service = createTokenService(db);
+    await service.recordToken({
+      mintAddress: result.mintAddress,
+      creatorAddress: body.creatorAddress,
+      name: body.name,
+      symbol: body.symbol,
+      decimals: body.decimals,
+      supply: result.supply,
+      metadataUri,
+    });
+
+    return c.json(result, 201);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Unknown error";
+    return c.json({ error: msg }, 500);
+  }
 });

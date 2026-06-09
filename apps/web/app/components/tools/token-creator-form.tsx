@@ -15,6 +15,7 @@ interface FormState {
 export function TokenCreatorForm({
   onSubmit,
   isPending,
+  mode,
 }: {
   onSubmit: (data: {
     name: string;
@@ -24,12 +25,13 @@ export function TokenCreatorForm({
     image?: File;
   }) => void;
   isPending: boolean;
+  mode: "platform" | "wallet";
 }) {
   const [form, setForm] = useState<FormState>({
     name: "",
     symbol: "",
     decimals: "9",
-    amount: "0",
+    amount: "1000000",
     image: null,
   });
 
@@ -82,15 +84,6 @@ export function TokenCreatorForm({
 
   return (
     <div className="space-y-5">
-      <Field label="Token Name" required>
-        <Input
-          placeholder="My Token"
-          value={form.name}
-          onChange={(e) => update("name", e.target.value)}
-          maxLength={32}
-        />
-      </Field>
-
       <div>
         <Field label="Symbol" required>
           <Input
@@ -100,8 +93,17 @@ export function TokenCreatorForm({
             maxLength={10}
           />
         </Field>
-        <p className="mt-1 text-xs text-muted">Max 10 characters</p>
+        <p className="mt-1 text-xs text-muted">Max 10 characters, uppercase</p>
       </div>
+
+      <Field label="Token Name" required>
+        <Input
+          placeholder="My Token"
+          value={form.name}
+          onChange={(e) => update("name", e.target.value)}
+          maxLength={32}
+        />
+      </Field>
 
       <div>
         <Field label="Decimals" required>
@@ -113,7 +115,7 @@ export function TokenCreatorForm({
             onChange={(e) => update("decimals", e.target.value)}
           />
         </Field>
-        <p className="mt-1 text-xs text-muted">0 = NFT, 9 = typical SPL token</p>
+        <p className="mt-1 text-xs text-muted">Typically 6 or 9</p>
       </div>
 
       <div>
@@ -170,7 +172,11 @@ export function TokenCreatorForm({
       )}
 
       <Button variant="default" onClick={handleSubmit} disabled={!canSubmit} className="w-full">
-        {isPending ? "Creating Token..." : "Create Token"}
+        {isPending
+          ? "Creating Token..."
+          : mode === "platform"
+            ? "Create Token on Platform"
+            : "Create Token with Wallet"}
       </Button>
     </div>
   );
