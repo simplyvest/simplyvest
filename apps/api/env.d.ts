@@ -7,4 +7,5 @@ export interface Env {
   SOLANA_RPC_URL?: string;
   PRIVY_APP_ID?: string;
   PRIVY_APP_SECRET?: string;
+  TOKEN_ASSETS: R2Bucket;
 }
