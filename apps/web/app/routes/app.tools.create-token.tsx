@@ -4,7 +4,7 @@ import { lazy } from "react";
 import { Route as ToolsRoute } from "./app.tools";
 
 const CreateTokenPage = lazy(() =>
-  import("./_tools/create-token-page").then((m) => ({
+  import("./_tools/-create-token-page").then((m) => ({
     default: m.CreateTokenPage,
   })),
 );
