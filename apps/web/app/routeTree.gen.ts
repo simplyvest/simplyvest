@@ -23,6 +23,9 @@ import { Route as AppOrganizationsOrgIdRouteImport } from "./routes/app.organiza
 import { Route as AppProfileRouteImport } from "./routes/app.profile";
 import { Route as AppSettingsRouteImport } from "./routes/app.settings";
 import { Route as AppStreamsStreamPdaRouteImport } from "./routes/app.streams.$streamPda";
+import { Route as AppToolsRouteImport } from "./routes/app.tools";
+import { Route as AppToolsCreateTokenRouteImport } from "./routes/app.tools.create-token";
+import { Route as AppToolsTokensRouteImport } from "./routes/app.tools.tokens";
 import { Route as DocsRouteImport } from "./routes/docs";
 import { Route as FaqRouteImport } from "./routes/faq";
 import { Route as IndexRouteImport } from "./routes/index";
@@ -52,6 +55,11 @@ const IndexRoute = IndexRouteImport.update({
   id: "/",
   path: "/",
   getParentRoute: () => rootRouteImport,
+} as any);
+const AppToolsRoute = AppToolsRouteImport.update({
+  id: "/tools",
+  path: "/tools",
+  getParentRoute: () => AppRoute,
 } as any);
 const AppSettingsRoute = AppSettingsRouteImport.update({
   id: "/settings",
@@ -93,6 +101,16 @@ const AppActivityRoute = AppActivityRouteImport.update({
   path: "/activity",
   getParentRoute: () => AppRoute,
 } as any);
+const AppToolsTokensRoute = AppToolsTokensRouteImport.update({
+  id: "/tokens",
+  path: "/tokens",
+  getParentRoute: () => AppToolsRoute,
+} as any);
+const AppToolsCreateTokenRoute = AppToolsCreateTokenRouteImport.update({
+  id: "/create-token",
+  path: "/create-token",
+  getParentRoute: () => AppToolsRoute,
+} as any);
 const AppStreamsStreamPdaRoute = AppStreamsStreamPdaRouteImport.update({
   id: "/streams/$streamPda",
   path: "/streams/$streamPda",
@@ -133,11 +151,14 @@ export interface FileRoutesByFullPath {
   "/app/organizations": typeof AppOrganizationsRouteWithChildren;
   "/app/profile": typeof AppProfileRoute;
   "/app/settings": typeof AppSettingsRoute;
+  "/app/tools": typeof AppToolsRouteWithChildren;
   "/app/create/cliff": typeof AppCreateCliffRoute;
   "/app/create/linear": typeof AppCreateLinearRoute;
   "/app/create/milestone": typeof AppCreateMilestoneRoute;
   "/app/organizations/$orgId": typeof AppOrganizationsOrgIdRoute;
   "/app/streams/$streamPda": typeof AppStreamsStreamPdaRoute;
+  "/app/tools/create-token": typeof AppToolsCreateTokenRoute;
+  "/app/tools/tokens": typeof AppToolsTokensRoute;
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute;
@@ -153,11 +174,14 @@ export interface FileRoutesByTo {
   "/app/organizations": typeof AppOrganizationsRouteWithChildren;
   "/app/profile": typeof AppProfileRoute;
   "/app/settings": typeof AppSettingsRoute;
+  "/app/tools": typeof AppToolsRouteWithChildren;
   "/app/create/cliff": typeof AppCreateCliffRoute;
   "/app/create/linear": typeof AppCreateLinearRoute;
   "/app/create/milestone": typeof AppCreateMilestoneRoute;
   "/app/organizations/$orgId": typeof AppOrganizationsOrgIdRoute;
   "/app/streams/$streamPda": typeof AppStreamsStreamPdaRoute;
+  "/app/tools/create-token": typeof AppToolsCreateTokenRoute;
+  "/app/tools/tokens": typeof AppToolsTokensRoute;
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
@@ -174,11 +198,14 @@ export interface FileRoutesById {
   "/app/organizations": typeof AppOrganizationsRouteWithChildren;
   "/app/profile": typeof AppProfileRoute;
   "/app/settings": typeof AppSettingsRoute;
+  "/app/tools": typeof AppToolsRouteWithChildren;
   "/app/create/cliff": typeof AppCreateCliffRoute;
   "/app/create/linear": typeof AppCreateLinearRoute;
   "/app/create/milestone": typeof AppCreateMilestoneRoute;
   "/app/organizations/$orgId": typeof AppOrganizationsOrgIdRoute;
   "/app/streams/$streamPda": typeof AppStreamsStreamPdaRoute;
+  "/app/tools/create-token": typeof AppToolsCreateTokenRoute;
+  "/app/tools/tokens": typeof AppToolsTokensRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
@@ -196,11 +223,14 @@ export interface FileRouteTypes {
     | "/app/organizations"
     | "/app/profile"
     | "/app/settings"
+    | "/app/tools"
     | "/app/create/cliff"
     | "/app/create/linear"
     | "/app/create/milestone"
     | "/app/organizations/$orgId"
-    | "/app/streams/$streamPda";
+    | "/app/streams/$streamPda"
+    | "/app/tools/create-token"
+    | "/app/tools/tokens";
   fileRoutesByTo: FileRoutesByTo;
   to:
     | "/"
@@ -216,11 +246,14 @@ export interface FileRouteTypes {
     | "/app/organizations"
     | "/app/profile"
     | "/app/settings"
+    | "/app/tools"
     | "/app/create/cliff"
     | "/app/create/linear"
     | "/app/create/milestone"
     | "/app/organizations/$orgId"
-    | "/app/streams/$streamPda";
+    | "/app/streams/$streamPda"
+    | "/app/tools/create-token"
+    | "/app/tools/tokens";
   id:
     | "__root__"
     | "/"
@@ -236,11 +269,14 @@ export interface FileRouteTypes {
     | "/app/organizations"
     | "/app/profile"
     | "/app/settings"
+    | "/app/tools"
     | "/app/create/cliff"
     | "/app/create/linear"
     | "/app/create/milestone"
     | "/app/organizations/$orgId"
-    | "/app/streams/$streamPda";
+    | "/app/streams/$streamPda"
+    | "/app/tools/create-token"
+    | "/app/tools/tokens";
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
@@ -287,6 +323,13 @@ declare module "@tanstack/react-router" {
       fullPath: "/";
       preLoaderRoute: typeof IndexRouteImport;
       parentRoute: typeof rootRouteImport;
+    };
+    "/app/tools": {
+      id: "/app/tools";
+      path: "/tools";
+      fullPath: "/app/tools";
+      preLoaderRoute: typeof AppToolsRouteImport;
+      parentRoute: typeof AppRoute;
     };
     "/app/settings": {
       id: "/app/settings";
@@ -343,6 +386,20 @@ declare module "@tanstack/react-router" {
       fullPath: "/app/activity";
       preLoaderRoute: typeof AppActivityRouteImport;
       parentRoute: typeof AppRoute;
+    };
+    "/app/tools/tokens": {
+      id: "/app/tools/tokens";
+      path: "/tokens";
+      fullPath: "/app/tools/tokens";
+      preLoaderRoute: typeof AppToolsTokensRouteImport;
+      parentRoute: typeof AppToolsRoute;
+    };
+    "/app/tools/create-token": {
+      id: "/app/tools/create-token";
+      path: "/create-token";
+      fullPath: "/app/tools/create-token";
+      preLoaderRoute: typeof AppToolsCreateTokenRouteImport;
+      parentRoute: typeof AppToolsRoute;
     };
     "/app/streams/$streamPda": {
       id: "/app/streams/$streamPda";
@@ -408,6 +465,18 @@ const AppOrganizationsRouteWithChildren = AppOrganizationsRoute._addFileChildren
   AppOrganizationsRouteChildren,
 );
 
+interface AppToolsRouteChildren {
+  AppToolsCreateTokenRoute: typeof AppToolsCreateTokenRoute;
+  AppToolsTokensRoute: typeof AppToolsTokensRoute;
+}
+
+const AppToolsRouteChildren: AppToolsRouteChildren = {
+  AppToolsCreateTokenRoute: AppToolsCreateTokenRoute,
+  AppToolsTokensRoute: AppToolsTokensRoute,
+};
+
+const AppToolsRouteWithChildren = AppToolsRoute._addFileChildren(AppToolsRouteChildren);
+
 interface AppRouteChildren {
   AppActivityRoute: typeof AppActivityRoute;
   AppAnalyticsRoute: typeof AppAnalyticsRoute;
@@ -417,6 +486,7 @@ interface AppRouteChildren {
   AppOrganizationsRoute: typeof AppOrganizationsRouteWithChildren;
   AppProfileRoute: typeof AppProfileRoute;
   AppSettingsRoute: typeof AppSettingsRoute;
+  AppToolsRoute: typeof AppToolsRouteWithChildren;
   AppStreamsStreamPdaRoute: typeof AppStreamsStreamPdaRoute;
 }
 
@@ -429,6 +499,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppOrganizationsRoute: AppOrganizationsRouteWithChildren,
   AppProfileRoute: AppProfileRoute,
   AppSettingsRoute: AppSettingsRoute,
+  AppToolsRoute: AppToolsRouteWithChildren,
   AppStreamsStreamPdaRoute: AppStreamsStreamPdaRoute,
 };
 
