@@ -1,6 +1,6 @@
 import { useSignAndSendTransaction, useWallets } from "@privy-io/react-auth/solana";
 import { Transaction } from "@solana/web3.js";
-import type { Connection, PublicKey, TransactionInstruction } from "@solana/web3.js";
+import type { Connection, Keypair, PublicKey, TransactionInstruction } from "@solana/web3.js";
 
 const envChain = import.meta.env.VITE_SOLANA_CHAIN;
 const SOLANA_CHAIN: string = typeof envChain === "string" ? envChain : "solana:devnet";
@@ -24,6 +24,7 @@ export function useSolanaTransaction() {
     connection: Connection,
     payer: PublicKey,
     instructions: TransactionInstruction[],
+    opts?: { signers?: Keypair[] },
   ): Promise<SendTxResult> {
     if (!solanaWallet) throw new Error("Wallet not connected");
 
@@ -32,6 +33,10 @@ export function useSolanaTransaction() {
     tx.recentBlockhash = blockhash;
     tx.feePayer = payer;
     tx.add(...instructions);
+
+    if (opts?.signers?.length) {
+      tx.partialSign(...opts.signers);
+    }
 
     const serialized = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
     const { signature } = await signAndSendTransaction({

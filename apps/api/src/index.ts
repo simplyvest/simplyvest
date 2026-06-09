@@ -8,6 +8,7 @@ import { rateLimit } from "./middleware/rate-limit";
 import { orgRoutes } from "./routes/organizations";
 import { reconcileRoutes } from "./routes/reconciliation";
 import { streamRoutes } from "./routes/streams";
+import { tokenRoutes } from "./routes/tokens";
 import { userRoutes } from "./routes/users";
 import { waitlistRoutes } from "./routes/waitlist";
 import { createReconcilerService } from "./services/reconciler";
@@ -23,12 +24,14 @@ app.use("/api/users/*", rateLimit({ windowMs: 60_000, max: 20 }));
 app.use("/api/orgs", rateLimit({ windowMs: 60_000, max: 10 }));
 app.use("/api/orgs/*/members", rateLimit({ windowMs: 60_000, max: 20 }));
 app.use("/api/waitlist", rateLimit({ windowMs: 60_000, max: 5 }));
+app.use("/api/tokens/*", rateLimit({ windowMs: 60_000, max: 10 }));
 
 app.route("/api/waitlist", waitlistRoutes);
 app.route("/api/streams", streamRoutes);
 app.route("/api/users", userRoutes);
 app.route("/api/orgs", orgRoutes);
 app.route("/api/reconcile", reconcileRoutes);
+app.route("/api/tokens", tokenRoutes);
 
 app.notFound((c) => c.json({ error: "Not found" }, 404));
 
