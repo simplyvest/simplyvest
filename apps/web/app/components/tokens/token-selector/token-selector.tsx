@@ -83,12 +83,12 @@ export function TokenSelector({
         aria-haspopup="dialog"
         aria-expanded={open}
         className={cn(
-          "flex w-full items-center gap-3 rounded-lg border border-field bg-surface px-3 py-2.5 text-left transition-colors hover:bg-field",
+          "flex w-full items-center gap-3 rounded-lg border border-border2 bg-bg2 px-3 py-2.5 text-left transition-colors hover:bg-border",
         )}
       >
         {selectedToken ? (
           <>
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-field text-xs font-semibold">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-bg1 text-xs font-semibold">
               {selectedToken.name.charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0 flex-1">

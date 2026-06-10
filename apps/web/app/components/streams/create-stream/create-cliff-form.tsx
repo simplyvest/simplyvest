@@ -93,7 +93,9 @@ export function CreateCliffForm() {
             onChange={(e) => update("recipient", e.target.value)}
           />
         </Field>
-        <TokenSelector value={form.mint} onChange={(v) => update("mint", v)} />
+        <Field label="Token" required>
+          <TokenSelector value={form.mint} onChange={(v) => update("mint", v)} />
+        </Field>
       </div>
 
       <Field label="Amount (tokens)" required>

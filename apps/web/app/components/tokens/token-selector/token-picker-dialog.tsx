@@ -1,5 +1,6 @@
 import { Dialog } from "@base-ui/react/dialog";
 import { useState, useMemo, useEffect } from "react";
+import { LuX } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -91,30 +92,18 @@ export function TokenPickerDialog({
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" />
-        <Dialog.Popup className="fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl border bg-surface p-0 shadow-xl">
+        <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" />
+        <Dialog.Popup className="fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl border border-border bg-bg1 p-0 shadow-xl">
           <Dialog.Title className="sr-only">Select Token</Dialog.Title>
           <div className="flex max-h-[32rem] flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between border-b px-4 py-3">
-              <h2 className="text-base font-semibold">Select Token</h2>
+            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+              <h2 className="text-base font-semibold text-text">Select Token</h2>
               <Dialog.Close
-                className="rounded-lg p-1 text-muted transition-colors hover:bg-field"
+                className="rounded-lg p-1 text-muted transition-colors hover:bg-bg2"
                 aria-label="Close"
               >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <LuX className="h-5 w-5" />
               </Dialog.Close>
             </div>
 
@@ -185,12 +174,12 @@ export function TokenPickerDialog({
                       <div className="space-y-2 px-1 py-1">
                         {SKELETON_IDS.map((id) => (
                           <div key={id} className="flex animate-pulse items-center gap-3">
-                            <div className="h-7 w-7 rounded-full bg-field" />
+                            <div className="h-7 w-7 rounded-full bg-bg2" />
                             <div className="flex-1 space-y-1.5">
-                              <div className="h-3.5 w-24 rounded bg-field" />
-                              <div className="h-3 w-12 rounded bg-field" />
+                              <div className="h-3.5 w-24 rounded bg-bg2" />
+                              <div className="h-3 w-12 rounded bg-bg2" />
                             </div>
-                            <div className="h-3.5 w-16 rounded bg-field" />
+                            <div className="h-3.5 w-16 rounded bg-bg2" />
                           </div>
                         ))}
                       </div>
@@ -207,7 +196,10 @@ export function TokenPickerDialog({
                         </p>
                         <p className="px-3 py-2 text-sm text-muted">
                           No tokens found.{" "}
-                          <a href="/app/tools/create-token" className="text-sol underline">
+                          <a
+                            href="/app/tools/create-token"
+                            className="text-sol underline-offset-2 hover:underline"
+                          >
                             Create one in Tools
                           </a>
                         </p>
@@ -237,7 +229,7 @@ export function TokenPickerDialog({
             </div>
 
             {/* Custom mint input */}
-            <div className="border-t px-4 py-3">
+            <div className="border-t border-border px-4 py-3">
               <p className="mb-2 text-xs text-muted">Or paste a mint address:</p>
               <div className="flex gap-2">
                 <Input
