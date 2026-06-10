@@ -43,6 +43,10 @@ export function useOwnedTokens() {
   const { data: tokens = [], isLoading: loading } = useQuery({
     queryKey: ["owned-tokens", publicKey?.toBase58(), connection.rpcEndpoint],
     queryFn: async () => {
+      console.log(
+        "[useOwnedTokens] queryFn running, publicKey:",
+        publicKey?.toBase58()?.slice(0, 8),
+      );
       if (!publicKey) return [] as TokenInfo[];
       const { value: accounts } = await connection.getTokenAccountsByOwner(publicKey, {
         programId: TOKEN_PROGRAM_ID,
@@ -57,6 +61,7 @@ export function useOwnedTokens() {
         .filter((t) => t.balance > 0);
       mints.sort((a, b) => Number(b.balance - a.balance));
 
+      console.log("[useOwnedTokens] found", mints.length, "mints, fetching metadata...");
       const metaMap = new Map<string, TokenMetadata | null>();
       await Promise.all(
         mints.map(async (t) => {
@@ -74,7 +79,7 @@ export function useOwnedTokens() {
       });
     },
     enabled: !!publicKey,
-    staleTime: 30_000,
+    staleTime: 0,
   });
 
   return { tokens, loading };
