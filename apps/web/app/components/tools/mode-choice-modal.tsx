@@ -9,13 +9,8 @@ type ModeChoiceModalProps = {
   onSelectMode: (mode: Mode) => void;
 };
 
-function handleSelect(
-  mode: Mode,
-  onSelectMode: (mode: Mode) => void,
-  onOpenChange: (open: boolean) => void,
-) {
+function handleSelect(mode: Mode, onSelectMode: (mode: Mode) => void) {
   onSelectMode(mode);
-  onOpenChange(false);
 }
 
 export function ModeChoiceModal({ open, onOpenChange, onSelectMode }: ModeChoiceModalProps) {
@@ -32,7 +27,7 @@ export function ModeChoiceModal({ open, onOpenChange, onSelectMode }: ModeChoice
             {/* Platform card */}
             <button
               type="button"
-              onClick={() => handleSelect("platform", onSelectMode, onOpenChange)}
+              onClick={() => handleSelect("platform", onSelectMode)}
               className="flex flex-col rounded-xl border border-border p-4 text-left transition-all hover:border-sol hover:bg-sol/5 focus:outline-none focus:ring-2 focus:ring-sol"
             >
               <div className="flex items-center gap-2">
@@ -66,7 +61,7 @@ export function ModeChoiceModal({ open, onOpenChange, onSelectMode }: ModeChoice
             {/* Wallet card */}
             <button
               type="button"
-              onClick={() => handleSelect("wallet", onSelectMode, onOpenChange)}
+              onClick={() => handleSelect("wallet", onSelectMode)}
               className="flex flex-col rounded-xl border border-border p-4 text-left transition-all hover:border-sol hover:bg-sol/5 focus:outline-none focus:ring-2 focus:ring-sol"
             >
               <div className="flex items-center gap-2">
