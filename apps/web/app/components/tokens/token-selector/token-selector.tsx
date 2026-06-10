@@ -31,7 +31,7 @@ export function TokenSelector({
       return {
         mint: mintStr,
         balance: t.balance,
-        name: api?.name ?? t.meta?.name ?? "Unknown Token",
+        name: api?.name ?? t.meta?.name ?? `${mintStr.slice(0, 4)}...${mintStr.slice(-4)}`,
         symbol: api?.symbol ?? t.meta?.symbol ?? "???",
         iconUrl: api?.metadataUri ?? t.meta?.uri,
         decimals: api?.decimals ?? 6,
