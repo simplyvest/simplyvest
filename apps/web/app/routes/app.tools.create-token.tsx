@@ -18,13 +18,5 @@ function CreateTokenPage() {
     return <Outlet />;
   }
 
-  return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-text">Create Token</h1>
-        <p className="mt-1 text-sm text-muted">Choose how you want to create your token</p>
-      </div>
-      <TokenCreateSelector />
-    </div>
-  );
+  return <TokenCreateSelector />;
 }
