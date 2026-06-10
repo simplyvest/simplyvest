@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 
 import { FundWalletModal } from "@/components/tools/fund-wallet-modal";
@@ -9,6 +10,8 @@ import { useCreateToken } from "@/hooks/use-create-token";
 import { SOL_THRESHOLD, useSolBalance } from "@/hooks/use-sol-balance";
 import { useAuth } from "@/lib/solana/use-auth";
 
+import { Route } from "../app.tools.create-token";
+
 const SOLANA_EXPLORER = import.meta.env.VITE_SOLANA_EXPLORER ?? "https://explorer.solana.com";
 
 type Mode = "platform" | "wallet";
@@ -19,14 +22,22 @@ function getChain(): string {
   return typeof envChain === "string" ? envChain : "solana:devnet";
 }
 
+function initialPhase(mode: Mode | undefined): Phase {
+  if (!mode) return "mode-choice";
+  if (mode === "wallet") return "sol-check";
+  return "form";
+}
+
 export function CreateTokenPage() {
+  const { mode } = Route.useSearch();
+  const navigate = useNavigate();
+
   const createToken = useCreateToken();
   const createPlatformToken = useCreatePlatformToken();
   const { publicKey } = useAuth();
   const { balance, isFetching, isFetched, refetch } = useSolBalance();
 
-  const [mode, setMode] = useState<Mode | null>(null);
-  const [phase, setPhase] = useState<Phase>("mode-choice");
+  const [phase, setPhase] = useState<Phase>(() => initialPhase(mode));
   const [result, setResult] = useState<{
     mintAddress: string;
     txSignature: string;
@@ -34,14 +45,12 @@ export function CreateTokenPage() {
     symbol: string;
   } | null>(null);
 
-  const handleSelectMode = useCallback((m: Mode) => {
-    setMode(m);
-    if (m === "platform") {
-      setPhase("form");
-    } else {
-      setPhase("sol-check");
-    }
-  }, []);
+  const handleSelectMode = useCallback(
+    (m: Mode) => {
+      void navigate({ to: "/app/tools/create-token", search: { mode: m } });
+    },
+    [navigate],
+  );
 
   // Wait for SOL balance fetch to complete, then decide next phase
   useEffect(() => {
@@ -82,9 +91,7 @@ export function CreateTokenPage() {
       {/* Mode Choice Modal */}
       <ModeChoiceModal
         open={phase === "mode-choice"}
-        onOpenChange={(open) => {
-          if (!open) window.history.back();
-        }}
+        onOpenChange={() => {}}
         onSelectMode={handleSelectMode}
       />
 
@@ -99,7 +106,9 @@ export function CreateTokenPage() {
       {phase === "fund-wallet" && publicKey && (
         <FundWalletModal
           open
-          onOpenChange={() => setPhase("mode-choice")}
+          onOpenChange={() => {
+            void navigate({ to: "/app/tools/create-token", search: {} });
+          }}
           walletAddress={publicKey.toBase58()}
           currentBalance={balance}
           onFunded={handleFunded}
@@ -115,7 +124,9 @@ export function CreateTokenPage() {
             </p>
             <button
               type="button"
-              onClick={() => setPhase("mode-choice")}
+              onClick={() => {
+                void navigate({ to: "/app/tools/create-token", search: {} });
+              }}
               className="text-xs text-dim transition-colors hover:text-text"
             >
               Change mode

@@ -1,5 +1,4 @@
 import { Dialog } from "@base-ui/react/dialog";
-import { LuX } from "react-icons/lu";
 
 type Mode = "platform" | "wallet";
 
@@ -92,13 +91,6 @@ export function ModeChoiceModal({ open, onOpenChange, onSelectMode }: ModeChoice
               </span>
             </button>
           </div>
-
-          <Dialog.Close
-            className="absolute top-4 right-4 rounded-lg p-1 text-muted transition-colors hover:bg-bg2"
-            aria-label="Close"
-          >
-            <LuX className="h-5 w-5" />
-          </Dialog.Close>
         </Dialog.Popup>
       </Dialog.Portal>
     </Dialog.Root>

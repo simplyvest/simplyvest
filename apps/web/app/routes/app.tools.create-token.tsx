@@ -12,5 +12,9 @@ const CreateTokenPage = lazy(() =>
 export const Route = createRoute({
   getParentRoute: () => ToolsRoute,
   path: "/create-token",
+  validateSearch: (input: Record<string, unknown>): { mode?: "platform" | "wallet" } => {
+    const mode = input.mode === "platform" || input.mode === "wallet" ? input.mode : undefined;
+    return { mode };
+  },
   component: CreateTokenPage,
 });
