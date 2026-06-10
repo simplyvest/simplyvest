@@ -109,3 +109,38 @@ export const streamEvents = sqliteTable(
     uniqueIndex("idx_events_dedup").on(t.streamId, t.eventType, t.txSignature),
   ],
 );
+
+export const tokenCreations = sqliteTable(
+  "token_creations",
+  {
+    mintAddress: text("mint_address").primaryKey(),
+    creatorAddress: text("creator_address").notNull(),
+    name: text("name").notNull(),
+    symbol: text("symbol").notNull(),
+    decimals: integer("decimals").notNull(),
+    supply: text("supply").notNull(),
+    metadataUri: text("metadata_uri").notNull(),
+    createdAt: text("created_at")
+      .notNull()
+      .$defaultFn(() => new Date().toISOString()),
+  },
+  (t) => [index("idx_token_creations_creator").on(t.creatorAddress)],
+);
+
+export const tokenPreferences = sqliteTable(
+  "token_preferences",
+  {
+    mintAddress: text("mint_address").notNull(),
+    creatorAddress: text("creator_address").notNull(),
+    visible: integer("visible", { mode: "boolean" }).notNull().default(true),
+    hiddenAt: text("hidden_at"),
+  },
+  (t) => [uniqueIndex("idx_token_prefs_unique").on(t.mintAddress, t.creatorAddress)],
+);
+
+export const userSettings = sqliteTable("user_settings", {
+  userId: text("user_id").primaryKey(),
+  tokenVisibilityMode: text("token_visibility_mode", { enum: ["hide_list", "allow_list"] })
+    .notNull()
+    .default("hide_list"),
+});

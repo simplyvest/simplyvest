@@ -1,50 +1,39 @@
+import { fetchMetadataFromSeeds, mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata";
+import { publicKey } from "@metaplex-foundation/umi";
+import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { PublicKey } from "@solana/web3.js";
 import type { Connection } from "@solana/web3.js";
-
-const METADATA_PROGRAM_ID = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
-export function formatAddress(pubkey: PublicKey | string, chars = 4): string {
-  const s = typeof pubkey === "string" ? pubkey : pubkey.toBase58();
-  return `${s.slice(0, chars)}...${s.slice(-chars)}`;
-}
 
 export interface TokenMetadata {
   name: string;
   symbol: string;
+  uri: string;
+}
+
+export function formatAddress(pubkey: PublicKey | string, chars = 4): string {
+  const s = typeof pubkey === "string" ? pubkey : pubkey.toBase58();
+  return `${s.slice(0, chars)}...${s.slice(-chars)}`;
 }
 
 export async function fetchTokenMetadata(
   connection: Connection,
   mint: PublicKey,
 ): Promise<TokenMetadata | null> {
-  const [pda] = PublicKey.findProgramAddressSync(
-    [Buffer.from("metadata"), METADATA_PROGRAM_ID.toBuffer(), mint.toBuffer()],
-    METADATA_PROGRAM_ID,
-  );
-
-  const info = await connection.getAccountInfo(pda);
-  if (!info) return null;
-
   try {
-    const data = info.data;
-    let offset = 1 + 32 + 32;
-    const nameLen = data.readUInt32LE(offset);
-    offset += 4;
-    const name = data
-      .subarray(offset, offset + nameLen)
-      .toString("utf8")
-      .split("\0")
-      .join("");
-    offset += nameLen;
-
-    const symbolLen = data.readUInt32LE(offset);
-    offset += 4;
-    const symbol = data
-      .subarray(offset, offset + symbolLen)
-      .toString("utf8")
-      .split("\0")
-      .join("");
-
-    return { name, symbol };
+    const umi = createUmi(connection.rpcEndpoint).use(mplTokenMetadata());
+    const metadata = await fetchMetadataFromSeeds(umi, {
+      mint: publicKey(mint.toBase58()),
+    });
+    const name = cleanStr((metadata as { name?: unknown }).name);
+    const symbol = cleanStr((metadata as { symbol?: unknown }).symbol);
+    if (name || symbol) {
+      return {
+        name: name || symbol,
+        symbol,
+        uri: cleanStr((metadata as { uri?: unknown }).uri),
+      };
+    }
+    return null;
   } catch {
     return null;
   }
@@ -61,4 +50,9 @@ export function formatTokenLabel(
 
 export function shortAddress(pk: PublicKey): string {
   return formatAddress(pk, 4);
+}
+
+function cleanStr(val: unknown): string {
+  if (typeof val !== "string") return "";
+  return val.split("\x00")[0];
 }

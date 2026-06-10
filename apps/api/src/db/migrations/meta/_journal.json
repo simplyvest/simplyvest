@@ -8,6 +8,27 @@
       "when": 1780783563944,
       "tag": "0000_aromatic_deadpool",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1780900000000,
+      "tag": "0001_add_org_description",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1780950000000,
+      "tag": "0002_add_stream_metadata",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1780985476893,
+      "tag": "0003_token_creations",
+      "breakpoints": true
     }
   ]
 }

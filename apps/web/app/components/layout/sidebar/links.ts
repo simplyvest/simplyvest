@@ -1,4 +1,11 @@
-import { LuLayoutDashboard, LuCirclePlus, LuBuilding2, LuClock, LuChartBar } from "react-icons/lu";
+import {
+  LuLayoutDashboard,
+  LuCirclePlus,
+  LuBuilding2,
+  LuClock,
+  LuChartBar,
+  LuWrench,
+} from "react-icons/lu";
 
 export interface SidebarLink {
   to: string;
@@ -12,4 +19,5 @@ export const sidebarLinks: SidebarLink[] = [
   { to: "/app/organizations", label: "Organizations", icon: LuBuilding2 },
   { to: "/app/activity", label: "Activity", icon: LuClock },
   { to: "/app/analytics", label: "Analytics", icon: LuChartBar },
+  { to: "/app/tools/tokens", label: "Tools", icon: LuWrench },
 ];

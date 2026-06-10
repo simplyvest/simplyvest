@@ -1,6 +1,6 @@
 import { useSignAndSendTransaction, useWallets } from "@privy-io/react-auth/solana";
 import { Transaction } from "@solana/web3.js";
-import type { Connection, PublicKey, TransactionInstruction } from "@solana/web3.js";
+import type { Connection, Keypair, PublicKey, TransactionInstruction } from "@solana/web3.js";
 
 const envChain = import.meta.env.VITE_SOLANA_CHAIN;
 const SOLANA_CHAIN: string = typeof envChain === "string" ? envChain : "solana:devnet";
@@ -15,8 +15,7 @@ interface SendTxResult {
  */
 export function useSolanaTransaction() {
   const { wallets } = useWallets();
-  // oxlint-disable-next-line typescript/unbound-method
-  const { signAndSendTransaction } = useSignAndSendTransaction();
+  const privyTx = useSignAndSendTransaction();
 
   const solanaWallet = wallets[0] ?? null;
 
@@ -24,6 +23,7 @@ export function useSolanaTransaction() {
     connection: Connection,
     payer: PublicKey,
     instructions: TransactionInstruction[],
+    opts?: { signers?: Keypair[] },
   ): Promise<SendTxResult> {
     if (!solanaWallet) throw new Error("Wallet not connected");
 
@@ -33,13 +33,21 @@ export function useSolanaTransaction() {
     tx.feePayer = payer;
     tx.add(...instructions);
 
+    // Extra signers (e.g. mint Keypair) require pre-signing.
+    // Gas sponsorship rejects pre-signed transactions, so we skip sponsor
+    // when extra signers are present.
+    const hasExtraSigners = !!opts?.signers?.length;
+    if (hasExtraSigners && opts?.signers) {
+      tx.partialSign(...opts.signers);
+    }
+
     const serialized = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
-    const { signature } = await signAndSendTransaction({
+    const { signature } = await privyTx.signAndSendTransaction({
       transaction: new Uint8Array(serialized),
       wallet: solanaWallet,
       chain: SOLANA_CHAIN,
       options: {
-        sponsor: true,
+        sponsor: !hasExtraSigners,
       },
     });
 
