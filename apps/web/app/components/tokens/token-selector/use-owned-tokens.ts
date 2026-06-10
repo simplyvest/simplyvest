@@ -1,26 +1,11 @@
 import { fetchTokenMetadata } from "@solana-tdp/sdk";
 import type { TokenMetadata } from "@solana-tdp/sdk";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { Connection, PublicKey } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import { useQuery } from "@tanstack/react-query";
 
 import { useAuth } from "@/lib/solana/use-auth";
 import { useConnection } from "@/lib/solana/use-connection";
-
-const METADATA_RPC_URL =
-  import.meta.env.VITE_SOLANA_METADATA_RPC_URL ??
-  import.meta.env.VITE_SOLANA_RPC_URL ??
-  "https://api.devnet.solana.com";
-
-console.log("[useOwnedTokens] metadata RPC:", METADATA_RPC_URL.slice(0, 80));
-
-let metadataConnection: Connection | null = null;
-function getMetadataConnection(): Connection {
-  if (!metadataConnection) {
-    metadataConnection = new Connection(METADATA_RPC_URL, "confirmed");
-  }
-  return metadataConnection;
-}
 
 interface TokenInfo {
   mint: PublicKey;
@@ -43,10 +28,6 @@ export function useOwnedTokens() {
   const { data: tokens = [], isLoading: loading } = useQuery({
     queryKey: ["owned-tokens", publicKey?.toBase58(), connection.rpcEndpoint],
     queryFn: async () => {
-      console.log(
-        "[useOwnedTokens] queryFn running, publicKey:",
-        publicKey?.toBase58()?.slice(0, 8),
-      );
       if (!publicKey) return [] as TokenInfo[];
       const { value: accounts } = await connection.getTokenAccountsByOwner(publicKey, {
         programId: TOKEN_PROGRAM_ID,
@@ -61,13 +42,12 @@ export function useOwnedTokens() {
         .filter((t) => t.balance > 0);
       mints.sort((a, b) => Number(b.balance - a.balance));
 
-      console.log("[useOwnedTokens] found", mints.length, "mints, fetching metadata...");
       const metaMap = new Map<string, TokenMetadata | null>();
       await Promise.all(
         mints.map(async (t) => {
           const key = t.mint.toBase58();
           if (!metaMap.has(key)) {
-            const meta = await fetchTokenMetadata(getMetadataConnection(), t.mint);
+            const meta = await fetchTokenMetadata(connection, t.mint);
             metaMap.set(key, meta);
           }
         }),
@@ -79,7 +59,7 @@ export function useOwnedTokens() {
       });
     },
     enabled: !!publicKey,
-    staleTime: 0,
+    staleTime: 30_000,
   });
 
   return { tokens, loading };

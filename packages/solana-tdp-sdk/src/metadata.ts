@@ -1,4 +1,4 @@
-import { fetchDigitalAsset, mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata";
+import { fetchMetadataFromSeeds, mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata";
 import { publicKey } from "@metaplex-foundation/umi";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { PublicKey } from "@solana/web3.js";
@@ -20,22 +20,21 @@ export async function fetchTokenMetadata(
   mint: PublicKey,
 ): Promise<TokenMetadata | null> {
   try {
-    console.log(
-      "[fetchTokenMetadata] Fetching",
-      mint.toBase58(),
-      "via",
-      connection.rpcEndpoint.slice(0, 60),
-    );
     const umi = createUmi(connection.rpcEndpoint).use(mplTokenMetadata());
-    const asset = await fetchDigitalAsset(umi, publicKey(mint.toBase58()));
-    console.log("[fetchTokenMetadata] OK", mint.toBase58(), "→", asset.metadata.name);
-    return {
-      name: asset.metadata.name,
-      symbol: asset.metadata.symbol,
-      uri: asset.metadata.uri,
-    };
-  } catch (err) {
-    console.warn("[fetchTokenMetadata] Failed for", mint.toBase58(), String(err));
+    const metadata = await fetchMetadataFromSeeds(umi, {
+      mint: publicKey(mint.toBase58()),
+    });
+    const name = cleanStr((metadata as { name?: unknown }).name);
+    const symbol = cleanStr((metadata as { symbol?: unknown }).symbol);
+    if (name || symbol) {
+      return {
+        name: name || symbol,
+        symbol,
+        uri: cleanStr((metadata as { uri?: unknown }).uri),
+      };
+    }
+    return null;
+  } catch {
     return null;
   }
 }
@@ -51,4 +50,9 @@ export function formatTokenLabel(
 
 export function shortAddress(pk: PublicKey): string {
   return formatAddress(pk, 4);
+}
+
+function cleanStr(val: unknown): string {
+  if (typeof val !== "string") return "";
+  return val.split("\x00")[0];
 }
