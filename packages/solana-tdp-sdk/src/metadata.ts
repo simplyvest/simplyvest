@@ -20,15 +20,22 @@ export async function fetchTokenMetadata(
   mint: PublicKey,
 ): Promise<TokenMetadata | null> {
   try {
+    console.log(
+      "[fetchTokenMetadata] Fetching",
+      mint.toBase58(),
+      "via",
+      connection.rpcEndpoint.slice(0, 60),
+    );
     const umi = createUmi(connection.rpcEndpoint).use(mplTokenMetadata());
     const asset = await fetchDigitalAsset(umi, publicKey(mint.toBase58()));
+    console.log("[fetchTokenMetadata] OK", mint.toBase58(), "→", asset.metadata.name);
     return {
       name: asset.metadata.name,
       symbol: asset.metadata.symbol,
       uri: asset.metadata.uri,
     };
   } catch (err) {
-    console.warn("[fetchTokenMetadata] Failed for", mint.toBase58(), err);
+    console.warn("[fetchTokenMetadata] Failed for", mint.toBase58(), String(err));
     return null;
   }
 }

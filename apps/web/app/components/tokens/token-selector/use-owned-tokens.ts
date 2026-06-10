@@ -12,6 +12,8 @@ const METADATA_RPC_URL =
   import.meta.env.VITE_SOLANA_RPC_URL ??
   "https://api.devnet.solana.com";
 
+console.log("[useOwnedTokens] metadata RPC:", METADATA_RPC_URL.slice(0, 80));
+
 let metadataConnection: Connection | null = null;
 function getMetadataConnection(): Connection {
   if (!metadataConnection) {
