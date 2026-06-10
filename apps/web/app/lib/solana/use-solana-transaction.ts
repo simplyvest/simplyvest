@@ -15,7 +15,6 @@ interface SendTxResult {
  */
 export function useSolanaTransaction() {
   const { wallets } = useWallets();
-  // oxlint-disable-next-line typescript/unbound-method
   const { signAndSendTransaction } = useSignAndSendTransaction();
 
   const solanaWallet = wallets[0] ?? null;
@@ -34,8 +33,12 @@ export function useSolanaTransaction() {
     tx.feePayer = payer;
     tx.add(...instructions);
 
-    if (opts?.signers?.length) {
-      tx.partialSign(...opts.signers);
+    // Extra signers (e.g. mint Keypair) require pre-signing.
+    // Gas sponsorship rejects pre-signed transactions, so we skip sponsor
+    // when extra signers are present.
+    const hasExtraSigners = !!opts?.signers?.length;
+    if (hasExtraSigners) {
+      tx.partialSign(...opts.signers!);
     }
 
     const serialized = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
@@ -44,7 +47,7 @@ export function useSolanaTransaction() {
       wallet: solanaWallet,
       chain: SOLANA_CHAIN,
       options: {
-        sponsor: true,
+        sponsor: !hasExtraSigners,
       },
     });
 

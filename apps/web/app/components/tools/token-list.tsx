@@ -16,14 +16,17 @@ type FilterTab = "all" | "visible" | "hidden";
 export function TokenList() {
   const { tokens: ownedTokens, loading: ownerLoading } = useOwnedTokens();
   const { data: apiTokens = [] } = useTokenList();
-  const { setVisibility } = useTokenPreferences();
+  const { preferences, setVisibility } = useTokenPreferences();
   const navigate = useNavigate();
 
   const [filter, setFilter] = useState<FilterTab>("all");
 
   const createdHereMap = new Map(apiTokens.map((t) => [t.mintAddress, t]));
+  const visibilityMap = new Map(preferences.preferences.map((p) => [p.mintAddress, p.visible]));
 
   function isHidden(mintAddress: string): boolean {
+    const v = visibilityMap.get(mintAddress);
+    if (v !== undefined) return !v;
     const record = createdHereMap.get(mintAddress);
     if (!record) return false;
     return record.visible === false;

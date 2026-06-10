@@ -14,6 +14,6 @@ export const cors = honoCors({
     if (origin.endsWith(".simplyvest.pages.dev")) return origin;
     return ALLOWED_ORIGINS[0];
   },
-  allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowHeaders: ["Content-Type", "Authorization"],
 });
