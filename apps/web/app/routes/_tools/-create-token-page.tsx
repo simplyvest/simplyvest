@@ -108,26 +108,29 @@ export function CreateTokenPage() {
 
       {/* Form */}
       {phase === "form" && mode && (
-        <TokenCreatorForm
-          mode={mode}
-          onSubmit={(data) =>
-            activeMutation.mutate(data, {
-              onSuccess: (res) => setResult(res),
-            })
-          }
-          isPending={activeMutation.isPending}
-        />
-      )}
-
-      {/* Back button when in form mode */}
-      {phase === "form" && (
-        <button
-          type="button"
-          onClick={() => setPhase("mode-choice")}
-          className="mt-4 w-full text-center text-xs text-muted transition-colors hover:text-text"
-        >
-          Change creation mode
-        </button>
+        <>
+          <div className="mb-5 flex items-center justify-between">
+            <p className="text-xs text-muted">
+              {mode === "platform" ? "Creating on Platform" : "Creating with Wallet"}
+            </p>
+            <button
+              type="button"
+              onClick={() => setPhase("mode-choice")}
+              className="text-xs text-dim transition-colors hover:text-text"
+            >
+              Change mode
+            </button>
+          </div>
+          <TokenCreatorForm
+            mode={mode}
+            onSubmit={(data) =>
+              activeMutation.mutate(data, {
+                onSuccess: (res) => setResult(res),
+              })
+            }
+            isPending={activeMutation.isPending}
+          />
+        </>
       )}
     </div>
   );
