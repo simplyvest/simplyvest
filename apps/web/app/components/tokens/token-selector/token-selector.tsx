@@ -28,19 +28,10 @@ export function TokenSelector({
     const mapped: PickerToken[] = walletTokens.map((t) => {
       const mintStr = t.mint.toBase58();
       const api = apiMap.get(mintStr);
-      const name = api?.name ?? t.meta?.name ?? "Unknown Token";
-      if (name === "Unknown Token") {
-        console.log("[TokenSelector] Unknown token:", {
-          mint: mintStr,
-          apiEntry: api ?? null,
-          onChainMeta: t.meta ?? null,
-          rawBalance: t.balance?.toString() ?? "0",
-        });
-      }
       return {
         mint: mintStr,
         balance: t.balance,
-        name,
+        name: api?.name ?? t.meta?.name ?? "Unknown Token",
         symbol: api?.symbol ?? t.meta?.symbol ?? "???",
         iconUrl: api?.metadataUri ?? t.meta?.uri,
         decimals: api?.decimals ?? 6,

@@ -1,4 +1,4 @@
-import { fetchDigitalAsset } from "@metaplex-foundation/mpl-token-metadata";
+import { fetchDigitalAsset, mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata";
 import { publicKey } from "@metaplex-foundation/umi";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { PublicKey } from "@solana/web3.js";
@@ -20,14 +20,15 @@ export async function fetchTokenMetadata(
   mint: PublicKey,
 ): Promise<TokenMetadata | null> {
   try {
-    const umi = createUmi(connection.rpcEndpoint);
+    const umi = createUmi(connection.rpcEndpoint).use(mplTokenMetadata());
     const asset = await fetchDigitalAsset(umi, publicKey(mint.toBase58()));
     return {
       name: asset.metadata.name,
       symbol: asset.metadata.symbol,
       uri: asset.metadata.uri,
     };
-  } catch {
+  } catch (err) {
+    console.warn("[fetchTokenMetadata] Failed for", mint.toBase58(), err);
     return null;
   }
 }
