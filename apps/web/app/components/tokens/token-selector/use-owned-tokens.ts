@@ -1,11 +1,24 @@
 import { fetchTokenMetadata } from "@solana-tdp/sdk";
 import type { TokenMetadata } from "@solana-tdp/sdk";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { PublicKey } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 import { useQuery } from "@tanstack/react-query";
 
 import { useAuth } from "@/lib/solana/use-auth";
 import { useConnection } from "@/lib/solana/use-connection";
+
+const METADATA_RPC_URL =
+  import.meta.env.VITE_SOLANA_METADATA_RPC_URL ??
+  import.meta.env.VITE_SOLANA_RPC_URL ??
+  "https://api.devnet.solana.com";
+
+let metadataConnection: Connection | null = null;
+function getMetadataConnection(): Connection {
+  if (!metadataConnection) {
+    metadataConnection = new Connection(METADATA_RPC_URL, "confirmed");
+  }
+  return metadataConnection;
+}
 
 interface TokenInfo {
   mint: PublicKey;
@@ -47,7 +60,7 @@ export function useOwnedTokens() {
         mints.map(async (t) => {
           const key = t.mint.toBase58();
           if (!metaMap.has(key)) {
-            const meta = await fetchTokenMetadata(connection, t.mint);
+            const meta = await fetchTokenMetadata(getMetadataConnection(), t.mint);
             metaMap.set(key, meta);
           }
         }),
