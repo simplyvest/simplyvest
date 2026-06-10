@@ -34,11 +34,18 @@ async function uploadImage(file: File, token: string): Promise<string> {
     body: form,
   });
   if (!res.ok) {
-    const err = (await res.json()) as { error: string };
-    throw new Error(err.error || "Failed to upload image");
+    const errBody: unknown = await res.json();
+    const errMsg =
+      errBody && typeof errBody === "object" && "error" in errBody
+        ? String((errBody as Record<string, unknown>).error)
+        : "Failed to upload image";
+    throw new Error(errMsg);
   }
-  const data = (await res.json()) as { url: string };
-  return data.url;
+  const body: unknown = await res.json();
+  if (!body || typeof body !== "object" || !("url" in body)) {
+    throw new Error("Invalid upload response");
+  }
+  return String((body as Record<string, unknown>).url);
 }
 
 export function useCreatePlatformToken() {

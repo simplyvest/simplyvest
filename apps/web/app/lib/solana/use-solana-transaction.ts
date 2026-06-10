@@ -15,7 +15,7 @@ interface SendTxResult {
  */
 export function useSolanaTransaction() {
   const { wallets } = useWallets();
-  const { signAndSendTransaction } = useSignAndSendTransaction();
+  const privyTx = useSignAndSendTransaction();
 
   const solanaWallet = wallets[0] ?? null;
 
@@ -37,12 +37,12 @@ export function useSolanaTransaction() {
     // Gas sponsorship rejects pre-signed transactions, so we skip sponsor
     // when extra signers are present.
     const hasExtraSigners = !!opts?.signers?.length;
-    if (hasExtraSigners) {
-      tx.partialSign(...opts.signers!);
+    if (hasExtraSigners && opts?.signers) {
+      tx.partialSign(...opts.signers);
     }
 
     const serialized = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
-    const { signature } = await signAndSendTransaction({
+    const { signature } = await privyTx.signAndSendTransaction({
       transaction: new Uint8Array(serialized),
       wallet: solanaWallet,
       chain: SOLANA_CHAIN,

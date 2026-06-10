@@ -13,12 +13,25 @@ interface TokenPreferences {
 
 const TOKEN_LIST_KEY = ["api-tokens"] as const;
 
+function isTokenRecordArray(val: unknown): val is TokenCreationRecord[] {
+  return (
+    Array.isArray(val) &&
+    val.every((item) => typeof item === "object" && item !== null && "mintAddress" in item)
+  );
+}
+
+function isTokenPreferences(val: unknown): val is TokenPreferences {
+  if (typeof val !== "object" || val === null) return false;
+  if (!("preferences" in val)) return false;
+  return Array.isArray(val.preferences);
+}
+
 export function useTokenPreferences() {
   const { publicKey } = useAuth();
   const creatorAddress = publicKey?.toBase58();
   const queryClient = useQueryClient();
 
-  const query = useQuery({
+  const prefsQuery = useQuery({
     queryKey: ["token-preferences", creatorAddress],
     queryFn: () => api.get<TokenPreferences>(`/api/tokens/preferences?creator=${creatorAddress}`),
     enabled: !!creatorAddress,
@@ -38,20 +51,27 @@ export function useTokenPreferences() {
       const prev: Map<string, unknown> = new Map();
 
       // Optimistically update token list queries
-      queryClient.getQueryCache().findAll({ queryKey: TOKEN_LIST_KEY }).forEach((q) => {
-        const data = q.state.data as TokenCreationRecord[] | undefined;
-        prev.set(q.queryHash, data);
-        queryClient.setQueryData(
-          q.queryKey,
-          (data ?? []).map((t) =>
-            t.mintAddress === input.mintAddress ? { ...t, visible: input.visible } : t,
-          ),
-        );
-      });
+      queryClient
+        .getQueryCache()
+        .findAll({ queryKey: TOKEN_LIST_KEY })
+        .forEach((q) => {
+          const raw = q.state.data;
+          const data = isTokenRecordArray(raw) ? raw : undefined;
+          prev.set(q.queryHash, data);
+          queryClient.setQueryData(
+            q.queryKey,
+            (data ?? []).map((t) =>
+              t.mintAddress === input.mintAddress
+                ? Object.assign({}, t, { visible: input.visible })
+                : t,
+            ),
+          );
+        });
 
       // Optimistically update preferences query
-      const prefsQuery = queryClient.getQueryCache().find({ queryKey: prefsKey });
-      const prevPrefs = prefsQuery?.state.data as TokenPreferences | undefined;
+      const prefsCacheEntry = queryClient.getQueryCache().find({ queryKey: prefsKey });
+      const prefsData = prefsCacheEntry?.state.data;
+      const prevPrefs = isTokenPreferences(prefsData) ? prefsData : undefined;
       if (prevPrefs) {
         prev.set("prefs", prevPrefs);
         const existing = prevPrefs.preferences.find((p) => p.mintAddress === input.mintAddress);
@@ -87,8 +107,8 @@ export function useTokenPreferences() {
   });
 
   return {
-    preferences: query.data ?? { tokenVisibilityMode: "hide_list" as const, preferences: [] },
+    preferences: prefsQuery.data ?? { tokenVisibilityMode: "hide_list" as const, preferences: [] },
     setVisibility,
-    isLoading: query.isLoading,
+    isLoading: prefsQuery.isLoading,
   };
 }
