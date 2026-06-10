@@ -23,6 +23,7 @@
     "**/build/**",
     "**/.anchor/**",
     "**/test-ledger/**",
-    "**/keypairs/**"
+    "**/keypairs/**",
+    "**/routeTree.gen.ts"
   ]
 }
