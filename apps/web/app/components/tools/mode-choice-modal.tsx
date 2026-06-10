@@ -1,4 +1,5 @@
 import { Dialog } from "@base-ui/react/dialog";
+import { LuX } from "react-icons/lu";
 
 type Mode = "platform" | "wallet";
 
@@ -21,9 +22,9 @@ export function ModeChoiceModal({ open, onOpenChange, onSelectMode }: ModeChoice
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" />
-        <Dialog.Popup className="fixed top-1/2 left-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-xl border bg-surface p-6 shadow-xl">
-          <Dialog.Title className="text-lg font-semibold">
+        <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" />
+        <Dialog.Popup className="fixed top-1/2 left-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-xl border border-border bg-bg1 p-6 shadow-xl">
+          <Dialog.Title className="text-lg font-semibold text-text">
             How would you like to create this token?
           </Dialog.Title>
 
@@ -98,16 +99,10 @@ export function ModeChoiceModal({ open, onOpenChange, onSelectMode }: ModeChoice
           </div>
 
           <Dialog.Close
-            className="absolute top-4 right-4 rounded-lg p-1 text-muted transition-colors hover:bg-field"
+            className="absolute top-4 right-4 rounded-lg p-1 text-muted transition-colors hover:bg-bg2"
             aria-label="Close"
           >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path
-                fillRule="evenodd"
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <LuX className="h-5 w-5" />
           </Dialog.Close>
         </Dialog.Popup>
       </Dialog.Portal>
