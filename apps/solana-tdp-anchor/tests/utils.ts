@@ -35,10 +35,7 @@ interface ProviderSend {
 
 // Fresh SVM per call to prevent memory accumulation across tests
 const newSvm = () => {
-  const soPath = path.resolve(
-    import.meta.dirname,
-    "../programs/solana-tdp/target/deploy/solana_tdp.so",
-  );
+  const soPath = path.resolve(import.meta.dirname, "../target/deploy/solana_tdp.so");
   const svm = new LiteSVM().withSysvars().withBuiltins().withDefaultPrograms();
   svm.addProgramFromFile(new PublicKey("6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk"), soPath);
   return svm;
