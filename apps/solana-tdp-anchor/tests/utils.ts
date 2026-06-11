@@ -1,3 +1,5 @@
+import * as path from "path";
+
 import * as anchor from "@coral-xyz/anchor";
 import type { SolanaTdp } from "@solana-tdp/sdk";
 import { SOLANA_TDP_PROGRAM_IDL } from "@solana-tdp/sdk";
@@ -19,7 +21,8 @@ import {
   Transaction,
   VersionedTransaction,
 } from "@solana/web3.js";
-import { fromWorkspace, LiteSVMProvider } from "anchor-litesvm";
+import { LiteSVMProvider } from "anchor-litesvm";
+import { LiteSVM } from "litesvm";
 
 interface ProviderSend {
   connection: Connection;
@@ -31,7 +34,15 @@ interface ProviderSend {
 }
 
 // Fresh SVM per call to prevent memory accumulation across tests
-const newSvm = () => fromWorkspace("./").withDefaultPrograms().withBuiltins().withSysvars();
+const newSvm = () => {
+  const soPath = path.resolve(
+    import.meta.dirname,
+    "../programs/solana-tdp/target/deploy/solana_tdp.so",
+  );
+  const svm = new LiteSVM().withSysvars().withBuiltins().withDefaultPrograms();
+  svm.addProgramFromFile(new PublicKey("6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk"), soPath);
+  return svm;
+};
 
 export const setupTest = () => {
   const svm = newSvm();

@@ -37,6 +37,29 @@ export function DateTimePicker({
     ? new Date(Math.max(now.getTime(), minDate?.getTime() ?? 0))
     : minDate;
 
+  const handleChangeRaw = (
+    event: React.KeyboardEvent<HTMLElement> | React.MouseEvent<HTMLElement> | undefined,
+  ) => {
+    if (!event?.target) return;
+    if (!(event.target instanceof HTMLInputElement)) return;
+    const text = event.target.value;
+    if (!text) {
+      onChange("");
+      return;
+    }
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(text)) {
+      const parsed = new Date(text);
+      if (!isNaN(parsed.getTime())) {
+        const year = parsed.getFullYear();
+        const month = String(parsed.getMonth() + 1).padStart(2, "0");
+        const day = String(parsed.getDate()).padStart(2, "0");
+        const hours = String(parsed.getHours()).padStart(2, "0");
+        const minutes = String(parsed.getMinutes()).padStart(2, "0");
+        onChange(`${year}-${month}-${day}T${hours}:${minutes}`);
+      }
+    }
+  };
+
   const handleChange = (date: Date | null) => {
     if (!date) {
       onChange("");
@@ -78,6 +101,7 @@ export function DateTimePicker({
     <DatePicker
       selected={selected}
       onChange={handleChange}
+      onChangeRaw={handleChangeRaw}
       showTimeSelect
       timeFormat="HH:mm"
       timeIntervals={15}
