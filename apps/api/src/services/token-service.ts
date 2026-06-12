@@ -1,5 +1,10 @@
 import { createTokenInstructions } from "@solana-tdp/sdk";
-import { Keypair, Connection, Transaction } from "@solana/web3.js";
+import {
+  createAssociatedTokenAccountInstruction,
+  createTransferInstruction,
+  getAssociatedTokenAddressSync,
+} from "@solana/spl-token";
+import { Keypair, Connection, PublicKey, Transaction } from "@solana/web3.js";
 import { eq, sql } from "drizzle-orm";
 
 import type { Db } from "../db";
@@ -171,6 +176,7 @@ export async function createPlatformToken(params: {
   const connection = new Connection(params.rpcUrl, "confirmed");
   const mint = Keypair.generate();
   const supply = String(Math.floor(Number(params.amount) * 10 ** params.decimals));
+  const creatorPk = new PublicKey(params.creatorAddress);
 
   const instructions = createTokenInstructions({
     payer: platformWallet.publicKey,
@@ -182,7 +188,23 @@ export async function createPlatformToken(params: {
     symbol: params.symbol,
   });
 
-  const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
+  const creatorAta = getAssociatedTokenAddressSync(mint.publicKey, creatorPk);
+  instructions.push(
+    createAssociatedTokenAccountInstruction(
+      platformWallet.publicKey,
+      creatorAta,
+      creatorPk,
+      mint.publicKey,
+    ),
+    createTransferInstruction(
+      getAssociatedTokenAddressSync(mint.publicKey, platformWallet.publicKey),
+      creatorAta,
+      platformWallet.publicKey,
+      BigInt(supply),
+    ),
+  );
+
+  const { blockhash } = await connection.getLatestBlockhash();
   const tx = new Transaction();
   tx.recentBlockhash = blockhash;
   tx.feePayer = platformWallet.publicKey;
@@ -193,10 +215,24 @@ export async function createPlatformToken(params: {
     skipPreflight: true,
     maxRetries: 5,
   });
-  await connection.confirmTransaction(
-    { signature: txSignature, blockhash, lastValidBlockHeight },
-    "confirmed",
-  );
+
+  const startTime = Date.now();
+  // oxlint-disable-next-line eslint/no-await-in-loop
+  while (Date.now() - startTime < 30_000) {
+    // oxlint-disable-next-line eslint/no-await-in-loop
+    const status = await connection.getSignatureStatus(txSignature);
+    if (
+      status?.value?.confirmationStatus === "confirmed" ||
+      status?.value?.confirmationStatus === "finalized"
+    ) {
+      break;
+    }
+    if (status?.value?.err) {
+      throw new Error(`Transaction failed: ${JSON.stringify(status.value.err)}`);
+    }
+    // oxlint-disable-next-line eslint/no-await-in-loop
+    await new Promise((r) => setTimeout(r, 2000));
+  }
 
   return {
     mintAddress: mint.publicKey.toBase58(),

@@ -27,13 +27,17 @@ export function useOwnedTokens() {
 
   const { data: tokens = [], isLoading: loading } = useQuery({
     queryKey: ["owned-tokens", publicKey?.toBase58(), connection.rpcEndpoint],
-    queryFn: async () => {
-      if (!publicKey) return [] as TokenInfo[];
+    queryFn: async (): Promise<TokenInfo[]> => {
+      if (!publicKey) return [];
+      const timeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("timeout")), 10_000),
+      );
       try {
-        const { value: accounts } = await connection.getTokenAccountsByOwner(publicKey, {
-          programId: TOKEN_PROGRAM_ID,
-        });
-        const mints = accounts
+        const accounts = await Promise.race([
+          connection.getTokenAccountsByOwner(publicKey, { programId: TOKEN_PROGRAM_ID }),
+          timeout,
+        ]);
+        const mints = accounts.value
           .map((acc) => {
             const data = Buffer.from(acc.account.data);
             const mint = new PublicKey(data.subarray(0, 32));
@@ -59,7 +63,7 @@ export function useOwnedTokens() {
           return Object.assign(t, { meta });
         });
       } catch {
-        return [] as TokenInfo[];
+        return [];
       }
     },
     enabled: !!publicKey,
