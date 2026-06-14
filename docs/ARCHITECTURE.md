@@ -83,21 +83,21 @@ erDiagram
 
 One per vesting stream. Created at `create_stream` time and closed when the stream completes (final `withdraw`) or is cancelled. Status is derived at read time — only `cancelled: bool` is stored.
 
-| Field              | Type            | Purpose                                                     |
-| ------------------ | --------------- | ----------------------------------------------------------- | -------------------------------------- |
-| `creator`          | `Pubkey`        | Wallet that funded the stream. Only this wallet can cancel. |
-| `recipient`        | `Pubkey`        | Wallet that receives vested tokens. Immutable once created. |
-| `mint`             | `Pubkey`        | SPL Token or Token-2022 mint address.                       |
-| `vault`            | `Pubkey`        | Escrow token account address (cached for self-description). |
-| `amount`           | `u64`           | Total tokens locked in this stream.                         |
-| `amount_withdrawn` | `u64`           | Tokens already claimed by the recipient.                    |
-| `start_time`       | `i64`           | Unix timestamp when vesting begins.                         |
-| `end_time`         | `i64`           | Unix timestamp when the full amount is vested.              |
-| `cliff_time`       | `i64`           | Unix timestamp of cliff; 0 means no cliff.                  |
-|                    | `vesting_count` | `u64`                                                       | Nonce used in this stream's PDA seeds. |
-| `cancelled`        | `bool`          | True if the creator cancelled the stream.                   |
-| `bump`             | `u8`            | Stream PDA bump seed, stored to avoid re-derivation.        |
-| `vault_bump`       | `u8`            | Vault PDA bump seed, stored to avoid re-derivation.         |
+| Field              | Type     | Purpose                                                     |
+| ------------------ | -------- | ----------------------------------------------------------- |
+| `creator`          | `Pubkey` | Wallet that funded the stream. Only this wallet can cancel. |
+| `recipient`        | `Pubkey` | Wallet that receives vested tokens. Immutable once created. |
+| `mint`             | `Pubkey` | SPL Token or Token-2022 mint address.                       |
+| `vault`            | `Pubkey` | Escrow token account address (cached for self-description). |
+| `amount`           | `u64`    | Total tokens locked in this stream.                         |
+| `amount_withdrawn` | `u64`    | Tokens already claimed by the recipient.                    |
+| `start_time`       | `i64`    | Unix timestamp when vesting begins.                         |
+| `end_time`         | `i64`    | Unix timestamp when the full amount is vested.              |
+| `cliff_time`       | `i64`    | Unix timestamp of cliff; 0 means no cliff.                  |
+| `vesting_count`    | `u64`    | Nonce used in this stream's PDA seeds.                      |
+| `cancelled`        | `bool`   | True if the creator cancelled the stream.                   |
+| `bump`             | `u8`     | Stream PDA bump seed, stored to avoid re-derivation.        |
+| `vault_bump`       | `u8`     | Vault PDA bump seed, stored to avoid re-derivation.         |
 
 **Account size:** 187 bytes (8 anchor discriminator + 128 pubkeys + 48 integers + 3 bool/u8).
 
@@ -113,10 +113,10 @@ Chosen over an ATA because a custom PDA can be fully closed on stream completion
 
 One per creator wallet. Created lazily on the first `create_stream` or `create_milestone_stream` call via Anchor's `init_if_needed`. Stores a sequential nonce that increments on each `create_stream` and `create_milestone_stream`, enabling multiple streams between the same creator and recipient for the same mint.
 
-| Field     | Type            | Purpose                 |
-| --------- | --------------- | ----------------------- | ------------------------------------- |
-| `creator` | `Pubkey`        | Creator wallet address. |
-|           | `vesting_count` | `u64`                   | Next sequential nonce, starting at 0. |
+| Field           | Type     | Purpose                               |
+| --------------- | -------- | ------------------------------------- |
+| `creator`       | `Pubkey` | Creator wallet address.               |
+| `vesting_count` | `u64`    | Next sequential nonce, starting at 0. |
 
 **Account size:** 48 bytes (8 discriminator + 32 pubkey + 8 u64).
 
@@ -139,16 +139,16 @@ One per milestone-gated vesting stream. Created at `create_milestone_stream` tim
 | `bump`                | `u8`     | MilestoneStream PDA bump seed, stored to avoid re-derivation. |
 | `vault_bump`          | `u8`     | Vault PDA bump seed, stored to avoid re-derivation.           |
 
-## **Account size:** 196 bytes (8 anchor discriminator + 160 pubkeys + 24 integers + 4 bool/u8).
+**Account size:** 196 bytes (8 anchor discriminator + 160 pubkeys + 24 integers + 4 bool/u8).
 
 ## PDA seeds
 
-| Account       | Seeds                         | Notes                                                           |
-| ------------- | ----------------------------- | --------------------------------------------------------------- | ---------------------------------- |
-| CreatorConfig | `["creator_config", creator]` | One per creator wallet                                          |
-|               | StreamAccount                 | `["stream", creator, recipient, mint, vesting_count]`           | `vesting_count` from CreatorConfig |
-| Vault         | `["vault", stream.key()]`     | Escrow token account                                            |
-|               | MilestoneStream               | `["milestone-stream", creator, recipient, mint, vesting_count]` | `vesting_count` from CreatorConfig |
+| Account         | Seeds                                                           | Notes                              |
+| --------------- | --------------------------------------------------------------- | ---------------------------------- |
+| CreatorConfig   | `["creator_config", creator]`                                   | One per creator wallet             |
+| StreamAccount   | `["stream", creator, recipient, mint, vesting_count]`           | `vesting_count` from CreatorConfig |
+| Vault           | `["vault", stream.key()]`                                       | Escrow token account               |
+| MilestoneStream | `["milestone-stream", creator, recipient, mint, vesting_count]` | `vesting_count` from CreatorConfig |
 
 The `vesting_count` is a sequential nonce that lets the same creator fund multiple streams and milestone streams for the same recipient and mint without address collisions. It increments on each `create_stream` and `create_milestone_stream` call.
 
