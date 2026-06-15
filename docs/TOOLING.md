@@ -37,7 +37,7 @@ anchor build             # BPF compilation (for on-chain deployment)
 
 Run with `cargo test` — no SVM/validator required. Tests live in `#[cfg(test)] mod tests {}` blocks co-located with the source they cover.
 
-### TypeScript integration tests (Jest + anchor-litesvm)
+### TypeScript integration tests (vitest + anchor-litesvm)
 
 Run with:
 
@@ -46,7 +46,7 @@ cd apps/solana-tdp-anchor
 pnpm test
 ```
 
-Tests use the `anchor-litesvm` npm package (v0.2.1) via `LiteSVMProvider`. Each test creates fresh token mints, keypairs, and stream fixtures — fully isolated, no local validator needed. Each test file covers one instruction family.
+Tests use `vitest` with the `anchor-litesvm` npm package via `LiteSVMProvider`. Each test creates fresh token mints, keypairs, and stream fixtures — fully isolated, no local validator needed. Each test file covers one instruction family.
 
 **Helpers:** `tests/helpers.ts` provides `findStreamPDA`, `findVaultPDA`, `findCreatorConfigPDA`, `now()`, `parseEvents`, `findEvent`.
 
@@ -57,6 +57,22 @@ Tests use the `anchor-litesvm` npm package (v0.2.1) via `LiteSVMProvider`. Each 
 | `solana-tdp.001.withdraw.test.ts` | 13 tests — partial/full vesting, cumulative tracking, cliff/start/cancelled rejections, ExceedsClaimable, TokensClaimed event, closure, 25%/50% percentages, third-party/creator rejections |
 | `solana-tdp.002.cancel.test.ts` | 6 tests — pre-start/partial/post-end splits, double-cancel rejection, StreamCancelled event, closure |
 | `solana-tdp.003.milestone.test.ts` | Milestone stream creation, trigger, withdraw, cancel |
+| `solana-tdp.005.security-audit.test.ts` | 16 tests — signer authority, PDA uniqueness, overflow, account ownership, state transitions, wrong-account attacks, timestamp boundaries |
+| `fixtures.ts` | Shared test fixtures (token mints, accounts, PDAs) |
+
+### Storybook browser tests (vitest + Playwright)
+
+Run with:
+
+```bash
+cd apps/web
+pnpm test:storybook        # Storybook tests only
+pnpm test:ci               # Unit + Storybook tests combined
+```
+
+The web frontend has **40+ Storybook stories** tested via `@storybook/addon-vitest` with Playwright (Chromium). Each story is rendered in a headless browser and tested for interaction correctness (clicks, form fills, callback assertions) and accessibility (axe-core).
+
+Playwright browsers are installed automatically via the `postinstall` script (`playwright install chromium`).
 
 ---
 
@@ -66,10 +82,10 @@ Tests use the `anchor-litesvm` npm package (v0.2.1) via `LiteSVMProvider`. Each 
 // apps/solana-tdp-anchor/package.json (devDependencies)
 {
   "anchor-litesvm": "^0.2.1",
+  "litesvm": "0.3.3",
   "@coral-xyz/anchor": "^0.32.1",
   "@solana/web3.js": "^1.98.4",
-  "jest": "^29.0.3",
-  "ts-jest": "^29.0.2",
+  "vitest": "^4.1.8",
   "typescript": "^5.7.3"
 }
 ```
@@ -127,9 +143,11 @@ apps/
 │       ├── solana-tdp.000.create-stream.test.ts
 │       ├── solana-tdp.001.withdraw.test.ts
 │       ├── solana-tdp.002.cancel.test.ts
+│       ├── solana-tdp.003.milestone.test.ts
+│       ├── solana-tdp.005.security-audit.test.ts
+│       ├── fixtures.ts
 │       ├── helpers.ts
-│       ├── utils.ts
-│       └── jest-sequencer.js
+│       └── utils.ts
 ├── web/                         # React frontend (Vite + TanStack Router)
 │   ├── app/
 │   │   ├── components/
@@ -182,6 +200,7 @@ solana-tdp.000.create-stream.test.ts    # stream must exist first
 solana-tdp.001.withdraw.test.ts          # then claim vested tokens
 solana-tdp.002.cancel.test.ts            # then cancel mid-stream
 solana-tdp.003.milestone.test.ts         # milestone lifecycle
+solana-tdp.005.security-audit.test.ts    # security attack-vector tests
 ```
 
 ### Anchor.toml
@@ -191,19 +210,21 @@ solana-tdp.003.milestone.test.ts         # milestone lifecycle
 cluster = "localnet"
 
 [scripts]
-test = "jest"
+test = "pnpm exec vitest run"
 ```
 
 ---
 
 ## API Stack
 
-| Layer     | Technology    | Purpose                                  |
-| --------- | ------------- | ---------------------------------------- |
-| Framework | Hono          | Lightweight web framework for CF Workers |
-| ORM       | Drizzle ORM   | Type-safe SQL queries, migrations        |
-| Database  | Cloudflare D1 | SQLite at the edge                       |
-| Auth      | Privy JWT     | JWKS-based token verification            |
+| Layer         | Technology           | Purpose                                    |
+| ------------- | -------------------- | ------------------------------------------ |
+| Framework     | Hono                 | Lightweight web framework for CF Workers   |
+| ORM           | Drizzle ORM          | Type-safe SQL queries, migrations          |
+| Database      | Cloudflare D1        | SQLite at the edge                         |
+| Object Store  | Cloudflare R2        | Token metadata JSON storage (TOKEN_ASSETS) |
+| Auth          | Privy JWT            | JWKS-based token verification              |
+| Compatibility | `nodejs_compat` flag | Node.js API support in CF Workers          |
 
 ### Database tables
 
@@ -222,6 +243,16 @@ test = "jest"
 | `cors.ts`       | CORS restricted to localhost + simplyvest.pages.dev + simplyvest.xyz          |
 | `auth.ts`       | Privy JWT verification via JWKS (cached 1hr)                                  |
 | `rate-limit.ts` | In-memory per-IP rate limiting (30/min streams, 20/min users, 5/min waitlist) |
+
+### Services
+
+| Service          | Purpose                                                       |
+| ---------------- | ------------------------------------------------------------- |
+| `stream-service` | Stream business logic                                         |
+| `user-service`   | User profile logic                                            |
+| `org-service`    | Org CRUD logic                                                |
+| `token-service`  | Platform token creation, R2 metadata upload, token visibility |
+| `reconciler`     | On-chain event reconciliation                                 |
 
 ### Scheduled tasks
 

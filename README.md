@@ -34,9 +34,11 @@ A monorepo managed by pnpm workspaces.
 
 ```txt
 apps/
+├── api/                      # Cloudflare Worker API (Hono + D1 + R2)
 ├── solana-tdp-anchor/        # Anchor program (on-chain vesting logic)
-│   └── programs/tdp/src/     # lib.rs, error.rs, event.rs, state/, instructions/
-└── web/                      # React frontend (Vite + TanStack Router)
+│   ├── programs/solana-tdp/src/ # lib.rs, errors.rs, events.rs, state/, instructions/
+│   └── tests/                # Integration tests (vitest + anchor-litesvm)
+└── web/                      # React frontend (Vite + TanStack Router + Storybook)
 packages/
 └── solana-tdp-sdk/           # TypeScript SDK (IDL types, PDA helpers, event parsing)
 docs/
@@ -67,12 +69,25 @@ pnpm build
 
 ### Targeted scripts
 
-| Script               | What it does                                                      |
-| -------------------- | ----------------------------------------------------------------- |
-| `pnpm program:build` | Builds the Anchor program, syncs the IDL into the SDK, builds SDK |
-| `pnpm sdk:sync`      | Copies the latest IDL from the program build into the SDK package |
-| `pnpm sdk:build`     | Builds only the SDK package                                       |
-| `pnpm test`          | Runs all workspace tests                                          |
+| Script                   | What it does                                                      |
+| ------------------------ | ----------------------------------------------------------------- |
+| `pnpm program:build`     | Builds the Anchor program, syncs the IDL into the SDK, builds SDK |
+| `pnpm sdk:sync`          | Copies the latest IDL from the program build into the SDK package |
+| `pnpm sdk:build`         | Builds only the SDK package                                       |
+| `pnpm test`              | Runs all workspace tests                                          |
+| `pnpm dev`               | Start API + web in parallel                                       |
+| `pnpm dev:web`           | Build SDK + start web app (localhost:5173)                        |
+| `pnpm dev:api`           | Start API worker locally (localhost:8787)                         |
+| `pnpm build`             | Build all workspaces                                              |
+| `pnpm lint`              | JS/TS lint with oxlint                                            |
+| `pnpm format`            | Code formatting with oxfmt                                        |
+| `pnpm lint:rust`         | Rust clippy with deny warnings                                    |
+| `pnpm format:rust`       | Format Rust code with cargo fmt                                   |
+| `pnpm check:ts`          | TypeScript check (web)                                            |
+| `pnpm check:ts:all`      | TypeScript check (web + API)                                      |
+| `pnpm storybook`         | Start Storybook dev server                                        |
+| `pnpm deploy:api`        | Deploy API worker to Cloudflare                                   |
+| `pnpm db:migrate:remote` | Apply D1 migrations to remote                                     |
 
 ### Program ID
 
