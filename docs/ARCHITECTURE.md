@@ -320,7 +320,7 @@ Let the milestone authority mark a milestone stream as reached. Once triggered, 
 
 - **Caller:** MilestoneAuthority (signer)
 - **Parameters:** none
-- **Accounts:** MilestoneAuthority (signer), MilestoneStream (mut), Clock sysvar
+- **Accounts:** MilestoneAuthority (signer), MilestoneStream (mut)
 
 **Validations:**
 
@@ -343,7 +343,7 @@ Let the recipient withdraw the full stream amount after the milestone has been r
 
 - **Caller:** Recipient (signer)
 - **Parameters:** none
-- **Accounts:** Recipient (signer, mut), Creator (unchecked, mut, rent return), MilestoneStream (mut, close), Vault (mut, close), RecipientTokenAccount (init_if_needed, mut), TokenProgram, AssociatedTokenProgram, SystemProgram, Clock sysvar
+- **Accounts:** Recipient (signer, mut), Creator (unchecked, mut, rent return), MilestoneStream (mut, close), Vault (mut, close), RecipientTokenAccount (init_if_needed, mut), TokenProgram, AssociatedTokenProgram, SystemProgram
 
 **Validations:**
 
@@ -387,7 +387,7 @@ Let the creator cancel an active milestone stream before the milestone is reache
 3. Close MilestoneStream: return rent SOL to creator.
 4. Close Vault: return rent SOL to creator.
 
-## **Error codes:** `Unauthorized`, `AlreadyCancelled`, `FullyVested`
+**Error codes:** `Unauthorized`, `AlreadyCancelled`, `FullyVested`
 
 ## Data flow
 
