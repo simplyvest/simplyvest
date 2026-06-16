@@ -70,7 +70,7 @@ apps/web/
 │   │   ├── use-token-preferences.ts  # Token preferences
 │   │   ├── use-create-token.ts       # Token creation flow
 │   │   └── use-create-platform-token.ts # Platform token creation
-│   ├── routes/            # 25 file-based routes (dashboard, streams, tokens, tools)
+│   ├── routes/            # 24 file-based routes (dashboard, streams, tokens, tools)
 │   ├── types/             # Shared TypeScript types
 │   ├── utils/             # cn(), formatters
 │   ├── main.tsx           # App entry point
