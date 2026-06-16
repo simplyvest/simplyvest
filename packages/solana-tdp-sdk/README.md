@@ -52,10 +52,20 @@ const percent = getVestedPercent(stream, Math.floor(Date.now() / 1000));
 ## PDA Derivation
 
 ```ts
-import { getStreamPda, getVaultPda, getCreatorConfigPda } from "@solana-tdp/sdk";
+import {
+  getStreamPda,
+  getMilestoneStreamPda,
+  getVaultPda,
+  getCreatorConfigPda,
+} from "@solana-tdp/sdk";
 import { BN } from "@coral-xyz/anchor";
 
+// Time-based stream
 const [streamPda] = getStreamPda(creator, recipient, mint, new BN(0), programId);
+
+// Milestone stream
+const [milestonePda] = getMilestoneStreamPda(creator, recipient, mint, new BN(0), programId);
+
 const [vaultPda] = getVaultPda(streamPda, programId);
 const [configPda] = getCreatorConfigPda(creator, programId);
 ```
