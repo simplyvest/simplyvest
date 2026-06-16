@@ -4,7 +4,7 @@
 
 A full-stack protocol for creating, managing, and claiming token vesting schedules. Built on Anchor for trustless on-chain custody, wrapped in a hybrid dApp that non-technical founders can use from day one.
 
-> **Status:** Active development. On-chain program deployed to devnet with 7 instructions, API live with D1 + R2, web frontend with dashboard and claim UI, SDK with PDA helpers and event parsing, 94+ tests across 3 layers, full CI/CD with 14 GitHub Actions workflows.
+> **Status:** Active development. On-chain program deployed to devnet with 7 instructions, API live with D1 + R2, web frontend with dashboard and claim UI, SDK with PDA helpers and event parsing, 147+ tests across 4 layers, full CI/CD with 14 GitHub Actions workflows.
 
 ## The problem
 
@@ -114,7 +114,7 @@ Update `declare_id!("...")` in `programs/solana-tdp/src/lib.rs` and `[programs.l
 | [Deployment](./docs/DEPLOYMENT.md)                          | Building, testing, program deployment, frontend deployment, CI/CD, browser compatibility                                        |
 | [Contributing](./docs/CONTRIBUTING.md)                      | Branch workflow, commit conventions, pre-commit hook behavior                                                                   |
 | [Observations](./docs/OBSERVATIONS.md)                      | Deferred v2 decisions: global config, batch creation, Token-2022 hooks                                                          |
-| [Security Testing](./docs/SECURITY_TESTING_PRESENTATION.md) | Security architecture, test coverage (~94 tests), CI/CD pipeline, known gaps                                                    |
+| [Security Testing](./docs/SECURITY_TESTING_PRESENTATION.md) | Security architecture, test coverage (~147 tests), CI/CD pipeline, known gaps                                                   |
 
 ## Repository
 
