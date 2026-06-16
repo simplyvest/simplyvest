@@ -58,10 +58,18 @@ apps/web/
 │   │   ├── tools/         # Token creation tools
 │   │   └── ui/            # Shared UI primitives (Button, Card, etc.)
 │   ├── hooks/
-│   │   ├── tx/            # Transaction handling hooks
-│   │   ├── use-stream.ts  # Stream data hooks
-│   │   ├── use-api.ts     # API client hooks
-│   │   └── use-program.ts # Anchor program hooks
+│   │   ├── tx/                        # Transaction handling hooks
+│   │   ├── use-stream.ts             # Stream data hooks
+│   │   ├── use-stream-detail.ts      # Single stream detail
+│   │   ├── use-stream-events.ts      # Stream event parsing
+│   │   ├── use-stream-role.ts        # Creator vs recipient role
+│   │   ├── use-api.ts                # API client hooks
+│   │   ├── use-program.ts            # Anchor program hooks
+│   │   ├── use-sol-balance.ts        # SOL balance
+│   │   ├── use-token-list.ts         # Token list
+│   │   ├── use-token-preferences.ts  # Token preferences
+│   │   ├── use-create-token.ts       # Token creation flow
+│   │   └── use-create-platform-token.ts # Platform token creation
 │   ├── routes/            # 25 file-based routes (dashboard, streams, tokens, tools)
 │   ├── types/             # Shared TypeScript types
 │   ├── utils/             # cn(), formatters
