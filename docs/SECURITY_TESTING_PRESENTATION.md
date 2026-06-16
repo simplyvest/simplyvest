@@ -82,7 +82,7 @@ Three account types, all **Program-Derived Addresses**:
 
 ```
 StreamAccount (187 bytes)
-├── sender, recipient, mint, vault
+├── creator, recipient, mint, vault
 ├── amount, amount_withdrawn
 ├── start_time, end_time, cliff_time
 ├── vesting_count, cancelled, bumps
@@ -111,7 +111,7 @@ graph TD
         A --> A3[PDA derivation]
     end
     subgraph "Layer 2: Anchor Integration Tests"
-        B[Jest + litesvm] --> B1[Create/Withdraw/Cancel]
+        B[Vitest + litesvm] --> B1[Create/Withdraw/Cancel]
         B --> B2[Milestone lifecycle]
         B --> B3[Security audit vectors]
     end
@@ -129,11 +129,11 @@ graph TD
 
 Embedded program tests (`#[cfg(test)]`):
 
-| File               | Tests | Coverage                                                                                |
-| ------------------ | ----- | --------------------------------------------------------------------------------------- |
-| `errors.rs`        | 2     | Error discriminant values, error messages for all 15 variants                           |
-| `events.rs`        | 4     | Serialization round-trips for all 4 event types                                         |
-| `create_stream.rs` | 6     | PDA derivation determinism, vesting_count uniqueness, duration boundary, balance checks |
+| File               | Tests | Coverage                                                                                                     |
+| ------------------ | ----- | ------------------------------------------------------------------------------------------------------------ |
+| `errors.rs`        | 2     | Error discriminant values, error messages for all 15 variants                                                |
+| `events.rs`        | 4     | Serialization round-trips for 4 event types (StreamCreated, TokensClaimed, StreamCompleted, StreamCancelled) |
+| `create_stream.rs` | 6     | PDA derivation determinism, vesting_count uniqueness, duration boundary, balance checks                      |
 
 Run with: `cargo test` or `pnpm lint:rust`
 
@@ -141,7 +141,7 @@ Run with: `cargo test` or `pnpm lint:rust`
 
 # Layer 2 — Anchor Integration Tests
 
-**Jest** + **anchor-litesvm** (SVM simulator, no validator needed):
+**Vitest** + **anchor-litesvm** (SVM simulator, no validator needed):
 
 | Test File                    | Tests | Coverage                                                                                                                               |
 | ---------------------------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------- |
@@ -239,19 +239,23 @@ Every commit runs automatically:
 
 # CI/CD Security Pipeline
 
-**GitHub Actions** — 9 jobs on push/PR to `main`:
+**GitHub Actions** — 13 jobs on push/PR to `main`:
 
-| Job                   | Guard                                                   |
-| --------------------- | ------------------------------------------------------- |
-| `typecheck-web`       | TypeScript strict checks                                |
-| `typecheck-api`       | Worker type safety                                      |
-| `typecheck-anchor-ts` | Test code type safety                                   |
-| `lint`                | `oxlint .` (304 rules)                                  |
-| `format`              | `oxfmt --check .`                                       |
-| `build-web`           | Production Vite build                                   |
-| `anchor`              | `cargo fmt` + `clippy` + `anchor build` + `anchor test` |
-| `deploy-web`          | Cloudflare Pages (main only)                            |
-| `deploy-api`          | Cloudflare Worker (main only)                           |
+| Job                   | Guard                                                  |
+| --------------------- | ------------------------------------------------------ |
+| `typecheck-web`       | TypeScript strict checks                               |
+| `typecheck-api`       | Worker type safety                                     |
+| `typecheck-sdk`       | SDK type safety                                        |
+| `typecheck-anchor-ts` | Test code type safety                                  |
+| `lint`                | `oxlint .` (304 rules)                                 |
+| `format`              | `oxfmt --check .`                                      |
+| `lint-rust`           | `cargo fmt --check` + `cargo clippy`                   |
+| `build-web`           | Production Vite build                                  |
+| `test-api`            | API tests with vitest                                  |
+| `test-web`            | Web unit + Storybook browser tests                     |
+| `anchor`              | `cargo fmt` + `clippy` + `anchor build` + vitest tests |
+| `deploy-web`          | Cloudflare Pages (main only)                           |
+| `deploy-api`          | Cloudflare Worker (main only)                          |
 
 ---
 
