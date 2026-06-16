@@ -48,7 +48,7 @@ pnpm test
 
 Tests use `vitest` with the `anchor-litesvm` npm package via `LiteSVMProvider`. Each test creates fresh token mints, keypairs, and stream fixtures — fully isolated, no local validator needed. Each test file covers one instruction family.
 
-**Helpers:** `tests/helpers.ts` provides `findStreamPDA`, `findVaultPDA`, `findCreatorConfigPDA`, `now()`, `parseEvents`, `findEvent`.
+**Helpers:** `tests/helpers.ts` provides `now()` and `clockNow()` (SVM-based clock helper). PDA derivation helpers (`findStreamPDA`, `findVaultPDA`, `findCreatorConfigPDA`) and event parsing (`parseEvents`, `findEvent`) live in `@solana-tdp/sdk`.
 
 **Test files:**
 | File | Coverage |
@@ -103,17 +103,20 @@ apps/
 │   │   ├── index.ts               # Hono app entry
 │   │   ├── middleware/
 │   │   │   ├── auth.ts            # Privy JWT verification
-│   │   │   └── cors.ts            # CORS config
+│   │   │   ├── cors.ts            # CORS config
+│   │   │   └── rate-limit.ts      # In-memory per-IP rate limiting
 │   │   ├── routes/
 │   │   │   ├── streams.ts         # Stream recording endpoints
 │   │   │   ├── users.ts           # User profile endpoints
 │   │   │   ├── organizations.ts   # Org CRUD + members
 │   │   │   ├── reconciliation.ts  # On-chain reconciliation
+│   │   │   ├── tokens.ts          # Token metadata, R2 upload, visibility
 │   │   │   └── waitlist.ts        # Legacy waitlist endpoint
 │   │   ├── services/
 │   │   │   ├── stream-service.ts  # Stream business logic
 │   │   │   ├── user-service.ts    # User profile logic
 │   │   │   ├── org-service.ts     # Org CRUD logic
+│   │   │   ├── token-service.ts   # Platform token creation, R2 metadata, visibility
 │   │   │   └── reconciler.ts      # Reconciliation logic
 │   │   └── db/
 │   │       ├── schema.ts          # Drizzle schema
