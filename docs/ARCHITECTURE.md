@@ -217,7 +217,7 @@ Let the recipient claim a specific amount of vested tokens. Calculates the total
 
 - **Caller:** Recipient (signer)
 - **Parameters:** `{ amount: u64 }` — amount of tokens to claim (must be > 0 and <= total claimable)
-- **Accounts:** Recipient (signer, mut), Sender (unchecked, mut, rent return), Mint, StreamAccount (mut), Vault (mut), RecipientTokenAccount (init_if_needed, mut), TokenProgram, AssociatedTokenProgram, SystemProgram
+- **Accounts:** Recipient (signer, mut), Creator (unchecked, mut, rent return), Mint, StreamAccount (mut), Vault (mut), RecipientTokenAccount (init_if_needed, mut), TokenProgram, AssociatedTokenProgram, SystemProgram
 
 **Validations:**
 
@@ -350,7 +350,7 @@ Let the recipient withdraw the full stream amount after the milestone has been r
 
 | Condition                    | Error               |
 | ---------------------------- | ------------------- |
-| Caller is not `creator`      | `Unauthorized`      |
+| Stream creator mismatch      | `Unauthorized`      |
 | Status is Cancelled          | `AlreadyCancelled`  |
 | `milestone_reached == false` | `NothingToWithdraw` |
 | `amount_withdrawn > 0`       | `FullyVested`       |
@@ -548,7 +548,7 @@ Each decision documents the alternatives considered and why the chosen approach 
 
 **Rationale:** "Stream" is shorter than "VestingSchedule" for a frequently-referenced type. It matches the code convention (the stub used `StreamAccount`) and aligns with industry conventions (Streamflow, streaming vesting). The terms "vesting" and "schedule" add no semantic value — the protocol only does vesting, and every stream has its own schedule implicitly.
 
-**Trade-off:** Replaces a self-documenting name with a shorter one. The domain glossary (CONTEXT.md) compensates.
+**Trade-off:** Replaces a self-documenting name with a shorter one. The domain documentation compensates for this brevity.
 
 ### PDA seeds: recipient and mint in the derivation path
 

@@ -81,7 +81,7 @@ pnpm check:ts:all
 | `solana-tdp.001.withdraw.test.ts`       | Claiming vested tokens, cliff checks, partial claims                                                                                                    |
 | `solana-tdp.002.cancel.test.ts`         | Mid-stream cancellation, vested/unvested split                                                                                                          |
 | `solana-tdp.003.milestone.test.ts`      | Milestone stream creation, trigger, withdraw, cancel                                                                                                    |
-| `solana-tdp.005.security-audit.test.ts` | 16 security audit tests — signer authority, PDA uniqueness, overflow, account ownership, state transitions, wrong-account attacks, timestamp boundaries |
+| `solana-tdp.005.security-audit.test.ts` | 19 security audit tests — signer authority, PDA uniqueness, overflow, account ownership, state transitions, wrong-account attacks, timestamp boundaries |
 | `fixtures.ts`                           | Shared test fixtures (token mints, accounts, PDAs)                                                                                                      |
 
 ---

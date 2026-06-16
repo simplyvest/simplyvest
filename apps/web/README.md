@@ -92,5 +92,6 @@ apps/web/
 | `test`            | Run all tests (unit + storybook)       |
 | `test:unit`       | Run unit tests only                    |
 | `test:storybook`  | Run Storybook browser tests            |
+| `test:ci`         | Run unit + storybook tests combined    |
 | `storybook`       | Start Storybook dev server (port 6006) |
 | `build-storybook` | Build Storybook for deployment         |

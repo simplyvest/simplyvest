@@ -121,7 +121,7 @@ graph TD
     end
 ```
 
-**Total: ~94 tests**
+**Total: ~147 tests**
 
 ---
 
@@ -133,7 +133,7 @@ Embedded program tests (`#[cfg(test)]`):
 | ------------------ | ----- | ------------------------------------------------------------------------------------------------------------ |
 | `errors.rs`        | 2     | Error discriminant values, error messages for all 15 variants                                                |
 | `events.rs`        | 4     | Serialization round-trips for 4 event types (StreamCreated, TokensClaimed, StreamCompleted, StreamCancelled) |
-| `create_stream.rs` | 6     | PDA derivation determinism, vesting_count uniqueness, duration boundary, balance checks                      |
+| `create_stream.rs` | 5     | PDA derivation determinism, vesting_count uniqueness, duration boundary, balance checks                      |
 
 Run with: `cargo test` or `pnpm lint:rust`
 
@@ -146,10 +146,10 @@ Run with: `cargo test` or `pnpm lint:rust`
 | Test File                    | Tests | Coverage                                                                                                                               |
 | ---------------------------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | `000.create-stream.test.ts`  | 9     | Happy path, cliff variant, 4 validation rejections, insufficient balance, event emission                                               |
-| `001.withdraw.test.ts`       | 13    | Partial/full vesting, cumulative tracking, cliff/before-start/cancelled rejections, ExceedsClaimable, event, T/P third-party rejection |
-| `002.cancel.test.ts`         | 6     | Pre-start/partial/post-end splits, double-cancel, event, account closure                                                               |
-| `003.milestone.test.ts`      | ~15   | Full milestone lifecycle: create, trigger, withdraw, cancel + events                                                                   |
-| `005.security-audit.test.ts` | 16    | Dedicated security audit suite — **7 attack categories**                                                                               |
+| `001.withdraw.test.ts`       | 15    | Partial/full vesting, cumulative tracking, cliff/before-start/cancelled rejections, ExceedsClaimable, event, T/P third-party rejection |
+| `002.cancel.test.ts`         | 8     | Pre-start/partial/post-end splits, double-cancel, event, account closure                                                               |
+| `003.milestone.test.ts`      | 18    | Full milestone lifecycle: create, trigger, withdraw, cancel + events                                                                   |
+| `005.security-audit.test.ts` | 19    | Dedicated security audit suite — **7 attack categories**                                                                               |
 
 Custom alpha-sort sequencer ensures deterministic test order.
 
@@ -161,7 +161,7 @@ Custom alpha-sort sequencer ensures deterministic test order.
 
 | Test File        | Tests | Coverage                                                                                  |
 | ---------------- | ----- | ----------------------------------------------------------------------------------------- |
-| `format.test.ts` | 18    | `formatAddress` (3), `formatSol` (5), `formatDate` (2), `formatDuration` (6), `clamp` (2) |
+| `format.test.ts` | 18    | `formatAddress` (3), `formatSol` (5), `formatDate` (2), `formatDuration` (6), `clamp` (3) |
 | `cn.test.ts`     | 4     | Merging, conditional classes, Tailwind conflict resolution, empty input                   |
 
 Setup: `@testing-library/jest-dom` matchers + `Buffer` polyfill
@@ -174,7 +174,7 @@ Run with: `pnpm test` in `apps/web/`
 
 **File:** `solana-tdp.005.security-audit.test.ts`
 
-7 attack vector categories — **16 tests total**:
+7 attack vector categories — **19 tests total**:
 
 | #   | Category                    | Tests | What It Verifies                                                                                      |
 | --- | --------------------------- | ----- | ----------------------------------------------------------------------------------------------------- |
@@ -273,19 +273,19 @@ Every commit runs automatically:
 
 # Appendix — Full Test Coverage Map
 
-| Test File                    | Instructions/Utilities                  | Layer       | Tests   |
-| ---------------------------- | --------------------------------------- | ----------- | ------- |
-| `errors.rs`                  | Error discriminant stability            | Rust unit   | 2       |
-| `events.rs`                  | Event serialization round-trips         | Rust unit   | 4       |
-| `create_stream.rs`           | PDA derivation, vesting math            | Rust unit   | 6       |
-| `000.create-stream.test.ts`  | `create_stream`                         | Integration | 9       |
-| `001.withdraw.test.ts`       | `withdraw`                              | Integration | 13      |
-| `002.cancel.test.ts`         | `cancel`                                | Integration | 6       |
-| `003.milestone.test.ts`      | Milestone lifecycle (4 ixns)            | Integration | ~15     |
-| `005.security-audit.test.ts` | 7 attack categories (all ixns)          | Integration | 16      |
-| `format.test.ts`             | `formatAddress/Sol/Date/Duration/clamp` | Web unit    | 18      |
-| `cn.test.ts`                 | `cn()` class merging                    | Web unit    | 4       |
-| **Total**                    |                                         |             | **~94** |
+| Test File                    | Instructions/Utilities                  | Layer       | Tests    |
+| ---------------------------- | --------------------------------------- | ----------- | -------- |
+| `errors.rs`                  | Error discriminant stability            | Rust unit   | 2        |
+| `events.rs`                  | Event serialization round-trips         | Rust unit   | 4        |
+| `create_stream.rs`           | PDA derivation, vesting math            | Rust unit   | 5        |
+| `000.create-stream.test.ts`  | `create_stream`                         | Integration | 9        |
+| `001.withdraw.test.ts`       | `withdraw`                              | Integration | 15       |
+| `002.cancel.test.ts`         | `cancel`                                | Integration | 8        |
+| `003.milestone.test.ts`      | Milestone lifecycle (4 ixns)            | Integration | 18       |
+| `005.security-audit.test.ts` | 7 attack categories (all ixns)          | Integration | 19       |
+| `format.test.ts`             | `formatAddress/Sol/Date/Duration/clamp` | Web unit    | 18       |
+| `cn.test.ts`                 | `cn()` class merging                    | Web unit    | 4        |
+| **Total**                    |                                         |             | **~147** |
 
 ---
 

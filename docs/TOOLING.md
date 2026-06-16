@@ -54,10 +54,10 @@ Tests use `vitest` with the `anchor-litesvm` npm package via `LiteSVMProvider`. 
 | File | Coverage |
 |---|---|
 | `solana-tdp.000.create-stream.test.ts` | 9 tests — happy path, cliff variant, 4 validation rejections, DurationTooShort, InsufficientBalance, StreamCreated event |
-| `solana-tdp.001.withdraw.test.ts` | 13 tests — partial/full vesting, cumulative tracking, cliff/start/cancelled rejections, ExceedsClaimable, TokensClaimed event, closure, 25%/50% percentages, third-party/creator rejections |
-| `solana-tdp.002.cancel.test.ts` | 6 tests — pre-start/partial/post-end splits, double-cancel rejection, StreamCancelled event, closure |
+| `solana-tdp.001.withdraw.test.ts` | 15 tests — partial/full vesting, cumulative tracking, cliff/start/cancelled rejections, ExceedsClaimable, TokensClaimed event, closure, 25%/50% percentages, third-party/creator rejections |
+| `solana-tdp.002.cancel.test.ts` | 8 tests — pre-start/partial/post-end splits, double-cancel rejection, StreamCancelled event, closure |
 | `solana-tdp.003.milestone.test.ts` | Milestone stream creation, trigger, withdraw, cancel |
-| `solana-tdp.005.security-audit.test.ts` | 16 tests — signer authority, PDA uniqueness, overflow, account ownership, state transitions, wrong-account attacks, timestamp boundaries |
+| `solana-tdp.005.security-audit.test.ts` | 19 tests — signer authority, PDA uniqueness, overflow, account ownership, state transitions, wrong-account attacks, timestamp boundaries |
 | `fixtures.ts` | Shared test fixtures (token mints, accounts, PDAs) |
 | `helpers.ts` | `now()` and `clockNow()` SVM-based clock helpers |
 | `utils.ts` | Test utility functions |
