@@ -147,7 +147,10 @@ pub fn create_stream_handler(ctx: Context<CreateStream>, params: CreateStreamPar
     // 4. Increment vesting_count for next stream
     let creator_config = &mut ctx.accounts.creator_config;
     creator_config.creator = ctx.accounts.sender.key();
-    creator_config.vesting_count = creator_config.vesting_count.checked_add(1).unwrap();
+    creator_config.vesting_count = creator_config
+        .vesting_count
+        .checked_add(1)
+        .ok_or(TdpError::ArithmeticOverflow)?;
 
     Ok(())
 }
