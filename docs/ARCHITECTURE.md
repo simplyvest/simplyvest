@@ -343,7 +343,7 @@ Let the recipient withdraw the full stream amount after the milestone has been r
 
 - **Caller:** Recipient (signer)
 - **Parameters:** none
-- **Accounts:** Recipient (signer, mut), Creator (unchecked, mut, rent return), MilestoneStream (mut, close), Vault (mut, close), RecipientTokenAccount (init_if_needed, mut), TokenProgram, AssociatedTokenProgram, SystemProgram
+- **Accounts:** Recipient (signer, mut), Creator (unchecked, mut, rent return), MilestoneStream (mut, close), Vault (mut, close), RecipientTokenAccount (init_if_needed, mut), Mint (constraint), TokenProgram, AssociatedTokenProgram, SystemProgram
 
 **Validations:**
 
@@ -370,7 +370,7 @@ Let the creator cancel an active milestone stream before the milestone is reache
 
 - **Caller:** Creator (signer)
 - **Parameters:** none
-- **Accounts:** Creator (signer, mut), Recipient (unchecked), MilestoneStream (mut, close), Vault (mut, close), CreatorTokenAccount (mut), TokenProgram, SystemProgram, Clock sysvar
+- **Accounts:** Creator (signer, mut), Recipient (unchecked), MilestoneStream (mut, close), Vault (mut, close), CreatorTokenAccount (mut), Mint (constraint), TokenProgram, AssociatedTokenProgram
 
 **Validations:**
 
@@ -509,7 +509,7 @@ Events are emitted via Anchor's `emit!` macro and parsed from transaction logs b
 | `StreamCancelled`        | `stream`, `creator`, `recipient`, `vested_to_recipient`, `returned_to_creator`             | On `cancel` — followed by account closure                     |
 | `MilestoneStreamCreated` | `stream`, `creator`, `recipient`, `mint`, `amount`, `milestone_authority`                  | On successful `create_milestone_stream`                       |
 | `MilestoneTriggered`     | `stream`, `milestone_authority`                                                            | On successful `trigger_milestone`                             |
-| `MilestoneCompleted`     | `stream`, `recipient`, `total_amount`                                                      | On `withdraw_milestone` — followed by account closure         |
+| `MilestoneCompleted`     | `stream`, `recipient`, `amount`                                                            | On `withdraw_milestone` — followed by account closure         |
 | `MilestoneCancelled`     | `stream`, `creator`, `recipient`, `returned_to_creator`                                    | On `cancel_milestone` — followed by account closure           |
 
 ---

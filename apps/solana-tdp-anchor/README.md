@@ -49,7 +49,7 @@ anchor test
 | Instruction               | Description                                             |
 | ------------------------- | ------------------------------------------------------- |
 | `create_stream`           | Lock tokens in a PDA vault, record vesting schedule     |
-| `withdraw`                | Recipient claims all vested tokens at any time          |
+| `withdraw`                | Recipient claims a specified amount of vested tokens    |
 | `cancel`                  | Creator cancels; vested → recipient, unvested → creator |
 | `create_milestone_stream` | Lock tokens pending a milestone trigger                 |
 | `trigger_milestone`       | Milestone authority marks milestone as reached          |
