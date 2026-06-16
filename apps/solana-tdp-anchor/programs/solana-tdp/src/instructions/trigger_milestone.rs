@@ -24,7 +24,10 @@ pub fn trigger_milestone_handler(ctx: Context<TriggerMilestone>) -> Result<()> {
         TdpError::Unauthorized
     );
     require!(!stream.cancelled, TdpError::AlreadyCancelled);
-    require!(!stream.milestone_reached, TdpError::FullyVested);
+    require!(
+        !stream.milestone_reached,
+        TdpError::MilestoneAlreadyTriggered
+    );
 
     stream.milestone_reached = true;
 

@@ -42,7 +42,10 @@ pub fn cancel_milestone_handler(ctx: Context<CancelMilestone>) -> Result<()> {
         TdpError::Unauthorized
     );
     require!(!stream.cancelled, TdpError::AlreadyCancelled);
-    require!(!stream.milestone_reached, TdpError::FullyVested);
+    require!(
+        !stream.milestone_reached,
+        TdpError::MilestoneAlreadyTriggered
+    );
 
     let return_amount = stream.amount.checked_sub(stream.amount_withdrawn).unwrap();
 

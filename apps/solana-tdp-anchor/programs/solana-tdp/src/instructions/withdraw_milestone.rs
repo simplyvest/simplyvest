@@ -50,7 +50,7 @@ pub fn withdraw_milestone_handler(ctx: Context<WithdrawMilestone>) -> Result<()>
 
     require!(!stream.cancelled, TdpError::AlreadyCancelled);
     require!(stream.milestone_reached, TdpError::NothingToWithdraw);
-    require!(stream.amount_withdrawn == 0, TdpError::FullyVested);
+    require!(stream.amount_withdrawn == 0, TdpError::AlreadyWithdrawn);
     require_keys_eq!(
         ctx.accounts.sender.key(),
         stream.creator,
