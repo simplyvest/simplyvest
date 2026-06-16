@@ -135,7 +135,7 @@ Embedded program tests (`#[cfg(test)]`):
 | `events.rs`        | 4     | Serialization round-trips for 4 event types (StreamCreated, TokensClaimed, StreamCompleted, StreamCancelled) |
 | `create_stream.rs` | 5     | PDA derivation determinism, vesting_count uniqueness, duration boundary, balance checks                      |
 
-Run with: `cargo test` or `pnpm lint:rust`
+Run with: `cargo test`
 
 ---
 
@@ -223,9 +223,9 @@ Every commit runs automatically:
 │  *.{css,md,json} → oxfmt               │
 └─────────────────────────────────────────┘
 ┌─ TypeScript typecheck ─────────────────┐
-│  web: tsc --noEmit                     │
+│  web: tsgo --noEmit                    │
 │  api: typecheck                        │
-│  anchor: tsc --noEmit                  │
+│  anchor: tsgo --noEmit                 │
 └─────────────────────────────────────────┘
 ┌─ Rust checks ──────────────────────────┐
 │  cargo fmt --check                     │
