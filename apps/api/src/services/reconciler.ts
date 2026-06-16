@@ -1,4 +1,4 @@
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 
 import type { Db } from "../db";
 
@@ -10,9 +10,14 @@ interface ReconcileResult {
   errors: string[];
 }
 
+type AccountInfoResult =
+  | { status: "exists" }
+  | { status: "not_found" }
+  | { status: "error"; error: string };
+
 export function createReconcilerService(db: Db, rpcUrl: string) {
   return {
-    async reconcile(_limit = 100): Promise<ReconcileResult> {
+    async reconcile(limit = 100): Promise<ReconcileResult> {
       const result: ReconcileResult = {
         processed: 0,
         updated: 0,
@@ -21,7 +26,11 @@ export function createReconcilerService(db: Db, rpcUrl: string) {
 
       try {
         // Get active streams that haven't been synced recently
-        const activeStreams = await db.select().from(streams).where(eq(streams.status, "active"));
+        const activeStreams = await db
+          .select()
+          .from(streams)
+          .where(eq(streams.status, "active"))
+          .limit(limit);
 
         result.processed = activeStreams.length;
 
@@ -32,7 +41,9 @@ export function createReconcilerService(db: Db, rpcUrl: string) {
             // oxlint-disable-next-line no-await-in-loop
             const accountInfo = await fetchAccountInfo(rpcUrl, stream.id);
 
-            if (!accountInfo) {
+            if (accountInfo.status === "error") {
+              result.errors.push(`Stream ${stream.id}: RPC error — ${accountInfo.error}`);
+            } else if (accountInfo.status === "not_found") {
               // Account closed on-chain — mark as completed
               // oxlint-disable-next-line no-await-in-loop
               await db
@@ -93,26 +104,43 @@ export function createReconcilerService(db: Db, rpcUrl: string) {
     },
 
     async getStats() {
-      const allStreams = await db.select().from(streams);
-      const active = allStreams.filter((s) => s.status === "active").length;
-      const completed = allStreams.filter((s) => s.status === "completed").length;
-      const cancelled = allStreams.filter((s) => s.status === "cancelled").length;
-      const orphaned = allStreams.filter((s) => s.status === "orphaned").length;
-
-      const totalEvents = await db.select().from(streamEvents);
+      const [activeResult] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(streams)
+        .where(eq(streams.status, "active"));
+      const [completedResult] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(streams)
+        .where(eq(streams.status, "completed"));
+      const [cancelledResult] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(streams)
+        .where(eq(streams.status, "cancelled"));
+      const [orphanedResult] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(streams)
+        .where(eq(streams.status, "orphaned"));
+      const [eventsResult] = await db.select({ count: sql<number>`count(*)` }).from(streamEvents);
 
       return {
-        streams: { total: allStreams.length, active, completed, cancelled, orphaned },
-        events: { total: totalEvents.length },
+        streams: {
+          total:
+            activeResult.count +
+            completedResult.count +
+            cancelledResult.count +
+            orphanedResult.count,
+          active: activeResult.count,
+          completed: completedResult.count,
+          cancelled: cancelledResult.count,
+          orphaned: orphanedResult.count,
+        },
+        events: { total: eventsResult.count },
       };
     },
   };
 }
 
-async function fetchAccountInfo(
-  rpcUrl: string,
-  address: string,
-): Promise<{ exists: boolean } | null> {
+async function fetchAccountInfo(rpcUrl: string, address: string): Promise<AccountInfoResult> {
   try {
     const response = await fetch(rpcUrl, {
       method: "POST",
@@ -138,16 +166,19 @@ async function fetchAccountInfo(
     };
 
     if (data.error) {
-      throw new Error(data.error.message);
+      return { status: "error", error: data.error.message };
     }
 
     // If value is null, account doesn't exist
     if (!data.result?.value) {
-      return null;
+      return { status: "not_found" };
     }
 
-    return { exists: true };
-  } catch {
-    return null;
+    return { status: "exists" };
+  } catch (err) {
+    return {
+      status: "error",
+      error: err instanceof Error ? err.message : "Unknown RPC error",
+    };
   }
 }
