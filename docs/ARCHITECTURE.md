@@ -225,6 +225,7 @@ Let the recipient claim a specific amount of vested tokens. Calculates the total
 | ------------------------------ | ------------------- |
 | Status is Cancelled            | `AlreadyCancelled`  |
 | Clock timestamp < `cliff_time` | `CliffNotReached`   |
+| `amount == 0`                  | `ZeroAmount`        |
 | Calculated claimable == 0      | `NothingToWithdraw` |
 | `amount > claimable`           | `ExceedsClaimable`  |
 
@@ -349,6 +350,7 @@ Let the recipient withdraw the full stream amount after the milestone has been r
 
 | Condition                    | Error               |
 | ---------------------------- | ------------------- |
+| Caller is not `creator`      | `Unauthorized`      |
 | Status is Cancelled          | `AlreadyCancelled`  |
 | `milestone_reached == false` | `NothingToWithdraw` |
 | `amount_withdrawn > 0`       | `FullyVested`       |
@@ -356,7 +358,7 @@ Let the recipient withdraw the full stream amount after the milestone has been r
 **Effects:**
 
 1. Create recipient's ATA via CPI if it does not exist (payer = recipient).
-2. Transfer `amount - amount_withdrawn` tokens from vault to recipient's ATA via `invoke_signed`.
+2. Transfer `amount` tokens from vault to recipient's ATA via `invoke_signed`.
 3. Update `MilestoneStream.amount_withdrawn = amount`.
 4. Emit `MilestoneCompleted` event.
 5. Close MilestoneStream: return rent SOL to creator.
@@ -370,7 +372,7 @@ Let the creator cancel an active milestone stream before the milestone is reache
 
 - **Caller:** Creator (signer)
 - **Parameters:** none
-- **Accounts:** Creator (signer, mut), Recipient (unchecked), MilestoneStream (mut, close), Vault (mut, close), CreatorTokenAccount (mut), Mint (constraint), TokenProgram, AssociatedTokenProgram
+- **Accounts:** Creator (signer, mut), MilestoneStream (mut, close), Vault (mut, close), CreatorTokenAccount (mut), Mint (constraint), TokenProgram, AssociatedTokenProgram
 
 **Validations:**
 
