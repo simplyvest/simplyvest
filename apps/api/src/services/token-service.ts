@@ -187,6 +187,7 @@ export async function createPlatformToken(params: {
     metadataUri: params.metadataUri,
     name: params.name,
     symbol: params.symbol,
+    rpcUrl: params.rpcUrl,
   });
 
   const creatorAta = getAssociatedTokenAddressSync(mint.publicKey, creatorPk);
