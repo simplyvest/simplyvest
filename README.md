@@ -45,7 +45,10 @@ docs/
 ├── RESEARCH.md               # Vesting types, competitive landscape, market gap, user research
 ├── ARCHITECTURE.md           # Account model, program instructions, data flow, events/errors
 ├── TOOLING.md                # Solana tooling decisions, testing strategy, conventions
-└── DEPLOYMENT.md             # Build, test, deploy guides, CI/CD
+├── DEPLOYMENT.md             # Build, test, deploy guides, CI/CD
+├── CONTRIBUTING.md           # Branch workflow, commit conventions, pre-commit hook
+├── OBSERVATIONS.md           # Deferred v2 decisions
+└── SECURITY_TESTING_PRESENTATION.md # Security architecture, test coverage, known gaps
 ```
 
 ## Quick start
@@ -83,6 +86,7 @@ pnpm build
 | `pnpm format`            | Code formatting with oxfmt                                        |
 | `pnpm lint:rust`         | Rust clippy with deny warnings                                    |
 | `pnpm format:rust`       | Format Rust code with cargo fmt                                   |
+| `pnpm format:rust:check` | Check Rust formatting without modifying                           |
 | `pnpm check:ts`          | TypeScript check (web)                                            |
 | `pnpm check:ts:all`      | TypeScript check (web + API)                                      |
 | `pnpm storybook`         | Start Storybook dev server                                        |
@@ -98,16 +102,19 @@ cd apps/solana-tdp-anchor
 anchor keys list
 ```
 
-Update `declare_id!("...")` in `programs/tdp/src/lib.rs` and `[programs.localnet]` in `Anchor.toml`.
+Update `declare_id!("...")` in `programs/solana-tdp/src/lib.rs` and `[programs.localnet]` in `Anchor.toml`.
 
 ## Documentation
 
-| Document                               | Contents                                                                                                                        |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| [Research](./docs/RESEARCH.md)         | Vesting types (cliff/linear/milestone), competitive landscape, market gap analysis, user research findings, product positioning |
-| [Architecture](./docs/ARCHITECTURE.md) | Account structure, PDA seeds, program instructions, data flow, edge cases, events and error reference                           |
-| [Tooling](./docs/TOOLING.md)           | Framework, testing setup, repo layout, code conventions                                                                         |
-| [Deployment](./docs/DEPLOYMENT.md)     | Building, testing, program deployment, frontend deployment, CI/CD, browser compatibility                                        |
+| Document                                                    | Contents                                                                                                                        |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [Research](./docs/RESEARCH.md)                              | Vesting types (cliff/linear/milestone), competitive landscape, market gap analysis, user research findings, product positioning |
+| [Architecture](./docs/ARCHITECTURE.md)                      | Account structure, PDA seeds, program instructions, data flow, edge cases, events and error reference                           |
+| [Tooling](./docs/TOOLING.md)                                | Framework, testing setup, repo layout, code conventions                                                                         |
+| [Deployment](./docs/DEPLOYMENT.md)                          | Building, testing, program deployment, frontend deployment, CI/CD, browser compatibility                                        |
+| [Contributing](./docs/CONTRIBUTING.md)                      | Branch workflow, commit conventions, pre-commit hook behavior                                                                   |
+| [Observations](./docs/OBSERVATIONS.md)                      | Deferred v2 decisions: global config, batch creation, Token-2022 hooks                                                          |
+| [Security Testing](./docs/SECURITY_TESTING_PRESENTATION.md) | Security architecture, test coverage (~94 tests), CI/CD pipeline, known gaps                                                    |
 
 ## Repository
 
