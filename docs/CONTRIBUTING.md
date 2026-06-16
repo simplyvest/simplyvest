@@ -6,7 +6,7 @@
   The pre-commit hook runs automatically via `nano-staged`. It:
 
 - Lints and formats staged JS/TS files (`oxlint --fix` + `oxfmt`)
-- Typechecks all workspaces when any `.ts` files are staged (`tsc --noEmit` across web, api, anchor)
+- Typechecks web, API, and anchor workspaces when any `.ts` files are staged (`tsc --noEmit`)
 - Checks `.rs` files with `cargo fmt --check` + `cargo clippy`
 
 To skip the hook temporarily:
