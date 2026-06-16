@@ -36,6 +36,8 @@ pub enum TdpError {
     MilestoneAlreadyTriggered,
     #[msg("Tokens have already been withdrawn from this milestone.")]
     AlreadyWithdrawn,
+    #[msg("Arithmetic overflow in vesting calculation.")]
+    ArithmeticOverflow,
 }
 
 #[cfg(test)]
@@ -62,6 +64,7 @@ mod tests {
         assert_eq!(TdpError::Unauthorized as u32, 14);
         assert_eq!(TdpError::MilestoneAlreadyTriggered as u32, 15);
         assert_eq!(TdpError::AlreadyWithdrawn as u32, 16);
+        assert_eq!(TdpError::ArithmeticOverflow as u32, 17);
     }
 
     #[test]
@@ -133,6 +136,10 @@ mod tests {
         assert_eq!(
             TdpError::AlreadyWithdrawn.to_string(),
             "Tokens have already been withdrawn from this milestone."
+        );
+        assert_eq!(
+            TdpError::ArithmeticOverflow.to_string(),
+            "Arithmetic overflow in vesting calculation."
         );
     }
 }

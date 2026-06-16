@@ -78,18 +78,23 @@ pub fn withdraw_handler(ctx: Context<Withdraw>, params: WithdrawParams) -> Resul
         stream
             .amount
             .checked_mul(elapsed)
-            .unwrap()
+            .ok_or(TdpError::ArithmeticOverflow)?
             .checked_div(duration)
-            .unwrap()
+            .ok_or(TdpError::ArithmeticOverflow)?
     };
 
     // 3. Determine claimable amount
-    let claimable = total_vested.checked_sub(stream.amount_withdrawn).unwrap();
+    let claimable = total_vested
+        .checked_sub(stream.amount_withdrawn)
+        .ok_or(TdpError::ArithmeticOverflow)?;
     require!(claimable > 0, TdpError::NothingToWithdraw);
     require!(params.amount <= claimable, TdpError::ExceedsClaimable);
 
     // 4. Update state
-    stream.amount_withdrawn = stream.amount_withdrawn.checked_add(params.amount).unwrap();
+    stream.amount_withdrawn = stream
+        .amount_withdrawn
+        .checked_add(params.amount)
+        .ok_or(TdpError::ArithmeticOverflow)?;
 
     // 5. CPI Transfer (Signed by Stream PDA)
     let seeds = &[
