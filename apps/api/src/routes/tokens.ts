@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import type { Env } from "../../env";
 
 import { createDb } from "../db";
+import { authMiddleware } from "../middleware/auth";
 import {
   createTokenService,
   createPlatformToken,
@@ -27,12 +28,7 @@ tokenRoutes.get("/r2/*", async (c) => {
   return c.body(obj.body);
 });
 
-tokenRoutes.post("/upload-image", async (c) => {
-  const authHeader = c.req.header("Authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
+tokenRoutes.post("/upload-image", authMiddleware, async (c) => {
   const form = await c.req.formData();
   const file = form.get("file");
 
@@ -60,12 +56,7 @@ tokenRoutes.post("/upload-image", async (c) => {
   return c.json({ url });
 });
 
-tokenRoutes.post("/metadata", async (c) => {
-  const authHeader = c.req.header("Authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
+tokenRoutes.post("/metadata", authMiddleware, async (c) => {
   const body = await c.req.json<{ name: string; symbol: string; imageUrl?: string }>();
   if (!body.name || !body.symbol) {
     return c.json({ error: "Missing required fields: name, symbol" }, 400);
@@ -168,12 +159,7 @@ tokenRoutes.get("/preferences", async (c) => {
   return c.json(prefs);
 });
 
-tokenRoutes.post("/create-platform", async (c) => {
-  const authHeader = c.req.header("Authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
+tokenRoutes.post("/create-platform", authMiddleware, async (c) => {
   const body = await c.req.json<{
     name: string;
     symbol: string;
