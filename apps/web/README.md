@@ -15,7 +15,7 @@ React frontend for the Solana Token Distribution Protocol, built with Vite, TanS
 
 ## Prerequisites
 
-- Node.js v18+ and pnpm
+- Node.js v24+ and pnpm
 
 ## Getting Started
 
