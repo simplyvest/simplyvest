@@ -59,6 +59,8 @@ Tests use `vitest` with the `anchor-litesvm` npm package via `LiteSVMProvider`. 
 | `solana-tdp.003.milestone.test.ts` | Milestone stream creation, trigger, withdraw, cancel |
 | `solana-tdp.005.security-audit.test.ts` | 16 tests — signer authority, PDA uniqueness, overflow, account ownership, state transitions, wrong-account attacks, timestamp boundaries |
 | `fixtures.ts` | Shared test fixtures (token mints, accounts, PDAs) |
+| `helpers.ts` | `now()` and `clockNow()` SVM-based clock helpers |
+| `utils.ts` | Test utility functions |
 
 ### Storybook browser tests (vitest + Playwright)
 
