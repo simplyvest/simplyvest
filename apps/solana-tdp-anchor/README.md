@@ -7,14 +7,15 @@ A non-custodial, on-chain SPL-token vesting and distribution program built with 
 ## Monorepo Structure
 
 ```
-Solana-TDP-Program/
+simply-vest/
 ├── apps/
 │   ├── solana-tdp-anchor/        # Anchor program (Rust + tests)
-│   └── web/                      # Future: React frontend
+│   ├── api/                      # Cloudflare Worker API (Hono + D1 + R2)
+│   └── web/                      # React frontend (Vite + TanStack Router)
 ├── packages/
-│   └── solana-tdp-sdk/           # Future: TypeScript SDK
-├── Cargo.toml                    # Root Rust workspace
-├── package.json                  # pnpm 10.33.0 workspace root
+│   └── solana-tdp-sdk/           # TypeScript SDK (IDL types, PDA helpers, event parsing)
+├── docs/                         # Architecture, research, deployment docs
+├── package.json                  # pnpm workspace root
 └── pnpm-workspace.yaml
 ```
 
@@ -45,17 +46,21 @@ anchor test
 
 ## Program Instructions
 
-| Instruction     | Description                                           |
-| --------------- | ----------------------------------------------------- |
-| `create_stream` | Lock tokens in a PDA vault, record vesting schedule   |
-| `withdraw`      | Recipient claims all vested tokens at any time        |
-| `cancel`        | Sender cancels; vested → recipient, unvested → sender |
+| Instruction               | Description                                             |
+| ------------------------- | ------------------------------------------------------- |
+| `create_stream`           | Lock tokens in a PDA vault, record vesting schedule     |
+| `withdraw`                | Recipient claims all vested tokens at any time          |
+| `cancel`                  | Creator cancels; vested → recipient, unvested → creator |
+| `create_milestone_stream` | Lock tokens pending a milestone trigger                 |
+| `trigger_milestone`       | Milestone authority marks milestone as reached          |
+| `withdraw_milestone`      | Recipient claims tokens after milestone is triggered    |
+| `cancel_milestone`        | Creator cancels milestone stream; unvested → creator    |
 
 ## Account Structure
 
 ```
-StreamAccount (PDA)  [seeds: b"stream" + sender + recipient]
-├── sender             Pubkey
+StreamAccount (PDA)  [seeds: b"stream" + creator + recipient + mint + vesting_count]
+├── creator            Pubkey
 ├── recipient          Pubkey
 ├── mint               Pubkey
 ├── vault              Pubkey ──▶ VaultTokenAccount (PDA)
@@ -65,19 +70,21 @@ StreamAccount (PDA)  [seeds: b"stream" + sender + recipient]
 ├── start_time         i64
 ├── end_time           i64
 ├── cliff_time         i64
+├── vesting_count      u64
 ├── cancelled          bool
-└── bump               u8
+├── bump               u8
+└── vault_bump         u8
 ```
 
 ## Prerequisites
 
 | Tool       | Version       |
-| ---------- | ------------- | ------ |
+| ---------- | ------------- |
 | Rust       | stable ≥ 1.75 |
-| Solana CLI | ≥ 1.18        |
-|            | Anchor CLI    | 0.32.1 |
-| Node.js    | ≥ 20          |
-| pnpm       | **10.33.0**   |
+| Solana CLI | ≥ 3.1         |
+| Anchor CLI | 0.32.1        |
+| Node.js    | ≥ 24          |
+| pnpm       | 11.2.2        |
 
 ## Setup Steps
 
@@ -114,23 +121,25 @@ Tests run in-process with [LiteSVM](https://github.com/LiteSVM/litesvm) — no l
 
 ```bash
 cd apps/solana-tdp-anchor
-anchor test
+pnpm test
 ```
 
 This will:
 
 1. Build the program (BPF)
-2. Run all 16 TypeScript tests against LiteSVM using Jest
+2. Run all TypeScript tests against LiteSVM using vitest
 
 Tests use the `anchor-litesvm` provider (`fromWorkspace("./")` + `LiteSVMProvider`) to load the compiled `.so` and IDL directly. Each test creates fresh token mints, keypairs, and stream fixtures — fully isolated, no network required.
 
 ### Test files
 
-| File                                   | Tests                                                                           |
-| -------------------------------------- | ------------------------------------------------------------------------------- |
-| `solana-tdp.000.create-stream.test.ts` | 6 — happy path, cliff variant, 4 validation rejections                          |
-| `solana-tdp.001.withdraw.test.ts`      | 6 — partial/full vesting, cumulative tracking, cliff/start/cancelled rejections |
-| `solana-tdp.002.cancel.test.ts`        | 4 — pre-start/partial/post-end splits, double-cancel rejection                  |
+| File                                    | Tests                                                                       |
+| --------------------------------------- | --------------------------------------------------------------------------- |
+| `solana-tdp.000.create-stream.test.ts`  | Happy path, cliff variant, validation rejections                            |
+| `solana-tdp.001.withdraw.test.ts`       | Partial/full vesting, cumulative tracking, cliff/start/cancelled rejections |
+| `solana-tdp.002.cancel.test.ts`         | Pre-start/partial/post-end splits, double-cancel rejection                  |
+| `solana-tdp.003.milestone.test.ts`      | Milestone creation, trigger, withdraw, cancel flows                         |
+| `solana-tdp.005.security-audit.test.ts` | Security edge cases and invariant checks                                    |
 
 ---
 
@@ -173,7 +182,7 @@ Run the happy-path end-to-end test against real devnet:
 pnpm run devnet-test
 ```
 
-This executes all three instructions (`create_stream` → `withdraw` → `cancel`) using the devnet wallet as both sender and recipient. A fresh SPL token mint is created for each run. Every transaction links to Solana Explorer for inspection.
+This executes the happy-path instructions (`create_stream` → `withdraw` → `cancel`) using the devnet wallet as both creator and recipient. A fresh SPL token mint is created for each run. Every transaction links to Solana Explorer for inspection.
 
 **Prerequisites:** The devnet wallet must be funded and the program must be deployed (see above).
 
