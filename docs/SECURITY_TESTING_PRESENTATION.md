@@ -85,13 +85,13 @@ StreamAccount (187 bytes)
 ├── creator, recipient, mint, vault
 ├── amount, amount_withdrawn
 ├── start_time, end_time, cliff_time
-├── vesting_count, cancelled, bumps
+├── vesting_count, cancelled, bump, vault_bump
 
 MilestoneStreamAccount (196 bytes)
 ├── creator, recipient, mint, vault
 ├── amount, amount_withdrawn
 ├── milestone_authority, milestone_reached
-├── vesting_count, cancelled, bumps
+├── vesting_count, cancelled, bump, vault_bump
 
 CreatorConfig (48 bytes)
 ├── creator, vesting_count

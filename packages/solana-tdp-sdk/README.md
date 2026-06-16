@@ -10,19 +10,19 @@ pnpm add @solana-tdp/sdk
 
 ## Modules
 
-| Module      | Purpose                                                                              |
-| ----------- | ------------------------------------------------------------------------------------ |
-| `program`   | Build a read-only Anchor `Program` instance from a `Connection`                      |
-| `pda`       | Derive PDAs for streams, milestone streams, vaults, creator config                   |
-| `accounts`  | Build account structs for all 7 program instructions                                 |
-| `fetch`     | Fetch and decode on-chain accounts (streams, milestones, creator config)             |
-| `decode`    | Low-level Borsh decoding of raw account data                                         |
-| `vesting`   | Client-side vesting math: status, claimable amount, vested %                         |
-| `events`    | Parse and filter program events from transaction logs                                |
-| `token`     | Build SPL token creation instructions (mint + metadata)                              |
-| `metadata`  | Fetch Metaplex token metadata, format addresses/labels                               |
-| `constants` | Program ID, account discriminators, account sizes                                    |
-| `types`     | TypeScript interfaces for `StreamAccount`, `MilestoneStreamAccount`, `CreatorConfig` |
+| Module      | Purpose                                                                                                            |
+| ----------- | ------------------------------------------------------------------------------------------------------------------ |
+| `program`   | Build a read-only Anchor `Program` instance from a `Connection`                                                    |
+| `pda`       | Derive PDAs for streams, milestone streams, vaults, creator config                                                 |
+| `accounts`  | Build account structs for all 7 program instructions                                                               |
+| `fetch`     | Fetch and decode on-chain accounts (streams, milestones, creator config)                                           |
+| `decode`    | Low-level Borsh decoding of raw account data                                                                       |
+| `vesting`   | Client-side vesting math: status, claimable amount, vested %                                                       |
+| `events`    | Parse and filter program events from transaction logs                                                              |
+| `token`     | Build SPL token creation instructions (mint + metadata)                                                            |
+| `metadata`  | Fetch Metaplex token metadata, format addresses/labels (`formatAddress`, `fetchTokenMetadata`, `formatTokenLabel`) |
+| `constants` | Program ID, account discriminators, account sizes                                                                  |
+| `types`     | TypeScript interfaces for `StreamAccount`, `MilestoneStreamAccount`, `CreatorConfig`                               |
 
 ## Quick Start
 
