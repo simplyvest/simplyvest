@@ -4,7 +4,7 @@
 
 A full-stack protocol for creating, managing, and claiming token vesting schedules. Built on Anchor for trustless on-chain custody, wrapped in a hybrid dApp that non-technical founders can use from day one.
 
-> **Status:** Early development. Monorepo scaffolded. Program and frontend implementation in progress.
+> **Status:** Active development. On-chain program deployed to devnet with 7 instructions, API live with D1 + R2, web frontend with dashboard and claim UI, SDK with PDA helpers and event parsing, 94+ tests across 3 layers, full CI/CD with 14 GitHub Actions workflows.
 
 ## The problem
 
@@ -55,7 +55,7 @@ docs/
 - [Rust](https://rustup.rs/) — `rustup install stable`
   |- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v3.1.12
 - [Anchor CLI](https://www.anchor-lang.com/docs/installation) — v0.32.1
-- [Node.js](https://nodejs.org/) v18+ + [pnpm](https://pnpm.io/) (install: `corepack enable && corepack prepare pnpm@latest --activate`)
+- [Node.js](https://nodejs.org/) v24+ + [pnpm](https://pnpm.io/) (install: `corepack enable && corepack prepare pnpm@latest --activate`)
 
 ### Setup
 
