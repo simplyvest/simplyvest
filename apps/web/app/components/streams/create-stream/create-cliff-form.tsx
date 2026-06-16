@@ -1,6 +1,6 @@
-import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+import { getAssociatedTokenAddressSync, getMint } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 import { TokenSelector } from "@/components/tokens/token-selector/token-selector";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useCreateStream } from "@/hooks/tx/use-create-stream";
 import { useAuth } from "@/lib/solana/use-auth";
+import { useConnection } from "@/lib/solana/use-connection";
 
 import { StreamCreationSuccess } from "./stream-creation-success";
 import { TimeFields } from "./time-fields";
@@ -15,6 +16,7 @@ import { toUnixSec, isValidPubkey } from "./utils";
 
 export function CreateCliffForm() {
   const { publicKey } = useAuth();
+  const { connection } = useConnection();
   const createStream = useCreateStream();
 
   const [form, setForm] = useState({
@@ -25,6 +27,28 @@ export function CreateCliffForm() {
     endTime: "",
     cliffTime: "",
   });
+
+  const [tokenDecimals, setTokenDecimals] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!form.mint) {
+      setTokenDecimals(null);
+      return;
+    }
+    try {
+      const pk = new PublicKey(form.mint);
+      getMint(connection, pk)
+        .then((info) => {
+          setTokenDecimals(info.decimals);
+        })
+        .catch(() => {
+          // If RPC fails, default to 6
+          setTokenDecimals(6);
+        });
+    } catch {
+      setTokenDecimals(null);
+    }
+  }, [form.mint, connection]);
 
   const errors = useMemo(() => {
     const e: string[] = [];
@@ -55,11 +79,12 @@ export function CreateCliffForm() {
 
   const handleSubmit = () => {
     if (!publicKey) return;
+    const decimals = tokenDecimals ?? 6;
     const mint = new PublicKey(form.mint);
     createStream.mutate({
       recipient: new PublicKey(form.recipient),
       mint,
-      amount: Math.round(Number(form.amount) * 10 ** 6),
+      amount: Math.round(Number(form.amount) * 10 ** decimals),
       startTime: toUnixSec(form.startTime),
       endTime: toUnixSec(form.endTime),
       cliffTime: toUnixSec(form.cliffTime),
