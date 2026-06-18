@@ -99,7 +99,7 @@ export function StreamList({ role }: { role: "created" | "received" }) {
         ))}
 
         {milestoneStreams.map((s) => {
-          const canTrigger = role === "created" && !s.milestoneReached;
+          const canTrigger = role === "created" && !s.milestoneReached && s.status === "active";
           const isRecipient = walletAddress === s.recipientAddress;
           return (
             <MilestoneStreamCard
