@@ -217,7 +217,7 @@ Let the recipient claim a specific amount of vested tokens. Calculates the total
 
 - **Caller:** Recipient (signer)
 - **Parameters:** `{ amount: u64 }` — amount of tokens to claim (must be > 0 and <= total claimable)
-- **Accounts:** Recipient (signer, mut), Sender (unchecked, mut, rent return), Mint, StreamAccount (mut), Vault (mut), RecipientTokenAccount (init_if_needed, mut), TokenProgram, AssociatedTokenProgram, SystemProgram
+- **Accounts:** Recipient (signer, mut), Creator (unchecked, mut, rent return), Mint, StreamAccount (mut), Vault (mut), RecipientTokenAccount (init_if_needed, mut), TokenProgram, AssociatedTokenProgram, SystemProgram
 
 **Validations:**
 
@@ -225,6 +225,7 @@ Let the recipient claim a specific amount of vested tokens. Calculates the total
 | ------------------------------ | ------------------- |
 | Status is Cancelled            | `AlreadyCancelled`  |
 | Clock timestamp < `cliff_time` | `CliffNotReached`   |
+| `amount == 0`                  | `ZeroAmount`        |
 | Calculated claimable == 0      | `NothingToWithdraw` |
 | `amount > claimable`           | `ExceedsClaimable`  |
 
@@ -320,7 +321,7 @@ Let the milestone authority mark a milestone stream as reached. Once triggered, 
 
 - **Caller:** MilestoneAuthority (signer)
 - **Parameters:** none
-- **Accounts:** MilestoneAuthority (signer), MilestoneStream (mut), Clock sysvar
+- **Accounts:** MilestoneAuthority (signer), MilestoneStream (mut)
 
 **Validations:**
 
@@ -343,12 +344,13 @@ Let the recipient withdraw the full stream amount after the milestone has been r
 
 - **Caller:** Recipient (signer)
 - **Parameters:** none
-- **Accounts:** Recipient (signer, mut), Creator (unchecked, mut, rent return), MilestoneStream (mut, close), Vault (mut, close), RecipientTokenAccount (init_if_needed, mut), TokenProgram, AssociatedTokenProgram, SystemProgram, Clock sysvar
+- **Accounts:** Recipient (signer, mut), Creator (unchecked, mut, rent return), MilestoneStream (mut, close), Vault (mut, close), RecipientTokenAccount (init_if_needed, mut), Mint (constraint), TokenProgram, AssociatedTokenProgram, SystemProgram
 
 **Validations:**
 
 | Condition                    | Error               |
 | ---------------------------- | ------------------- |
+| Stream creator mismatch      | `Unauthorized`      |
 | Status is Cancelled          | `AlreadyCancelled`  |
 | `milestone_reached == false` | `NothingToWithdraw` |
 | `amount_withdrawn > 0`       | `FullyVested`       |
@@ -356,7 +358,7 @@ Let the recipient withdraw the full stream amount after the milestone has been r
 **Effects:**
 
 1. Create recipient's ATA via CPI if it does not exist (payer = recipient).
-2. Transfer `amount - amount_withdrawn` tokens from vault to recipient's ATA via `invoke_signed`.
+2. Transfer `amount` tokens from vault to recipient's ATA via `invoke_signed`.
 3. Update `MilestoneStream.amount_withdrawn = amount`.
 4. Emit `MilestoneCompleted` event.
 5. Close MilestoneStream: return rent SOL to creator.
@@ -370,7 +372,7 @@ Let the creator cancel an active milestone stream before the milestone is reache
 
 - **Caller:** Creator (signer)
 - **Parameters:** none
-- **Accounts:** Creator (signer, mut), Recipient (unchecked), MilestoneStream (mut, close), Vault (mut, close), CreatorTokenAccount (mut), TokenProgram, SystemProgram, Clock sysvar
+- **Accounts:** Creator (signer, mut), MilestoneStream (mut, close), Vault (mut, close), CreatorTokenAccount (mut), Mint (constraint), TokenProgram, AssociatedTokenProgram
 
 **Validations:**
 
@@ -387,7 +389,7 @@ Let the creator cancel an active milestone stream before the milestone is reache
 3. Close MilestoneStream: return rent SOL to creator.
 4. Close Vault: return rent SOL to creator.
 
-## **Error codes:** `Unauthorized`, `AlreadyCancelled`, `FullyVested`
+**Error codes:** `Unauthorized`, `AlreadyCancelled`, `FullyVested`
 
 ## Data flow
 
@@ -509,7 +511,7 @@ Events are emitted via Anchor's `emit!` macro and parsed from transaction logs b
 | `StreamCancelled`        | `stream`, `creator`, `recipient`, `vested_to_recipient`, `returned_to_creator`             | On `cancel` — followed by account closure                     |
 | `MilestoneStreamCreated` | `stream`, `creator`, `recipient`, `mint`, `amount`, `milestone_authority`                  | On successful `create_milestone_stream`                       |
 | `MilestoneTriggered`     | `stream`, `milestone_authority`                                                            | On successful `trigger_milestone`                             |
-| `MilestoneCompleted`     | `stream`, `recipient`, `total_amount`                                                      | On `withdraw_milestone` — followed by account closure         |
+| `MilestoneCompleted`     | `stream`, `recipient`, `amount`                                                            | On `withdraw_milestone` — followed by account closure         |
 | `MilestoneCancelled`     | `stream`, `creator`, `recipient`, `returned_to_creator`                                    | On `cancel_milestone` — followed by account closure           |
 
 ---
@@ -546,7 +548,7 @@ Each decision documents the alternatives considered and why the chosen approach 
 
 **Rationale:** "Stream" is shorter than "VestingSchedule" for a frequently-referenced type. It matches the code convention (the stub used `StreamAccount`) and aligns with industry conventions (Streamflow, streaming vesting). The terms "vesting" and "schedule" add no semantic value — the protocol only does vesting, and every stream has its own schedule implicitly.
 
-**Trade-off:** Replaces a self-documenting name with a shorter one. The domain glossary (CONTEXT.md) compensates.
+**Trade-off:** Replaces a self-documenting name with a shorter one. The domain documentation compensates for this brevity.
 
 ### PDA seeds: recipient and mint in the derivation path
 

@@ -4,7 +4,7 @@
 
 A full-stack protocol for creating, managing, and claiming token vesting schedules. Built on Anchor for trustless on-chain custody, wrapped in a hybrid dApp that non-technical founders can use from day one.
 
-> **Status:** Early development. Monorepo scaffolded. Program and frontend implementation in progress.
+> **Status:** Active development. On-chain program deployed to devnet with 7 instructions, API live with D1 + R2, web frontend with dashboard and claim UI, SDK with PDA helpers and event parsing, 147+ tests across 4 layers, full CI/CD with 14 GitHub Actions workflows.
 
 ## The problem
 
@@ -45,7 +45,10 @@ docs/
 ├── RESEARCH.md               # Vesting types, competitive landscape, market gap, user research
 ├── ARCHITECTURE.md           # Account model, program instructions, data flow, events/errors
 ├── TOOLING.md                # Solana tooling decisions, testing strategy, conventions
-└── DEPLOYMENT.md             # Build, test, deploy guides, CI/CD
+├── DEPLOYMENT.md             # Build, test, deploy guides, CI/CD
+├── CONTRIBUTING.md           # Branch workflow, commit conventions, pre-commit hook
+├── OBSERVATIONS.md           # Deferred v2 decisions
+└── SECURITY_TESTING_PRESENTATION.md # Security architecture, test coverage, known gaps
 ```
 
 ## Quick start
@@ -55,7 +58,7 @@ docs/
 - [Rust](https://rustup.rs/) — `rustup install stable`
   |- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v3.1.12
 - [Anchor CLI](https://www.anchor-lang.com/docs/installation) — v0.32.1
-- [Node.js](https://nodejs.org/) v18+ + [pnpm](https://pnpm.io/) (install: `corepack enable && corepack prepare pnpm@latest --activate`)
+- [Node.js](https://nodejs.org/) v24+ + [pnpm](https://pnpm.io/) (install: `corepack enable && corepack prepare pnpm@latest --activate`)
 
 ### Setup
 
@@ -83,6 +86,7 @@ pnpm build
 | `pnpm format`            | Code formatting with oxfmt                                        |
 | `pnpm lint:rust`         | Rust clippy with deny warnings                                    |
 | `pnpm format:rust`       | Format Rust code with cargo fmt                                   |
+| `pnpm format:rust:check` | Check Rust formatting without modifying                           |
 | `pnpm check:ts`          | TypeScript check (web)                                            |
 | `pnpm check:ts:all`      | TypeScript check (web + API)                                      |
 | `pnpm storybook`         | Start Storybook dev server                                        |
@@ -98,16 +102,19 @@ cd apps/solana-tdp-anchor
 anchor keys list
 ```
 
-Update `declare_id!("...")` in `programs/tdp/src/lib.rs` and `[programs.localnet]` in `Anchor.toml`.
+Update `declare_id!("...")` in `programs/solana-tdp/src/lib.rs` and `[programs.localnet]` in `Anchor.toml`.
 
 ## Documentation
 
-| Document                               | Contents                                                                                                                        |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| [Research](./docs/RESEARCH.md)         | Vesting types (cliff/linear/milestone), competitive landscape, market gap analysis, user research findings, product positioning |
-| [Architecture](./docs/ARCHITECTURE.md) | Account structure, PDA seeds, program instructions, data flow, edge cases, events and error reference                           |
-| [Tooling](./docs/TOOLING.md)           | Framework, testing setup, repo layout, code conventions                                                                         |
-| [Deployment](./docs/DEPLOYMENT.md)     | Building, testing, program deployment, frontend deployment, CI/CD, browser compatibility                                        |
+| Document                                                    | Contents                                                                                                                        |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [Research](./docs/RESEARCH.md)                              | Vesting types (cliff/linear/milestone), competitive landscape, market gap analysis, user research findings, product positioning |
+| [Architecture](./docs/ARCHITECTURE.md)                      | Account structure, PDA seeds, program instructions, data flow, edge cases, events and error reference                           |
+| [Tooling](./docs/TOOLING.md)                                | Framework, testing setup, repo layout, code conventions                                                                         |
+| [Deployment](./docs/DEPLOYMENT.md)                          | Building, testing, program deployment, frontend deployment, CI/CD, browser compatibility                                        |
+| [Contributing](./docs/CONTRIBUTING.md)                      | Branch workflow, commit conventions, pre-commit hook behavior                                                                   |
+| [Observations](./docs/OBSERVATIONS.md)                      | Deferred v2 decisions: global config, batch creation, Token-2022 hooks                                                          |
+| [Security Testing](./docs/SECURITY_TESTING_PRESENTATION.md) | Security architecture, test coverage (~147 tests), CI/CD pipeline, known gaps                                                   |
 
 ## Repository
 

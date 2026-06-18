@@ -41,7 +41,7 @@ Tokens unlock when a specific event occurs, not when time passes.
 
 - **Use case:** Bounty programs, investor tranches tied to product milestones, ecosystem grants
 - **On-chain complexity:** High — requires oracle-fed or admin-triggered verification
-- **Status:** Out of scope for MVP, but the account layout is designed to accommodate it later
+- **Status:** Implemented — `create_milestone_stream`, `trigger_milestone`, `withdraw_milestone`, `cancel_milestone` instructions with full test coverage
 
 ### Decision tree
 
@@ -61,7 +61,7 @@ flowchart TD
     style MilestoneAdmin fill:#00c2ff,stroke:#00c2ff,color:#000
 ```
 
-**MVP recommendation:** Start with cliff + linear. These cover the vast majority of use cases and require no oracle infrastructure.
+**MVP recommendation:** Cliff + linear + milestone. All three vesting types are now supported on-chain with full test coverage.
 
 ---
 
@@ -93,7 +93,7 @@ Solana TDP relies on three Solana primitives: **Accounts** (everything on Solana
 | **Bankrun**               | Deprecated (Mar 2025) | Migrate to LiteSVM                             |
 | **solana-program-test**   | Legacy                | Existing projects OK; new projects → LiteSVM   |
 
-## **Decision:** TypeScript tests with anchor-litesvm + jest. Tests use `fromWorkspace` to bootstrap the SVM and `LiteSVMProvider` for the Anchor provider. No local validator needed for most tests. Use solana-test-validator only when a real RPC node is required.
+## **Decision:** TypeScript tests with anchor-litesvm + vitest. Tests use `fromWorkspace` to bootstrap the SVM and `LiteSVMProvider` for the Anchor provider. No local validator needed for most tests. Use solana-test-validator only when a real RPC node is required.
 
 ## Competitive landscape
 

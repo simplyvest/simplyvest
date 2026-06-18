@@ -8,11 +8,14 @@ React frontend for the Solana Token Distribution Protocol, built with Vite, TanS
 - **TanStack Router** — Type-safe file-based routing
 - **TanStack Query** — Server state management
 - **Tailwind CSS v4** — Utility-first styling with dark theme
-- **Solana Wallet Integration** — Wallet adapter with Phantom and Solflare support
+- **Privy Auth** — Embedded wallet and social login
+- **Solana Web3.js** — On-chain program interaction via Anchor
+- **Storybook** — Component development and visual testing
+- **Playwright** — Browser integration tests
 
 ## Prerequisites
 
-- Node.js v18+ and pnpm
+- Node.js v24+ and pnpm
 
 ## Getting Started
 
@@ -44,31 +47,51 @@ Copy `.env.example` to `.env` and configure:
 apps/web/
 ├── app/
 │   ├── components/
-│   │   ├── solana/
-│   │   │   ├── solana-provider.tsx   # Solana wallet provider setup
-│   │   │   └── wallet-button.tsx     # Connect/disconnect button
-│   │   └── ui/
-│   │       └── button.tsx            # Reusable Button (cva-based)
-│   ├── routes/
-│   │   ├── __root.tsx                # Root layout with nav, wallet, footer
-│   │   └── index.tsx                 # Home page
-│   ├── utils/
-│   │   └── cn.ts                     # clsx + tailwind-merge helper
-│   ├── main.tsx                      # App entry point
-│   ├── routeTree.gen.ts              # Generated route tree
-│   └── styles.css                    # Tailwind theme configuration
+│   │   ├── docs/          # Documentation pages
+│   │   ├── layout/        # App shell, nav, footer
+│   │   ├── marketing/     # Landing page sections
+│   │   ├── orgs/          # Organization management
+│   │   ├── profile/       # User profile
+│   │   ├── solana/        # Wallet provider, connection
+│   │   ├── streams/       # Stream list, detail, create forms
+│   │   ├── tokens/        # Token picker, creator
+│   │   ├── tools/         # Token creation tools
+│   │   └── ui/            # Shared UI primitives (Button, Card, etc.)
+│   ├── hooks/
+│   │   ├── tx/                        # Transaction handling hooks
+│   │   ├── use-stream.ts             # Stream data hooks
+│   │   ├── use-stream-detail.ts      # Single stream detail
+│   │   ├── use-stream-events.ts      # Stream event parsing
+│   │   ├── use-stream-role.ts        # Creator vs recipient role
+│   │   ├── use-api.ts                # API client hooks
+│   │   ├── use-program.ts            # Anchor program hooks
+│   │   ├── use-sol-balance.ts        # SOL balance
+│   │   ├── use-token-list.ts         # Token list
+│   │   ├── use-token-preferences.ts  # Token preferences
+│   │   ├── use-create-token.ts       # Token creation flow
+│   │   └── use-create-platform-token.ts # Platform token creation
+│   ├── routes/            # 24 file-based routes (dashboard, streams, tokens, tools)
+│   ├── types/             # Shared TypeScript types
+│   ├── utils/             # cn(), formatters
+│   ├── main.tsx           # App entry point
+│   └── styles.css         # Tailwind theme
 ├── index.html
 ├── vite.config.ts
 ├── tsconfig.json
-├── .env.example
 └── package.json
 ```
 
 ## Scripts
 
-| Script     | Description                        |
-| ---------- | ---------------------------------- |
-| `dev`      | Start Vite dev server              |
-| `build`    | Type-check + Vite production build |
-| `preview`  | Preview production build           |
-| `check:ts` | Type-check without emitting        |
+| Script            | Description                            |
+| ----------------- | -------------------------------------- |
+| `dev`             | Start Vite dev server                  |
+| `build`           | Type-check + Vite production build     |
+| `preview`         | Preview production build               |
+| `check:ts`        | Type-check without emitting            |
+| `test`            | Run all tests (unit + storybook)       |
+| `test:unit`       | Run unit tests only                    |
+| `test:storybook`  | Run Storybook browser tests            |
+| `test:ci`         | Run unit + storybook tests combined    |
+| `storybook`       | Start Storybook dev server (port 6006) |
+| `build-storybook` | Build Storybook for deployment         |

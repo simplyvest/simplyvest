@@ -20,7 +20,7 @@ Building, testing, and deploying the Solana program, API, and web frontend.
 - [Rust](https://rustup.rs/) — `rustup install stable`
   |- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) — v3.1.12
 - [Anchor CLI](https://www.anchor-lang.com/docs/installation) — v0.32.1
-- [Node.js](https://nodejs.org/) v18+ + [pnpm](https://pnpm.io/) (install: `corepack enable && corepack prepare pnpm@latest --activate`)
+- [Node.js](https://nodejs.org/) v24+ + [pnpm](https://pnpm.io/) (install: `corepack enable && corepack prepare pnpm@latest --activate`)
 - [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/) — for API deployment (installed as devDependency)
 
 ---
@@ -50,7 +50,7 @@ cd apps/solana-tdp-anchor
 anchor keys list
 ```
 
-Update `declare_id!("...")` in `programs/tdp/src/lib.rs` and `[programs.localnet]` in `Anchor.toml` with the output, then rebuild.
+Update `declare_id!("...")` in `programs/solana-tdp/src/lib.rs` and `[programs.localnet]` in `Anchor.toml` with the output, then rebuild.
 
 ---
 
@@ -81,7 +81,7 @@ pnpm check:ts:all
 | `solana-tdp.001.withdraw.test.ts`       | Claiming vested tokens, cliff checks, partial claims                                                                                                    |
 | `solana-tdp.002.cancel.test.ts`         | Mid-stream cancellation, vested/unvested split                                                                                                          |
 | `solana-tdp.003.milestone.test.ts`      | Milestone stream creation, trigger, withdraw, cancel                                                                                                    |
-| `solana-tdp.005.security-audit.test.ts` | 16 security audit tests — signer authority, PDA uniqueness, overflow, account ownership, state transitions, wrong-account attacks, timestamp boundaries |
+| `solana-tdp.005.security-audit.test.ts` | 19 security audit tests — signer authority, PDA uniqueness, overflow, account ownership, state transitions, wrong-account attacks, timestamp boundaries |
 | `fixtures.ts`                           | Shared test fixtures (token mints, accounts, PDAs)                                                                                                      |
 
 ---
@@ -224,23 +224,24 @@ SPA routing works out of the box — Cloudflare Pages auto-detects a client-side
 
 ## CI/CD
 
-Each job has its own workflow file in `.github/workflows/`:
+Each job has its own reusable workflow file in `.github/workflows/`, called by the orchestrator `ci.yaml`:
 
-| Workflow file           | Job                 | Triggers   | What it does                                       |
-| ----------------------- | ------------------- | ---------- | -------------------------------------------------- |
-| `lint.yaml`             | lint                | PRs + main | JS/TS lint with oxlint                             |
-| `format.yaml`           | format              | PRs + main | Format check with oxfmt                            |
-| `typecheck-web.yaml`    | typecheck-web       | PRs + main | TypeScript check (web)                             |
-| `typecheck-api.yaml`    | typecheck-api       | PRs + main | TypeScript check (API)                             |
-| `typecheck-sdk.yaml`    | typecheck-sdk       | PRs + main | TypeScript check (SDK)                             |
-| `typecheck-anchor.yaml` | typecheck-anchor-ts | PRs + main | TypeScript check (anchor)                          |
-| `test-api.yaml`         | test-api            | PRs + main | API tests with vitest                              |
-| `test-web.yaml`         | test-web            | PRs + main | Build SDK + Playwright + vitest (unit + storybook) |
-| `build-web.yaml`        | build-web           | PRs + main | Production build of React frontend                 |
-| `rust-lint.yaml`        | lint-rust           | PRs + main | cargo fmt + clippy                                 |
-| `anchor.yaml`           | anchor              | PRs + main | Build Anchor program + vitest tests                |
-| `deploy-web.yaml`       | deploy-web          | main only  | Build SDK + Deploy to Cloudflare Pages             |
-| `deploy-api.yaml`       | deploy-api          | main only  | Build SDK + Deploy API Worker + D1 migrations      |
+| Workflow file           | Job                 | Triggers        | What it does                                       |
+| ----------------------- | ------------------- | --------------- | -------------------------------------------------- |
+| `ci.yaml`               | (orchestrator)      | Push/PR to main | Calls all other workflows, deploys on push         |
+| `lint.yaml`             | lint                | PRs + main      | JS/TS lint with oxlint                             |
+| `format.yaml`           | format              | PRs + main      | Format check with oxfmt                            |
+| `typecheck-web.yaml`    | typecheck-web       | PRs + main      | TypeScript check (web)                             |
+| `typecheck-api.yaml`    | typecheck-api       | PRs + main      | TypeScript check (API)                             |
+| `typecheck-sdk.yaml`    | typecheck-sdk       | PRs + main      | TypeScript check (SDK)                             |
+| `typecheck-anchor.yaml` | typecheck-anchor-ts | PRs + main      | TypeScript check (anchor)                          |
+| `test-api.yaml`         | test-api            | PRs + main      | API tests with vitest                              |
+| `test-web.yaml`         | test-web            | PRs + main      | Build SDK + Playwright + vitest (unit + storybook) |
+| `build-web.yaml`        | build-web           | PRs + main      | Production build of React frontend                 |
+| `rust-lint.yaml`        | lint-rust           | PRs + main      | cargo fmt + clippy                                 |
+| `anchor.yaml`           | anchor              | PRs + main      | Build Anchor program + vitest tests                |
+| `deploy-web.yaml`       | deploy-web          | main only       | Build SDK + Deploy to Cloudflare Pages             |
+| `deploy-api.yaml`       | deploy-api          | main only       | Build SDK + Deploy API Worker + D1 migrations      |
 
 ### GitHub Actions Variables
 
