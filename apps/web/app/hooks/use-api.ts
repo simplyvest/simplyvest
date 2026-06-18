@@ -47,7 +47,7 @@ interface StreamWithEvents extends StreamRecord {
   events: StreamEventRecord[];
 }
 
-export type { StreamRecord, StreamEventRecord, StreamWithEvents };
+export type { StreamRecord, StreamEventRecord, StreamWithEvents, Organization };
 
 export function useRecordStream() {
   const queryClient = useQueryClient();
@@ -196,6 +196,10 @@ interface Organization {
   description: string | null;
   createdBy: string;
   createdAt: Date;
+  mintAddress: string | null;
+  tokenName: string | null;
+  tokenSymbol: string | null;
+  tokenDecimals: number | null;
 }
 
 interface UserOrg extends Organization {
@@ -327,6 +331,58 @@ export function useRemoveOrgMember() {
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Failed to remove member");
+    },
+  });
+}
+
+type OrgTokenInput =
+  | { action: "create"; name: string; symbol: string; decimals: number; amount: string }
+  | {
+      action: "link";
+      mintAddress: string;
+      tokenName?: string | null;
+      tokenSymbol?: string | null;
+      tokenDecimals?: number;
+    };
+
+export function useUpdateOrgToken(orgId: string) {
+  const queryClient = useQueryClient();
+  const { getAccessToken } = usePrivy();
+
+  return useMutation({
+    mutationFn: async (input: OrgTokenInput) => {
+      const token = await getAccessToken();
+      if (!token) throw new Error("Not authenticated");
+      return api.put<Organization>(`/api/orgs/${orgId}/token`, input, token);
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["org", orgId] });
+      void queryClient.invalidateQueries({ queryKey: ["user-orgs"] });
+      toast.success("Token updated");
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to update token");
+    },
+  });
+}
+
+export function useRemoveOrgToken(orgId: string) {
+  const queryClient = useQueryClient();
+  const { getAccessToken } = usePrivy();
+
+  return useMutation({
+    mutationFn: async () => {
+      const token = await getAccessToken();
+      if (!token) throw new Error("Not authenticated");
+      return api.delete(`/api/orgs/${orgId}/token`, token);
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["org", orgId] });
+      void queryClient.invalidateQueries({ queryKey: ["user-orgs"] });
+      toast.success("Token removed");
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to remove token");
     },
   });
 }

@@ -22,6 +22,10 @@ export const organizations = sqliteTable("organizations", {
   createdBy: text("created_by")
     .notNull()
     .references(() => users.id),
+  mintAddress: text("mint_address"),
+  tokenName: text("token_name"),
+  tokenSymbol: text("token_symbol"),
+  tokenDecimals: integer("token_decimals"),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .$defaultFn(() => new Date()),

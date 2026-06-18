@@ -199,6 +199,10 @@ export function createOrgService(db: Db) {
           slug: organizations.slug,
           description: organizations.description,
           createdAt: organizations.createdAt,
+          mintAddress: organizations.mintAddress,
+          tokenName: organizations.tokenName,
+          tokenSymbol: organizations.tokenSymbol,
+          tokenDecimals: organizations.tokenDecimals,
           role: orgMembers.role,
         })
         .from(orgMembers)
@@ -206,6 +210,44 @@ export function createOrgService(db: Db) {
         .where(eq(orgMembers.userId, userId));
 
       return result;
+    },
+
+    async setOrgToken(
+      orgId: string,
+      token: {
+        mintAddress: string;
+        tokenName: string | null;
+        tokenSymbol: string | null;
+        tokenDecimals: number;
+      },
+    ) {
+      const result = await db
+        .update(organizations)
+        .set({
+          mintAddress: token.mintAddress,
+          tokenName: token.tokenName,
+          tokenSymbol: token.tokenSymbol,
+          tokenDecimals: token.tokenDecimals,
+        })
+        .where(eq(organizations.id, orgId))
+        .returning();
+
+      return result[0] ?? null;
+    },
+
+    async removeOrgToken(orgId: string) {
+      const result = await db
+        .update(organizations)
+        .set({
+          mintAddress: null,
+          tokenName: null,
+          tokenSymbol: null,
+          tokenDecimals: null,
+        })
+        .where(eq(organizations.id, orgId))
+        .returning();
+
+      return result[0] ?? null;
     },
   };
 }

@@ -33,6 +33,7 @@ export function useCreateStream() {
       endTime: number;
       cliffTime: number;
       senderToken: PublicKey;
+      orgId?: string;
     }) => {
       if (!publicKey || !wallet) throw new Error("Wallet not connected");
       const program = buildReadProgram(connection);
@@ -85,6 +86,7 @@ export function useCreateStream() {
           mintAddress: result.input.mint.toBase58(),
           vaultAddress: result.vaultPda.toBase58(),
           amount: result.input.amount.toString(),
+          orgId: result.input.orgId,
           startTime: result.input.startTime,
           endTime: result.input.endTime,
           cliffTime: result.input.cliffTime,
