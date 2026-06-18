@@ -21,6 +21,14 @@ export interface AddMemberInput {
 export function createOrgService(db: Db) {
   return {
     async createOrg(input: CreateOrgInput) {
+      // Ensure the creator user exists (handles Privy DIDs and wallet addresses)
+      let createdBy = input.createdBy;
+      if (createdBy.startsWith("did:privy:")) {
+        createdBy = await this.findOrCreateUserByPrivyId(createdBy);
+      } else if (!createdBy.startsWith("wallet:")) {
+        createdBy = await this.findOrCreateUserByWallet(createdBy);
+      }
+
       const id = uuidv4();
       const result = await db
         .insert(organizations)
@@ -29,7 +37,7 @@ export function createOrgService(db: Db) {
           name: input.name,
           slug: input.slug,
           description: input.description ?? null,
-          createdBy: input.createdBy,
+          createdBy,
         })
         .returning();
 
@@ -38,7 +46,7 @@ export function createOrgService(db: Db) {
       // Add creator as owner
       await db.insert(orgMembers).values({
         orgId: org.id,
-        userId: input.createdBy,
+        userId: createdBy,
         role: "owner",
       });
 
@@ -88,6 +96,28 @@ export function createOrgService(db: Db) {
       return result[0] ?? null;
     },
 
+    async findOrCreateUserByPrivyId(privyId: string): Promise<string> {
+      const existing = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.id, privyId))
+        .limit(1);
+
+      if (existing[0]) {
+        return existing[0].id;
+      }
+
+      await db
+        .insert(users)
+        .values({
+          id: privyId,
+          walletAddress: privyId,
+        })
+        .onConflictDoNothing();
+
+      return privyId;
+    },
+
     async findOrCreateUserByWallet(walletAddress: string): Promise<string> {
       // Look up existing user by wallet address
       const existing = await db
@@ -114,10 +144,23 @@ export function createOrgService(db: Db) {
     },
 
     async addMember(input: AddMemberInput) {
-      // Resolve userId - if it looks like a wallet address, find/create the user
+      // Resolve userId - find or create the user record
       let userId = input.userId;
-      if (!userId.startsWith("did:privy:") && !userId.startsWith("wallet:")) {
-        userId = await this.findOrCreateUserByWallet(input.userId);
+      if (userId.startsWith("did:privy:")) {
+        userId = await this.findOrCreateUserByPrivyId(userId);
+      } else if (!userId.startsWith("wallet:")) {
+        userId = await this.findOrCreateUserByWallet(userId);
+      }
+
+      // Check if already a member
+      const existing = await db
+        .select({ orgId: orgMembers.orgId })
+        .from(orgMembers)
+        .where(and(eq(orgMembers.orgId, input.orgId), eq(orgMembers.userId, userId)))
+        .limit(1);
+
+      if (existing[0]) {
+        return null;
       }
 
       const result = await db
@@ -127,7 +170,6 @@ export function createOrgService(db: Db) {
           userId,
           role: input.role,
         })
-        .onConflictDoNothing()
         .returning();
 
       return result[0] ?? null;
