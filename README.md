@@ -44,6 +44,9 @@ packages/
 docs/
 ├── RESEARCH.md               # Vesting types, competitive landscape, market gap, user research
 ├── ARCHITECTURE.md           # Account model, program instructions, data flow, events/errors
+├── REFERENCE.md              # Full program reference with TypeScript code examples per instruction
+├── INTEGRATION_GUIDE.md      # Step-by-step integration guide with working code snippets
+├── adr/                      # Architecture Decision Records (ADR-001 through ADR-005)
 ├── TOOLING.md                # Solana tooling decisions, testing strategy, conventions
 ├── DEPLOYMENT.md             # Build, test, deploy guides, CI/CD
 ├── CONTRIBUTING.md           # Branch workflow, commit conventions, pre-commit hook
@@ -69,6 +72,14 @@ pnpm install
 # Build everything (packages + program)
 pnpm build
 ```
+
+### SDK (for integrators)
+
+```bash
+pnpm add @solana-tdp/sdk @coral-xyz/anchor @solana/web3.js @solana/spl-token
+```
+
+The SDK provides PDA derivation helpers, instruction account builders, vesting math, event parsing, and account fetch/decode. See [Integration Guide](./docs/INTEGRATION_GUIDE.md) and [Program Reference](./docs/REFERENCE.md).
 
 ### Targeted scripts
 
@@ -110,6 +121,9 @@ Update `declare_id!("...")` in `programs/solana-tdp/src/lib.rs` and `[programs.l
 | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | [Research](./docs/RESEARCH.md)                              | Vesting types (cliff/linear/milestone), competitive landscape, market gap analysis, user research findings, product positioning |
 | [Architecture](./docs/ARCHITECTURE.md)                      | Account structure, PDA seeds, program instructions, data flow, edge cases, events and error reference                           |
+| [Program Reference](./docs/REFERENCE.md)                    | Every instruction documented with parameters, accounts, validation, errors, events, and TypeScript examples                     |
+| [Integration Guide](./docs/INTEGRATION_GUIDE.md)            | Step-by-step for another developer to create streams, withdraw, cancel, and query — with working code snippets                  |
+| [ADRs](./docs/adr/)                                         | Architecture Decision Records: PDA seeds, vault design, derived status, vesting curve, batch creation                           |
 | [Tooling](./docs/TOOLING.md)                                | Framework, testing setup, repo layout, code conventions                                                                         |
 | [Deployment](./docs/DEPLOYMENT.md)                          | Building, testing, program deployment, frontend deployment, CI/CD, browser compatibility                                        |
 | [Contributing](./docs/CONTRIBUTING.md)                      | Branch workflow, commit conventions, pre-commit hook behavior                                                                   |
@@ -123,7 +137,3 @@ Update `declare_id!("...")` in `programs/solana-tdp/src/lib.rs` and `[programs.l
 | **Program ID (devnet)** | [`6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk`](https://explorer.solana.com/address/6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk?cluster=devnet) |
 | **Explorer**            | [Solana Explorer (devnet)](https://explorer.solana.com/?cluster=devnet)                                                                           |
 | **License**             | MIT                                                                                                                                               |
-
-## Team
-
-Built as part of the Mancer accelerator — Team 1.
