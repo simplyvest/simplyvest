@@ -40,6 +40,15 @@ export function StreamCard({
   const amount = new BN(stream.amount);
   const amountWithdrawn = new BN(stream.amountWithdrawn ?? "0");
 
+  console.log("[StreamCard]", stream.id, {
+    status: stream.status,
+    startTime,
+    endTime,
+    clockTime,
+    amount: stream.amount,
+    amountWithdrawn: stream.amountWithdrawn,
+  });
+
   const status = stream.status;
 
   let claimable = new BN(0);
@@ -49,9 +58,17 @@ export function StreamCard({
     } else if (clockTime >= startTime) {
       const elapsed = clockTime - startTime;
       const duration = endTime - startTime;
-      const vested = amount.muln(elapsed).divn(duration);
-      claimable = vested.sub(amountWithdrawn);
-      if (claimable.lt(new BN(0))) claimable = new BN(0);
+      console.log("[StreamCard] vest calc", { elapsed, duration, amount: stream.amount });
+      try {
+        if (duration > 0) {
+          const vested = amount.muln(elapsed).divn(duration);
+          claimable = vested.sub(amountWithdrawn);
+          if (claimable.lt(new BN(0))) claimable = new BN(0);
+        }
+      } catch (e) {
+        console.warn("[StreamCard] claimable calc failed", e);
+        claimable = new BN(0);
+      }
     }
   }
 

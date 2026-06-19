@@ -9,6 +9,7 @@ import { useAuth } from "@/lib/solana/use-auth";
 import { AddMemberForm } from "./add-member-form";
 import { EditOrgForm } from "./edit-org-form";
 import { MemberList } from "./member-list";
+import { OrgDashboard } from "./org-dashboard";
 
 interface OrgDetailProps {
   orgId: string;
@@ -80,6 +81,8 @@ export function OrgDetail({ orgId }: OrgDetailProps) {
           onSuccess={() => setEditing(false)}
         />
       )}
+
+      <OrgDashboard org={org} currentUserRole={currentUserRole} />
 
       {(currentUserRole === "owner" || currentUserRole === "admin") && (
         <AddMemberForm orgId={orgId} currentUserRole={currentUserRole} />

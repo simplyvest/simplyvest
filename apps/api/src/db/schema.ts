@@ -22,23 +22,31 @@ export const organizations = sqliteTable("organizations", {
   createdBy: text("created_by")
     .notNull()
     .references(() => users.id),
+  mintAddress: text("mint_address"),
+  tokenName: text("token_name"),
+  tokenSymbol: text("token_symbol"),
+  tokenDecimals: integer("token_decimals"),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .$defaultFn(() => new Date()),
 });
 
-export const orgMembers = sqliteTable("org_members", {
-  orgId: text("org_id")
-    .notNull()
-    .references(() => organizations.id, { onDelete: "cascade" }),
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  role: text("role", { enum: ["owner", "admin", "member"] }).notNull(),
-  joinedAt: integer("joined_at", { mode: "timestamp" })
-    .notNull()
-    .$defaultFn(() => new Date()),
-});
+export const orgMembers = sqliteTable(
+  "org_members",
+  {
+    orgId: text("org_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    role: text("role", { enum: ["owner", "admin", "member"] }).notNull(),
+    joinedAt: integer("joined_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (t) => [uniqueIndex("idx_org_members_unique").on(t.orgId, t.userId)],
+);
 
 export const streams = sqliteTable(
   "streams",

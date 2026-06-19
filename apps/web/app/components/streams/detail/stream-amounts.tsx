@@ -1,11 +1,13 @@
+import { BN } from "@coral-xyz/anchor";
+
 import type { StreamDetail } from "@/hooks/use-stream-detail";
 import { formatSol } from "@/utils/format";
 
 export function StreamAmounts({ detail }: { detail: StreamDetail }) {
-  const total = Number(detail.amount);
-  const withdrawn = Number(detail.amountWithdrawn);
-  const claimable = detail.claimable.toNumber();
-  const remaining = total - withdrawn;
+  const total = new BN(detail.amount);
+  const withdrawn = new BN(detail.amountWithdrawn);
+  const claimable = detail.claimable;
+  const remaining = total.sub(withdrawn);
 
   return (
     <div className="space-y-3">
@@ -13,7 +15,11 @@ export function StreamAmounts({ detail }: { detail: StreamDetail }) {
       <div className="grid grid-cols-2 gap-3">
         <AmountCard label="Total" value={formatSol(total, 6)} />
         <AmountCard label="Withdrawn" value={formatSol(withdrawn, 6)} />
-        <AmountCard label="Claimable" value={formatSol(claimable, 6)} highlight={claimable > 0} />
+        <AmountCard
+          label="Claimable"
+          value={formatSol(claimable, 6)}
+          highlight={claimable.gt(new BN(0))}
+        />
         <AmountCard label="Remaining" value={formatSol(remaining, 6)} />
       </div>
     </div>

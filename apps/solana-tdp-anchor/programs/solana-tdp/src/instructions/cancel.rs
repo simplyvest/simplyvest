@@ -84,15 +84,18 @@ pub fn cancel_handler(ctx: Context<Cancel>) -> Result<()> {
         stream
             .amount
             .checked_mul(elapsed)
-            .unwrap()
+            .ok_or(TdpError::ArithmeticOverflow)?
             .checked_div(duration)
-            .unwrap()
+            .ok_or(TdpError::ArithmeticOverflow)?
     };
 
     let recipient_share = vested_at_cancel
         .checked_sub(stream.amount_withdrawn)
-        .unwrap();
-    let sender_share = stream.amount.checked_sub(vested_at_cancel).unwrap();
+        .ok_or(TdpError::ArithmeticOverflow)?;
+    let sender_share = stream
+        .amount
+        .checked_sub(vested_at_cancel)
+        .ok_or(TdpError::ArithmeticOverflow)?;
 
     // Mark cancelled early so seeds can borrow stream fields immutably
     stream.cancelled = true;

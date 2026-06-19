@@ -23,6 +23,7 @@ export type CreateTokenParams = {
   metadataUri: string;
   name: string;
   symbol: string;
+  rpcUrl?: string;
 };
 
 function umiPubkeyToWeb3(pk: UmiPk): PublicKey {
@@ -95,7 +96,7 @@ export function createTokenInstructions(params: CreateTokenParams): TransactionI
   const mintStr = mint.publicKey.toBase58();
   const metadataPdaStr = metadataPda.toBase58();
 
-  const umi = createUmi("https://api.devnet.solana.com");
+  const umi = createUmi(params.rpcUrl ?? "https://api.devnet.solana.com");
 
   const umiPayer = createNoopSigner(publicKey(payerStr));
   const umiMintAuthority = createNoopSigner(publicKey(payerStr));

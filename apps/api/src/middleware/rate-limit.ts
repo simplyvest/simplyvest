@@ -1,5 +1,20 @@
 import type { Context, Next } from "hono";
 
+/**
+ * Best-effort in-memory rate limiter for Cloudflare Workers.
+ *
+ * Limitations:
+ * - State lives in a single Worker isolate. Cloudflare Workers do not
+ *   guarantee request affinity, so concurrent requests from the same IP
+ *   may hit different isolates — each with an independent counter.
+ * - The check-and-increment is non-atomic: two concurrent requests can
+ *   both see the entry as expired and each create a fresh entry at
+ *   count 0, effectively doubling the allowed rate.
+ *
+ * For production hardening, migrate to Durable Objects (global
+ * consistency) or KV with atomic checks.
+ */
+
 interface RateLimitEntry {
   count: number;
   resetAt: number;

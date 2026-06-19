@@ -1,6 +1,6 @@
-import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+import { getAssociatedTokenAddressSync, getMint } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 import { TokenSelector } from "@/components/tokens/token-selector/token-selector";
 import { Button } from "@/components/ui/button";
@@ -8,12 +8,14 @@ import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useCreateMilestoneStream } from "@/hooks/tx/use-create-milestone-stream";
 import { useAuth } from "@/lib/solana/use-auth";
+import { useConnection } from "@/lib/solana/use-connection";
 
 import { StreamCreationSuccess } from "./stream-creation-success";
 import { isValidPubkey } from "./utils";
 
 export function CreateMilestoneForm() {
   const { publicKey } = useAuth();
+  const { connection } = useConnection();
   const createMilestoneStream = useCreateMilestoneStream();
 
   const [form, setForm] = useState({
@@ -21,6 +23,27 @@ export function CreateMilestoneForm() {
     mint: "",
     amount: "",
   });
+
+  const [tokenDecimals, setTokenDecimals] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!form.mint) {
+      setTokenDecimals(null);
+      return;
+    }
+    try {
+      const pk = new PublicKey(form.mint);
+      getMint(connection, pk)
+        .then((info) => {
+          setTokenDecimals(info.decimals);
+        })
+        .catch(() => {
+          setTokenDecimals(6);
+        });
+    } catch {
+      setTokenDecimals(null);
+    }
+  }, [form.mint, connection]);
 
   const errors = useMemo(() => {
     const e: string[] = [];
@@ -40,12 +63,13 @@ export function CreateMilestoneForm() {
 
   const handleSubmit = () => {
     if (!publicKey) return;
+    const decimals = tokenDecimals ?? 6;
     const mint = new PublicKey(form.mint);
     createMilestoneStream.mutate({
       recipient: new PublicKey(form.recipient),
       milestoneAuthority: publicKey,
       mint,
-      amount: Math.round(Number(form.amount) * 10 ** 6),
+      amount: Math.round(Number(form.amount) * 10 ** decimals),
       senderToken: getAssociatedTokenAddressSync(mint, publicKey, true),
     });
   };

@@ -41,8 +41,8 @@ export function MilestoneStreamCard({
           className="min-w-0 flex-1 space-y-1 no-underline hover:no-underline"
         >
           <div className="flex items-center gap-2">
-            <Badge variant={milestoneReached ? "sol2" : "sol"}>
-              {milestoneReached ? "completed" : "active"}
+            <Badge variant={cancelled ? "warn" : milestoneReached ? "sol2" : "sol"}>
+              {cancelled ? "cancelled" : milestoneReached ? "completed" : "active"}
             </Badge>
             <span className="font-mono text-xs text-dim">
               {stream.tokenSymbol ?? "Milestone stream"}

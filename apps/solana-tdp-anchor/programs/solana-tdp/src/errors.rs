@@ -32,6 +32,12 @@ pub enum TdpError {
     ExceedsClaimable,
     #[msg("You are not authorized to perform this action.")]
     Unauthorized,
+    #[msg("Milestone has already been triggered.")]
+    MilestoneAlreadyTriggered,
+    #[msg("Tokens have already been withdrawn from this milestone.")]
+    AlreadyWithdrawn,
+    #[msg("Arithmetic overflow in vesting calculation.")]
+    ArithmeticOverflow,
 }
 
 #[cfg(test)]
@@ -56,6 +62,9 @@ mod tests {
         assert_eq!(TdpError::StreamExpired as u32, 12);
         assert_eq!(TdpError::ExceedsClaimable as u32, 13);
         assert_eq!(TdpError::Unauthorized as u32, 14);
+        assert_eq!(TdpError::MilestoneAlreadyTriggered as u32, 15);
+        assert_eq!(TdpError::AlreadyWithdrawn as u32, 16);
+        assert_eq!(TdpError::ArithmeticOverflow as u32, 17);
     }
 
     #[test]
@@ -115,6 +124,22 @@ mod tests {
         assert_eq!(
             TdpError::StartTimeInPast.to_string(),
             "Stream start time must be in the future."
+        );
+        assert_eq!(
+            TdpError::StreamExpired.to_string(),
+            "Stream duration has ended; no cancel allowed."
+        );
+        assert_eq!(
+            TdpError::MilestoneAlreadyTriggered.to_string(),
+            "Milestone has already been triggered."
+        );
+        assert_eq!(
+            TdpError::AlreadyWithdrawn.to_string(),
+            "Tokens have already been withdrawn from this milestone."
+        );
+        assert_eq!(
+            TdpError::ArithmeticOverflow.to_string(),
+            "Arithmetic overflow in vesting calculation."
         );
     }
 }

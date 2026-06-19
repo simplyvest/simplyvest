@@ -5,6 +5,11 @@ import type { Env } from "../../env";
 import { createDb } from "../db";
 import { authMiddleware, getUserId } from "../middleware/auth";
 import { createOrgService } from "../services/org-service";
+import {
+  createTokenService,
+  createPlatformToken,
+  uploadMetadataJson,
+} from "../services/token-service";
 
 export const orgRoutes = new Hono<{ Bindings: Env }>();
 
@@ -145,6 +150,123 @@ orgRoutes.delete("/:id/members/:userId", authMiddleware, async (c) => {
 
   await service.removeMember(orgId, targetUserId);
 
+  return c.json({ ok: true });
+});
+
+// Set org token (requires auth + owner role)
+orgRoutes.put("/:id/token", authMiddleware, async (c) => {
+  const userId = getUserId(c);
+  const orgId = c.req.param("id");
+  if (!orgId) return c.json({ error: "Organization ID required" }, 400);
+
+  const body = await c.req.json();
+  const db = createDb(c.env.DB);
+  const service = createOrgService(db);
+
+  const role = await service.getMemberRole(orgId, userId);
+  if (role !== "owner") {
+    return c.json({ error: "Only owners can manage the org token" }, 403);
+  }
+
+  const org = await service.getOrgById(orgId);
+  if (!org) {
+    return c.json({ error: "Organization not found" }, 404);
+  }
+
+  if (org.mintAddress) {
+    return c.json({ error: "Organization already has a token. Remove it first." }, 409);
+  }
+
+  if (body.action === "create") {
+    if (!body.name || !body.symbol || body.decimals === undefined || !body.amount) {
+      return c.json({ error: "name, symbol, decimals, and amount are required for create" }, 400);
+    }
+
+    const tokenService = createTokenService(db);
+    const rpcUrl = c.env.SOLANA_RPC_URL ?? "https://api.devnet.solana.com";
+
+    const metadataUri = await uploadMetadataJson(
+      body.name,
+      body.symbol,
+      body.imageUrl,
+      c.env.TOKEN_ASSETS,
+      c.req.url,
+    );
+
+    try {
+      const result = await createPlatformToken({
+        secretKeyJson: c.env.PLATFORM_SECRET_KEY,
+        rpcUrl,
+        name: body.name,
+        symbol: body.symbol,
+        decimals: body.decimals,
+        amount: body.amount,
+        creatorAddress: userId,
+        metadataUri,
+      });
+
+      await tokenService.recordToken({
+        mintAddress: result.mintAddress,
+        creatorAddress: userId,
+        name: body.name,
+        symbol: body.symbol,
+        decimals: body.decimals,
+        supply: result.supply,
+        metadataUri,
+      });
+
+      const updated = await service.setOrgToken(orgId, {
+        mintAddress: result.mintAddress,
+        tokenName: body.name,
+        tokenSymbol: body.symbol,
+        tokenDecimals: body.decimals,
+      });
+
+      return c.json(updated, 200);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      return c.json({ error: msg }, 500);
+    }
+  }
+
+  if (body.action === "link") {
+    if (!body.mintAddress) {
+      return c.json({ error: "mintAddress is required for link" }, 400);
+    }
+
+    const updated = await service.setOrgToken(orgId, {
+      mintAddress: body.mintAddress,
+      tokenName: body.tokenName ?? null,
+      tokenSymbol: body.tokenSymbol ?? null,
+      tokenDecimals: body.tokenDecimals ?? 9,
+    });
+
+    return c.json(updated, 200);
+  }
+
+  return c.json({ error: "action must be 'create' or 'link'" }, 400);
+});
+
+// Remove org token (requires auth + owner role)
+orgRoutes.delete("/:id/token", authMiddleware, async (c) => {
+  const userId = getUserId(c);
+  const orgId = c.req.param("id");
+  if (!orgId) return c.json({ error: "Organization ID required" }, 400);
+
+  const db = createDb(c.env.DB);
+  const service = createOrgService(db);
+
+  const role = await service.getMemberRole(orgId, userId);
+  if (role !== "owner") {
+    return c.json({ error: "Only owners can manage the org token" }, 403);
+  }
+
+  const org = await service.getOrgById(orgId);
+  if (!org?.mintAddress) {
+    return c.json({ error: "Organization has no token" }, 404);
+  }
+
+  await service.removeOrgToken(orgId);
   return c.json({ ok: true });
 });
 

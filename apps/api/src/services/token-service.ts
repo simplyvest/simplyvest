@@ -175,7 +175,8 @@ export async function createPlatformToken(params: {
 
   const connection = new Connection(params.rpcUrl, "confirmed");
   const mint = Keypair.generate();
-  const supply = String(Math.floor(Number(params.amount) * 10 ** params.decimals));
+  const [whole, frac = ""] = params.amount.split(".");
+  const supply = whole + frac.padEnd(params.decimals, "0").slice(0, params.decimals);
   const creatorPk = new PublicKey(params.creatorAddress);
 
   const instructions = createTokenInstructions({
@@ -186,6 +187,7 @@ export async function createPlatformToken(params: {
     metadataUri: params.metadataUri,
     name: params.name,
     symbol: params.symbol,
+    rpcUrl: params.rpcUrl,
   });
 
   const creatorAta = getAssociatedTokenAddressSync(mint.publicKey, creatorPk);

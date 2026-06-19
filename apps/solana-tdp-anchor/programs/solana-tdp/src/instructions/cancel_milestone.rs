@@ -1,5 +1,4 @@
 use anchor_lang::prelude::*;
-use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{self, CloseAccount, Transfer};
 use anchor_spl::token::{Mint, Token, TokenAccount};
 
@@ -30,7 +29,6 @@ pub struct CancelMilestone<'info> {
     )]
     pub mint: Box<Account<'info, Mint>>,
     pub token_program: Program<'info, Token>,
-    pub associated_token_program: Program<'info, AssociatedToken>,
 }
 
 pub fn cancel_milestone_handler(ctx: Context<CancelMilestone>) -> Result<()> {
@@ -42,9 +40,15 @@ pub fn cancel_milestone_handler(ctx: Context<CancelMilestone>) -> Result<()> {
         TdpError::Unauthorized
     );
     require!(!stream.cancelled, TdpError::AlreadyCancelled);
-    require!(!stream.milestone_reached, TdpError::FullyVested);
+    require!(
+        !stream.milestone_reached,
+        TdpError::MilestoneAlreadyTriggered
+    );
 
-    let return_amount = stream.amount.checked_sub(stream.amount_withdrawn).unwrap();
+    let return_amount = stream
+        .amount
+        .checked_sub(stream.amount_withdrawn)
+        .ok_or(TdpError::ArithmeticOverflow)?;
 
     stream.cancelled = true;
 

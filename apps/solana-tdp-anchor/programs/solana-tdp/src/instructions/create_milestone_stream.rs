@@ -57,6 +57,11 @@ pub fn create_milestone_stream_handler(
         TdpError::InsufficientBalance
     );
 
+    // TODO: The Token-2022 branch below (mint_owner == spl_token_2022::ID) is
+    // currently unreachable — the vault uses Program<'info, Token> (SPL Token)
+    // which rejects Token-2022 mints at account-deserialization time. To
+    // support Token-2022 the vault must be upgraded to use a generic token
+    // interface. Keep this check as documentation of intent.
     // Mint owner must be SPL Token or Token-2022
     let mint_owner = ctx.accounts.mint.to_account_info().owner;
     require!(
@@ -112,7 +117,10 @@ pub fn create_milestone_stream_handler(
 
     let creator_config = &mut ctx.accounts.creator_config;
     creator_config.creator = ctx.accounts.sender.key();
-    creator_config.vesting_count = creator_config.vesting_count.checked_add(1).unwrap();
+    creator_config.vesting_count = creator_config
+        .vesting_count
+        .checked_add(1)
+        .ok_or(TdpError::ArithmeticOverflow)?;
 
     Ok(())
 }
