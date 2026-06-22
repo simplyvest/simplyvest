@@ -17,6 +17,7 @@ pub struct Cancel<'info> {
 
     #[account(
         mut,
+        close = sender,
         seeds = [b"stream", sender.key().as_ref(), recipient.key().as_ref(), stream.mint.as_ref(), &stream.vesting_count.to_le_bytes()],
         bump = stream.bump,
     )]
@@ -170,17 +171,6 @@ pub fn cancel_handler(ctx: Context<Cancel>) -> Result<()> {
         },
         signer,
     ))?;
-
-    // Close stream account — zero data and transfer rent to sender
-    let stream_info = stream.to_account_info();
-    let lamports = stream_info.lamports();
-    **ctx
-        .accounts
-        .sender
-        .to_account_info()
-        .try_borrow_mut_lamports()? += lamports;
-    **stream_info.try_borrow_mut_lamports()? = 0;
-    stream_info.data.borrow_mut().fill(0);
 
     Ok(())
 }
