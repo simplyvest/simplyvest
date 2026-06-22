@@ -63,7 +63,9 @@ apps/web/
 │   │   ├── use-stream-detail.ts      # Single stream detail
 │   │   ├── use-stream-events.ts      # Stream event parsing
 │   │   ├── use-stream-role.ts        # Creator vs recipient role
-│   │   ├── use-api.ts                # API client hooks
+│   │   ├── use-stream-api.ts         # Stream API hooks
+│   │   ├── use-user-api.ts           # User profile API hooks
+│   │   ├── use-org-api.ts            # Organization API hooks
 │   │   ├── use-program.ts            # Anchor program hooks
 │   │   ├── use-sol-balance.ts        # SOL balance
 │   │   ├── use-token-list.ts         # Token list

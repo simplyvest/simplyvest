@@ -165,7 +165,9 @@ apps/
 │   │   ├── hooks/
 │   │   │   ├── tx/                  # On-chain transaction hooks (use-create-stream, use-withdraw, etc.)
 │   │   │   ├── use-stream.ts        # On-chain queries
-│   │   │   ├── use-api.ts           # API hooks (streams, users, orgs)
+│   │   │   ├── use-stream-api.ts    # Stream API hooks
+│   │   │   ├── use-user-api.ts      # User profile API hooks
+│   │   │   ├── use-org-api.ts       # Organization API hooks
 │   │   │   └── use-program.ts       # Anchor program instance
 │   │   ├── lib/
 │   │   │   ├── solana/          # Privy-backed hooks (useAuth, useAnchorSigner, useConnection)
