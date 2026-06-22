@@ -42,7 +42,7 @@ export function SidebarBottom({ collapsed, onToggleCollapse }: SidebarBottomProp
           "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors no-underline hover:no-underline",
           collapsed && "justify-center px-2",
           profileActive
-            ? "bg-sol/10 text-sol dark:bg-sol/20"
+            ? "bg-primary/10 text-primary dark:bg-primary/20"
             : "text-muted hover:bg-bg2 hover:text-text",
         )}
       >
@@ -57,7 +57,7 @@ export function SidebarBottom({ collapsed, onToggleCollapse }: SidebarBottomProp
           "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors no-underline hover:no-underline",
           collapsed && "justify-center px-2",
           helpActive
-            ? "bg-sol/10 text-sol dark:bg-sol/20"
+            ? "bg-primary/10 text-primary dark:bg-primary/20"
             : "text-muted hover:bg-bg2 hover:text-text",
         )}
       >

@@ -22,7 +22,7 @@ function VestProgress({ stream }: { stream: StreamWithEvents }) {
   return (
     <div className="flex items-center gap-2">
       <div className="h-1.5 w-16 overflow-hidden rounded-full bg-bg2">
-        <div className="h-full rounded-full bg-sol transition-all" style={{ width: `${pct}%` }} />
+        <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${pct}%` }} />
       </div>
       <span className="text-xs text-muted">{pct.toFixed(0)}%</span>
     </div>

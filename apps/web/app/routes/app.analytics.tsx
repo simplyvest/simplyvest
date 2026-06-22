@@ -168,19 +168,19 @@ function AnalyticsPage() {
               label="Currently Vesting"
               value={formatSol(stats.vesting, 6)}
               icon={LuLock}
-              color="text-sol"
+              color="text-primary"
             />
             <StatCard
               label="Already Claimed"
               value={formatSol(stats.withdrawn, 6)}
               icon={LuArrowDownLeft}
-              color="text-sol2"
+              color="text-success"
             />
             <StatCard
               label="Total Allocated"
               value={formatSol(stats.allocated, 6)}
               icon={LuArrowUpRight}
-              color="text-sol3"
+              color="text-info"
             />
             <StatCard
               label="Streams"
@@ -193,17 +193,17 @@ function AnalyticsPage() {
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="rounded-xl border border-border bg-bg1 p-5">
               <div className="flex items-center gap-2">
-                <LuClock className="h-4 w-4 text-sol" />
+                <LuClock className="h-4 w-4 text-primary" />
                 <p className="text-sm font-medium text-text">Active</p>
               </div>
-              <p className="mt-2 text-3xl font-bold text-sol">{stats.active}</p>
+              <p className="mt-2 text-3xl font-bold text-primary">{stats.active}</p>
             </div>
             <div className="rounded-xl border border-border bg-bg1 p-5">
               <div className="flex items-center gap-2">
-                <LuCircleCheck className="h-4 w-4 text-sol2" />
+                <LuCircleCheck className="h-4 w-4 text-success" />
                 <p className="text-sm font-medium text-text">Completed</p>
               </div>
-              <p className="mt-2 text-3xl font-bold text-sol2">{stats.completed}</p>
+              <p className="mt-2 text-3xl font-bold text-success">{stats.completed}</p>
             </div>
             <div className="rounded-xl border border-border bg-bg1 p-5">
               <div className="flex items-center gap-2">
@@ -240,13 +240,13 @@ function AnalyticsPage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted">Currently vesting</span>
-                  <span className="text-sm font-medium text-sol">
+                  <span className="text-sm font-medium text-primary">
                     {formatSol(stats.vesting, 6)} tokens
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted">Already claimed</span>
-                  <span className="text-sm font-medium text-sol2">
+                  <span className="text-sm font-medium text-success">
                     {formatSol(stats.withdrawn, 6)} tokens
                   </span>
                 </div>

@@ -123,11 +123,11 @@ export function TokenList() {
                       {mintStr.slice(0, 4)}...{mintStr.slice(-4)}
                     </p>
                     {record?.created_here ? (
-                      <Badge variant="sol">Created</Badge>
+                      <Badge variant="primary">Created</Badge>
                     ) : (
-                      <Badge variant="sol2">External</Badge>
+                      <Badge variant="success">External</Badge>
                     )}
-                    {hidden && <Badge variant="sol3">Hidden</Badge>}
+                    {hidden && <Badge variant="info">Hidden</Badge>}
                   </div>
                 </div>
 

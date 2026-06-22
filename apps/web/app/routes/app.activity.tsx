@@ -39,9 +39,9 @@ const eventLabels = {
 };
 
 const eventColors = {
-  created: "text-sol",
-  received: "text-sol2",
-  milestone: "text-sol3",
+  created: "text-primary",
+  received: "text-success",
+  milestone: "text-info",
 };
 
 function buildActivityItems(

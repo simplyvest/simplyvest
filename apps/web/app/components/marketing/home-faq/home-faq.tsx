@@ -44,7 +44,7 @@ export function HomeFAQ() {
           </div>
           <Link
             to="/faq"
-            className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-sol no-underline transition-colors hover:text-[#6d28d9] hover:no-underline focus-visible:ring-2 focus-visible:ring-sol focus-visible:outline-none"
+            className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-primary no-underline transition-colors hover:text-[#6d28d9] hover:no-underline focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
           >
             View full FAQ
             <LuArrowRight className="h-3.5 w-3.5" />

@@ -122,7 +122,7 @@ export function VestToMemberModal({
                   href={`https://explorer.solana.com/tx/${createStream.data.tx}?cluster=devnet`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-1 inline-block text-xs text-sol hover:underline font-mono"
+                  className="mt-1 inline-block text-xs text-primary hover:underline font-mono"
                 >
                   {createStream.data.tx.slice(0, 16)}...
                 </a>

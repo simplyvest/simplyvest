@@ -53,7 +53,7 @@ export function AddMemberForm({ orgId, currentUserRole }: AddMemberFormProps) {
             onClick={() => setRole("member")}
             className={cn(
               "rounded-md px-3 py-1.5 text-xs font-medium transition-all",
-              role === "member" ? "bg-sol text-white shadow-sm" : "text-muted hover:text-text",
+              role === "member" ? "bg-primary text-white shadow-sm" : "text-muted hover:text-text",
             )}
           >
             Member
@@ -64,7 +64,7 @@ export function AddMemberForm({ orgId, currentUserRole }: AddMemberFormProps) {
               onClick={() => setRole("admin")}
               className={cn(
                 "rounded-md px-3 py-1.5 text-xs font-medium transition-all",
-                role === "admin" ? "bg-sol text-white shadow-sm" : "text-muted hover:text-text",
+                role === "admin" ? "bg-primary text-white shadow-sm" : "text-muted hover:text-text",
               )}
             >
               Admin

@@ -16,7 +16,7 @@ export function StreamProgressBar({
       <div className="flex items-center gap-2">
         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-border2">
           <div
-            className="h-full rounded-full bg-sol transition-all"
+            className="h-full rounded-full bg-primary transition-all"
             style={{ width: `${Math.min(100, progress)}%` }}
           />
         </div>

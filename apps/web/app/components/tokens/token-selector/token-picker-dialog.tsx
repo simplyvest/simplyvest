@@ -198,7 +198,7 @@ export function TokenPickerDialog({
                           No tokens found.{" "}
                           <a
                             href="/app/tools/create-token"
-                            className="text-sol underline-offset-2 hover:underline"
+                            className="text-primary underline-offset-2 hover:underline"
                           >
                             Create one in Tools
                           </a>

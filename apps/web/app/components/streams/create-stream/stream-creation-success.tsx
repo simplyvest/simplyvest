@@ -17,15 +17,15 @@ export function StreamCreationSuccess({
   const explorerTxUrl = `https://explorer.solana.com/tx/${txSignature}?cluster=${cluster}`;
 
   return (
-    <div className="flex flex-col items-center justify-center rounded-xl border border-sol2/30 bg-sol2/5 px-8 py-12 text-center">
-      <p className="text-lg font-semibold text-sol2">Stream Created!</p>
+    <div className="flex flex-col items-center justify-center rounded-xl border border-success/30 bg-success/5 px-8 py-12 text-center">
+      <p className="text-lg font-semibold text-success">Stream Created!</p>
       <p className="mt-1 text-sm text-muted">
         Transaction:{" "}
         <a
           href={explorerTxUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="font-mono text-sol2 underline underline-offset-2 hover:text-sol2/80"
+          className="font-mono text-success underline underline-offset-2 hover:text-success/80"
         >
           {txSignature}
         </a>

@@ -94,7 +94,7 @@ export function TokenSelector({
             <div className="min-w-0 flex-1">
               <span className="text-sm font-medium">{selectedToken.name}</span>
               {selectedToken.isSV && (
-                <span className="ml-1.5 inline-flex items-center rounded bg-tag2 px-1.5 py-0.5 text-[0.6rem] font-mono uppercase tracking-wide text-tag2t">
+                <span className="ml-1.5 inline-flex items-center rounded bg-badge-green px-1.5 py-0.5 text-[0.6rem] font-mono uppercase tracking-wide text-badge-green-text">
                   SV
                 </span>
               )}

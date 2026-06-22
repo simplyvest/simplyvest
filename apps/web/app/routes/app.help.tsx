@@ -19,7 +19,7 @@ function HelpPage() {
       <div className="grid gap-4 sm:grid-cols-2">
         <Link
           to="/docs"
-          className="rounded-lg border border-border bg-bg1 p-6 transition-colors hover:border-sol/30 hover:bg-bg2 no-underline hover:no-underline"
+          className="rounded-lg border border-border bg-bg1 p-6 transition-colors hover:border-primary/30 hover:bg-bg2 no-underline hover:no-underline"
         >
           <h3 className="text-base font-semibold text-text">Documentation</h3>
           <p className="mt-1 text-sm text-muted">Learn how to use SimplyVest</p>
@@ -27,7 +27,7 @@ function HelpPage() {
 
         <Link
           to="/faq"
-          className="rounded-lg border border-border bg-bg1 p-6 transition-colors hover:border-sol/30 hover:bg-bg2 no-underline hover:no-underline"
+          className="rounded-lg border border-border bg-bg1 p-6 transition-colors hover:border-primary/30 hover:bg-bg2 no-underline hover:no-underline"
         >
           <h3 className="text-base font-semibold text-text">FAQ</h3>
           <p className="mt-1 text-sm text-muted">Frequently asked questions</p>

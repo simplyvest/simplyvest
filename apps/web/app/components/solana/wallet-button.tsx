@@ -43,7 +43,7 @@ function LogoutDialog({
             type="checkbox"
             checked={dontAsk}
             onChange={(e) => setDontAsk(e.target.checked)}
-            className="mt-0.5 h-4 w-4 shrink-0 rounded border-border text-sol accent-purple-600"
+            className="mt-0.5 h-4 w-4 shrink-0 rounded border-border text-primary accent-purple-600"
           />
           <span className="text-xs text-muted leading-relaxed">Don&apos;t show this again</span>
         </label>

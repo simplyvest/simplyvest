@@ -23,8 +23,8 @@ export function TokenCreatorSuccess({
   return (
     <div className="mx-auto max-w-md space-y-6 text-center">
       <div className="flex justify-center">
-        <div className="rounded-full bg-sol/10 p-3">
-          <LuCheck className="h-12 w-12 text-sol" />
+        <div className="rounded-full bg-primary/10 p-3">
+          <LuCheck className="h-12 w-12 text-primary" />
         </div>
       </div>
 

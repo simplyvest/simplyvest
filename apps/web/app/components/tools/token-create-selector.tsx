@@ -9,7 +9,7 @@ const modes = [
     description:
       "Free — SimplyVest covers gas and creates the token for you. Just connect your wallet.",
     label: "Create on Platform →",
-    bg: "bg-sol/5 border-sol/20 hover:border-sol/40",
+    bg: "bg-primary/5 border-primary/20 hover:border-primary/40",
   },
   {
     to: "/app/tools/create-token/wallet",
@@ -18,7 +18,7 @@ const modes = [
     description:
       "You sign and pay ~0.011 SOL in gas. Full control — the token is yours from the start.",
     label: "Create with Wallet →",
-    bg: "bg-sol3/5 border-sol3/20 hover:border-sol3/40",
+    bg: "bg-info/5 border-info/20 hover:border-info/40",
   },
 ] as const;
 
@@ -34,7 +34,7 @@ export function TokenCreateSelector() {
           <m.icon className="h-8 w-8 text-text" />
           <h3 className="mt-4 text-lg font-semibold text-text">{m.title}</h3>
           <p className="mt-2 flex-1 text-sm text-muted">{m.description}</p>
-          <span className="mt-4 text-sm font-medium text-sol">{m.label}</span>
+          <span className="mt-4 text-sm font-medium text-primary">{m.label}</span>
         </Link>
       ))}
     </div>

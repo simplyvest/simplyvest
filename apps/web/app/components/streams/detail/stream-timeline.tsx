@@ -32,7 +32,7 @@ function VestingTimeline({ detail }: { detail: StreamDetail }) {
         </div>
         <div className="h-2 w-full rounded-full bg-bg2">
           <div
-            className="h-full rounded-full bg-sol transition-all"
+            className="h-full rounded-full bg-primary transition-all"
             style={{ width: `${progress}%` }}
           />
         </div>

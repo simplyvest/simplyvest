@@ -113,15 +113,15 @@ export function DateTimePicker({
       calendarClassName="!bg-bg1 !border-border !rounded-xl !shadow-lg"
       dayClassName={(date) =>
         cn(
-          "hover:!bg-sol/10 !rounded-lg",
-          date.toDateString() === now.toDateString() && "!bg-sol/5",
+          "hover:!bg-primary/10 !rounded-lg",
+          date.toDateString() === now.toDateString() && "!bg-primary/5",
         )
       }
       popperClassName="!z-50"
       wrapperClassName="w-full"
       className={cn(
         "flex h-10 w-full rounded-lg border border-border bg-bg1 px-3 py-2 text-sm text-text",
-        "placeholder:text-dim focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sol/30",
+        "placeholder:text-dim focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
         "disabled:cursor-not-allowed disabled:opacity-50",
       )}
     />

@@ -15,7 +15,7 @@ export function OrgCard({ id, name, slug, description, role, memberCount }: OrgC
     <Link
       to="/app/organizations/$orgId"
       params={{ orgId: id }}
-      className="flex flex-col rounded-xl border border-border bg-bg1 p-5 transition-colors hover:border-sol/30 hover:bg-bg2 no-underline hover:no-underline"
+      className="flex flex-col rounded-xl border border-border bg-bg1 p-5 transition-colors hover:border-primary/30 hover:bg-bg2 no-underline hover:no-underline"
     >
       <div className="flex items-start justify-between">
         <div className="min-w-0 flex-1">
@@ -23,7 +23,7 @@ export function OrgCard({ id, name, slug, description, role, memberCount }: OrgC
           <p className="mt-0.5 text-xs text-dim">/{slug}</p>
           {description && <p className="mt-1.5 text-sm text-muted line-clamp-2">{description}</p>}
         </div>
-        <span className="rounded-full bg-sol/10 px-2.5 py-0.5 text-xs font-medium text-sol capitalize ml-3 shrink-0">
+        <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary capitalize ml-3 shrink-0">
           {role}
         </span>
       </div>

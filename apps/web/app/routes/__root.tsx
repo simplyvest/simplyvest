@@ -31,7 +31,7 @@ export const Route = createRootRoute({
       <div className="text-center">
         <h1 className="text-4xl font-semibold tracking-tight">404</h1>
         <p className="mt-2 text-muted">Page not found.</p>
-        <Link to="/" className="mt-6 inline-block text-sm font-medium text-sol hover:underline">
+        <Link to="/" className="mt-6 inline-block text-sm font-medium text-primary hover:underline">
           Go home
         </Link>
       </div>
@@ -56,7 +56,7 @@ function RootComponent() {
             <div className="flex min-h-screen flex-col bg-bg text-text">
               <a
                 href="#main-content"
-                className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-sol focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:no-underline"
+                className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:no-underline"
               >
                 Skip to main content
               </a>

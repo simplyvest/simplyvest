@@ -44,7 +44,7 @@ function DashboardPage() {
             search={{ tab: t.key }}
             className={cn(
               "flex-1 rounded-md px-4 py-2 text-center text-sm font-medium transition-all no-underline hover:no-underline",
-              tab === t.key ? "bg-sol text-white shadow-sm" : "text-muted hover:text-text",
+              tab === t.key ? "bg-primary text-white shadow-sm" : "text-muted hover:text-text",
             )}
           >
             {t.label}

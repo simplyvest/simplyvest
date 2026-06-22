@@ -8,7 +8,7 @@ const content = (
     <h2 className="text-lg font-semibold text-text">Confirm Action</h2>
     <p className="mt-2 text-sm text-muted">Are you sure you want to proceed?</p>
     <div className="mt-4 flex justify-end gap-3">
-      <button className="rounded-md bg-sol px-4 py-2 text-sm text-white">Confirm</button>
+      <button className="rounded-md bg-primary px-4 py-2 text-sm text-white">Confirm</button>
     </div>
   </div>
 );

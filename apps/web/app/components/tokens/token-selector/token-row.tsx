@@ -52,14 +52,14 @@ export function TokenRow({
       data-mint-address={mintAddress}
       className={cn(
         "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-bg2",
-        isSelected && "ring-1 ring-sol",
+        isSelected && "ring-1 ring-primary",
       )}
     >
       <TokenIcon name={name} iconUrl={iconUrl} />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
           <span className="truncate text-sm font-medium">{name}</span>
-          {isSVToken && <Badge variant="sol2">SV</Badge>}
+          {isSVToken && <Badge variant="success">SV</Badge>}
         </div>
         <span className="text-xs text-muted">{symbol}</span>
       </div>

@@ -40,9 +40,9 @@ export function AppLayout() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-8 text-center px-6">
-          <div className="rounded-2xl border border-sol/20 bg-sol/5 p-6">
+          <div className="rounded-2xl border border-primary/20 bg-primary/5 p-6">
             <svg
-              className="h-12 w-12 text-sol"
+              className="h-12 w-12 text-primary"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -59,7 +59,7 @@ export function AppLayout() {
             <h2 className="text-2xl font-bold tracking-tight text-text">Log In to Continue</h2>
             <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted">
               To use the SimplyVest app, log in with your email, Google, or connect a wallet on{" "}
-              <span className="font-mono text-sol">Solana devnet</span>.
+              <span className="font-mono text-primary">Solana devnet</span>.
             </p>
           </div>
           <Button

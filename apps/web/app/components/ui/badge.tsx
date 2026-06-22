@@ -3,14 +3,14 @@ import * as React from "react";
 import { cn } from "@/utils/cn";
 
 const variants = {
-  sol: "bg-tag1 text-tag1t",
-  sol2: "bg-tag2 text-tag2t",
-  sol3: "bg-tag3 text-tag3t",
+  primary: "bg-badge-purple text-badge-purple-text",
+  success: "bg-badge-green text-badge-green-text",
+  info: "bg-badge-blue text-badge-blue-text",
   warn: "bg-warn/10 text-warn",
 } as const;
 
 export function Badge({
-  variant = "sol",
+  variant = "primary",
   children,
   className,
 }: {

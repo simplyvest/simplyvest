@@ -12,7 +12,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       ref={ref}
       className={cn(
         "flex h-10 w-full rounded-md border bg-bg2 px-3.5 py-2.5 text-sm text-text placeholder:text-dim",
-        "focus:outline-none focus:ring-2 focus:ring-sol transition-colors",
+        "focus:outline-none focus:ring-2 focus:ring-primary transition-colors",
         "file:border-0 file:bg-transparent file:text-sm file:font-medium",
         "disabled:cursor-not-allowed disabled:opacity-50",
         invalid ? "border-warn" : "border-border2",
@@ -44,7 +44,7 @@ function InputGroup({ prefix, className, invalid, ...props }: InputGroupProps) {
       <input
         className={cn(
           "flex h-10 flex-1 rounded-r-md border bg-bg2 px-3.5 py-2.5 text-sm text-text placeholder:text-dim",
-          "focus:outline-none focus:ring-2 focus:ring-sol transition-colors",
+          "focus:outline-none focus:ring-2 focus:ring-primary transition-colors",
           "disabled:cursor-not-allowed disabled:opacity-50",
           invalid ? "border-warn" : "border-border2",
           "rounded-l-none",

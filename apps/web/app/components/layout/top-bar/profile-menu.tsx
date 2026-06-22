@@ -35,7 +35,7 @@ export function ProfileMenu() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex h-8 w-8 items-center justify-center rounded-full bg-sol/10 text-sm font-semibold text-sol transition-colors hover:bg-sol/20"
+        className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary transition-colors hover:bg-primary/20"
       >
         {initial}
       </button>

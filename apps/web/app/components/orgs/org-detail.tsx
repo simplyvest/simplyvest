@@ -37,7 +37,7 @@ export function OrgDetail({ orgId }: OrgDetailProps) {
         <p className="text-sm text-muted">Organization not found</p>
         <Link
           to="/app/organizations"
-          className="mt-2 inline-block text-sm text-sol hover:underline no-underline"
+          className="mt-2 inline-block text-sm text-primary hover:underline no-underline"
         >
           Back to organizations
         </Link>
