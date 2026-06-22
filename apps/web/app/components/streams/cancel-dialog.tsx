@@ -7,7 +7,7 @@ import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ModalOverlay } from "@/components/ui/modal-overlay";
 import { useCancel } from "@/hooks/tx/use-cancel";
-import type { StreamWithEvents } from "@/hooks/use-api";
+import type { StreamWithEvents } from "@/hooks/use-stream-api";
 import { useAuth } from "@/lib/solana/use-auth";
 import { formatSol } from "@/utils/format";
 

@@ -1,7 +1,7 @@
 import { LuTrash2 } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
-import { useRemoveOrgMember } from "@/hooks/use-api";
+import { useRemoveOrgMember } from "@/hooks/use-org-api";
 
 interface Member {
   userId: string;

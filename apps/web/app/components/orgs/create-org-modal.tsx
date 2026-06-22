@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { ModalOverlay } from "@/components/ui/modal-overlay";
-import { useCreateOrg } from "@/hooks/use-api";
+import { useCreateOrg } from "@/hooks/use-org-api";
 
 function slugify(s: string): string {
   return s

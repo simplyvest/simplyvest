@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useUpdateOrg } from "@/hooks/use-api";
+import { useUpdateOrg } from "@/hooks/use-org-api";
 
 interface EditOrgFormProps {
   orgId: string;

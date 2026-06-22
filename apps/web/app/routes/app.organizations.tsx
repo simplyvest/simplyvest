@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CreateOrgModal } from "@/components/orgs/create-org-modal";
 import { OrgList } from "@/components/orgs/org-list";
 import { Button } from "@/components/ui/button";
-import { useUserOrgs } from "@/hooks/use-api";
+import { useUserOrgs } from "@/hooks/use-org-api";
 
 import { Route as AppRoute } from "./app";
 

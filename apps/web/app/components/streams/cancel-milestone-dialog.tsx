@@ -7,7 +7,7 @@ import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ModalOverlay } from "@/components/ui/modal-overlay";
 import { useCancelMilestone } from "@/hooks/tx/use-cancel-milestone";
-import type { StreamWithEvents } from "@/hooks/use-api";
+import type { StreamWithEvents } from "@/hooks/use-stream-api";
 import { formatSol } from "@/utils/format";
 
 export function CancelMilestoneDialog({

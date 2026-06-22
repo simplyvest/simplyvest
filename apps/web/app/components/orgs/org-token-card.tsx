@@ -2,8 +2,8 @@ import { useState } from "react";
 import { LuExternalLink } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
-import type { Organization } from "@/hooks/use-api";
-import { useRemoveOrgToken } from "@/hooks/use-api";
+import type { Organization } from "@/hooks/use-org-api";
+import { useRemoveOrgToken } from "@/hooks/use-org-api";
 
 import { CreateOrgTokenModal } from "./create-org-token-modal";
 import { LinkOrgTokenModal } from "./link-org-token-modal";

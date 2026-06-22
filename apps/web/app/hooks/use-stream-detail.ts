@@ -1,7 +1,7 @@
 import BN from "bn.js";
 import { useMemo } from "react";
 
-import { useApiStream, type StreamWithEvents } from "@/hooks/use-api";
+import { useApiStream, type StreamWithEvents } from "@/hooks/use-stream-api";
 
 type StreamType = "linear" | "cliff" | "milestone";
 type StreamStatus = "active" | "completed" | "cancelled";

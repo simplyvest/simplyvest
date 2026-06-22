@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/solana/use-auth";
 import { useConnection } from "@/lib/solana/use-connection";
 import { useSolanaTransaction } from "@/lib/solana/use-solana-transaction";
 
-import { useRecordStreamEvent } from "../use-api";
+import { useRecordStreamEvent } from "../use-stream-api";
 import { buildReadProgram, getCancelMilestoneAccounts } from "./shared";
 
 export function useCancelMilestone() {

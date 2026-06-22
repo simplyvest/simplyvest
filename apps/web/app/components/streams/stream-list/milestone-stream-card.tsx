@@ -3,7 +3,7 @@ import BN from "bn.js";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { StreamWithEvents } from "@/hooks/use-api";
+import type { StreamWithEvents } from "@/hooks/use-stream-api";
 import { formatSol } from "@/utils/format";
 
 export function MilestoneStreamCard({

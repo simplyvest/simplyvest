@@ -1,4 +1,4 @@
-import type { StreamWithEvents } from "@/hooks/use-api";
+import type { StreamWithEvents } from "@/hooks/use-stream-api";
 
 interface OrgTokenStatsProps {
   streams: StreamWithEvents[];

@@ -1,4 +1,4 @@
-import { useUserOrgs } from "@/hooks/use-api";
+import { useUserOrgs } from "@/hooks/use-org-api";
 
 import { OrgCard } from "./org-card";
 

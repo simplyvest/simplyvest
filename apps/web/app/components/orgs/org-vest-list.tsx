@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 
-import type { StreamWithEvents } from "@/hooks/use-api";
+import type { StreamWithEvents } from "@/hooks/use-stream-api";
 
 interface OrgVestListProps {
   streams: StreamWithEvents[];

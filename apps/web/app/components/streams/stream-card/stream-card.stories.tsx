@@ -1,7 +1,7 @@
 import type { StoryObj } from "@storybook/tanstack-react";
 import { fn } from "storybook/test";
 
-import type { StreamWithEvents } from "@/hooks/use-api";
+import type { StreamWithEvents } from "@/hooks/use-stream-api";
 
 import { StreamCard } from "./stream-card";
 

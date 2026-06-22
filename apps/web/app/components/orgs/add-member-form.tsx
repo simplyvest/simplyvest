@@ -4,7 +4,7 @@ import { isValidPubkey } from "@/components/streams/create-stream/utils";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useAddOrgMember } from "@/hooks/use-api";
+import { useAddOrgMember } from "@/hooks/use-org-api";
 import { cn } from "@/utils/cn";
 
 interface AddMemberFormProps {

@@ -1,8 +1,8 @@
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { useApiStreams } from "@/hooks/use-api";
-import type { Organization } from "@/hooks/use-api";
+import { useApiStreams } from "@/hooks/use-stream-api";
+import type { Organization } from "@/hooks/use-org-api";
 
 import { OrgTokenCard } from "./org-token-card";
 import { OrgTokenStats } from "./org-token-stats";

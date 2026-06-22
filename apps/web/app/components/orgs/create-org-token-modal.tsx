@@ -4,7 +4,7 @@ import { LuX } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useUpdateOrgToken } from "@/hooks/use-api";
+import { useUpdateOrgToken } from "@/hooks/use-org-api";
 
 interface CreateOrgTokenModalProps {
   orgId: string;

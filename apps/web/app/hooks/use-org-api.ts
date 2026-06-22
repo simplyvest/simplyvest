@@ -4,191 +4,6 @@ import { toast } from "sonner";
 
 import { api } from "@/lib/api-client";
 
-type StreamStatus = "active" | "completed" | "cancelled" | "orphaned";
-
-interface StreamRecord {
-  id: string;
-  type: "time" | "milestone";
-  creatorAddress: string;
-  recipientAddress: string;
-  mintAddress: string;
-  vaultAddress: string;
-  amount: string;
-  orgId?: string;
-  startTime?: number;
-  endTime?: number;
-  cliffTime?: number;
-  milestoneAuthority?: string;
-  creationTx: string;
-  createdAt: number;
-  // New metadata fields
-  tokenName?: string;
-  tokenSymbol?: string;
-  tokenDecimals?: number;
-  creatorDisplayName?: string;
-  description?: string;
-}
-
-interface StreamEventRecord {
-  eventType: "created" | "withdrawn" | "milestone_triggered" | "completed" | "cancelled";
-  actorAddress: string;
-  amount?: string;
-  txSignature: string;
-  blockTime: number;
-}
-
-interface StreamWithEvents extends StreamRecord {
-  status: StreamStatus;
-  amountWithdrawn: string;
-  milestoneReached: boolean;
-  closedAt: number | null;
-  closeTx: string | null;
-  lastSyncedAt: number | null;
-  events: StreamEventRecord[];
-}
-
-export type { StreamRecord, StreamEventRecord, StreamWithEvents, Organization };
-
-export function useRecordStream() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (input: StreamRecord) => api.post("/api/streams", input),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["api-streams"] });
-    },
-    onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "Failed to record stream");
-    },
-  });
-}
-
-export function useRecordStreamEvent() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ streamId, ...input }: StreamEventRecord & { streamId: string }) =>
-      api.post(`/api/streams/${streamId}/events`, input),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["api-streams"] });
-    },
-    onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "Failed to record event");
-    },
-  });
-}
-
-export function useApiStreams(filters: {
-  creator?: string;
-  recipient?: string;
-  org?: string;
-  status?: string;
-  type?: string;
-}) {
-  const params = new URLSearchParams();
-  if (filters.creator) params.set("creator", filters.creator);
-  if (filters.recipient) params.set("recipient", filters.recipient);
-  if (filters.org) params.set("org", filters.org);
-  if (filters.status) params.set("status", filters.status);
-  if (filters.type) params.set("type", filters.type);
-
-  const qs = params.toString();
-  const path = `/api/streams${qs ? `?${qs}` : ""}`;
-
-  return useQuery({
-    queryKey: ["api-streams", filters],
-    queryFn: () => api.get<StreamWithEvents[]>(path),
-    staleTime: 30_000,
-  });
-}
-
-export function useApiStream(id: string) {
-  return useQuery({
-    queryKey: ["api-stream", id],
-    queryFn: () => api.get<StreamWithEvents>(`/api/streams/${id}`),
-    enabled: !!id,
-  });
-}
-
-// User profile types
-interface UserProfile {
-  id: string;
-  walletAddress: string;
-  displayName: string | null;
-  avatarUrl: string | null;
-  email: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-interface UpdateProfileInput {
-  displayName?: string;
-  avatarUrl?: string;
-  email?: string;
-}
-
-// User profile hooks
-export function useUserProfile() {
-  const { getAccessToken } = usePrivy();
-
-  return useQuery({
-    queryKey: ["user-profile"],
-    queryFn: async () => {
-      const token = await getAccessToken();
-      if (!token) throw new Error("Not authenticated");
-      try {
-        return await api.get<UserProfile>("/api/users/me", { token });
-      } catch (err) {
-        // 404 means user hasn't been created yet — return null
-        if (err instanceof Error && err.message.includes("not found")) {
-          return null;
-        }
-        throw err;
-      }
-    },
-  });
-}
-
-export function useUpdateProfile() {
-  const queryClient = useQueryClient();
-  const { getAccessToken } = usePrivy();
-
-  return useMutation({
-    mutationFn: async (input: UpdateProfileInput) => {
-      const token = await getAccessToken();
-      if (!token) throw new Error("Not authenticated");
-      return api.put<UserProfile>("/api/users/me", input, token);
-    },
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["user-profile"] });
-      toast.success("Profile updated");
-    },
-    onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "Failed to update profile");
-    },
-  });
-}
-
-export function useCreateProfile() {
-  const queryClient = useQueryClient();
-  const { getAccessToken } = usePrivy();
-
-  return useMutation({
-    mutationFn: async (input: { walletAddress: string; displayName?: string; email?: string }) => {
-      const token = await getAccessToken();
-      if (!token) throw new Error("Not authenticated");
-      return api.post<UserProfile>("/api/users/me", input, token);
-    },
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["user-profile"] });
-    },
-    onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "Failed to create profile");
-    },
-  });
-}
-
-// Organization types
 interface Organization {
   id: string;
   name: string;
@@ -224,7 +39,18 @@ interface CreateOrgInput {
   description?: string;
 }
 
-// Organization hooks
+type OrgTokenInput =
+  | { action: "create"; name: string; symbol: string; decimals: number; amount: string }
+  | {
+      action: "link";
+      mintAddress: string;
+      tokenName?: string | null;
+      tokenSymbol?: string | null;
+      tokenDecimals?: number;
+    };
+
+export type { Organization, UserOrg, OrgMember, OrgWithMembers, CreateOrgInput, OrgTokenInput };
+
 export function useCreateOrg() {
   const queryClient = useQueryClient();
   const { getAccessToken } = usePrivy();
@@ -334,16 +160,6 @@ export function useRemoveOrgMember() {
     },
   });
 }
-
-type OrgTokenInput =
-  | { action: "create"; name: string; symbol: string; decimals: number; amount: string }
-  | {
-      action: "link";
-      mintAddress: string;
-      tokenName?: string | null;
-      tokenSymbol?: string | null;
-      tokenDecimals?: number;
-    };
 
 export function useUpdateOrgToken(orgId: string) {
   const queryClient = useQueryClient();

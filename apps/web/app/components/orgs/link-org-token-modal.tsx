@@ -4,7 +4,7 @@ import { COMMON_TOKENS } from "@/components/tokens/token-selector/common-tokens"
 import type { PickerToken } from "@/components/tokens/token-selector/token-picker-dialog";
 import { TokenPickerDialog } from "@/components/tokens/token-selector/token-picker-dialog";
 import { useOwnedTokens } from "@/components/tokens/token-selector/use-owned-tokens";
-import { useUpdateOrgToken } from "@/hooks/use-api";
+import { useUpdateOrgToken } from "@/hooks/use-org-api";
 import { useTokenList } from "@/hooks/use-token-list";
 
 interface LinkOrgTokenModalProps {

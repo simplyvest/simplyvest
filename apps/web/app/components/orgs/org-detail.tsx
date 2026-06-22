@@ -3,7 +3,7 @@ import { useState } from "react";
 import { LuArrowLeft } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
-import { useOrg } from "@/hooks/use-api";
+import { useOrg } from "@/hooks/use-org-api";
 import { useAuth } from "@/lib/solana/use-auth";
 
 import { AddMemberForm } from "./add-member-form";

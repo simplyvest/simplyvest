@@ -7,7 +7,7 @@ import BN from "bn.js";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useWithdraw } from "@/hooks/tx/use-withdraw";
-import type { StreamWithEvents } from "@/hooks/use-api";
+import type { StreamWithEvents } from "@/hooks/use-stream-api";
 import { useAuth } from "@/lib/solana/use-auth";
 import { formatSol, formatDuration } from "@/utils/format";
 

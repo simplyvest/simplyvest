@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { useTriggerMilestone } from "@/hooks/tx/use-trigger-milestone";
 import { useWithdrawMilestone } from "@/hooks/tx/use-withdraw-milestone";
-import { useApiStreams, type StreamWithEvents } from "@/hooks/use-api";
+import { useApiStreams, type StreamWithEvents } from "@/hooks/use-stream-api";
 import { useAuth } from "@/lib/solana/use-auth";
 
 import { CancelDialog } from "../cancel-dialog";
