@@ -4,6 +4,8 @@ import type { Db } from "../db";
 
 import { streams, streamEvents } from "../db/schema";
 
+import { decodeStreamAccount, decodeMilestoneStreamAccount } from "@solana-tdp/sdk";
+
 interface ReconcileResult {
   processed: number;
   updated: number;
@@ -11,7 +13,7 @@ interface ReconcileResult {
 }
 
 type AccountInfoResult =
-  | { status: "exists" }
+  | { status: "exists"; data: string }
   | { status: "not_found" }
   | { status: "error"; error: string };
 
@@ -81,12 +83,31 @@ export function createReconcilerService(db: Db, rpcUrl: string) {
 
               result.updated++;
             } else {
-              // Account exists — update sync timestamp
+              // Account exists — decode on-chain state and sync fields
+              let amountWithdrawn: string | undefined;
+              let milestoneReached: boolean | undefined;
+
+              try {
+                const raw = Buffer.from(accountInfo.data, "base64");
+                if (stream.type === "milestone") {
+                  const decoded = decodeMilestoneStreamAccount(raw);
+                  amountWithdrawn = decoded.amountWithdrawn.toString();
+                  milestoneReached = decoded.milestoneReached;
+                } else {
+                  const decoded = decodeStreamAccount(raw);
+                  amountWithdrawn = decoded.amountWithdrawn.toString();
+                }
+              } catch {
+                // If decoding fails, just fall through and update sync time
+              }
+
               // oxlint-disable-next-line no-await-in-loop
               await db
                 .update(streams)
                 .set({
                   lastSyncedAt: Math.floor(Date.now() / 1000),
+                  ...(amountWithdrawn !== undefined ? { amountWithdrawn } : {}),
+                  ...(milestoneReached !== undefined ? { milestoneReached } : {}),
                 })
                 .where(eq(streams.id, stream.id));
             }
@@ -169,12 +190,19 @@ async function fetchAccountInfo(rpcUrl: string, address: string): Promise<Accoun
       return { status: "error", error: data.error.message };
     }
 
-    // If value is null, account doesn't exist
     if (!data.result?.value) {
       return { status: "not_found" };
     }
 
-    return { status: "exists" };
+    // Extract base64-encoded account data
+    // The RPC response format is: { data: ["<base64>", "base64"], ... }
+    const value = data.result.value as { data?: [string, string]; [key: string]: unknown };
+    const rawData = value.data?.[0];
+    if (!rawData) {
+      return { status: "error", error: "Account data missing from RPC response" };
+    }
+
+    return { status: "exists", data: rawData };
   } catch (err) {
     return {
       status: "error",
