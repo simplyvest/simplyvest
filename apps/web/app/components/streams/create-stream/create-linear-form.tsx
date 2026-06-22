@@ -1,6 +1,6 @@
-import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+import { getAssociatedTokenAddressSync, getMint } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 import { TokenSelector } from "@/components/tokens/token-selector/token-selector";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useCreateStream } from "@/hooks/tx/use-create-stream";
 import { useAuth } from "@/lib/solana/use-auth";
+import { useConnection } from "@/lib/solana/use-connection";
 
 import { StreamCreationSuccess } from "./stream-creation-success";
 import { TimeFields } from "./time-fields";
@@ -15,6 +16,7 @@ import { toUnixSec, isValidPubkey } from "./utils";
 
 export function CreateLinearForm() {
   const { publicKey } = useAuth();
+  const { connection } = useConnection();
   const createStream = useCreateStream();
 
   const [form, setForm] = useState({
@@ -23,7 +25,30 @@ export function CreateLinearForm() {
     amount: "",
     startTime: "",
     endTime: "",
+    cliffTime: "",
   });
+
+  const [tokenDecimals, setTokenDecimals] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!form.mint) {
+      setTokenDecimals(null);
+      return;
+    }
+    try {
+      const pk = new PublicKey(form.mint);
+      getMint(connection, pk)
+        .then((info) => {
+          setTokenDecimals(info.decimals);
+        })
+        .catch(() => {
+          // If RPC fails, default to 6
+          setTokenDecimals(6);
+        });
+    } catch {
+      setTokenDecimals(null);
+    }
+  }, [form.mint, connection]);
 
   const errors = useMemo(() => {
     const e: string[] = [];
@@ -31,9 +56,12 @@ export function CreateLinearForm() {
     if (form.mint && !isValidPubkey(form.mint)) e.push("Invalid token mint address");
     const start = toUnixSec(form.startTime);
     const end = toUnixSec(form.endTime);
+    const cliff = toUnixSec(form.cliffTime);
     if (start && end && end <= start) e.push("End time must be after start time");
     if (start && start <= Math.floor(Date.now() / 1000)) e.push("Start time must be in the future");
     if (end && start && end - start < 60) e.push("Duration must be at least 60 seconds");
+    if (cliff && start && cliff < start) e.push("Cliff must be after or equal to start");
+    if (cliff && end && cliff >= end) e.push("Cliff must be before end time");
     return e;
   }, [form]);
 
@@ -50,21 +78,22 @@ export function CreateLinearForm() {
 
   const handleSubmit = () => {
     if (!publicKey) return;
+    const decimals = tokenDecimals ?? 6;
     const mint = new PublicKey(form.mint);
     const start = toUnixSec(form.startTime);
     createStream.mutate({
       recipient: new PublicKey(form.recipient),
       mint,
-      amount: Math.round(Number(form.amount) * 10 ** 6),
+      amount: Math.round(Number(form.amount) * 10 ** decimals),
       startTime: start,
       endTime: toUnixSec(form.endTime),
-      cliffTime: start,
+      cliffTime: form.cliffTime ? toUnixSec(form.cliffTime) : start,
       senderToken: getAssociatedTokenAddressSync(mint, publicKey, true),
     });
   };
 
   const resetForm = () =>
-    setForm({ recipient: "", mint: "", amount: "", startTime: "", endTime: "" });
+    setForm({ recipient: "", mint: "", amount: "", startTime: "", endTime: "", cliffTime: "" });
 
   const update = (field: keyof typeof form, val: string) =>
     setForm((f) => ({ ...f, [field]: val }));
@@ -107,10 +136,10 @@ export function CreateLinearForm() {
       <TimeFields
         startTime={form.startTime}
         endTime={form.endTime}
-        cliffTime=""
+        cliffTime={form.cliffTime}
         onStartTimeChange={(v) => update("startTime", v)}
         onEndTimeChange={(v) => update("endTime", v)}
-        onCliffTimeChange={() => {}}
+        onCliffTimeChange={(v) => update("cliffTime", v)}
       />
 
       {errors.length > 0 && (
