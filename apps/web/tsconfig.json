@@ -20,5 +20,6 @@
       "@/*": ["./app/*"]
     }
   },
-  "include": ["app", "components", "vitest.shims.d.ts", "vite-env.d.ts"]
+  "include": ["app", "components", "vite-env.d.ts"],
+  "exclude": ["**/*.stories.*"]
 }

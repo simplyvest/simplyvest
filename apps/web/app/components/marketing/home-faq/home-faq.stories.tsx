@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import { userEvent, expect } from "storybook/test";
 
-import { withProviders } from "@/../.storybook/decorators";
+import { withProviders } from "@/.storybook/decorators";
 
 import { HomeFAQ } from "./home-faq";
 

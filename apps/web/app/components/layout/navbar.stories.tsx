@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/tanstack-react";
 
-import { withProviders } from "@/../.storybook/decorators";
+import { withProviders } from "@/.storybook/decorators";
 
 import { Navbar } from "./navbar";
 

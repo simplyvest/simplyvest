@@ -7,14 +7,9 @@
     "build": "tsgo && vite build",
     "preview": "vite preview",
     "check:ts": "tsgo --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --project=unit",
     "test:watch": "vitest",
-    "test:unit": "vitest run --project=unit",
-    "test:storybook": "vitest run --project=storybook",
-    "postinstall": "playwright install chromium",
-    "test:ci": "vitest run --project=unit --project=storybook",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "test:unit": "vitest run --project=unit"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
@@ -40,16 +35,10 @@
     "tailwind-merge": "^3.3.0"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "^5.2.1",
-    "@playwright/test": "^1.60.0",
     "@solana-program/memo": "^0.11.1",
     "@solana-program/system": "^0.12.2",
     "@solana-program/token": "^0.13.0",
     "@solana/kit": "^6.9.0",
-    "@storybook/addon-a11y": "^10.4.2",
-    "@storybook/addon-docs": "^10.4.2",
-    "@storybook/addon-mcp": "^0.6.0",
-    "@storybook/addon-vitest": "^10.4.2",
     "@storybook/tanstack-react": "^10.4.2",
     "@tailwindcss/vite": "^4.3.0",
     "@tanstack/react-devtools": "^0.10.2",
@@ -64,11 +53,9 @@
     "@types/react-dom": "^19.0.0",
     "@typescript/native-preview": "^7.0.0-dev.20260421.2",
     "@vitejs/plugin-react": "^6.0.2",
-    "@vitest/browser-playwright": "4.1.8",
     "@vitest/coverage-v8": "4.1.8",
     "axe-core": "^4.12.0",
     "jsdom": "^29.1.1",
-    "playwright": "^1.60.0",
     "storybook": "^10.4.2",
     "vite": "^8.0.16",
     "vitest": "^4.1.8"
