@@ -1,13 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { LuArrowLeft } from "react-icons/lu";
+import { LuArrowLeft, LuSettings } from "react-icons/lu";
 
-import { Button } from "@/components/ui/button";
+import { LinkButton } from "@/components/ui/link-button";
 import { useOrg } from "@/hooks/use-org-api";
 import { useAuth } from "@/lib/solana/use-auth";
 
 import { AddMemberForm } from "./add-member-form";
-import { EditOrgForm } from "./edit-org-form";
 import { MemberList } from "./member-list";
 import { OrgDashboard } from "./org-dashboard";
 
@@ -18,7 +16,6 @@ interface OrgDetailProps {
 export function OrgDetail({ orgId }: OrgDetailProps) {
   const { data: org, isLoading, error } = useOrg(orgId);
   const { publicKey } = useAuth();
-  const [editing, setEditing] = useState(false);
 
   const currentUserRole = org?.members.find((m) => m.walletAddress === publicKey?.toBase58())?.role;
 
@@ -65,22 +62,19 @@ export function OrgDetail({ orgId }: OrgDetailProps) {
             </p>
           </div>
           {(currentUserRole === "owner" || currentUserRole === "admin") && (
-            <Button variant="outline" size="sm" onClick={() => setEditing((e) => !e)}>
-              {editing ? "Close" : "Edit"}
-            </Button>
+            <LinkButton
+              to="/app/organizations/$orgId/edit"
+              params={{ orgId }}
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+            >
+              <LuSettings className="h-4 w-4" />
+              Settings
+            </LinkButton>
           )}
         </div>
       </div>
-
-      {editing && (currentUserRole === "owner" || currentUserRole === "admin") && (
-        <EditOrgForm
-          orgId={orgId}
-          currentName={org.name}
-          currentSlug={org.slug}
-          currentDescription={org.description}
-          onSuccess={() => setEditing(false)}
-        />
-      )}
 
       <OrgDashboard org={org} currentUserRole={currentUserRole} />
 

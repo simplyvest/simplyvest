@@ -202,3 +202,24 @@ export function useRemoveOrgToken(orgId: string) {
     },
   });
 }
+
+export function useDeleteOrg() {
+  const queryClient = useQueryClient();
+  const { getAccessToken } = usePrivy();
+
+  return useMutation({
+    mutationFn: async (orgId: string) => {
+      const token = await getAccessToken();
+      if (!token) throw new Error("Not authenticated");
+      return api.delete(`/api/orgs/${orgId}`, token);
+    },
+    onSuccess: (_data, orgId) => {
+      void queryClient.invalidateQueries({ queryKey: ["org", orgId] });
+      void queryClient.invalidateQueries({ queryKey: ["user-orgs"] });
+      toast.success("Organization deleted");
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to delete organization");
+    },
+  });
+}

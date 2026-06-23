@@ -32,6 +32,7 @@ import { Route as AppCreateLinearRouteImport } from './routes/app.create.linear'
 import { Route as AppCreateCliffRouteImport } from './routes/app.create.cliff'
 import { Route as AppToolsCreateTokenWalletRouteImport } from './routes/app.tools.create-token.wallet'
 import { Route as AppToolsCreateTokenPlatformRouteImport } from './routes/app.tools.create-token.platform'
+import { Route as AppOrganizationsOrgIdEditRouteImport } from './routes/app.organizations.$orgId.edit'
 
 const WaitlistRoute = WaitlistRouteImport.update({
   id: '/waitlist',
@@ -150,6 +151,12 @@ const AppToolsCreateTokenPlatformRoute =
     path: '/platform',
     getParentRoute: () => AppToolsCreateTokenRoute,
   } as any)
+const AppOrganizationsOrgIdEditRoute =
+  AppOrganizationsOrgIdEditRouteImport.update({
+    id: '/edit',
+    path: '/edit',
+    getParentRoute: () => AppOrganizationsOrgIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -169,10 +176,11 @@ export interface FileRoutesByFullPath {
   '/app/create/cliff': typeof AppCreateCliffRoute
   '/app/create/linear': typeof AppCreateLinearRoute
   '/app/create/milestone': typeof AppCreateMilestoneRoute
-  '/app/organizations/$orgId': typeof AppOrganizationsOrgIdRoute
+  '/app/organizations/$orgId': typeof AppOrganizationsOrgIdRouteWithChildren
   '/app/streams/$streamPda': typeof AppStreamsStreamPdaRoute
   '/app/tools/create-token': typeof AppToolsCreateTokenRouteWithChildren
   '/app/tools/tokens': typeof AppToolsTokensRoute
+  '/app/organizations/$orgId/edit': typeof AppOrganizationsOrgIdEditRoute
   '/app/tools/create-token/platform': typeof AppToolsCreateTokenPlatformRoute
   '/app/tools/create-token/wallet': typeof AppToolsCreateTokenWalletRoute
 }
@@ -194,10 +202,11 @@ export interface FileRoutesByTo {
   '/app/create/cliff': typeof AppCreateCliffRoute
   '/app/create/linear': typeof AppCreateLinearRoute
   '/app/create/milestone': typeof AppCreateMilestoneRoute
-  '/app/organizations/$orgId': typeof AppOrganizationsOrgIdRoute
+  '/app/organizations/$orgId': typeof AppOrganizationsOrgIdRouteWithChildren
   '/app/streams/$streamPda': typeof AppStreamsStreamPdaRoute
   '/app/tools/create-token': typeof AppToolsCreateTokenRouteWithChildren
   '/app/tools/tokens': typeof AppToolsTokensRoute
+  '/app/organizations/$orgId/edit': typeof AppOrganizationsOrgIdEditRoute
   '/app/tools/create-token/platform': typeof AppToolsCreateTokenPlatformRoute
   '/app/tools/create-token/wallet': typeof AppToolsCreateTokenWalletRoute
 }
@@ -220,10 +229,11 @@ export interface FileRoutesById {
   '/app/create/cliff': typeof AppCreateCliffRoute
   '/app/create/linear': typeof AppCreateLinearRoute
   '/app/create/milestone': typeof AppCreateMilestoneRoute
-  '/app/organizations/$orgId': typeof AppOrganizationsOrgIdRoute
+  '/app/organizations/$orgId': typeof AppOrganizationsOrgIdRouteWithChildren
   '/app/streams/$streamPda': typeof AppStreamsStreamPdaRoute
   '/app/tools/create-token': typeof AppToolsCreateTokenRouteWithChildren
   '/app/tools/tokens': typeof AppToolsTokensRoute
+  '/app/organizations/$orgId/edit': typeof AppOrganizationsOrgIdEditRoute
   '/app/tools/create-token/platform': typeof AppToolsCreateTokenPlatformRoute
   '/app/tools/create-token/wallet': typeof AppToolsCreateTokenWalletRoute
 }
@@ -251,6 +261,7 @@ export interface FileRouteTypes {
     | '/app/streams/$streamPda'
     | '/app/tools/create-token'
     | '/app/tools/tokens'
+    | '/app/organizations/$orgId/edit'
     | '/app/tools/create-token/platform'
     | '/app/tools/create-token/wallet'
   fileRoutesByTo: FileRoutesByTo
@@ -276,6 +287,7 @@ export interface FileRouteTypes {
     | '/app/streams/$streamPda'
     | '/app/tools/create-token'
     | '/app/tools/tokens'
+    | '/app/organizations/$orgId/edit'
     | '/app/tools/create-token/platform'
     | '/app/tools/create-token/wallet'
   id:
@@ -301,6 +313,7 @@ export interface FileRouteTypes {
     | '/app/streams/$streamPda'
     | '/app/tools/create-token'
     | '/app/tools/tokens'
+    | '/app/organizations/$orgId/edit'
     | '/app/tools/create-token/platform'
     | '/app/tools/create-token/wallet'
   fileRoutesById: FileRoutesById
@@ -476,6 +489,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppToolsCreateTokenPlatformRouteImport
       parentRoute: typeof AppToolsCreateTokenRoute
     }
+    '/app/organizations/$orgId/edit': {
+      id: '/app/organizations/$orgId/edit'
+      path: '/edit'
+      fullPath: '/app/organizations/$orgId/edit'
+      preLoaderRoute: typeof AppOrganizationsOrgIdEditRouteImport
+      parentRoute: typeof AppOrganizationsOrgIdRoute
+    }
   }
 }
 
@@ -495,12 +515,25 @@ const AppCreateRouteWithChildren = AppCreateRoute._addFileChildren(
   AppCreateRouteChildren,
 )
 
+interface AppOrganizationsOrgIdRouteChildren {
+  AppOrganizationsOrgIdEditRoute: typeof AppOrganizationsOrgIdEditRoute
+}
+
+const AppOrganizationsOrgIdRouteChildren: AppOrganizationsOrgIdRouteChildren = {
+  AppOrganizationsOrgIdEditRoute: AppOrganizationsOrgIdEditRoute,
+}
+
+const AppOrganizationsOrgIdRouteWithChildren =
+  AppOrganizationsOrgIdRoute._addFileChildren(
+    AppOrganizationsOrgIdRouteChildren,
+  )
+
 interface AppOrganizationsRouteChildren {
-  AppOrganizationsOrgIdRoute: typeof AppOrganizationsOrgIdRoute
+  AppOrganizationsOrgIdRoute: typeof AppOrganizationsOrgIdRouteWithChildren
 }
 
 const AppOrganizationsRouteChildren: AppOrganizationsRouteChildren = {
-  AppOrganizationsOrgIdRoute: AppOrganizationsOrgIdRoute,
+  AppOrganizationsOrgIdRoute: AppOrganizationsOrgIdRouteWithChildren,
 }
 
 const AppOrganizationsRouteWithChildren =
