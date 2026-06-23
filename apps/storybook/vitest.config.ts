@@ -8,12 +8,12 @@ const dirname =
   typeof __dirname !== "undefined" ? __dirname : path.dirname(new URL(import.meta.url).pathname);
 
 export default defineConfig({
+  plugins: [
+    storybookTest({
+      configDir: path.join(dirname, ".storybook"),
+    }),
+  ],
   test: {
-    plugins: [
-      storybookTest({
-        configDir: path.join(dirname, ".storybook"),
-      }),
-    ],
     globals: true,
     browser: {
       enabled: true,
