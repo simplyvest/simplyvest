@@ -30,6 +30,8 @@ jobs:
     uses: ./.github/workflows/test-api.yaml
   test-web:
     uses: ./.github/workflows/test-web.yaml
+  test-storybook:
+    uses: ./.github/workflows/test-storybook.yaml
   anchor:
     uses: ./.github/workflows/anchor.yaml
 
