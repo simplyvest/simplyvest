@@ -25,3 +25,5 @@ minimumReleaseAgeExclude:
   - "@typescript/native-preview-win32-arm64@7.0.0-dev.20260618.1"
   - "@typescript/native-preview-win32-x64@7.0.0-dev.20260618.1"
   - "@typescript/native-preview@7.0.0-dev.20260618.1"
+  - "@astrojs/markdown-satteri@0.3.1"
+  - astro@7.0.0

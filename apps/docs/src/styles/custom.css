@@ -1,0 +1,47 @@
+/* SimplyVest brand customizations for Starlight */
+
+:root {
+  --sl-color-accent-low: #f3e8ff;
+  --sl-color-accent: #9333ea;
+  --sl-color-accent-high: #581c87;
+  --sl-color-white: #18181b;
+  --sl-color-gray-1: #27272a;
+  --sl-color-gray-2: #3f3f46;
+  --sl-color-gray-3: #52525b;
+  --sl-color-gray-4: #a1a1aa;
+  --sl-color-gray-5: #d4d4d8;
+  --sl-color-gray-6: #e4e4e7;
+  --sl-color-black: #ffffff;
+  --sl-color-bg-nav: #fafafa;
+  --sl-color-bg-sidebar: #fafafa;
+  --sl-color-bg: #ffffff;
+  --sl-color-bg-mark: #f3e8ff;
+}
+
+/* Dark mode overrides */
+:root[data-theme="dark"] {
+  --sl-color-accent-low: #2e1065;
+  --sl-color-accent: #a855f7;
+  --sl-color-accent-high: #d8b4fe;
+  --sl-color-white: #ffffff;
+  --sl-color-gray-1: #f4f4f5;
+  --sl-color-gray-2: #d4d4d8;
+  --sl-color-gray-3: #a1a1aa;
+  --sl-color-gray-4: #71717a;
+  --sl-color-gray-5: #3f3f46;
+  --sl-color-gray-6: #27272a;
+  --sl-color-black: #18181b;
+  --sl-color-bg-nav: #1c1c1f;
+  --sl-color-bg-sidebar: #1c1c1f;
+  --sl-color-bg: #18181b;
+  --sl-color-bg-mark: #2e1065;
+}
+
+/* Gradient hero */
+.hero {
+  background: linear-gradient(135deg, var(--sl-color-bg) 0%, #f3e8ff 50%, var(--sl-color-bg) 100%);
+}
+
+[data-theme="dark"] .hero {
+  background: linear-gradient(135deg, var(--sl-color-bg) 0%, #1e1035 50%, var(--sl-color-bg) 100%);
+}

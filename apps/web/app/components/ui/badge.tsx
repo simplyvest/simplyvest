@@ -7,6 +7,8 @@ const variants = {
   success: "bg-badge-green text-badge-green-text",
   info: "bg-badge-blue text-badge-blue-text",
   warn: "bg-warn/10 text-warn",
+  sol: "bg-badge-blue text-badge-blue-text",
+  sol2: "bg-badge-green text-badge-green-text",
 } as const;
 
 export function Badge({

@@ -10,3 +10,6 @@ dist/
 .wrangler/
 .env
 .dev.vars
+.astro/
+.reasonix/
+docs/reasonix/
