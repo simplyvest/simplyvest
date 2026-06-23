@@ -64,7 +64,7 @@ monorepo/
 | Guardrail                                             | Where                                          |
 | ----------------------------------------------------- | ---------------------------------------------- |
 | **Checked math** (`checked_mul`, `checked_div`, etc.) | All vesting calculations                       |
-| **15 custom error codes**                             | Every invalid state transition                 |
+| **Custom error codes**                                | Every invalid state transition                 |
 | **60-second minimum duration**                        | Anti-griefing — prevents account space bloat   |
 | **`cancelled` state set before CPI**                  | Reentrancy protection during cancel operations |
 | **Cliff bounds validated against start/end**          | Prevents logical inconsistencies               |

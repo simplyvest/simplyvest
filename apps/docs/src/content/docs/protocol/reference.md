@@ -173,8 +173,8 @@ Initialize a new time-based vesting stream. Tokens transfer from creator's token
 | `end_time - start_time < 60`                                               | `DurationTooShort`        |
 | Creator token balance < `amount`                                           | `InsufficientBalance`     |
 | `start_time <= clock.unix_timestamp`                                       | `StartTimeInPast`         |
-| Mint owner not SPL Token or Token-2022                                     | `UnsupportedTokenProgram` |
-| Token-2022 mint has transfer-hook extension                                | `TokenHasTransferHook`    |
+| Mint owner is not an SPL Token mint                                        | `UnsupportedTokenProgram` |
+| Mint has a transfer-hook extension (Token-2022 only)                       | `TokenHasTransferHook`    |
 
 **Events:** `StreamCreated`
 
@@ -182,7 +182,7 @@ Initialize a new time-based vesting stream. Tokens transfer from creator's token
 
 ```ts
 import { BN, Program } from "@coral-xyz/anchor";
-import { Transaction } from "@solana/web3.js";
+import { Transaction, Keypair } from "@solana/web3.js";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import {
   getStreamPda,
@@ -438,12 +438,12 @@ Initialize a new milestone-gated vesting stream. No time parameters — withdraw
 
 **Validation:**
 
-| Condition                                   | Error                     |
-| ------------------------------------------- | ------------------------- |
-| `amount == 0`                               | `ZeroAmount`              |
-| Creator token balance < `amount`            | `InsufficientBalance`     |
-| Mint owner not SPL Token or Token-2022      | `UnsupportedTokenProgram` |
-| Token-2022 mint has transfer-hook extension | `TokenHasTransferHook`    |
+| Condition                                            | Error                     |
+| ---------------------------------------------------- | ------------------------- |
+| `amount == 0`                                        | `ZeroAmount`              |
+| Creator token balance < `amount`                     | `InsufficientBalance`     |
+| Mint owner is not an SPL Token mint                  | `UnsupportedTokenProgram` |
+| Mint has a transfer-hook extension (Token-2022 only) | `TokenHasTransferHook`    |
 
 **Events:** `MilestoneStreamCreated`
 
@@ -683,19 +683,19 @@ async function cancelMilestone(
 | 2   | 6002 | `InvalidCliffTime`          | `cliff_time` must be between `start_time` and `end_time` |
 | 3   | 6003 | `DurationTooShort`          | Stream duration must be at least 60 seconds              |
 | 4   | 6004 | `InsufficientBalance`       | Sender does not have enough token balance                |
-| 5   | 6005 | `UnsupportedTokenProgram`   | Only SPL Token and Token-2022 are supported              |
+| 5   | 6005 | `UnsupportedTokenProgram`   | Unsupported token program. Only SPL Token is supported.  |
 | 6   | 6006 | `TokenHasTransferHook`      | Token-2022 mint has transfer-hook extension              |
 | 7   | 6007 | `CliffNotReached`           | Cliff time has not been reached yet                      |
 | 8   | 6008 | `NothingToWithdraw`         | No tokens available to withdraw                          |
 | 9   | 6009 | `AlreadyCancelled`          | Stream is already cancelled                              |
-| 10  | 6010 | `FullyVested`               | Milestone reached — no cancel/retrigger allowed          |
+| 10  | 6010 | `FullyVested`               | Stream is fully vested; no tokens remain to cancel.      |
 | 11  | 6011 | `StartTimeInPast`           | `start_time` must be in the future                       |
 | 12  | 6012 | `StreamExpired`             | Cancel after `end_time` — use withdraw instead           |
 | 13  | 6013 | `ExceedsClaimable`          | Requested amount exceeds claimable tokens                |
 | 14  | 6014 | `Unauthorized`              | Caller is not authorized for this action                 |
 | 15  | 6015 | `MilestoneAlreadyTriggered` | Milestone has already been triggered                     |
-| 16  | 6016 | `AlreadyWithdrawn`          | Tokens already withdrawn from this milestone             |
-| 17  | 6017 | `ArithmeticOverflow`        | Arithmetic overflow in vesting calculation               |
+| 16  | 6016 | `AlreadyWithdrawn`          | Tokens have already been withdrawn from this milestone.  |
+| 17  | 6017 | `ArithmeticOverflow`        | Arithmetic overflow in vesting calculation.              |
 
 ---
 

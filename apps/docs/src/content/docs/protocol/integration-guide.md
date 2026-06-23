@@ -213,11 +213,11 @@ const accounts = getWithdrawAccounts(
   mint,
 );
 
-// Use recipient's wallet as signer
+// Use recipient's wallet keypair as signer
 const txSig = await program.methods
   .withdraw({ amount: claimable })
   .accountsPartial(accounts)
-  .signers([recipientKeypair]) // recipient must sign!
+  .signers([recipient]) // recipient must sign — pass their keypair
   .rpc();
 
 console.log(`Withdrew ${claimable.toString()} tokens: ${txSig}`);
@@ -318,7 +318,7 @@ const accounts = getTriggerMilestoneAccounts(milestoneAuthority, streamPDA);
 const txSig = await program.methods
   .triggerMilestone()
   .accountsPartial(accounts)
-  .signers([milestoneAuthorityKeypair]) // must match milestone_authority field
+  .signers([milestoneAuthority]) // must match milestone_authority field
   .rpc();
 
 console.log(`Milestone triggered: ${txSig}`);
@@ -347,7 +347,7 @@ const accounts = getWithdrawMilestoneAccounts(
 const txSig = await program.methods
   .withdrawMilestone()
   .accountsPartial(accounts)
-  .signers([recipientKeypair])
+  .signers([recipient]) // recipient must sign — pass their keypair
   .rpc();
 
 console.log(`Milestone withdrawn: ${txSig}`);

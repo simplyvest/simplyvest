@@ -15,7 +15,7 @@ The **Vesting List** table shows:
 - **Amount** — total amount being vested
 - **Claimed** — how much has been claimed so far
 - **Progress** — visual progress bar
-- **Status** — active, completed, cancelled, or expired
+- **Status** — active, completed, cancelled, or orphaned
 
 ## Cancelling a stream
 
@@ -39,13 +39,11 @@ To cancel:
 ```
 Created → Active → Completed (all tokens claimed)
                 → Cancelled (owner stopped early)
-                → Expired (time passed, tokens unclaimed)
 ```
 
 - **Active** — tokens are vesting and can be claimed
 - **Completed** — all tokens have been claimed
 - **Cancelled** — owner cancelled, unvested tokens returned
-- **Expired** — the vesting end date passed with unclaimed tokens
 
 ## Stats
 

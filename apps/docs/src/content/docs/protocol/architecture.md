@@ -135,7 +135,7 @@ One per milestone-gated vesting stream. Created at `create_milestone_stream` tim
 | --------------------- | -------- | ------------------------------------------------------------- |
 | `creator`             | `Pubkey` | Wallet that funded the stream. Only this wallet can cancel.   |
 | `recipient`           | `Pubkey` | Wallet that receives vested tokens. Immutable once created.   |
-| `mint`                | `Pubkey` | SPL Token or Token-2022 mint address.                         |
+| `mint`                | `Pubkey` | SPL Token mint address.                                       |
 | `vault`               | `Pubkey` | Escrow token account address (cached for self-description).   |
 | `amount`              | `u64`    | Total tokens locked in this stream.                           |
 | `amount_withdrawn`    | `u64`    | Tokens already claimed by the recipient.                      |
@@ -525,23 +525,26 @@ Events are emitted via Anchor's `emit!` macro and parsed from transaction logs b
 
 ## Error reference
 
-| Error                     | Cause                                                                                           |
-| ------------------------- | ----------------------------------------------------------------------------------------------- |
-| `ZeroAmount`              | `amount` is 0                                                                                   |
-| `InvalidTimeRange`        | `end_time <= start_time`                                                                        |
-| `InvalidCliffTime`        | `cliff_time` is before `start_time` or after `end_time` (or equal to `end_time` for pure cliff) |
-| `DurationTooShort`        | `end_time - start_time < 60` seconds (anti-griefing minimum)                                    |
-| `InsufficientBalance`     | Sender does not have enough token balance                                                       |
-| `UnsupportedTokenProgram` | Mint owner is neither SPL Token nor Token-2022                                                  |
-| `TokenHasTransferHook`    | Token-2022 mint has a transfer-hook extension (would block CPI)                                 |
-| `CliffNotReached`         | Withdraw attempted before `cliff_time`                                                          |
-| `NothingToWithdraw`       | No tokens available to withdraw, milestone not reached, or milestone already triggered          |
-| `AlreadyCancelled`        | Operation attempted on an already-cancelled stream                                              |
-| `FullyVested`             | Milestone already reached (trigger/cancel milestone)                                            |
-| `StartTimeInPast`         | `create_stream` called with a `start_time` in the past                                          |
-| `StreamExpired`           | Cancel attempted after `end_time` — use withdraw instead                                        |
-| `ExceedsClaimable`        | Withdraw amount exceeds the claimable total                                                     |
-| `Unauthorized`            | Non-creator, non-recipient, or non-authority caller                                             |
+| Error                       | Cause                                                                                           |
+| --------------------------- | ----------------------------------------------------------------------------------------------- |
+| `ZeroAmount`                | `amount` is 0                                                                                   |
+| `InvalidTimeRange`          | `end_time <= start_time`                                                                        |
+| `InvalidCliffTime`          | `cliff_time` is before `start_time` or after `end_time` (or equal to `end_time` for pure cliff) |
+| `DurationTooShort`          | `end_time - start_time < 60` seconds (anti-griefing minimum)                                    |
+| `InsufficientBalance`       | Sender does not have enough token balance                                                       |
+| `UnsupportedTokenProgram`   | Mint owner is not an SPL Token mint                                                             |
+| `TokenHasTransferHook`      | Mint has a transfer-hook extension (Token-2022 only)                                            |
+| `CliffNotReached`           | Withdraw attempted before `cliff_time`                                                          |
+| `NothingToWithdraw`         | No tokens available to withdraw, milestone not reached, or milestone already triggered          |
+| `AlreadyCancelled`          | Operation attempted on an already-cancelled stream                                              |
+| `FullyVested`               | Stream fully vested (no cancel/retrigger) or milestone already withdrawn                        |
+| `StartTimeInPast`           | `create_stream` called with a `start_time` in the past                                          |
+| `StreamExpired`             | Cancel attempted after `end_time` — use withdraw instead                                        |
+| `ExceedsClaimable`          | Withdraw amount exceeds the claimable total                                                     |
+| `Unauthorized`              | Non-creator, non-recipient, or non-authority caller                                             |
+| `MilestoneAlreadyTriggered` | Milestone has already been triggered                                                            |
+| `AlreadyWithdrawn`          | Tokens have already been withdrawn from this milestone                                          |
+| `ArithmeticOverflow`        | Arithmetic overflow in vesting calculation                                                      |
 
 ---
 
@@ -580,16 +583,16 @@ Each decision documents the alternatives considered and why the chosen approach 
 
 **Trade-off:** Custom PDAs are not auto-discovered by wallets and explorers. Users must derive the vault address from the stream PDA. The SDK provides a derivation helper for this.
 
-### Token standard: SPL Token + Token-2022 (vs SPL-only)
+### Token standard: SPL Token only (Token-2022 deferred)
 
 **Alternatives considered:**
 
-1. SPL-only — simpler program, fewer failure modes.
-2. Both SPL Token and Token-2022 with validation gate (chosen).
+1. Both SPL Token and Token-2022 with validation gate.
+2. SPL-only — simpler program, fewer failure modes (chosen).
 
-**Rationale:** Token-2022 adoption is growing. New tokens increasingly launch with Token-2022 features (metadata extensions, transfer hooks). Rejecting them at protocol level would limit adoption in the near future. The validation gate at `create_stream` ensures only safe mints pass through — specifically rejecting transfer-hook extensions that would cause silent CPI failures during `withdraw` or `cancel`.
+**Rationale:** Token-2022 adoption is growing, but the current program only supports SPL Token. Token-2022 mints are rejected at account-deserialization time because the vault uses `Program<'info, Token>`. Full Token-2022 support would require additional CPI routing and is deferred to a future upgrade.
 
-**Trade-off:** Extra validation logic at creation time. Slightly larger instruction due to token program detection. Token-2022 transfer-hook tokens are rejected entirely, though they could be supported with additional CPI routing (deferred to v2).
+**Trade-off:** SPL-only means simpler code, fewer failure modes, and no extra validation logic. Token-2022 tokens must be held as standard SPL Token tokens to be used with the protocol.
 
 ### Vesting curve: timestamps define the curve (vs VestingType enum)
 

@@ -74,7 +74,7 @@ cd apps/solana-tdp-anchor
 anchor test
 
 # Web app unit + storybook tests
-pnpm --filter @solana-tdp/web test:ci
+pnpm --filter @solana-tdp/web test
 
 # Typecheck everything
 pnpm check:ts:all
@@ -126,13 +126,13 @@ The API (`apps/api`) is a Cloudflare Worker with D1 database.
 1. Create D1 database:
    ```bash
    cd apps/api
-   npx wrangler d1 create simplyvest-db
+   pnpm wrangler d1 create simplyvest-db
    ```
 2. Copy the `database_id` from output into `wrangler.toml`
 3. Set secrets:
    ```bash
-   npx wrangler secret put PRIVY_APP_ID
-   npx wrangler secret put PRIVY_APP_SECRET
+   pnpm wrangler secret put PRIVY_APP_ID
+   pnpm wrangler secret put PRIVY_APP_SECRET
    ```
 4. Apply migrations:
    ```bash
@@ -150,7 +150,7 @@ pnpm deploy:api
 ```bash
 pnpm dev:api          # Start API on localhost:8787
 pnpm dev:web          # Start web app on localhost:5173
-pnpm dev              # Start both in parallel
+pnpm dev              # Start API, web, docs, and storybook in parallel
 
 pnpm db:generate      # Generate new migration from schema changes
 pnpm db:migrate       # Apply migrations to local D1
@@ -159,34 +159,37 @@ pnpm db:reset         # Drop all tables (local only)
 
 ### API endpoints
 
-| Method   | Path                            | Auth   | Purpose                        |
-| -------- | ------------------------------- | ------ | ------------------------------ |
-| `POST`   | `/api/streams`                  | —      | Record new stream              |
-| `GET`    | `/api/streams`                  | —      | List streams                   |
-| `GET`    | `/api/streams/:id`              | —      | Get stream + events            |
-| `POST`   | `/api/streams/:id/sync`         | —      | Sync stream events             |
-| `POST`   | `/api/streams/:id/events`       | —      | Record stream event            |
-| `GET`    | `/api/users/me`                 | JWT    | Get own profile                |
-| `POST`   | `/api/users/me`                 | JWT    | Create profile                 |
-| `PUT`    | `/api/users/me`                 | JWT    | Update profile                 |
-| `GET`    | `/api/users/:id`                | —      | Get public profile             |
-| `POST`   | `/api/orgs`                     | JWT    | Create organization            |
-| `GET`    | `/api/orgs/:id`                 | —      | Get org + members              |
-| `PUT`    | `/api/orgs/:id`                 | JWT    | Update org                     |
-| `POST`   | `/api/orgs/:id/members`         | JWT    | Add member                     |
-| `DELETE` | `/api/orgs/:id/members/:userId` | JWT    | Remove member                  |
-| `GET`    | `/api/orgs/me/list`             | JWT    | List user's orgs               |
-| `POST`   | `/api/reconcile`                | JWT    | Trigger reconciliation         |
-| `GET`    | `/api/reconcile/stats`          | JWT    | Reconciliation stats           |
-| `POST`   | `/api/waitlist`                 | —      | Legacy waitlist                |
-| `GET`    | `/api/tokens/r2/*`              | —      | Serve R2 metadata JSON         |
-| `POST`   | `/api/tokens/upload-image`      | Bearer | Upload token image to R2       |
-| `POST`   | `/api/tokens/metadata`          | Bearer | Store token metadata           |
-| `POST`   | `/api/tokens`                   | —      | Record token info              |
-| `GET`    | `/api/tokens`                   | —      | List tokens                    |
-| `PATCH`  | `/api/tokens/:mint/visibility`  | —      | Toggle token visibility        |
-| `GET`    | `/api/tokens/preferences`       | —      | Get user token preferences     |
-| `POST`   | `/api/tokens/create-platform`   | Bearer | Create platform token on-chain |
+| Method   | Path                            | Auth | Purpose                        |
+| -------- | ------------------------------- | ---- | ------------------------------ |
+| `POST`   | `/api/streams`                  | —    | Record new stream              |
+| `GET`    | `/api/streams`                  | —    | List streams                   |
+| `GET`    | `/api/streams/:id`              | —    | Get stream + events            |
+| `POST`   | `/api/streams/:id/sync`         | —    | Sync stream events             |
+| `POST`   | `/api/streams/:id/events`       | —    | Record stream event            |
+| `GET`    | `/api/users/me`                 | JWT  | Get own profile                |
+| `POST`   | `/api/users/me`                 | JWT  | Create profile                 |
+| `PUT`    | `/api/users/me`                 | JWT  | Update profile                 |
+| `GET`    | `/api/users/:id`                | —    | Get public profile             |
+| `POST`   | `/api/orgs`                     | JWT  | Create organization            |
+| `GET`    | `/api/orgs/:id`                 | —    | Get org + members              |
+| `PUT`    | `/api/orgs/:id`                 | JWT  | Update org                     |
+| `DELETE` | `/api/orgs/:id`                 | JWT  | Delete org                     |
+| `POST`   | `/api/orgs/:id/members`         | JWT  | Add member                     |
+| `DELETE` | `/api/orgs/:id/members/:userId` | JWT  | Remove member                  |
+| `GET`    | `/api/orgs/me/list`             | JWT  | List user's orgs               |
+| `POST`   | `/api/reconcile`                | JWT  | Trigger reconciliation         |
+| `GET`    | `/api/reconcile/stats`          | JWT  | Reconciliation stats           |
+| `POST`   | `/api/waitlist`                 | —    | Legacy waitlist                |
+| `GET`    | `/api/tokens/r2/*`              | —    | Serve R2 metadata JSON         |
+| `POST`   | `/api/tokens/upload-image`      | JWT  | Upload token image to R2       |
+| `POST`   | `/api/tokens/metadata`          | JWT  | Store token metadata           |
+| `POST`   | `/api/tokens`                   | —    | Record token info              |
+| `GET`    | `/api/tokens`                   | —    | List tokens                    |
+| `PATCH`  | `/api/tokens/:mint/visibility`  | —    | Toggle token visibility        |
+| `GET`    | `/api/tokens/preferences`       | —    | Get user token preferences     |
+| `POST`   | `/api/tokens/create-platform`   | JWT  | Create platform token on-chain |
+| `PUT`    | `/api/orgs/:id/token`           | JWT  | Set org token (create or link) |
+| `DELETE` | `/api/orgs/:id/token`           | JWT  | Remove org token               |
 
 ---
 
@@ -194,7 +197,7 @@ pnpm db:reset         # Drop all tables (local only)
 
 The React frontend (`apps/web`) is deployed to Cloudflare Pages via GitHub Actions. A push to `main` that touches `apps/web/` or `packages/solana-tdp-sdk/` triggers an automatic build and deploy.
 
-Preview deploys are created for pull requests at `<branch>.solana-tdp-web.pages.dev`.
+Preview deploys are created for pull requests at `<branch>.simplyvest.pages.dev`.
 
 ### One-time setup
 
@@ -202,7 +205,7 @@ Preview deploys are created for pull requests at `<branch>.solana-tdp-web.pages.
 2. Get your Account ID from the Cloudflare dashboard sidebar
 3. Create the Pages project:
    ```bash
-   pnpm dlx wrangler pages project create solana-tdp-web --production-branch=main
+   pnpm dlx wrangler pages project create simplyvest --production-branch=main
    ```
 4. Add two GitHub Actions secrets:
    - `CLOUDFLARE_API_TOKEN` — your Cloudflare API token
@@ -211,8 +214,6 @@ Preview deploys are created for pull requests at `<branch>.solana-tdp-web.pages.
    **Where to scope the secrets:**
    - **Repository level** (recommended) — Settings > Secrets and variables > Actions > Secrets. Available to all workflows without extra config.
    - **Environment level** — If scoped to an environment (e.g., `main`), the workflow job must declare `environment: main` or the secrets won't be visible. Our CI workflow's `deploy-web` job already includes this declaration.
-
-5. Ensure `wrangler` is listed as a root `devDependency` in `package.json`. The `cloudflare/wrangler-action@v3` action tries to install wrangler via `pnpm add wrangler`, but that fails in a pnpm workspace without the `-w` flag (`ERR_PNPM_ADDING_TO_ROOT`). Adding wrangler as a root devDependency pre-installs it so the action finds it ready to use.
 
 ### Local manual deploy
 
@@ -233,22 +234,24 @@ SPA routing works out of the box — Cloudflare Pages auto-detects a client-side
 
 Each job has its own reusable workflow file in `.github/workflows/`, called by the orchestrator `ci.yaml`:
 
-| Workflow file           | Job                 | Triggers        | What it does                                       |
-| ----------------------- | ------------------- | --------------- | -------------------------------------------------- |
-| `ci.yaml`               | (orchestrator)      | Push/PR to main | Calls all other workflows, deploys on push         |
-| `lint.yaml`             | lint                | PRs + main      | JS/TS lint with oxlint                             |
-| `format.yaml`           | format              | PRs + main      | Format check with oxfmt                            |
-| `typecheck-web.yaml`    | typecheck-web       | PRs + main      | TypeScript check (web)                             |
-| `typecheck-api.yaml`    | typecheck-api       | PRs + main      | TypeScript check (API)                             |
-| `typecheck-sdk.yaml`    | typecheck-sdk       | PRs + main      | TypeScript check (SDK)                             |
-| `typecheck-anchor.yaml` | typecheck-anchor-ts | PRs + main      | TypeScript check (anchor)                          |
-| `test-api.yaml`         | test-api            | PRs + main      | API tests with vitest                              |
-| `test-web.yaml`         | test-web            | PRs + main      | Build SDK + Playwright + vitest (unit + storybook) |
-| `build-web.yaml`        | build-web           | PRs + main      | Production build of React frontend                 |
-| `rust-lint.yaml`        | lint-rust           | PRs + main      | cargo fmt + clippy                                 |
-| `anchor.yaml`           | anchor              | PRs + main      | Build Anchor program + vitest tests                |
-| `deploy-web.yaml`       | deploy-web          | main only       | Build SDK + Deploy to Cloudflare Pages             |
-| `deploy-api.yaml`       | deploy-api          | main only       | Build SDK + Deploy API Worker + D1 migrations      |
+| Workflow file           | Job                 | Triggers        | What it does                                  |
+| ----------------------- | ------------------- | --------------- | --------------------------------------------- |
+| `ci.yaml`               | (orchestrator)      | Push/PR to main | Calls all other workflows, deploys on push    |
+| `lint.yaml`             | lint                | PRs + main      | JS/TS lint with oxlint                        |
+| `format.yaml`           | format              | PRs + main      | Format check with oxfmt                       |
+| `typecheck-web.yaml`    | typecheck-web       | PRs + main      | TypeScript check (web)                        |
+| `typecheck-api.yaml`    | typecheck-api       | PRs + main      | TypeScript check (API)                        |
+| `typecheck-sdk.yaml`    | typecheck-sdk       | PRs + main      | TypeScript check (SDK)                        |
+| `typecheck-anchor.yaml` | typecheck-anchor-ts | PRs + main      | TypeScript check (anchor)                     |
+| `test-api.yaml`         | test-api            | PRs + main      | API tests with vitest                         |
+| `test-web.yaml`         | test-web            | PRs + main      | Unit tests with vitest (jsdom)                |
+| `test-storybook.yaml`   | test-storybook      | PRs + main      | Storybook interaction tests (Playwright)      |
+| `build-web.yaml`        | build-web           | PRs + main      | Production build of React frontend            |
+| `build-web.yaml`        | build-web           | PRs + main      | Production build of React frontend            |
+| `rust-lint.yaml`        | lint-rust           | PRs + main      | cargo fmt + clippy                            |
+| `anchor.yaml`           | anchor              | PRs + main      | Build Anchor program + vitest tests           |
+| `deploy-web.yaml`       | deploy-web          | main only       | Build SDK + Deploy to Cloudflare Pages        |
+| `deploy-api.yaml`       | deploy-api          | main only       | Build SDK + Deploy API Worker + D1 migrations |
 
 ### GitHub Actions Variables
 

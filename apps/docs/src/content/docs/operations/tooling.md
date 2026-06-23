@@ -74,12 +74,11 @@ Tests use `vitest` with the `anchor-litesvm` npm package via `LiteSVMProvider`. 
 Run with:
 
 ```bash
-cd apps/web
+cd apps/storybook
 pnpm test:storybook        # Storybook tests only
-pnpm test:ci               # Unit + Storybook tests combined
 ```
 
-The web frontend has **40+ Storybook stories** tested via `@storybook/addon-vitest` with Playwright (Chromium). Each story is rendered in a headless browser and tested for interaction correctness (clicks, form fills, callback assertions) and accessibility (axe-core).
+The web frontend has **55+ Storybook stories** tested via `@storybook/addon-vitest` with Playwright (Chromium). Each story is rendered in a headless browser and tested for interaction correctness (clicks, form fills, callback assertions) and accessibility (axe-core).
 
 Playwright browsers are installed automatically via the `postinstall` script (`playwright install chromium`).
 
@@ -88,14 +87,10 @@ Playwright browsers are installed automatically via the `postinstall` script (`p
 ## Dependencies
 
 ```json
-// apps/solana-tdp-anchor/package.json (devDependencies)
+// apps/solana-tdp-anchor/package.json (dependencies)
 {
-  "anchor-litesvm": "^0.2.1",
-  "litesvm": "0.3.3",
   "@coral-xyz/anchor": "^0.32.1",
-  "@solana/web3.js": "^1.98.4",
-  "vitest": "^4.1.8",
-  "typescript": "^5.7.3"
+  "@solana/web3.js": "^1.98.4"
 }
 ```
 
