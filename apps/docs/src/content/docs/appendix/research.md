@@ -100,7 +100,7 @@ Solana TDP relies on three Solana primitives: **Accounts** (everything on Solana
 | **Bankrun**               | Deprecated (Mar 2025) | Migrate to LiteSVM                             |
 | **solana-program-test**   | Legacy                | Existing projects OK; new projects → LiteSVM   |
 
-## **Decision:** TypeScript tests with anchor-litesvm + vitest. Tests use `fromWorkspace` to bootstrap the SVM and `LiteSVMProvider` for the Anchor provider. No local validator needed for most tests. Use solana-test-validator only when a real RPC node is required.
+**Decision:** TypeScript tests with anchor-litesvm + vitest. Tests use `fromWorkspace` to bootstrap the SVM and `LiteSVMProvider` for the Anchor provider. No local validator needed for most tests. Use solana-test-validator only when a real RPC node is required.
 
 ## Competitive landscape
 

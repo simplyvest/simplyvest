@@ -5,8 +5,6 @@ sidebar:
   label: "Security Model"
 ---
 
-# **Solana TDP**
-
 ## Security Architecture & Test Coverage
 
 **Token Distribution Protocol** on Solana
@@ -118,8 +116,6 @@ graph TD
         C --> C2[cn class merging]
     end
 ```
-
-**Total: ~147 tests**
 
 ---
 
@@ -287,13 +283,9 @@ Every commit runs automatically:
 
 ---
 
-# Thank You
-
 **Solana TDP** — Token Distribution Protocol
 
 - Program: `6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk`
 - Repo: `github.com/simplyvest/simplyvest`
 - Tests: `pnpm test` (all workspaces)
 - Build: `pnpm build` (all workspaces)
-
-Rendered with [Marp](https://marp.app/)

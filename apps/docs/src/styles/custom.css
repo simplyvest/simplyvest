@@ -45,3 +45,12 @@
 [data-theme="dark"] .hero {
   background: linear-gradient(135deg, var(--sl-color-bg) 0%, #1e1035 50%, var(--sl-color-bg) 100%);
 }
+
+/* Blue container behind the white logo for visibility on all backgrounds */
+.site-title img {
+  background-color: #433ae6;
+  border-radius: 10px;
+  padding: 6px;
+  height: 2.5rem;
+  width: auto;
+}
