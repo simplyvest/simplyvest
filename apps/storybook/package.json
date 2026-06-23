@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "storybook": "storybook dev -p 6006",
+    "build": "storybook build -o storybook-static",
     "build-storybook": "storybook build -o storybook-static",
     "preview:static": "wrangler pages dev storybook-static --port 8788",
     "deploy:storybook": "wrangler pages deploy storybook-static --project-name=simplyvest-storybook",
