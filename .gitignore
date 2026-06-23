@@ -14,3 +14,6 @@ dist/
 .reasonix/
 docs/reasonix/
 storybook-static/
+.superpowers/
+.agents/
+docs/superpowers/
