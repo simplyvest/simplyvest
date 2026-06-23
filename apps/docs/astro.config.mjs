@@ -65,7 +65,15 @@ export default defineConfig({
         },
         {
           label: "Appendix",
-          items: [{ autogenerate: { directory: "appendix" } }],
+          items: [
+            {
+              label: "Architecture Decision Records",
+              collapsed: false,
+              autogenerate: { directory: "appendix/adr" },
+            },
+            { label: "Observations", slug: "appendix/observations" },
+            { label: "Research & Background", slug: "appendix/research" },
+          ],
         },
       ],
       customCss: ["./src/styles/custom.css"],
