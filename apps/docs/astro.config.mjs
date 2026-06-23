@@ -69,7 +69,7 @@ export default defineConfig({
             {
               label: "Architecture Decision Records",
               collapsed: false,
-              autogenerate: { directory: "appendix/adr" },
+              items: [{ autogenerate: { directory: "appendix/adr" } }],
             },
             { label: "Observations", slug: "appendix/observations" },
             { label: "Research & Background", slug: "appendix/research" },
