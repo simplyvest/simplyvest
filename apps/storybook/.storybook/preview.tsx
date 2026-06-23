@@ -2,7 +2,7 @@ import { Buffer } from "buffer";
 
 import type { Preview } from "@storybook/tanstack-react";
 
-import "../web/app/styles.css";
+import "../../web/app/styles.css";
 import { withProviders } from "./decorators";
 
 // Polyfill Buffer for @solana/spl-token in the browser

@@ -17,9 +17,9 @@
     "declaration": true,
     "declarationMap": true,
     "paths": {
-      "@/*": ["./app/*"]
+      "@/*": ["./app/*"],
+      "@/.storybook/*": ["../storybook/.storybook/*"]
     }
   },
-  "include": ["app", "components", "vite-env.d.ts"],
-  "exclude": ["**/*.stories.*"]
+  "include": ["app", "components", "vite-env.d.ts"]
 }
