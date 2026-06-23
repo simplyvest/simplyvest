@@ -23,6 +23,8 @@ describe("Footer", () => {
     expect(await screen.findByText("resources")).toBeInTheDocument();
     expect(await screen.findByText("company")).toBeInTheDocument();
 
+    const expectedDocsUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.com";
+
     // Product links (internal)
     expect((await screen.findByText("Features")).closest("a")).toHaveAttribute(
       "href",
@@ -30,7 +32,7 @@ describe("Footer", () => {
     );
     expect((await screen.findByText("Documentation")).closest("a")).toHaveAttribute(
       "href",
-      "/docs",
+      expectedDocsUrl,
     );
     expect((await screen.findByText("Waitlist")).closest("a")).toHaveAttribute("href", "/waitlist");
 

@@ -1,14 +1,16 @@
 import { Link } from "@tanstack/react-router";
 import { SiGithub, SiX } from "react-icons/si";
 
+const DOCS_URL = import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.com";
+
 const footerLinks = {
   product: [
     { name: "Features", href: "/#features" },
-    { name: "Documentation", href: "/docs" },
+    { name: "Documentation", href: DOCS_URL },
     { name: "Waitlist", href: "/waitlist" },
   ],
   resources: [
-    { name: "Docs", href: "/docs" },
+    { name: "Docs", href: DOCS_URL },
     { name: "FAQ", href: "/faq" },
     { name: "Support", href: "/waitlist" },
   ],

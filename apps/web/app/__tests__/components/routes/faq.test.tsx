@@ -52,7 +52,8 @@ describe("FAQPage", () => {
     expect(await screen.findByText("Still have questions?")).toBeInTheDocument();
 
     const docsLink = await screen.findByText("View Documentation");
-    expect(docsLink.closest("a")).toHaveAttribute("href", "/docs");
+    const expectedDocsUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.com";
+    expect(docsLink.closest("a")).toHaveAttribute("href", expectedDocsUrl);
 
     const waitlistLink = await screen.findByText("Join Waitlist");
     expect(waitlistLink.closest("a")).toHaveAttribute("href", "/waitlist");

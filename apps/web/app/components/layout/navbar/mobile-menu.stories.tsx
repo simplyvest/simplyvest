@@ -9,9 +9,9 @@ const meta = {
     links: [
       { to: "/", label: "Home" },
       { to: "/features", label: "Features" },
-      { to: "/docs", label: "Docs" },
       { to: "/faq", label: "FAQ" },
     ],
+    docsUrl: import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.com",
     onClose: fn(),
   },
 } satisfies Meta<typeof MobileMenu>;

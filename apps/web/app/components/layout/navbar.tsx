@@ -10,10 +10,11 @@ import { ThemeToggle } from "./navbar/theme-toggle";
 
 const links = [
   { to: "/", label: "Home" },
-  { to: "/docs", label: "Docs" },
   { to: "/faq", label: "FAQ" },
   { to: "/waitlist", label: "Waitlist" },
 ];
+
+const DOCS_URL = import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.com";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -30,6 +31,12 @@ export function Navbar() {
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-6">
             <NavLinks links={links} />
+            <a
+              href={DOCS_URL}
+              className="text-sm font-medium text-gray-700 hover:text-purple-600 dark:text-slate-300 dark:hover:text-purple-400 transition-colors no-underline hover:no-underline"
+            >
+              Docs
+            </a>
             <LinkButton to="/app" variant="brand" size="sm" className="rounded-xl px-4">
               Beta App
             </LinkButton>
@@ -39,7 +46,9 @@ export function Navbar() {
           <HamburgerButton open={mobileOpen} onClick={() => setMobileOpen((o) => !o)} />
         </div>
 
-        {mobileOpen && <MobileMenu links={links} onClose={() => setMobileOpen(false)} />}
+        {mobileOpen && (
+          <MobileMenu links={links} docsUrl={DOCS_URL} onClose={() => setMobileOpen(false)} />
+        )}
       </div>
     </nav>
   );

@@ -1,5 +1,5 @@
-import { screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { screen, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
 
 // Mock the root route to avoid pulling in SolanaProvider → LedgerHQ chain
 vi.mock("@/routes/__root", () => ({
@@ -14,54 +14,36 @@ if (!component) throw new Error("Docs route missing component");
 const DocsPage = component;
 
 describe("DocsPage", () => {
-  it("renders the hero heading and tagline", async () => {
+  it("renders a redirect link to the external docs site", async () => {
     renderWithRouter(<DocsPage />);
 
-    expect(await screen.findByText("DOCS")).toBeInTheDocument();
-    expect(await screen.findByText("OVERVIEW")).toBeInTheDocument();
-    expect(
-      await screen.findByText(/non-custodial, on-chain SPL-token vesting/),
-    ).toBeInTheDocument();
+    const expectedDocsUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.com";
+    const redirectLink = await screen.findByText("SimplyVest Docs");
+    expect(redirectLink).toBeInTheDocument();
+    expect(redirectLink.closest("a")).toHaveAttribute("href", expectedDocsUrl);
+    expect(await screen.findByText(/Redirecting/)).toBeInTheDocument();
   });
 
-  it("renders the Stream Types section", async () => {
+  it("redirects to the external docs URL", async () => {
+    const expectedDocsUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.com";
+    // window.location.href is set in useEffect
+    const originalLocation = window.location;
+    const mockLocation = Object.assign({}, originalLocation, { href: "" });
+    Object.defineProperty(window, "location", {
+      value: mockLocation,
+      writable: true,
+    });
+
     renderWithRouter(<DocsPage />);
 
-    expect(await screen.findByText("Stream Types")).toBeInTheDocument();
-    expect(
-      await screen.findByText("Two types of vesting streams for different distribution models."),
-    ).toBeInTheDocument();
+    // Wait for the effect to fire
+    await waitFor(() => {
+      expect(window.location.href).toBe(expectedDocsUrl);
+    });
 
-    // Stream type cards
-    expect(await screen.findByText("STREAMACCOUNT")).toBeInTheDocument();
-    expect(await screen.findByText("MILESTONESTREAM")).toBeInTheDocument();
-  });
-
-  it("renders the Account Model section", async () => {
-    renderWithRouter(<DocsPage />);
-
-    const accountModelTexts = await screen.findAllByText("Account Model");
-    expect(accountModelTexts.length).toBeGreaterThanOrEqual(1);
-    expect(
-      await screen.findByText("Three on-chain account types power the protocol."),
-    ).toBeInTheDocument();
-
-    // Account cards
-    expect(await screen.findByText("StreamAccount")).toBeInTheDocument();
-    expect(await screen.findByText("VaultAccount")).toBeInTheDocument();
-    expect(await screen.findByText("CreatorConfig")).toBeInTheDocument();
-  });
-
-  it("renders the Security Model section", async () => {
-    renderWithRouter(<DocsPage />);
-
-    expect(await screen.findByText("Security Model")).toBeInTheDocument();
-    expect(await screen.findByText("Key security properties of the protocol.")).toBeInTheDocument();
-
-    // Security features
-    expect(await screen.findByText("PDA Vaults")).toBeInTheDocument();
-    expect(await screen.findByText("Recipient Commitment")).toBeInTheDocument();
-    expect(await screen.findByText("Rent Recovery")).toBeInTheDocument();
-    expect(await screen.findByText("Token-2022")).toBeInTheDocument();
+    Object.defineProperty(window, "location", {
+      value: originalLocation,
+      writable: true,
+    });
   });
 });

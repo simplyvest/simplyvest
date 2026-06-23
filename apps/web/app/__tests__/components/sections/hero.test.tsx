@@ -33,6 +33,7 @@ describe("Hero", () => {
     expect(joinWaitlist.closest("a")).toHaveAttribute("href", "/waitlist");
 
     const readDocs = await screen.findByText("Read Docs");
-    expect(readDocs.closest("a")).toHaveAttribute("href", "/docs");
+    const expectedDocsUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.com";
+    expect(readDocs.closest("a")).toHaveAttribute("href", expectedDocsUrl);
   });
 });

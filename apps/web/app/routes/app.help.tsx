@@ -17,13 +17,13 @@ function HelpPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Link
-          to="/docs"
-          className="rounded-lg border border-border bg-bg1 p-6 transition-colors hover:border-primary/30 hover:bg-bg2 no-underline hover:no-underline"
+        <a
+          href={import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.com"}
+          className="rounded-lg border border-border bg-bg1 p-6 transition-colors hover:border-primary/30 hover:bg-bg2 no-underline block"
         >
           <h3 className="text-base font-semibold text-text">Documentation</h3>
           <p className="mt-1 text-sm text-muted">Learn how to use SimplyVest</p>
-        </Link>
+        </a>
 
         <Link
           to="/faq"

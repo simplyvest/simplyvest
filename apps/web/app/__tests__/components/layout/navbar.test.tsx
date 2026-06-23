@@ -33,9 +33,10 @@ describe("Navbar", () => {
   it("renders public navigation links on marketing pages", async () => {
     renderWithRouter(<Navbar />);
 
+    const expectedDocsUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.com";
     const expectedLinks = [
       { label: "Home", href: "/" },
-      { label: "Docs", href: "/docs" },
+      { label: "Docs", href: expectedDocsUrl },
       { label: "FAQ", href: "/faq" },
       { label: "Beta App", href: "/app" },
       { label: "Waitlist", href: "/waitlist" },

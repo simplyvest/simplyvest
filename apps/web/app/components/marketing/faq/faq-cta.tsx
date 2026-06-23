@@ -15,9 +15,12 @@ export function FaqCta() {
             documentation.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <LinkButton to="/docs" variant="brand" className="rounded-xl px-6 py-3">
+            <a
+              href={import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.com"}
+              className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-3 text-sm font-medium text-white shadow-lg shadow-purple-600/20 hover:shadow-purple-600/30 transition-shadow no-underline"
+            >
               View Documentation
-            </LinkButton>
+            </a>
             <LinkButton
               to="/waitlist"
               variant="outline"
