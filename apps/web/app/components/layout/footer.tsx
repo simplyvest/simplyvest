@@ -28,7 +28,9 @@ export function Footer() {
           {/* Logo & Description */}
           <div className="col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4 no-underline hover:no-underline">
-              <img src="/simplyvest.png" alt="SimplyVest" className="h-8 w-auto" />
+              <div className="flex items-center rounded-lg bg-primary p-1">
+                <img src="/simplyvest.png" alt="SimplyVest" className="h-6 w-auto" />
+              </div>
               <span className="text-lg font-semibold text-gray-900 dark:text-slate-100">
                 SimplyVest
               </span>

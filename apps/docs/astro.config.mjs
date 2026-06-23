@@ -7,6 +7,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "SimplyVest Docs",
+      head: [{ tag: "link", attrs: { rel: "icon", type: "image/png", href: "/favicon.png" } }],
       logo: {
         src: "./public/logo.png",
         replacesTitle: true,

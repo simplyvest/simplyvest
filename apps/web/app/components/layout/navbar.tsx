@@ -24,7 +24,9 @@ export function Navbar() {
       <div className="mx-auto w-full max-w-7xl rounded-2xl border border-white/60 bg-white/70 shadow-lg shadow-purple-600/5 backdrop-blur-xl dark:border-slate-700/60 dark:bg-slate-900/70 dark:shadow-purple-400/10 px-6 py-3">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 no-underline hover:no-underline">
-            <img src="/simplyvest.png" alt="SimplyVest" className="h-7 w-auto" />
+            <div className="flex items-center rounded-lg bg-primary p-1">
+              <img src="/simplyvest.png" alt="SimplyVest" className="h-5 w-auto" />
+            </div>
             <span className="text-lg font-semibold text-text">SimplyVest</span>
           </Link>
 

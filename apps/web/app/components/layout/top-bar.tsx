@@ -29,7 +29,9 @@ export function TopBar({ onMobileMenuToggle }: TopBarProps) {
           search={{ tab: "created" }}
           className="flex items-center gap-2 no-underline hover:no-underline"
         >
-          <img src="/simplyvest.png" alt="SimplyVest" className="h-6 w-auto" />
+          <div className="flex items-center rounded-lg bg-primary p-0.5">
+            <img src="/simplyvest.png" alt="SimplyVest" className="h-5 w-auto" />
+          </div>
           <span className="text-base font-semibold text-text">SimplyVest</span>
         </Link>
 
