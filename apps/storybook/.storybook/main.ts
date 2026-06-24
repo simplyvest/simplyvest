@@ -5,7 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 const config: StorybookConfig = {
   stories: [
-    "../../packages/ui/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+    "../../../packages/ui/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
     "../../dapp/app/components/**/*.stories.@(js|jsx|mjs|ts|tsx)",
     "../../marketing/src/components/**/*.stories.@(js|jsx|mjs|ts|tsx)",
   ],
