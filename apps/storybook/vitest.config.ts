@@ -15,6 +15,11 @@ export default defineConfig({
   ],
   test: {
     globals: true,
+    server: {
+      deps: {
+        inline: ["use-sync-external-store"],
+      },
+    },
     browser: {
       enabled: true,
       provider: playwright({}),

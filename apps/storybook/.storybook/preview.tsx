@@ -1,5 +1,6 @@
 import { Buffer } from "buffer";
 
+import { withThemeByClassName } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/tanstack-react";
 
 import "../../dapp/app/styles.css";
@@ -16,7 +17,16 @@ if (typeof globalThis.vi === "undefined") {
 }
 
 const preview: Preview = {
-  decorators: [withProviders],
+  decorators: [
+    withThemeByClassName({
+      themes: {
+        light: "",
+        dark: "dark",
+      },
+      defaultTheme: "dark",
+    }),
+    withProviders,
+  ],
   parameters: {
     controls: {
       matchers: {

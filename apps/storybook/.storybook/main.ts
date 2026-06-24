@@ -7,9 +7,14 @@ const config: StorybookConfig = {
   stories: [
     "../../../packages/ui/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
     "../../dapp/app/components/**/*.stories.@(js|jsx|mjs|ts|tsx)",
-    "../../marketing/src/components/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+    "../../marketing/stories/**/*.stories.@(js|jsx|mjs|ts|tsx)",
   ],
-  addons: ["@chromatic-com/storybook", "@storybook/addon-a11y", "@storybook/addon-docs"],
+  addons: [
+    "@chromatic-com/storybook",
+    "@storybook/addon-a11y",
+    "@storybook/addon-docs",
+    "@storybook/addon-themes",
+  ],
   framework: "@storybook/tanstack-react",
   viteFinal: async (viteConfig) => {
     viteConfig.plugins?.push(tailwindcss());
