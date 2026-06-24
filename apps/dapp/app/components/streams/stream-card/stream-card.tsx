@@ -10,6 +10,7 @@ import { useWithdraw } from "@/hooks/tx/use-withdraw";
 import type { StreamWithEvents } from "@/hooks/use-stream-api";
 import { useAuth } from "@/lib/solana/use-auth";
 import { formatSol, formatDuration } from "@/utils/format";
+import { calcClaimable, calcProgress, getStreamStatusColor } from "@/utils/stream";
 
 import { StreamProgressBar } from "./stream-progress-bar";
 
@@ -40,52 +41,17 @@ export function StreamCard({
   const amount = new BN(stream.amount);
   const amountWithdrawn = new BN(stream.amountWithdrawn ?? "0");
 
-  console.log("[StreamCard]", stream.id, {
-    status: stream.status,
-    startTime,
-    endTime,
-    clockTime,
-    amount: stream.amount,
-    amountWithdrawn: stream.amountWithdrawn,
-  });
-
   const status = stream.status;
 
-  let claimable = new BN(0);
-  if (status === "active" && endTime > 0) {
-    if (clockTime >= endTime) {
-      claimable = amount.sub(amountWithdrawn);
-    } else if (clockTime >= startTime) {
-      const elapsed = clockTime - startTime;
-      const duration = endTime - startTime;
-      console.log("[StreamCard] vest calc", { elapsed, duration, amount: stream.amount });
-      try {
-        if (duration > 0) {
-          const vested = amount.muln(elapsed).divn(duration);
-          claimable = vested.sub(amountWithdrawn);
-          if (claimable.lt(new BN(0))) claimable = new BN(0);
-        }
-      } catch (e) {
-        console.warn("[StreamCard] claimable calc failed", e);
-        claimable = new BN(0);
-      }
-    }
-  }
+  const claimable = calcClaimable(amount, amountWithdrawn, startTime, endTime, clockTime, status);
 
   const [vaultPda] = getVaultPda(pda, PROGRAM_ID);
   const recipientToken = publicKey ? getAssociatedTokenAddressSync(mintPk, publicKey) : pda;
 
-  const totalSec = endTime - startTime;
-  const elapsedSec = Math.max(0, clockTime - startTime);
-  const remainingSec = Math.max(0, totalSec - elapsedSec);
-  const progress = totalSec > 0 ? Math.min(100, (elapsedSec / totalSec) * 100) : 0;
+  const remainingSec = Math.max(0, endTime - startTime - Math.max(0, clockTime - startTime));
+  const progress = calcProgress(startTime, endTime, clockTime);
 
-  const statusColor =
-    status === "cancelled"
-      ? ("warn" as const)
-      : status === "completed"
-        ? ("sol2" as const)
-        : ("sol" as const);
+  const statusColor = getStreamStatusColor(status);
 
   return (
     <div className="rounded-xl border border-border bg-bg1 px-5 py-4 transition-colors hover:border-border2">
