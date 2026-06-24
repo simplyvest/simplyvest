@@ -20,15 +20,15 @@ jobs:
     uses: ./.github/workflows/typecheck-sdk.yaml
   typecheck-api:
     uses: ./.github/workflows/typecheck-api.yaml
-  typecheck-web:
+  typecheck-dapp:
     uses: ./.github/workflows/typecheck-web.yaml
   typecheck-anchor:
     uses: ./.github/workflows/typecheck-anchor.yaml
-  build-web:
+  build-dapp:
     uses: ./.github/workflows/build-web.yaml
   test-api:
     uses: ./.github/workflows/test-api.yaml
-  test-web:
+  test-dapp:
     uses: ./.github/workflows/test-web.yaml
   test-storybook:
     uses: ./.github/workflows/test-storybook.yaml
@@ -47,12 +47,12 @@ jobs:
       CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
-  deploy-web:
+  deploy-dapp:
     if: github.event_name == 'push'
     needs:
-      - typecheck-web
-      - test-web
-      - build-web
+      - typecheck-dapp
+      - test-dapp
+      - build-dapp
     uses: ./.github/workflows/deploy-web.yaml
     secrets:
       CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

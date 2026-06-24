@@ -1,18 +1,18 @@
-name: Build Web
+name: Build DApp
 
 on:
   workflow_call:
 
 jobs:
-  build-web:
+  build-dapp:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/pnpm-setup
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
-      - name: Build web app
-        run: pnpm --filter @solana-tdp/web build
+      - name: Build dapp
+        run: pnpm --filter @simplyvest/dapp build
         env:
           VITE_GA_MEASUREMENT_ID: ${{ vars.VITE_GA_MEASUREMENT_ID }}
           VITE_PRIVY_APP_ID: ${{ vars.VITE_PRIVY_APP_ID }}

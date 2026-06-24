@@ -1,10 +1,10 @@
-name: Test Web
+name: Test DApp
 
 on:
   workflow_call:
 
 jobs:
-  test-web:
+  test-dapp:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
@@ -12,4 +12,4 @@ jobs:
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
       - name: Run unit tests
-        run: pnpm --filter @solana-tdp/web test
+        run: pnpm --filter @simplyvest/dapp test

@@ -1,4 +1,4 @@
-name: Deploy Web
+name: Deploy DApp
 
 on:
   workflow_call:
@@ -9,7 +9,7 @@ on:
         required: true
 
 jobs:
-  deploy-web:
+  deploy-dapp:
     runs-on: ubuntu-24.04
     environment: main
     env:
@@ -25,7 +25,7 @@ jobs:
       - uses: ./.github/actions/pnpm-setup
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
-      - name: Build web app
-        run: pnpm --filter @solana-tdp/web build
+      - name: Build dapp
+        run: pnpm --filter @simplyvest/dapp build
       - name: Deploy to Cloudflare Pages
-        run: pnpm --filter @solana-tdp/web deploy
+        run: pnpm --filter @simplyvest/dapp deploy
