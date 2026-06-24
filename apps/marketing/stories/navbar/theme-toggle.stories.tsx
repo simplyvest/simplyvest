@@ -1,30 +1,10 @@
-import { ThemeProvider } from "@simplyvest/ui/theme";
 import type { Meta, StoryObj } from "@storybook/tanstack-react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { ReactNode } from "react";
 import { userEvent, expect } from "storybook/test";
 
 import { ThemeToggle } from "../../src/components/navbar/theme-toggle";
 
-function withProviders(Story: () => ReactNode) {
-  return (
-    <QueryClientProvider
-      client={
-        new QueryClient({
-          defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
-        })
-      }
-    >
-      <ThemeProvider>
-        <Story />
-      </ThemeProvider>
-    </QueryClientProvider>
-  );
-}
-
 const meta = {
   component: ThemeToggle,
-  decorators: [withProviders],
 } satisfies Meta<typeof ThemeToggle>;
 export default meta;
 type Story = StoryObj<typeof meta>;
