@@ -1,4 +1,4 @@
-import { createRoute, Link } from "@tanstack/react-router";
+import { createRoute } from "@tanstack/react-router";
 
 import { Route as AppRoute } from "./app";
 
@@ -25,13 +25,15 @@ function HelpPage() {
           <p className="mt-1 text-sm text-muted">Learn how to use SimplyVest</p>
         </a>
 
-        <Link
-          to="/faq"
-          className="rounded-lg border border-border bg-bg1 p-6 transition-colors hover:border-primary/30 hover:bg-bg2 no-underline hover:no-underline"
+        <a
+          href={`${import.meta.env.VITE_SITE_URL ?? "https://simplyvest.com"}/faq`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rounded-lg border border-border bg-bg1 p-6 transition-colors hover:border-primary/30 hover:bg-bg2 no-underline block"
         >
           <h3 className="text-base font-semibold text-text">FAQ</h3>
           <p className="mt-1 text-sm text-muted">Frequently asked questions</p>
-        </Link>
+        </a>
       </div>
     </div>
   );
