@@ -13,7 +13,9 @@ export function withProviders(Story: () => ReactNode) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <Story />
+        <div className="min-h-screen bg-bg text-text">
+          <Story />
+        </div>
       </ThemeProvider>
     </QueryClientProvider>
   );

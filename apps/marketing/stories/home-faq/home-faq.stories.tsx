@@ -1,30 +1,11 @@
-import { ThemeProvider } from "@simplyvest/ui/theme";
 import type { Meta, StoryObj } from "@storybook/tanstack-react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { ReactNode } from "react";
 import { userEvent, expect } from "storybook/test";
 
 import { HomeFAQ } from "../../src/components/home-faq/home-faq";
 
-function withProviders(Story: () => ReactNode) {
-  return (
-    <QueryClientProvider
-      client={
-        new QueryClient({
-          defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
-        })
-      }
-    >
-      <ThemeProvider>
-        <Story />
-      </ThemeProvider>
-    </QueryClientProvider>
-  );
-}
-
 const meta = {
   component: HomeFAQ,
-  decorators: [withProviders],
+  parameters: { layout: "fullscreen" },
 } satisfies Meta<typeof HomeFAQ>;
 export default meta;
 type Story = StoryObj<typeof meta>;

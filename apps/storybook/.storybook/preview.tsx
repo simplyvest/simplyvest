@@ -34,6 +34,21 @@ const preview: Preview = {
         date: /Date$/i,
       },
     },
+    a11y: {
+      // Run automatically (set manual:true to only check on demand)
+      manual: false,
+      config: {
+        rules: [
+          // SVG decorative elements often trigger false positives for
+          // accessible-name checks. This project uses many inline SVGs
+          // for background decorations and patterns.
+          { id: "svg-img-alt", enabled: false },
+          // The color-contrast rule is useful but can be noisy in
+          // development. Keep enabled by default; disable per-story
+          // when intentional low-contrast designs are used.
+        ],
+      },
+    },
   },
 };
 

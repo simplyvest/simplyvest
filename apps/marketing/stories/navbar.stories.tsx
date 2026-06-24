@@ -1,7 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/tanstack-react";
 
-import { withProviders } from "@/.storybook/decorators";
-
 import { Navbar } from "../src/components/navbar";
 
 vi.mock("@/lib/solana/use-auth", () => ({
@@ -20,7 +18,7 @@ vi.mock("@privy-io/react-auth", () => ({
 
 const meta = {
   component: Navbar,
-  decorators: [withProviders],
+  parameters: { layout: "fullscreen" },
 } satisfies Meta<typeof Navbar>;
 export default meta;
 type Story = StoryObj<typeof meta>;

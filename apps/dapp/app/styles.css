@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@source "../../dapp/app";
+@source "../../marketing/src";
+@source "../../../packages/ui/src";
 @import "@simplyvest/ui/tokens.css";
 
 /* ---- Base ---- */
