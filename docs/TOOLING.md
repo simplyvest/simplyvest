@@ -67,14 +67,26 @@ Tests use `vitest` with the `anchor-litesvm` npm package via `LiteSVMProvider`. 
 Run with:
 
 ```bash
-cd apps/web
-pnpm test:storybook        # Storybook tests only
-pnpm test:ci               # Unit + Storybook tests combined
+cd apps/storybook
+pnpm test:storybook        # Storybook tests only (vitest browser mode)
 ```
 
-The web frontend has **40+ Storybook stories** tested via `@storybook/addon-vitest` with Playwright (Chromium). Each story is rendered in a headless browser and tested for interaction correctness (clicks, form fills, callback assertions) and accessibility (axe-core).
+**55+ Storybook stories** across dapp, marketing, and UI packages are tested via `@storybook/addon-vitest` with Playwright (Chromium). Each story is rendered in a headless browser and tested for render correctness, interaction behavior (clicks, form fills, callback assertions), and accessibility (axe-core via `@storybook/addon-a11y`).
 
 Playwright browsers are installed automatically via the `postinstall` script (`playwright install chromium`).
+
+The vitest config uses `@vitejs/plugin-react` (required for React 19 CJS interop) and a targeted alias for `use-sync-external-store/shim/with-selector` to work around a React packaging limitation ([facebook/react#24590](https://github.com/facebook/react/issues/24590)). See [ADR-006](/appendix/adr/ADR-006) for details.
+
+### Unit tests (vitest + jsdom)
+
+Run with:
+
+```bash
+cd apps/dapp
+pnpm test                  # Unit tests (jsdom environment)
+```
+
+Covers utility functions (`format`, `cn`, stream calculation logic), route components, and hooks. Excludes story files.
 
 ---
 
@@ -101,81 +113,37 @@ Monorepo managed by pnpm workspaces.
 ```
 apps/
 ├── api/                           # Cloudflare Worker API (Hono + D1)
-│   ├── src/
-│   │   ├── index.ts               # Hono app entry
-│   │   ├── middleware/
-│   │   │   ├── auth.ts            # Privy JWT verification
-│   │   │   ├── cors.ts            # CORS config
-│   │   │   └── rate-limit.ts      # In-memory per-IP rate limiting
-│   │   ├── routes/
-│   │   │   ├── streams.ts         # Stream recording endpoints
-│   │   │   ├── users.ts           # User profile endpoints
-│   │   │   ├── organizations.ts   # Org CRUD + members
-│   │   │   ├── reconciliation.ts  # On-chain reconciliation
-│   │   │   ├── tokens.ts          # Token metadata, R2 upload, visibility
-│   │   │   └── waitlist.ts        # Legacy waitlist endpoint
-│   │   ├── services/
-│   │   │   ├── stream-service.ts  # Stream business logic
-│   │   │   ├── user-service.ts    # User profile logic
-│   │   │   ├── org-service.ts     # Org CRUD logic
-│   │   │   ├── token-service.ts   # Platform token creation, R2 metadata, visibility
-│   │   │   └── reconciler.ts      # Reconciliation logic
-│   │   └── db/
-│   │       ├── schema.ts          # Drizzle schema
-│   │       ├── index.ts           # DB client
-│   │       └── migrations/        # D1 migrations
-│   ├── drizzle.config.ts          # Drizzle Kit config
-│   ├── wrangler.toml              # CF Worker config + D1 binding
-│   └── env.d.ts                   # Env type definitions
-├── solana-tdp-anchor/
+│   └── src/                       # (see above for full layout)
+├── solana-tdp-anchor/             # Anchor program (Rust)
 │   ├── programs/solana-tdp/src/
 │   │   ├── lib.rs              # Program entry + declare_id!
 │   │   ├── errors.rs           # Custom error codes
 │   │   ├── events.rs           # Anchor event definitions
-│   │   ├── state/              # Account structs (StreamAccount, MilestoneStreamAccount, CreatorConfig)
-│   │   │   ├── mod.rs
-│   │   │   └── stream_account.rs
+│   │   ├── state/              # Account structs
 │   │   └── instructions/       # Instruction handlers
-│   │       ├── mod.rs
-│   │       ├── create_stream.rs
-│   │       ├── withdraw.rs
-│   │       ├── cancel.rs
-│   │       ├── create_milestone_stream.rs
-│   │       ├── trigger_milestone.rs
-│   │       ├── withdraw_milestone.rs
-│   │       └── cancel_milestone.rs
-│   └── tests/
-│       ├── solana-tdp.000.create-stream.test.ts
-│       ├── solana-tdp.001.withdraw.test.ts
-│       ├── solana-tdp.002.cancel.test.ts
-│       ├── solana-tdp.003.milestone.test.ts
-│       ├── solana-tdp.005.security-audit.test.ts
-│       ├── fixtures.ts
-│       ├── helpers.ts
-│       └── utils.ts
-├── web/                         # React frontend (Vite + TanStack Router)
-│   ├── app/
-│   │   ├── components/
-│   │   │   ├── solana/          # Wallet/auth components
-│   │   │   ├── streams/         # Stream management UI
-│   │   │   ├── tokens/          # Token selector
-│   │   │   ├── layout/          # Navbar, footer
-│   │   │   ├── marketing/       # Landing page sections
-│   │   │   └── ui/              # Generic UI primitives
-│   │   ├── hooks/
-│   │   │   ├── tx/                  # On-chain transaction hooks (use-create-stream, use-withdraw, etc.)
-│   │   │   ├── use-stream.ts        # On-chain queries
-│   │   │   ├── use-stream-api.ts    # Stream API hooks
-│   │   │   ├── use-user-api.ts      # User profile API hooks
-│   │   │   ├── use-org-api.ts       # Organization API hooks
-│   │   │   └── use-program.ts       # Anchor program instance
-│   │   ├── lib/
-│   │   │   ├── solana/          # Privy-backed hooks (useAuth, useAnchorSigner, useConnection)
-│   │   │   └── api-client.ts    # HTTP client for API
-│   │   └── routes/
-│   └── package.json
+│   └── tests/                    # Vitest + LiteSVM integration tests
+├── dapp/                          # React dapp (Vite + TanStack Router)
+│   └── app/
+│       ├── components/           # Streams, tokens, layout, docs, UI
+│       ├── hooks/                # tx/, use-stream-api, use-org-api, etc.
+│       ├── lib/                  # solana/ (Privy auth), api-client
+│       ├── routes/               # TanStack Router file-based routes
+│       ├── utils/                # format, stream calc, analytics
+│       └── __tests__/            # Unit tests (vitest + jsdom)
+├── marketing/                     # Astro marketing site
+│   └── src/
+│       ├── components/           # Hero, Features, CTA, Navbar, FAQ, etc.
+│       ├── pages/                # Astro pages
+│       └── stories/              # Storybook stories (co-located)
+├── docs/                          # Astro + Starlight documentation site
+│   └── src/content/docs/        # MDX documentation pages
+├── storybook/                     # Storybook app (standalone)
+│   ├── .storybook/              # main.ts, preview.tsx, decorators, vitest config
+│   └── storybook-static/        # Build output (deployed to Cloudflare Pages)
 packages/
-└── solana-tdp-sdk/              # TypeScript SDK (Anchor IDL + helpers)
+├── solana-tdp-sdk/               # TypeScript SDK (Anchor IDL + helpers)
+└── ui/                           # Shared UI library (@simplyvest/ui)
+    └── src/                       # Button, Input, Field, SectionDecorations, theme
 ```
 
 ### File rules

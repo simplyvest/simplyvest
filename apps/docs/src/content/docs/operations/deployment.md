@@ -74,7 +74,7 @@ cd apps/solana-tdp-anchor
 anchor test
 
 # Web app unit + storybook tests
-pnpm --filter @solana-tdp/web test
+pnpm --filter @simplyvest/dapp test
 
 # Typecheck everything
 pnpm check:ts:all
@@ -149,7 +149,7 @@ pnpm deploy:api
 
 ```bash
 pnpm dev:api          # Start API on localhost:8787
-pnpm dev:web          # Start web app on localhost:5173
+pnpm dev:dapp          # Start dapp on localhost:5173
 pnpm dev              # Start API, web, docs, and storybook in parallel
 
 pnpm db:generate      # Generate new migration from schema changes
@@ -222,7 +222,7 @@ No secrets, API keys, or environment variables are needed — the docs site is p
 
 ## Frontend deployment
 
-The React frontend (`apps/web`) is deployed to Cloudflare Pages via GitHub Actions. A push to `main` that touches `apps/web/` or `packages/solana-tdp-sdk/` triggers an automatic build and deploy.
+The React frontend (`apps/dapp`) is deployed to Cloudflare Pages via GitHub Actions. A push to `main` that touches `apps/dapp/` or `packages/solana-tdp-sdk/` triggers an automatic build and deploy.
 
 **Production URL:** [simplyvest.pages.dev](https://simplyvest.pages.dev)
 
@@ -248,8 +248,8 @@ Preview deploys are created for pull requests at `<branch>.simplyvest.pages.dev`
 
 ```bash
 # Build and deploy
-pnpm --filter @solana-tdp/web build
-pnpm --filter @solana-tdp/web deploy
+pnpm --filter @simplyvest/dapp build
+pnpm --filter @simplyvest/dapp deploy
 ```
 
 The `deploy` script runs `wrangler pages deploy dist --project-name=simplyvest` from the package directory.
@@ -356,7 +356,7 @@ gh secret list --env main
 
 ## Browser compatibility
 
-Solana's web3.js and wallet adapter libraries use Node.js globals (`Buffer`, `process`, `global`) that do not exist in browsers. The web frontend polyfills them in `apps/web/app/main.tsx`:
+Solana's web3.js and wallet adapter libraries use Node.js globals (`Buffer`, `process`, `global`) that do not exist in browsers. The dapp frontend polyfills them in `apps/dapp/app/main.tsx`:
 
 ```ts
 import { Buffer } from "buffer";
@@ -368,7 +368,7 @@ globalThis.process = process;
 The Vite config also maps `global` to `globalThis`:
 
 ```ts
-// apps/web/vite.config.ts
+// apps/dapp/vite.config.ts
 define: {
   global: "globalThis",
 }

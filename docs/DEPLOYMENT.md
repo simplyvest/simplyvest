@@ -67,7 +67,8 @@ cd apps/solana-tdp-anchor
 anchor test
 
 # Web app unit + storybook tests
-pnpm --filter @solana-tdp/web test:ci
+pnpm --filter @simplyvest/dapp test
+pnpm --filter @simplyvest/storybook test:storybook
 
 # Typecheck everything
 pnpm check:ts:all
@@ -142,7 +143,7 @@ pnpm deploy:api
 
 ```bash
 pnpm dev:api          # Start API on localhost:8787
-pnpm dev:web          # Start web app on localhost:5173
+pnpm --filter @simplyvest/dapp dev
 pnpm dev              # Start both in parallel
 
 pnpm db:generate      # Generate new migration from schema changes
@@ -212,7 +213,7 @@ No secrets, API keys, or environment variables are needed — the docs site is p
 
 ## Frontend deployment
 
-The React frontend (`apps/web`) is deployed to Cloudflare Pages via GitHub Actions. A push to `main` that touches `apps/web/` or `packages/solana-tdp-sdk/` triggers an automatic build and deploy.
+The React frontend (`apps/dapp`) is deployed to Cloudflare Pages via GitHub Actions. A push to `main` that touches `apps/web/` or `packages/solana-tdp-sdk/` triggers an automatic build and deploy.
 
 **Production URL:** [simplyvest.pages.dev](https://simplyvest.pages.dev)
 
@@ -240,8 +241,8 @@ Preview deploys are created for pull requests at `<branch>.simplyvest.pages.dev`
 
 ```bash
 # Build and deploy
-pnpm --filter @solana-tdp/web build
-pnpm --filter @solana-tdp/web deploy
+pnpm --filter @simplyvest/dapp build
+pnpm --filter @simplyvest/dapp deploy
 ```
 
 The `deploy` script runs `wrangler pages deploy dist --project-name=simplyvest` from the package directory.
@@ -293,7 +294,8 @@ Each job has its own reusable workflow file in `.github/workflows/`, called by t
 | `typecheck-anchor.yaml` | typecheck-anchor-ts | PRs + main      | TypeScript check (anchor)                                |
 | `typecheck-docs.yaml`   | typecheck-docs      | PRs + main      | Astro check (docs)                                       |
 | `test-api.yaml`         | test-api            | PRs + main      | API tests with vitest                                    |
-| `test-web.yaml`         | test-web            | PRs + main      | Build SDK + Playwright + vitest (unit + storybook)       |
+| `test-web.yaml`         | test-web            | PRs + main      | Build SDK + vitest unit tests (dapp)                     |
+| `test-storybook.yaml`   | test-storybook      | PRs + main      | Storybook vitest browser tests (Chromium + Playwright)   |
 | `build-web.yaml`        | build-web           | PRs + main      | Production build of React frontend                       |
 | `rust-lint.yaml`        | lint-rust           | PRs + main      | cargo fmt + clippy                                       |
 | `anchor.yaml`           | anchor              | PRs + main      | Build Anchor program + vitest tests                      |
@@ -347,7 +349,7 @@ gh secret list --env main
 
 ## Browser compatibility
 
-Solana's web3.js and wallet adapter libraries use Node.js globals (`Buffer`, `process`, `global`) that do not exist in browsers. The web frontend polyfills them in `apps/web/app/main.tsx`:
+Solana's web3.js and wallet adapter libraries use Node.js globals (`Buffer`, `process`, `global`) that do not exist in browsers. The dapp frontend polyfills them in `apps/dapp/app/main.tsx`:
 
 ```ts
 import { Buffer } from "buffer";
@@ -359,7 +361,7 @@ globalThis.process = process;
 The Vite config also maps `global` to `globalThis`:
 
 ```ts
-// apps/web/vite.config.ts
+// apps/dapp/vite.config.ts
 define: {
   global: "globalThis",
 }
