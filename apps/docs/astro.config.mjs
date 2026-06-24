@@ -1,4 +1,5 @@
 import starlight from "@astrojs/starlight";
+import mermaid from "astro-mermaid";
 import { defineConfig } from "astro/config";
 
 export default defineConfig({
@@ -6,6 +7,10 @@ export default defineConfig({
   output: "static",
   server: { port: 4324 },
   integrations: [
+    mermaid({
+      theme: "forest",
+      autoTheme: true,
+    }),
     starlight({
       title: "SimplyVest Docs",
       head: [{ tag: "link", attrs: { rel: "icon", type: "image/png", href: "/favicon.png" } }],
