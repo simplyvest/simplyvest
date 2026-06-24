@@ -14,7 +14,7 @@
     "check:ts": "pnpm --filter @simplyvest/dapp check:ts",
     "check:ts:api": "pnpm --filter @solana-tdp/api typecheck",
     "check:ts:all": "pnpm check:ts && pnpm check:ts:api",
-    "dev": "pnpm dev:api & pnpm dev:dapp & pnpm dev:marketing & pnpm dev:docs & pnpm dev:storybook",
+    "dev": "concurrently -n api,dapp,marketing,docs,storybook -c blue,green,yellow,magenta,cyan \"pnpm dev:api\" \"pnpm dev:dapp\" \"pnpm dev:marketing\" \"pnpm dev:docs\" \"pnpm dev:storybook\"",
     "dev:api": "pnpm --filter @solana-tdp/api dev",
     "dev:dapp": "pnpm sdk:build && pnpm --filter @simplyvest/dapp dev",
     "dev:marketing": "pnpm --filter @simplyvest/marketing dev",
@@ -35,6 +35,9 @@
     "format:rust": "cd apps/solana-tdp-anchor/programs/solana-tdp && cargo fmt",
     "format:rust:check": "cd apps/solana-tdp-anchor/programs/solana-tdp && cargo fmt --check",
     "prepare": "git config core.hooksPath .hooks"
+  },
+  "dependencies": {
+    "concurrently": "^10.0.3"
   },
   "devDependencies": {
     "@typescript/native-preview": "7.0.0-dev.20260618.1",

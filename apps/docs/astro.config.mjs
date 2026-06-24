@@ -4,6 +4,7 @@ import { defineConfig } from "astro/config";
 export default defineConfig({
   site: "https://docs.simplyvest.com",
   output: "static",
+  server: { port: 4324 },
   integrations: [
     starlight({
       title: "SimplyVest Docs",

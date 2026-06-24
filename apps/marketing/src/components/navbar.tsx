@@ -13,7 +13,8 @@ const links = [
   { to: "/waitlist", label: "Waitlist" },
 ];
 
-const DOCS_URL = "https://docs.simplyvest.com";
+const DOCS_URL = import.meta.env.PUBLIC_DOCS_URL ?? "http://localhost:4324";
+const DAPP_URL = import.meta.env.PUBLIC_DAPP_URL ?? "http://localhost:5173";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -39,7 +40,7 @@ export function Navbar() {
               >
                 Docs
               </a>
-              <LinkButton href="/app" variant="brand" size="sm" className="rounded-xl px-4">
+              <LinkButton href={DAPP_URL} variant="brand" size="sm" className="rounded-xl px-4">
                 Beta App
               </LinkButton>
               <ThemeToggle />

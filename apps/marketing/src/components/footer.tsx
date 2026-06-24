@@ -1,7 +1,8 @@
 import { ThemeProvider } from "@simplyvest/ui/theme";
 import { SiGithub, SiX } from "react-icons/si";
 
-const DOCS_URL = "https://docs.simplyvest.com";
+const DOCS_URL = import.meta.env.PUBLIC_DOCS_URL ?? "http://localhost:4324";
+const DAPP_URL = import.meta.env.PUBLIC_DAPP_URL ?? "http://localhost:5173";
 
 const footerLinks = {
   product: [
@@ -16,7 +17,7 @@ const footerLinks = {
   ],
   company: [
     { name: "GitHub", href: "https://github.com/simplyvest/simplyvest" },
-    { name: "App", href: "/app" },
+    { name: "App", href: DAPP_URL },
   ],
 };
 
