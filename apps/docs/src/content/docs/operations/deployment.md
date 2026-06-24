@@ -193,9 +193,38 @@ pnpm db:reset         # Drop all tables (local only)
 
 ---
 
+## Docs deployment
+
+The documentation site (`apps/docs`) is an [Astro](https://astro.build) + [Starlight](https://starlight.astro.build) static site, deployed to Cloudflare Pages.
+
+**Production URL:** [simplyvest-docs.pages.dev](https://simplyvest-docs.pages.dev)
+
+### One-time setup
+
+1. Create the Pages project (already done):
+   ```bash
+   pnpm wrangler pages project create simplyvest-docs --production-branch=main
+   ```
+
+### Local manual deploy
+
+```bash
+# Build and deploy
+pnpm --filter @simplyvest/docs build
+pnpm --filter @simplyvest/docs deploy
+```
+
+The `deploy` script runs `wrangler pages deploy dist --project-name=simplyvest-docs` from the package directory.
+
+No secrets, API keys, or environment variables are needed — the docs site is pure static content.
+
+---
+
 ## Frontend deployment
 
 The React frontend (`apps/web`) is deployed to Cloudflare Pages via GitHub Actions. A push to `main` that touches `apps/web/` or `packages/solana-tdp-sdk/` triggers an automatic build and deploy.
+
+**Production URL:** [simplyvest.pages.dev](https://simplyvest.pages.dev)
 
 Preview deploys are created for pull requests at `<branch>.simplyvest.pages.dev`.
 
@@ -218,15 +247,42 @@ Preview deploys are created for pull requests at `<branch>.simplyvest.pages.dev`
 ### Local manual deploy
 
 ```bash
-# Authenticate once
-pnpm dlx wrangler login
-
 # Build and deploy
 pnpm --filter @solana-tdp/web build
-pnpm wrangler pages deploy apps/web/dist --project-name=simplyvest
+pnpm --filter @solana-tdp/web deploy
 ```
 
+The `deploy` script runs `wrangler pages deploy dist --project-name=simplyvest` from the package directory.
+
 SPA routing works out of the box — Cloudflare Pages auto-detects a client-side router when there is no `404.html` and serves `index.html` for all unmatched paths.
+
+---
+
+## Storybook deployment
+
+The [Storybook](https://storybook.js.org) component library (`apps/storybook`) is deployed to Cloudflare Pages as a standalone static site.
+
+**Production URL:** [simplyvest-storybook.pages.dev](https://simplyvest-storybook.pages.dev)
+
+### One-time setup
+
+1. Create the Pages project (already done):
+   ```bash
+   pnpm wrangler pages project create simplyvest-storybook --production-branch=main
+   ```
+
+### Local manual deploy
+
+```bash
+# Build SDK (stories import from @solana-tdp/sdk)
+pnpm --filter @solana-tdp/sdk build
+
+# Build and deploy
+pnpm --filter @simplyvest/storybook build-storybook
+pnpm --filter @simplyvest/storybook deploy
+```
+
+The `deploy` script runs `wrangler pages deploy storybook-static --project-name=simplyvest-storybook` from the package directory.
 
 ---
 
@@ -234,24 +290,26 @@ SPA routing works out of the box — Cloudflare Pages auto-detects a client-side
 
 Each job has its own reusable workflow file in `.github/workflows/`, called by the orchestrator `ci.yaml`:
 
-| Workflow file           | Job                 | Triggers        | What it does                                  |
-| ----------------------- | ------------------- | --------------- | --------------------------------------------- |
-| `ci.yaml`               | (orchestrator)      | Push/PR to main | Calls all other workflows, deploys on push    |
-| `lint.yaml`             | lint                | PRs + main      | JS/TS lint with oxlint                        |
-| `format.yaml`           | format              | PRs + main      | Format check with oxfmt                       |
-| `typecheck-web.yaml`    | typecheck-web       | PRs + main      | TypeScript check (web)                        |
-| `typecheck-api.yaml`    | typecheck-api       | PRs + main      | TypeScript check (API)                        |
-| `typecheck-sdk.yaml`    | typecheck-sdk       | PRs + main      | TypeScript check (SDK)                        |
-| `typecheck-anchor.yaml` | typecheck-anchor-ts | PRs + main      | TypeScript check (anchor)                     |
-| `test-api.yaml`         | test-api            | PRs + main      | API tests with vitest                         |
-| `test-web.yaml`         | test-web            | PRs + main      | Unit tests with vitest (jsdom)                |
-| `test-storybook.yaml`   | test-storybook      | PRs + main      | Storybook interaction tests (Playwright)      |
-| `build-web.yaml`        | build-web           | PRs + main      | Production build of React frontend            |
-| `build-web.yaml`        | build-web           | PRs + main      | Production build of React frontend            |
-| `rust-lint.yaml`        | lint-rust           | PRs + main      | cargo fmt + clippy                            |
-| `anchor.yaml`           | anchor              | PRs + main      | Build Anchor program + vitest tests           |
-| `deploy-web.yaml`       | deploy-web          | main only       | Build SDK + Deploy to Cloudflare Pages        |
-| `deploy-api.yaml`       | deploy-api          | main only       | Build SDK + Deploy API Worker + D1 migrations |
+| Workflow file           | Job                 | Triggers        | What it does                                             |
+| ----------------------- | ------------------- | --------------- | -------------------------------------------------------- |
+| `ci.yaml`               | (orchestrator)      | Push/PR to main | Calls all other workflows, deploys on push               |
+| `lint.yaml`             | lint                | PRs + main      | JS/TS lint with oxlint                                   |
+| `format.yaml`           | format              | PRs + main      | Format check with oxfmt                                  |
+| `typecheck-web.yaml`    | typecheck-web       | PRs + main      | TypeScript check (web)                                   |
+| `typecheck-api.yaml`    | typecheck-api       | PRs + main      | TypeScript check (API)                                   |
+| `typecheck-sdk.yaml`    | typecheck-sdk       | PRs + main      | TypeScript check (SDK)                                   |
+| `typecheck-anchor.yaml` | typecheck-anchor-ts | PRs + main      | TypeScript check (anchor)                                |
+| `typecheck-docs.yaml`   | typecheck-docs      | PRs + main      | Astro check (docs)                                       |
+| `test-api.yaml`         | test-api            | PRs + main      | API tests with vitest                                    |
+| `test-web.yaml`         | test-web            | PRs + main      | Unit tests with vitest (jsdom)                           |
+| `test-storybook.yaml`   | test-storybook      | PRs + main      | Storybook interaction tests (Playwright)                 |
+| `build-web.yaml`        | build-web           | PRs + main      | Production build of React frontend                       |
+| `rust-lint.yaml`        | lint-rust           | PRs + main      | cargo fmt + clippy                                       |
+| `anchor.yaml`           | anchor              | PRs + main      | Build Anchor program + vitest tests                      |
+| `deploy-web.yaml`       | deploy-web          | main only       | Build SDK + Deploy web to Cloudflare Pages               |
+| `deploy-api.yaml`       | deploy-api          | main only       | Build SDK + Deploy API Worker + D1 migrations            |
+| `deploy-docs.yaml`      | deploy-docs         | main only       | Build + Deploy docs to Cloudflare Pages                  |
+| `deploy-storybook.yaml` | deploy-storybook    | main only       | Build SDK + Build + Deploy storybook to Cloudflare Pages |
 
 ### GitHub Actions Variables
 
@@ -269,10 +327,10 @@ Set in **Settings → Secrets and variables → Actions → Variables** (repo le
 
 Set in **Settings → Secrets and variables → Actions → Secrets** (environment `main`):
 
-| Secret                  | Value                                       | Used by                |
-| ----------------------- | ------------------------------------------- | ---------------------- |
-| `CLOUDFLARE_API_TOKEN`  | Cloudflare API token (Pages + Workers Edit) | deploy-web, deploy-api |
-| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare Account ID                       | deploy-web, deploy-api |
+| Secret                  | Value                                       | Used by                                               |
+| ----------------------- | ------------------------------------------- | ----------------------------------------------------- |
+| `CLOUDFLARE_API_TOKEN`  | Cloudflare API token (Pages + Workers Edit) | deploy-web, deploy-api, deploy-docs, deploy-storybook |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare Account ID                       | deploy-web, deploy-api, deploy-docs, deploy-storybook |
 
 **Why environment-scoped?** The deploy jobs declare `environment: main`, so they can access these secrets. PR workflows don't have access — this prevents a malicious PR from leaking credentials.
 

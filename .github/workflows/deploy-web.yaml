@@ -28,4 +28,4 @@ jobs:
       - name: Build web app
         run: pnpm --filter @solana-tdp/web build
       - name: Deploy to Cloudflare Pages
-        run: pnpm wrangler pages deploy apps/web/dist --project-name=simplyvest
+        run: pnpm --filter @solana-tdp/web deploy

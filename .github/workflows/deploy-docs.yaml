@@ -1,7 +1,6 @@
-name: Deploy Storybook
+name: Deploy Docs
 
 on:
-  workflow_dispatch:
   workflow_call:
     secrets:
       CF_API_TOKEN:
@@ -10,7 +9,7 @@ on:
         required: true
 
 jobs:
-  deploy-storybook:
+  deploy-docs:
     runs-on: ubuntu-24.04
     environment: main
     env:
@@ -19,9 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/pnpm-setup
-      - name: Build SDK
-        run: pnpm --filter @solana-tdp/sdk build
-      - name: Build Storybook
-        run: pnpm --filter @simplyvest/storybook build-storybook
+      - name: Build docs
+        run: pnpm --filter @simplyvest/docs build
       - name: Deploy to Cloudflare Pages
-        run: pnpm --filter @simplyvest/storybook deploy
+        run: pnpm --filter @simplyvest/docs deploy
