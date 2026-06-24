@@ -17,3 +17,4 @@ storybook-static/
 .superpowers/
 .agents/
 docs/superpowers/
+!.agents/skills/grill-with-docs/

@@ -5,8 +5,9 @@ import tailwindcss from "@tailwindcss/vite";
 
 const config: StorybookConfig = {
   stories: [
-    "../../web/app/components/ui/**/*.stories.@(js|jsx|mjs|ts|tsx)",
-    "../../web/app/components/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+    "../../packages/ui/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+    "../../dapp/app/components/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+    "../../marketing/src/components/**/*.stories.@(js|jsx|mjs|ts|tsx)",
   ],
   addons: ["@chromatic-com/storybook", "@storybook/addon-a11y", "@storybook/addon-docs"],
   framework: "@storybook/tanstack-react",
@@ -20,10 +21,10 @@ const config: StorybookConfig = {
       find: "@/.storybook",
       replacement: path.resolve(import.meta.dirname, "."),
     });
-    // Resolve @/ imports to apps/web/app/ (where the components live)
+    // Resolve @/ imports to apps/dapp/app/ (where the components live)
     alias.push({
       find: "@",
-      replacement: path.resolve(import.meta.dirname, "../../web/app"),
+      replacement: path.resolve(import.meta.dirname, "../../dapp/app"),
     });
     viteConfig.resolve.alias = alias;
     return viteConfig;

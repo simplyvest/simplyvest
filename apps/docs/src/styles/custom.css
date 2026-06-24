@@ -1,9 +1,11 @@
-/* SimplyVest brand customizations for Starlight */
+@import "tailwindcss";
+@import "@simplyvest/ui/tokens.css";
 
+/* Map brand tokens to Starlight's CSS custom properties */
 :root {
-  --sl-color-accent-low: #f3e8ff;
-  --sl-color-accent: #9333ea;
-  --sl-color-accent-high: #581c87;
+  --sl-color-accent-low: #ede9fe;
+  --sl-color-accent: #433ae6;
+  --sl-color-accent-high: #3730a3;
   --sl-color-white: #18181b;
   --sl-color-gray-1: #27272a;
   --sl-color-gray-2: #3f3f46;
@@ -15,14 +17,13 @@
   --sl-color-bg-nav: #fafafa;
   --sl-color-bg-sidebar: #fafafa;
   --sl-color-bg: #ffffff;
-  --sl-color-bg-mark: #f3e8ff;
+  --sl-color-bg-mark: #ede9fe;
 }
 
-/* Dark mode overrides */
 :root[data-theme="dark"] {
-  --sl-color-accent-low: #2e1065;
-  --sl-color-accent: #a855f7;
-  --sl-color-accent-high: #d8b4fe;
+  --sl-color-accent-low: #1e1b4b;
+  --sl-color-accent: #818cf8;
+  --sl-color-accent-high: #c7d2fe;
   --sl-color-white: #ffffff;
   --sl-color-gray-1: #f4f4f5;
   --sl-color-gray-2: #d4d4d8;
@@ -34,19 +35,19 @@
   --sl-color-bg-nav: #1c1c1f;
   --sl-color-bg-sidebar: #1c1c1f;
   --sl-color-bg: #18181b;
-  --sl-color-bg-mark: #2e1065;
+  --sl-color-bg-mark: #1e1b4b;
 }
 
 /* Gradient hero */
 .hero {
-  background: linear-gradient(135deg, var(--sl-color-bg) 0%, #f3e8ff 50%, var(--sl-color-bg) 100%);
+  background: linear-gradient(135deg, var(--sl-color-bg) 0%, #ede9fe 50%, var(--sl-color-bg) 100%);
 }
 
 [data-theme="dark"] .hero {
   background: linear-gradient(135deg, var(--sl-color-bg) 0%, #1e1035 50%, var(--sl-color-bg) 100%);
 }
 
-/* Blue container behind the white logo for visibility on all backgrounds */
+/* Blue container behind the white logo */
 .site-title img {
   background-color: #433ae6;
   border-radius: 10px;

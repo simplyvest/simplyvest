@@ -1,7 +1,6 @@
+import { ThemeProvider } from "@simplyvest/ui/theme";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
-
-import { ThemeProvider } from "../../web/app/lib/theme";
 
 export function withProviders(Story: () => ReactNode) {
   const queryClient = new QueryClient({
