@@ -1,0 +1,16 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { Navbar } from "../components/navbar.tsx";
+import { Footer } from "../components/footer.tsx";
+import { WaitlistForm } from "../components/waitlist/waitlist-form.tsx";
+---
+
+<Layout title="Waitlist — SimplyVest">
+  <Navbar client:load />
+  <main class="mx-auto max-w-xl px-6 py-24">
+    <h1 class="text-4xl font-bold text-text mb-4">Join the Waitlist</h1>
+    <p class="text-muted mb-12">Be the first to know when SimplyVest launches.</p>
+    <WaitlistForm client:load />
+  </main>
+  <Footer client:load />
+</Layout>

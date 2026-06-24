@@ -1,4 +1,4 @@
-import { cn } from "../cn";
+import { cn } from "./cn";
 
 /**
  * Wrapper for decorative elements inside marketing sections.

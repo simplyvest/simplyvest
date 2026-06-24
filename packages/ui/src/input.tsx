@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { cn } from "../cn";
+import { cn } from "./cn";
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   invalid?: boolean;
