@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SimplyVest</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    />
+    <link rel="stylesheet" href="/app/styles.css" />
+    <script>
+      (function () {
+        var measurementId = "%VITE_GA_MEASUREMENT_ID%";
+        if (measurementId && measurementId.indexOf("G-") === 0) {
+          var script = document.createElement("script");
+          script.async = true;
+          script.src = "https://www.googletagmanager.com/gtag/js?id=" + measurementId;
+          document.head.appendChild(script);
+
+          window.dataLayer = window.dataLayer || [];
+          window.gtag = function () {
+            dataLayer.push(arguments);
+          };
+          gtag("js", new Date());
+          gtag("config", measurementId, {
+            send_page_view: false, // Pageviews are tracked manually on route transitions
+          });
+        }
+      })();
+    </script>
+    <script>
+      globalThis.Buffer = class {
+        static from(a) {
+          return a;
+        }
+        static alloc(a) {
+          return new Uint8Array(a);
+        }
+        static isBuffer() {
+          return !1;
+        }
+        static concat() {
+          return new Uint8Array(0);
+        }
+        toString() {
+          return "";
+        }
+      };
+      globalThis.process = { env: {} };
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/app/main.tsx"></script>
+  </body>
+</html>

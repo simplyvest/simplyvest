@@ -6,6 +6,7 @@
     "./*": "./src/*"
   },
   "devDependencies": {
+    "@sentry/react": "^10.56.0",
     "@storybook/tanstack-react": "^10.4.2",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
