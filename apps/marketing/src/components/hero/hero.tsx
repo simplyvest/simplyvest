@@ -70,7 +70,7 @@ export function Hero() {
             </LinkButton>
 
             <a
-              href={import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.com"}
+              href={import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.xyz"}
               className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 dark:border-slate-600 px-6 py-3 text-sm font-medium text-gray-700 dark:text-slate-200 bg-white dark:bg-slate-900 hover:border-gray-300 dark:hover:border-slate-500 hover:shadow-md transition-colors no-underline"
             >
               Read Docs

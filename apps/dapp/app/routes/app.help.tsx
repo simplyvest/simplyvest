@@ -18,7 +18,7 @@ function HelpPage() {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <a
-          href={import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.com"}
+          href={import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.xyz"}
           className="rounded-lg border border-border bg-bg1 p-6 transition-colors hover:border-primary/30 hover:bg-bg2 no-underline block"
         >
           <h3 className="text-base font-semibold text-text">Documentation</h3>

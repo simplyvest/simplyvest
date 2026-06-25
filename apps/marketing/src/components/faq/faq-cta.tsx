@@ -16,7 +16,7 @@ export function FaqCta() {
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <a
-              href={import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.com"}
+              href={import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.xyz"}
               className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-3 text-sm font-medium text-white shadow-lg shadow-purple-600/20 hover:shadow-purple-600/30 transition-shadow no-underline"
             >
               View Documentation

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 
 import { Route as RootRoute } from "./__root";
 
-const DOCS_URL = import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.com";
+const DOCS_URL = import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.xyz";
 
 export const Route = createRoute({
   getParentRoute: () => RootRoute,

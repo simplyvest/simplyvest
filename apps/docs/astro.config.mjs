@@ -3,7 +3,7 @@ import mermaid from "astro-mermaid";
 import { defineConfig } from "astro/config";
 
 export default defineConfig({
-  site: "https://docs.simplyvest.com",
+  site: "https://docs.simplyvest.xyz",
   output: "static",
   server: { port: 4324 },
   integrations: [

@@ -17,7 +17,7 @@ describe("DocsPage", () => {
   it("renders a redirect link to the external docs site", async () => {
     renderWithRouter(<DocsPage />);
 
-    const expectedDocsUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.com";
+    const expectedDocsUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.xyz";
     const redirectLink = await screen.findByText("SimplyVest Docs");
     expect(redirectLink).toBeInTheDocument();
     expect(redirectLink.closest("a")).toHaveAttribute("href", expectedDocsUrl);
@@ -25,7 +25,7 @@ describe("DocsPage", () => {
   });
 
   it("redirects to the external docs URL", async () => {
-    const expectedDocsUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.com";
+    const expectedDocsUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.xyz";
     // window.location.href is set in useEffect
     const originalLocation = window.location;
     const mockLocation = Object.assign({}, originalLocation, { href: "" });
