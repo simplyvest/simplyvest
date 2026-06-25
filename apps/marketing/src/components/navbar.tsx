@@ -26,7 +26,7 @@ export function Navbar() {
           <div className="flex items-center justify-between">
             <a href="/" className="flex items-center gap-2 no-underline hover:no-underline">
               <div className="flex items-center rounded-lg bg-primary p-1">
-                <img src="/simplyvest.png" alt="SimplyVest" className="h-5 w-auto" />
+                <img src="/simplyvest.png" alt="" className="h-5 w-auto" />
               </div>
               <span className="text-lg font-semibold text-text">SimplyVest</span>
             </a>

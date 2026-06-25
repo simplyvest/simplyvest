@@ -31,7 +31,7 @@ export function Footer() {
             <div className="col-span-2">
               <a href="/" className="flex items-center gap-2 mb-4 no-underline hover:no-underline">
                 <div className="flex items-center rounded-lg bg-primary p-1">
-                  <img src="/simplyvest.png" alt="SimplyVest" className="h-6 w-auto" />
+                  <img src="/simplyvest.png" alt="" className="h-6 w-auto" />
                 </div>
                 <span className="text-lg font-semibold text-gray-900 dark:text-slate-100">
                   SimplyVest

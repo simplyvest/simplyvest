@@ -40,9 +40,9 @@ function HeroStatsCards() {
               <LuCalendar className="h-5 w-5 text-purple-600 dark:text-purple-400" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">
+              <div class="text-sm font-semibold text-gray-900 dark:text-slate-100">
                 Vesting Schedule
-              </h3>
+              </div>
               <p className="text-xs text-gray-500 dark:text-slate-400">Team Token Grant</p>
             </div>
           </div>
@@ -66,9 +66,9 @@ function HeroStatsCards() {
               <LuTrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">
+              <div class="text-sm font-semibold text-gray-900 dark:text-slate-100">
                 Token Stream
-              </h3>
+              </div>
               <p className="text-xs text-gray-500 dark:text-slate-400">Active Distribution</p>
             </div>
           </div>
@@ -97,7 +97,7 @@ function HeroStatsCards() {
               <LuLock className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold">Security Badge</h3>
+              <div class="text-sm font-semibold">Security Badge</div>
               <p className="text-xs text-purple-200">Vault Protection</p>
             </div>
           </div>

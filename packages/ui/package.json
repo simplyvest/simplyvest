@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./*": "./src/*"
+    "./*": "./src/*",
+    "./package.json": "./package.json"
   },
   "devDependencies": {
     "@sentry/react": "^10.56.0",
