@@ -60,5 +60,14 @@
   "engines": {
     "node": ">=24"
   },
-  "packageManager": "pnpm@11.2.2"
+  "packageManager": "pnpm@11.2.2",
+  "pnpm": {
+    "overrides": {
+      "@vitest/browser-playwright": "4.1.8",
+      "@vitest/browser": "4.1.8",
+      "@vitest/runner": "4.1.8",
+      "@vitest/expect": "4.1.8",
+      "@vitest/utils": "4.1.8"
+    }
+  }
 }

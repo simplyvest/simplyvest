@@ -28,13 +28,6 @@ const config: StorybookConfig = {
       ...(viteConfig.optimizeDeps.include || []),
       "react/jsx-dev-runtime",
     ];
-    // Don't pre-bundle storybook/test — it imports vitest which conflicts
-    // with the vitest version used by @storybook/addon-vitest. The cached
-    // bundle becomes corrupt causing "customEqualityTesters" errors.
-    viteConfig.optimizeDeps.exclude = [
-      ...(viteConfig.optimizeDeps.exclude || []),
-      "storybook/test",
-    ];
     viteConfig.resolve ||= {};
     viteConfig.resolve.alias ||= [];
     const alias = Array.isArray(viteConfig.resolve.alias) ? viteConfig.resolve.alias : [];

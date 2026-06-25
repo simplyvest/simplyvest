@@ -13,7 +13,6 @@
   },
   "devDependencies": {
     "@base-ui/react": "^1.5.0",
-    "@chromatic-com/storybook": "^5.2.1",
     "@coral-xyz/anchor": "^0.32.1",
     "@playwright/test": "^1.60.0",
     "@simplyvest/ui": "workspace:*",
@@ -32,7 +31,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^6.0.2",
-    "@vitest/browser-playwright": "4.1.9",
+    "@vitest/browser-playwright": "4.1.8",
     "buffer": "^6.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
