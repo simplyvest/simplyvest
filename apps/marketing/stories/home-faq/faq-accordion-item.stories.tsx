@@ -27,6 +27,7 @@ export const Closed: Story = {
       await expect(canvas.queryByText(/Vesting releases tokens/)).not.toBeInTheDocument();
     });
     await step("click opens the accordion", async () => {
+      args.onClick.mockClear();
       await userEvent.click(canvas.getByText("How does vesting work?"));
       await expect(args.onClick).toHaveBeenCalledTimes(1);
     });
@@ -40,6 +41,7 @@ export const Open: Story = {
       await expect(canvas.getByText(/Vesting releases tokens/)).toBeInTheDocument();
     });
     await step("click closes the accordion", async () => {
+      args.onClick.mockClear();
       await userEvent.click(canvas.getByText("How does vesting work?"));
       await expect(args.onClick).toHaveBeenCalledTimes(1);
     });
