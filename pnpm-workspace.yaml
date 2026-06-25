@@ -16,6 +16,12 @@ allowBuilds:
   usb: true
   utf-8-validate: true
   workerd: true
+overrides:
+  "@vitest/browser-playwright": "4.1.8"
+  "@vitest/browser": "4.1.8"
+  "@vitest/runner": "4.1.8"
+  "@vitest/expect": "4.1.8"
+  "@vitest/utils": "4.1.8"
 minimumReleaseAgeExclude:
   - "@typescript/native-preview-darwin-arm64@7.0.0-dev.20260618.1"
   - "@typescript/native-preview-darwin-x64@7.0.0-dev.20260618.1"
