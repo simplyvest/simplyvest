@@ -10,7 +10,6 @@ const config: StorybookConfig = {
     "../../marketing/stories/**/*.stories.@(js|jsx|mjs|ts|tsx)",
   ],
   addons: [
-    "@chromatic-com/storybook",
     "@storybook/addon-a11y",
     "@storybook/addon-docs",
     "@storybook/addon-themes",
@@ -28,6 +27,13 @@ const config: StorybookConfig = {
     viteConfig.optimizeDeps.include = [
       ...(viteConfig.optimizeDeps.include || []),
       "react/jsx-dev-runtime",
+    ];
+    // Don't pre-bundle storybook/test — it imports vitest which conflicts
+    // with the vitest version used by @storybook/addon-vitest. The cached
+    // bundle becomes corrupt causing "customEqualityTesters" errors.
+    viteConfig.optimizeDeps.exclude = [
+      ...(viteConfig.optimizeDeps.exclude || []),
+      "storybook/test",
     ];
     viteConfig.resolve ||= {};
     viteConfig.resolve.alias ||= [];
