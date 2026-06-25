@@ -40,7 +40,7 @@ export default defineConfig({
   // This is the documented fix for "Vitest failed to find the runner" on
   // cold-cache runs. See: storybookjs/storybook#31599, #33067, #32049.
   optimizeDeps: {
-    include: ["react/jsx-dev-runtime", "react-icons", "react-icons/lu"],
+    include: ["react/jsx-dev-runtime", "react-icons", "react-icons/lu", "storybook/test"],
   },
   test: {
     globals: true,
