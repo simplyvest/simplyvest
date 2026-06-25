@@ -20,16 +20,9 @@ const config: StorybookConfig = {
   viteFinal: async (viteConfig) => {
     viteConfig.plugins?.push(tailwindcss());
     // Pre-optimize deps that cause Vite reloads mid-test.
-    // Filter unresolvable deps (Storybook plugin adds internal deps like
-    // @tanstack/react-store that can't resolve from monorepo project root).
     viteConfig.optimizeDeps ||= {};
     viteConfig.optimizeDeps.include = [
-      ...(viteConfig.optimizeDeps.include || []).filter(
-        (d: string) =>
-          !d.includes("tanstack") &&
-          !d.includes("use-sync-external-store") &&
-          d !== "@storybook/addon-vitest",
-      ),
+      ...(viteConfig.optimizeDeps.include || []),
       "react/jsx-dev-runtime",
     ];
     viteConfig.resolve ||= {};
