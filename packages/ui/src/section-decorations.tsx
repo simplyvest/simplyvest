@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import { cn } from "./cn";
 
 /**
@@ -8,7 +10,7 @@ export function SectionDecorations({
   children,
   className,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }) {
   return (

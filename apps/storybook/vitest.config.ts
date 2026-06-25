@@ -40,7 +40,29 @@ export default defineConfig({
   // This is the documented fix for "Vitest failed to find the runner" on
   // cold-cache runs. See: storybookjs/storybook#31599, #33067, #32049.
   optimizeDeps: {
-    include: ["react/jsx-dev-runtime", "react-icons", "react-icons/lu", "storybook/test"],
+    include: [
+      "react/jsx-dev-runtime",
+      "react-icons",
+      "react-icons/lu",
+      "react-icons/si",
+      "storybook/test",
+      "@coral-xyz/anchor",
+      "@solana/spl-token",
+      "@solana/web3.js",
+      "sonner",
+      "@tanstack/react-query",
+      "class-variance-authority",
+      "clsx",
+      "tailwind-merge",
+      "buffer",
+      "@storybook/addon-themes",
+      "@base-ui/react/dialog",
+      "react-datepicker",
+      "@metaplex-foundation/mpl-token-metadata",
+      "@metaplex-foundation/umi-bundle-defaults",
+      "@metaplex-foundation/umi",
+      "bn.js",
+    ],
   },
   test: {
     globals: true,
@@ -49,6 +71,9 @@ export default defineConfig({
       provider: playwright({}),
       headless: true,
       instances: [{ browser: "chromium" }],
+    },
+    onConsoleLog(log: string, _type: "stderr" | "stdout"): boolean | void {
+      if (log.includes("ResizeObserver loop")) return false;
     },
   },
 });

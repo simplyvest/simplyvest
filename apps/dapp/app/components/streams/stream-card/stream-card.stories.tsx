@@ -93,13 +93,18 @@ const meta = {
     onCancel: fn(),
     role: "created",
   },
+  parameters: {
+    tanstack: {
+      router: {
+        path: "/app/streams/$streamPda",
+        params: { streamPda: baseStream.id },
+      },
+    },
+  },
 };
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Skipped: @storybook/tanstack-react v10.4.2 has a known Link+router
-// integration bug causing "Assertion failed" during SB-vitest test runs.
-// The component renders correctly in the Storybook dev server.
 export const Created: Story = {};
 
 export const Received: Story = {
