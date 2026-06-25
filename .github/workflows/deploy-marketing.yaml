@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-24.04
     environment: main
     env:
+      PUBLIC_DOCS_URL: ${{ vars.PUBLIC_DOCS_URL }}
+      PUBLIC_DAPP_URL: ${{ vars.PUBLIC_DAPP_URL }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
     steps:

@@ -26,7 +26,7 @@ function HelpPage() {
         </a>
 
         <a
-          href={`${import.meta.env.VITE_SITE_URL ?? "https://simplyvest.com"}/faq`}
+          href={`${import.meta.env.VITE_SITE_URL ?? "https://simplyvest.xyz"}/faq`}
           target="_blank"
           rel="noopener noreferrer"
           className="rounded-lg border border-border bg-bg1 p-6 transition-colors hover:border-primary/30 hover:bg-bg2 no-underline block"

@@ -9,6 +9,7 @@ dist/
 .tanstack/
 .wrangler/
 .env
+.env.*
 .dev.vars
 .astro/
 .reasonix/
