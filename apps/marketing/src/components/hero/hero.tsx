@@ -55,7 +55,7 @@ export function Hero() {
           {/* CTA buttons */}
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <LinkButton
-              to="/app/dashboard"
+              to="/app"
               search={{ tab: "created" }}
               variant="brand"
               className="rounded-xl px-6 py-3"

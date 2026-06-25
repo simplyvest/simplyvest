@@ -14,7 +14,7 @@ import { Route as AppRoute } from "./app";
 
 export const Route = createRoute({
   getParentRoute: () => AppRoute,
-  path: "/dashboard",
+  path: "/",
   component: DashboardPage,
   validateSearch: (search: Record<string, unknown>) => ({
     tab: typeof search.tab === "string" ? search.tab : "created",
@@ -171,7 +171,7 @@ function DashboardPage() {
         {tabs.map((t) => (
           <Link
             key={t.key}
-            to="/app/dashboard"
+            to="/app"
             search={{ tab: t.key }}
             className={cn(
               "flex-1 rounded-md px-4 py-2 text-center text-sm font-medium transition-all no-underline hover:no-underline",

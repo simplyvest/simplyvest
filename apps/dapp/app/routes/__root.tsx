@@ -30,7 +30,7 @@ export const Route = createRootRoute({
         <h1 className="text-4xl font-semibold tracking-tight">404</h1>
         <p className="mt-2 text-muted">Page not found.</p>
         <Link
-          to="/app/dashboard"
+          to="/app"
           search={{ tab: "created" }}
           className="mt-6 inline-block text-sm font-medium text-primary hover:underline"
         >

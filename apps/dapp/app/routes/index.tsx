@@ -6,6 +6,6 @@ export const Route = createRoute({
   getParentRoute: () => RootRoute,
   path: "/",
   loader: () => {
-    throw redirect({ to: "/app/dashboard", search: { tab: "created" } });
+    throw redirect({ to: "/app", search: { tab: "created" } });
   },
 });

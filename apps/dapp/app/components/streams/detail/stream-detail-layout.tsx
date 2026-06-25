@@ -23,11 +23,7 @@ export function StreamDetailLayout({
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Link
-          to="/app/dashboard"
-          search={{ tab: "created" }}
-          className="text-sm text-dim hover:text-text"
-        >
+        <Link to="/app" search={{ tab: "created" }} className="text-sm text-dim hover:text-text">
           ← Back
         </Link>
         <div className="flex items-center gap-3">

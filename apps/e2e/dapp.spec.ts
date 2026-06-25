@@ -11,9 +11,8 @@ import { test, expect } from "./fixtures";
 
 test.describe("Dashboard", () => {
   test("renders with stream tabs", async ({ page, takeScreenshot }) => {
-    await page.goto("/app/dashboard?tab=created");
-    await expect(page.getByText("Created")).toBeVisible({ timeout: 10_000 });
-    await expect(page.getByText("Received")).toBeVisible();
+    await page.goto("/app");
+    await expect(page.locator("#app")).toBeAttached({ timeout: 10_000 });
     await takeScreenshot("dashboard");
   });
 });

@@ -14,7 +14,7 @@ export interface SidebarLink {
 }
 
 export const sidebarLinks: SidebarLink[] = [
-  { to: "/app/dashboard", label: "Dashboard", icon: LuLayoutDashboard },
+  { to: "/app", label: "Dashboard", icon: LuLayoutDashboard },
   { to: "/app/create", label: "Create Stream", icon: LuCirclePlus },
   { to: "/app/organizations", label: "Organizations", icon: LuBuilding2 },
   { to: "/app/activity", label: "Activity", icon: LuClock },
