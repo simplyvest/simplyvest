@@ -16,6 +16,7 @@ const Icon = (props: { className?: string }) => (
 );
 
 const meta = {
+  title: "Dapp/Docs/Account Card",
   component: AccountTypeCard,
   args: {
     color: "green",

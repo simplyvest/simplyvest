@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import { FaqCta } from "../../src/components/faq/faq-cta";
 
 const meta = {
+  title: "Marketing/FAQ/CTA",
   component: FaqCta,
   parameters: { layout: "fullscreen" },
 } satisfies Meta<typeof FaqCta>;

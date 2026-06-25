@@ -4,6 +4,7 @@ import { fn, userEvent, expect } from "storybook/test";
 import { StreamCreationSuccess } from "./stream-creation-success";
 
 const meta = {
+  title: "Dapp/Streams/Creation Success",
   component: StreamCreationSuccess,
   args: {
     txSignature: "5KtPn3Ex7rAbCdEfGhIjKlMnOpQrStUvWxYz1234567qz7P",

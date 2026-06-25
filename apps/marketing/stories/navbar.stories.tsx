@@ -17,6 +17,7 @@ vi.mock("@privy-io/react-auth", () => ({
 }));
 
 const meta = {
+  title: "Marketing/Navbar",
   component: Navbar,
   parameters: { layout: "fullscreen" },
 } satisfies Meta<typeof Navbar>;

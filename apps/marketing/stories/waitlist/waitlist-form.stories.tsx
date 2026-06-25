@@ -9,6 +9,7 @@ vi.mock("../../utils/analytics", () => ({
 }));
 
 const meta = {
+  title: "Marketing/Waitlist/Form",
   component: WaitlistForm,
 };
 export default meta;

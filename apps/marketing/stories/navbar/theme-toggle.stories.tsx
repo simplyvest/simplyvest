@@ -4,6 +4,7 @@ import { userEvent, expect } from "storybook/test";
 import { ThemeToggle } from "../../src/components/navbar/theme-toggle";
 
 const meta = {
+  title: "Marketing/Navbar/Theme Toggle",
   component: ThemeToggle,
 } satisfies Meta<typeof ThemeToggle>;
 export default meta;

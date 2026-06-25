@@ -4,6 +4,7 @@ import { fn, userEvent, expect } from "storybook/test";
 import { TimeFields } from "./time-fields";
 
 const meta = {
+  title: "Dapp/Streams/Time Fields",
   component: TimeFields,
   args: {
     startTime: "",

@@ -14,6 +14,7 @@ const content = (
 );
 
 const meta = {
+  title: "UI/Modal Overlay",
   component: ModalOverlay,
   args: {
     children: content,

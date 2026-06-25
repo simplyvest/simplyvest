@@ -6,6 +6,7 @@ import { StreamProgressBar } from "./stream-progress-bar";
 const bn = (n: number) => new BN(n);
 
 const meta = {
+  title: "Dapp/Streams/Progress Bar",
   component: StreamProgressBar,
 } satisfies Meta<typeof StreamProgressBar>;
 export default meta;

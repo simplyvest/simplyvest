@@ -32,6 +32,7 @@ vi.mock("@solana-tdp/sdk", () => ({
 }));
 
 const meta = {
+  title: "Dapp/Tokens/Selector",
   component: TokenSelector,
   args: {
     value: "",

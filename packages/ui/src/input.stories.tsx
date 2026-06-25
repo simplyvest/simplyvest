@@ -4,6 +4,7 @@ import { fn, userEvent, expect } from "storybook/test";
 import { Input } from "./input";
 
 const meta = {
+  title: "UI/Input",
   component: Input,
   args: { type: "text", placeholder: "Placeholder" },
   argTypes: {

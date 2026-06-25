@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import { FaqItem } from "../../src/components/faq/faq-item";
 
 const meta = {
+  title: "Marketing/FAQ/Item",
   component: FaqItem,
   args: {
     question: "What is SimplyVest?",

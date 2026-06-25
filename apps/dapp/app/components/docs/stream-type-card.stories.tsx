@@ -16,6 +16,7 @@ const Icon = (props: { className?: string }) => (
 );
 
 const meta = {
+  title: "Dapp/Docs/Stream Card",
   component: StreamTypeCard,
   args: {
     color: "purple",

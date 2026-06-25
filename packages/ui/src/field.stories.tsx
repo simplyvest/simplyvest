@@ -5,6 +5,7 @@ import { Field } from "./field";
 import { Input } from "./input";
 
 const meta = {
+  title: "UI/Field",
   component: Field,
   args: { children: <Input placeholder="Type here" onChange={fn()} /> },
   argTypes: {

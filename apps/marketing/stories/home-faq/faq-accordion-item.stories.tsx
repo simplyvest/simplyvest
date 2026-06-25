@@ -4,6 +4,7 @@ import { fn, userEvent, expect } from "storybook/test";
 import { FaqAccordionItem } from "../../src/components/home-faq/faq-accordion-item";
 
 const meta = {
+  title: "Marketing/FAQ/Accordion",
   component: FaqAccordionItem,
   args: {
     question: "How does vesting work?",

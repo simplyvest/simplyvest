@@ -16,6 +16,7 @@ const Icon = (props: { className?: string; strokeWidth?: number }) => (
 );
 
 const meta = {
+  title: "Marketing/How It Works/Card",
   component: StepCard,
   args: {
     step: {

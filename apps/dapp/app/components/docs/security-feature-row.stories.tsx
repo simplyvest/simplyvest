@@ -16,6 +16,7 @@ const Icon = (props: { className?: string }) => (
 );
 
 const meta = {
+  title: "Dapp/Docs/Security Row",
   component: SecurityFeatureRow,
   args: {
     color: "blue",

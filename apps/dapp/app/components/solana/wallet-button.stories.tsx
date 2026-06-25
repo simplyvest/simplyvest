@@ -18,6 +18,7 @@ vi.mock("@privy-io/react-auth", () => ({
 }));
 
 const meta = {
+  title: "Dapp/Auth",
   component: AuthButton,
 } satisfies Meta<typeof AuthButton>;
 export default meta;

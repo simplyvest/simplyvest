@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import { LinkButton } from "./link-button";
 
 const meta = {
+  title: "UI/Link Button",
   component: LinkButton,
   args: { to: "." },
   argTypes: {

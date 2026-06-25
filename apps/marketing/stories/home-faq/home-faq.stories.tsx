@@ -4,6 +4,7 @@ import { userEvent, expect } from "storybook/test";
 import { HomeFAQ } from "../../src/components/home-faq/home-faq";
 
 const meta = {
+  title: "Marketing/FAQ/Accordion Section",
   component: HomeFAQ,
   parameters: { layout: "fullscreen" },
 } satisfies Meta<typeof HomeFAQ>;

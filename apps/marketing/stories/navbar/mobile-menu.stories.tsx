@@ -4,6 +4,7 @@ import { fn, expect } from "storybook/test";
 import { MobileMenu } from "../../src/components/navbar/mobile-menu";
 
 const meta = {
+  title: "Marketing/Navbar/Mobile Menu",
   component: MobileMenu,
   args: {
     links: [

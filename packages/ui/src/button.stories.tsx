@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import { fn, userEvent, expect } from "storybook/test";
 
 const meta = {
+  title: "UI/Button",
   component: Button,
   args: {},
   argTypes: {

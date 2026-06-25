@@ -85,6 +85,7 @@ const streamForReceived: StreamWithEvents = {
 };
 
 const meta = {
+  title: "Dapp/Streams/Stream Card",
   component: StreamCard,
   args: {
     stream: baseStream,

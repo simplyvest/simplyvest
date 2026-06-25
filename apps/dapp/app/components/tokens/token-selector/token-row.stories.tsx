@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import { TokenRow } from "./token-row";
 
 const meta = {
+  title: "Dapp/Tokens/Row",
   component: TokenRow,
   args: {
     name: "USD Coin",

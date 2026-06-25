@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import { Badge } from "./badge";
 
 const meta = {
+  title: "UI/Badge",
   component: Badge,
   argTypes: {
     variant: {

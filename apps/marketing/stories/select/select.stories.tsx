@@ -4,6 +4,7 @@ import { fn, userEvent, expect } from "storybook/test";
 import { Select } from "../../src/components/select";
 
 const meta = {
+  title: "Marketing/Select",
   component: Select,
   args: {
     children: (

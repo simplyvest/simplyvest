@@ -4,6 +4,7 @@ import { expect } from "storybook/test";
 import { TokenCreateSelector } from "./token-create-selector";
 
 const meta = {
+  title: "Dapp/Tools/Create Selector",
   component: TokenCreateSelector,
 } satisfies Meta<typeof TokenCreateSelector>;
 export default meta;

@@ -15,6 +15,7 @@ const Icon = (props: { className?: string }) => (
 );
 
 const meta = {
+  title: "Marketing/Security/Card",
   component: FeatureCard,
   args: {
     feature: {

@@ -43,6 +43,7 @@ const baseArgs = {
 };
 
 const meta = {
+  title: "Dapp/Streams/Milestone Card",
   component: MilestoneStreamCard,
   args: {
     stream: baseStream,

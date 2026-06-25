@@ -17,6 +17,7 @@ const Icon = (props: { className?: string }) => (
 );
 
 const meta = {
+  title: "Marketing/Use Cases/Card",
   component: UseCaseCard,
   args: {
     item: {

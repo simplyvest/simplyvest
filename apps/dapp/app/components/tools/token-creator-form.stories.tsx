@@ -4,6 +4,7 @@ import { fn, expect } from "storybook/test";
 import { TokenCreatorForm } from "./token-creator-form";
 
 const meta = {
+  title: "Dapp/Tools/Creator Form",
   component: TokenCreatorForm,
   args: {
     onSubmit: fn(),

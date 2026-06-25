@@ -4,6 +4,7 @@ import { fn, expect } from "storybook/test";
 import { HamburgerButton } from "../../src/components/navbar/hamburger-button";
 
 const meta = {
+  title: "Marketing/Navbar/Hamburger",
   component: HamburgerButton,
   args: { open: false, onClick: fn() },
 } satisfies Meta<typeof HamburgerButton>;

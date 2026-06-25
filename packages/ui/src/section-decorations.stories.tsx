@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import { SectionDecorations, BlobBlob } from "./section-decorations";
 
 const meta = {
+  title: "UI/Section Decorations",
   component: SectionDecorations,
   args: {
     children: (

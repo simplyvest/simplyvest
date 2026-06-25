@@ -4,6 +4,7 @@ import { fn, expect } from "storybook/test";
 import { NavLinks } from "../../src/components/navbar/nav-links";
 
 const meta = {
+  title: "Marketing/Navbar/Links",
   component: NavLinks,
   args: {
     links: [

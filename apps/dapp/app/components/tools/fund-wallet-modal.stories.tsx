@@ -4,6 +4,7 @@ import { fn, expect, userEvent, screen } from "storybook/test";
 import { FundWalletModal } from "./fund-wallet-modal";
 
 const meta = {
+  title: "Dapp/Tools/Fund Wallet",
   component: FundWalletModal,
   args: {
     open: true,
