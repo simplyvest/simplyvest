@@ -15,7 +15,8 @@ dist/
 docs/reasonix/
 storybook-static/
 .superpowers/
+AGENTS.md
+.mcp.json
 .agents/
 docs/superpowers/
-!.agents/skills/grill-with-docs/
 test-results/

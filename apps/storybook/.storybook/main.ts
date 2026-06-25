@@ -15,6 +15,7 @@ const config: StorybookConfig = {
     "@storybook/addon-docs",
     "@storybook/addon-themes",
     "@storybook/addon-vitest",
+    "@storybook/addon-mcp",
   ],
   framework: "@storybook/tanstack-react",
   viteFinal: async (viteConfig) => {
