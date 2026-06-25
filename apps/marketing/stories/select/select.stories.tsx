@@ -7,6 +7,7 @@ const meta = {
   title: "Marketing/Select",
   component: Select,
   args: {
+    "aria-label": "Select an option",
     children: (
       <>
         <option value="">Select an option</option>
