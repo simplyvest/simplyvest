@@ -13,9 +13,25 @@ export interface AuthState {
   } | null;
 }
 
+const DEV_BYPASS = import.meta.env.VITE_DEV_AUTH_BYPASS === "true";
+
+const FAKE_PUBKEY = new PublicKey("DRpbCBMxVnDK7maPMpNpowE5J5fB4suoA1YpF8fZQmYP");
+
 export function useAuth(): AuthState {
   const { ready, authenticated, user } = usePrivy();
   const { wallets } = useWallets();
+
+  // E2e test mode: skip Privy auth entirely and return a mock connected wallet.
+  // Activated by VITE_DEV_AUTH_BYPASS=true in the e2e Playwright webServer config.
+  // Never active in production builds (import.meta.env vars are replaced at build time).
+  if (DEV_BYPASS) {
+    return {
+      publicKey: FAKE_PUBKEY,
+      connected: true,
+      connecting: false,
+      user: { email: "e2e@simplyvest.test" },
+    };
+  }
 
   const solanaWallet = wallets[0] ?? null;
 

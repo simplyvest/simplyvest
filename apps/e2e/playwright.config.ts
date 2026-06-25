@@ -18,7 +18,7 @@ export default defineConfig({
   },
 
   webServer: {
-    command: `pnpm --filter @simplyvest/dapp dev --port ${PORT} --strictPort`,
+    command: `VITE_DEV_AUTH_BYPASS=true pnpm --filter @simplyvest/dapp dev --port ${PORT} --strictPort`,
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,

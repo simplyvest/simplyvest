@@ -1,28 +1,39 @@
-import { test, expect, mockAuthenticatedWallet } from "./fixtures";
+import { test, expect } from "./fixtures";
 
 /**
  * Tier 2: On-chain data display tests.
  *
- * Tests that the UI correctly fetches and displays Solana on-chain data.
- * For PR CI: uses mocked RPC responses (page.route).
- * For nightly CI: can be run against devnet with real on-chain state.
+ * Auth bypassed via VITE_DEV_AUTH_BYPASS=true in webServer config.
+ * The dapp renders real pages with the dev auth mock from use-auth.ts.
  *
  * Program ID: 6VkmhxbTH9dnzAE7Scpxn6R3HeXYtY4oZffAFMAYvECk (devnet)
  */
 
-test.describe("Stream data display", () => {
-  test("dashboard loads with auth mock", async ({ page, takeScreenshot }) => {
-    // Set up the auth mock before navigation
-    await mockAuthenticatedWallet(page);
+test.describe("Dashboard — authenticated", () => {
+  test("renders streams dashboard", async ({ page, takeScreenshot }) => {
     await page.goto("/app/dashboard?tab=created");
-    // The dashboard should render (may show empty state or login fallback)
-    await expect(page.locator("#app")).toBeAttached({ timeout: 10_000 });
-    await takeScreenshot("dashboard-authenticated");
+    await expect(page.getByText("Created")).toBeVisible({ timeout: 10_000 });
+    await takeScreenshot("dashboard");
   });
 
-  test("create stream page loads with auth mock", async ({ page }) => {
-    await mockAuthenticatedWallet(page);
-    await page.goto("/app/create");
+  test("shows empty state for new users", async ({ page }) => {
+    await page.goto("/app/dashboard?tab=created");
+    // New wallet has no streams — should show empty state
     await expect(page.locator("#app")).toBeAttached({ timeout: 10_000 });
+  });
+});
+
+test.describe("Create stream — authenticated", () => {
+  test("renders create page with type cards", async ({ page, takeScreenshot }) => {
+    await page.goto("/app/create");
+    await expect(page.getByRole("link", { name: /Linear/ })).toBeVisible({ timeout: 10_000 });
+    await takeScreenshot("create-stream");
+  });
+
+  test("shows three stream types", async ({ page }) => {
+    await page.goto("/app/create");
+    await expect(page.getByRole("link", { name: /Linear/ })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Cliff/ })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Milestone/ })).toBeVisible();
   });
 });
