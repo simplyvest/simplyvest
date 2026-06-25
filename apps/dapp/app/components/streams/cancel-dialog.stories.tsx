@@ -96,6 +96,7 @@ const MOCK_PDA = { toBase58: () => "PDA_ADDR_1111111111111111111111111111111" };
 const meta = {
   title: "Dapp/Streams/Cancel Dialog",
   component: CancelDialog,
+  tags: ["vitest-only"],
   args: {
     stream: MOCK_STREAM,
     pda: MOCK_PDA,

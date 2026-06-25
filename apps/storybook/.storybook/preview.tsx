@@ -42,6 +42,11 @@ const preview: Preview = {
       },
     },
   },
+  // Sidebar ordering: Dapp pages first, then Marketing, then UI primitives
+  storySort: {
+    method: "alphabetical",
+    order: ["Dapp", "Marketing", "UI"],
+  },
 };
 
 export default preview;

@@ -34,6 +34,7 @@ vi.mock("@solana-tdp/sdk", () => ({
 const meta = {
   title: "Dapp/Tokens/Selector",
   component: TokenSelector,
+  tags: ["vitest-only"],
   args: {
     value: "",
     onChange: fn(),

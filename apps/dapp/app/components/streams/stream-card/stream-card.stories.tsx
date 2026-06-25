@@ -87,6 +87,7 @@ const streamForReceived: StreamWithEvents = {
 const meta = {
   title: "Dapp/Streams/Stream Card",
   component: StreamCard,
+  tags: ["vitest-only"],
   args: {
     stream: baseStream,
     onCancel: fn(),

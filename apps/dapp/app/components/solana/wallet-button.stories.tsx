@@ -20,6 +20,7 @@ vi.mock("@privy-io/react-auth", () => ({
 const meta = {
   title: "Dapp/Auth",
   component: AuthButton,
+  tags: ["vitest-only"],
 } satisfies Meta<typeof AuthButton>;
 export default meta;
 type Story = StoryObj<typeof meta>;
