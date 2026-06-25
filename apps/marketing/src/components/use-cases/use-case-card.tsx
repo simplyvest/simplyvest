@@ -38,7 +38,10 @@ function UseCaseCard({ item }: { item: UseCaseItem }) {
       <div className="pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-br from-purple-50/0 dark:from-purple-950/0 to-violet-50/0 dark:to-violet-950/0 opacity-0 transition-opacity duration-300 group-hover:from-purple-50/40 dark:group-hover:from-purple-950/40 group-hover:to-violet-50/20 dark:group-hover:to-violet-950/20 group-hover:opacity-100" />
 
       {/* Large background number */}
-      <div className="pointer-events-none absolute right-4 top-4 font-display text-8xl font-bold leading-none text-purple-50/80 dark:text-purple-950/80">
+      <div
+        className="pointer-events-none absolute right-4 top-4 font-display text-8xl font-bold leading-none text-purple-50/80 dark:text-purple-950/80"
+        aria-hidden="true"
+      >
         {item.number}
       </div>
 
