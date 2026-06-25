@@ -28,6 +28,13 @@ const config: StorybookConfig = {
       ...(viteConfig.optimizeDeps.include || []),
       "react/jsx-dev-runtime",
     ];
+    // storybook/test imports vitest 3.x from storybook's vendored deps.
+    // Our project uses vitest 4.x. Excluding it from pre-bundling prevents
+    // incompatible vitest versions from mixing in the Vite cache.
+    viteConfig.optimizeDeps.exclude = [
+      ...(viteConfig.optimizeDeps.exclude || []),
+      "storybook/test",
+    ];
     viteConfig.resolve ||= {};
     viteConfig.resolve.alias ||= [];
     const alias = Array.isArray(viteConfig.resolve.alias) ? viteConfig.resolve.alias : [];
