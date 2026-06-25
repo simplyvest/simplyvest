@@ -19,6 +19,10 @@ const config: StorybookConfig = {
   framework: "@storybook/tanstack-react",
   viteFinal: async (viteConfig) => {
     viteConfig.plugins?.push(tailwindcss());
+    // Pre-optimize deps that cause Vite reloads mid-test (same as vitest.config.ts)
+    viteConfig.optimizeDeps ||= {};
+    viteConfig.optimizeDeps.include ||= [];
+    viteConfig.optimizeDeps.include.push("react/jsx-dev-runtime", "@storybook/addon-vitest");
     viteConfig.resolve ||= {};
     viteConfig.resolve.alias ||= [];
     const alias = Array.isArray(viteConfig.resolve.alias) ? viteConfig.resolve.alias : [];
