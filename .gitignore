@@ -18,3 +18,4 @@ storybook-static/
 .agents/
 docs/superpowers/
 !.agents/skills/grill-with-docs/
+test-results/
