@@ -29,7 +29,6 @@ overrides:
   "@vitest/coverage-v8": "4.1.8"
   "playwright": "1.60.0"
   "@playwright/test": "1.60.0"
-  "@vitejs/plugin-react": "6.0.2"
   "@tanstack/react-store": "0.11.0"
   "@tanstack/store": "0.11.0"
 minimumReleaseAgeExclude:
