@@ -42,6 +42,18 @@ const config: StorybookConfig = {
       find: "@",
       replacement: path.resolve(import.meta.dirname, "../../dapp/app"),
     });
+    // Redirect Privy/Solana imports to storybook stubs so components
+    // don't crash in the dev server (vi.mock only works in vitest CLI).
+    alias.push(
+      {
+        find: "@privy-io/react-auth/solana",
+        replacement: path.resolve(import.meta.dirname, "stubs/privy-solana.ts"),
+      },
+      {
+        find: "@privy-io/react-auth",
+        replacement: path.resolve(import.meta.dirname, "stubs/privy-react-auth.tsx"),
+      },
+    );
     viteConfig.resolve.alias = alias;
     return viteConfig;
   },
