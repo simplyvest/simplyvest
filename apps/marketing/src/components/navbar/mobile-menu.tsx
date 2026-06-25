@@ -10,10 +10,12 @@ interface NavLinkItem {
 export function MobileMenu({
   links,
   docsUrl,
+  dappUrl,
   onClose,
 }: {
   links: NavLinkItem[];
   docsUrl: string;
+  dappUrl: string;
   onClose: () => void;
 }) {
   return (
@@ -21,17 +23,20 @@ export function MobileMenu({
       <NavLinks links={links} onClick={onClose} />
       <a
         href={docsUrl}
+        target="_blank"
+        rel="noopener noreferrer"
         className="text-sm font-medium text-gray-700 hover:text-purple-600 dark:text-slate-300 dark:hover:text-purple-400 transition-colors no-underline hover:no-underline px-3"
         onClick={onClose}
       >
         Docs
       </a>
       <LinkButton
-        to="/app"
+        href={dappUrl}
         variant="brand"
         size="sm"
         className="w-full rounded-xl"
-        onClick={onClose}
+        target="_blank"
+        rel="noopener noreferrer"
       >
         Beta App
       </LinkButton>

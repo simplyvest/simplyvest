@@ -36,11 +36,20 @@ export function Navbar() {
               <NavLinks links={links} />
               <a
                 href={DOCS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-sm font-medium text-gray-700 hover:text-purple-600 dark:text-slate-300 dark:hover:text-purple-400 transition-colors no-underline hover:no-underline"
               >
                 Docs
               </a>
-              <LinkButton href={DAPP_URL} variant="brand" size="sm" className="rounded-xl px-4">
+              <LinkButton
+                href={DAPP_URL}
+                variant="brand"
+                size="sm"
+                className="rounded-xl px-4"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Beta App
               </LinkButton>
               <ThemeToggle />
@@ -50,7 +59,12 @@ export function Navbar() {
           </div>
 
           {mobileOpen && (
-            <MobileMenu links={links} docsUrl={DOCS_URL} onClose={() => setMobileOpen(false)} />
+            <MobileMenu
+              links={links}
+              docsUrl={DOCS_URL}
+              dappUrl={DAPP_URL}
+              onClose={() => setMobileOpen(false)}
+            />
           )}
         </div>
       </nav>

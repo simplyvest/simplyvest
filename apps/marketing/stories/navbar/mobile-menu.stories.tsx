@@ -12,6 +12,7 @@ const meta = {
       { to: "/faq", label: "FAQ" },
     ],
     docsUrl: import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.com",
+    dappUrl: import.meta.env.VITE_DAPP_URL ?? "https://app.simplyvest.com",
     onClose: fn(),
   },
 } satisfies Meta<typeof MobileMenu>;
