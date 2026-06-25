@@ -302,6 +302,7 @@ Each job has its own reusable workflow file in `.github/workflows/`, called by t
 | `typecheck-docs.yaml`   | typecheck-docs      | PRs + main      | Astro check (docs)                                       |
 | `test-api.yaml`         | test-api            | PRs + main      | API tests with vitest                                    |
 | `test-web.yaml`         | test-web            | PRs + main      | Unit tests with vitest (jsdom)                           |
+| `test-e2e.yaml`         | test-e2e            | PRs + main      | Playwright e2e tests (Chromium, 11 specs)                |
 | `test-storybook.yaml`   | test-storybook      | PRs + main      | Storybook interaction tests (Playwright)                 |
 | `build-web.yaml`        | build-web           | PRs + main      | Production build of React frontend                       |
 | `rust-lint.yaml`        | lint-rust           | PRs + main      | cargo fmt + clippy                                       |
