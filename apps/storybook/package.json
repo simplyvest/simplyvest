@@ -43,6 +43,7 @@
     "sonner": "^2.0.7",
     "storybook": "^10.4.6",
     "tailwind-merge": "^3.3.0",
+    "use-sync-external-store": "^1.6.0",
     "vitest": "^4.1.8",
     "wrangler": "^4.90.0"
   }
