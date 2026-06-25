@@ -18,6 +18,9 @@ const config: StorybookConfig = {
     "@storybook/addon-mcp",
   ],
   framework: "@storybook/tanstack-react",
+  refs: {
+    "@simplyvest/ui": { disable: true },
+  },
   viteFinal: async (viteConfig) => {
     viteConfig.plugins?.push(tailwindcss());
     // Pre-optimize deps that cause Vite reloads mid-test.
