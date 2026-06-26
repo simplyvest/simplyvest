@@ -6,7 +6,6 @@ import { useState, useMemo, useRef } from "react";
 interface FormState {
   name: string;
   symbol: string;
-  decimals: string;
   amount: string;
   image: File | null;
 }
@@ -29,7 +28,6 @@ export function TokenCreatorForm({
   const [form, setForm] = useState<FormState>({
     name: "",
     symbol: "",
-    decimals: "9",
     amount: "1000000",
     image: null,
   });
@@ -42,8 +40,6 @@ export function TokenCreatorForm({
   const errors = useMemo(() => {
     const e: string[] = [];
     if (form.symbol && form.symbol.length > 10) e.push("Symbol max 10 characters");
-    const dec = Number(form.decimals);
-    if (isNaN(dec) || dec < 0 || dec > 9) e.push("Decimals must be 0-9");
     const amt = Number(form.amount);
     if (isNaN(amt) || amt <= 0) e.push("Amount must be positive");
     return e;
@@ -71,11 +67,12 @@ export function TokenCreatorForm({
   };
 
   const handleSubmit = () => {
-    const dec = Number(form.decimals);
     onSubmit({
       name: form.name.trim(),
       symbol: form.symbol.trim().toUpperCase(),
-      decimals: isNaN(dec) ? 9 : dec,
+      // decimals fixed at 9 — the Solana ecosystem standard for SPL tokens (matching SOL).
+      // Varying decimals creates confusion in amount calculations and exchange integrations.
+      decimals: 9,
       amount: form.amount,
       image: form.image ?? undefined,
     });
@@ -103,19 +100,6 @@ export function TokenCreatorForm({
           maxLength={32}
         />
       </Field>
-
-      <div>
-        <Field label="Decimals" required>
-          <Input
-            type="number"
-            min={0}
-            max={9}
-            value={form.decimals}
-            onChange={(e) => update("decimals", e.target.value)}
-          />
-        </Field>
-        <p className="mt-1 text-xs text-muted">Typically 6 or 9</p>
-      </div>
 
       <div>
         <Field label="Initial Supply" required>

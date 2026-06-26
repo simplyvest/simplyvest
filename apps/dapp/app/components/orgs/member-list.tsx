@@ -6,8 +6,9 @@ import { useRemoveOrgMember } from "@/hooks/use-org-api";
 interface Member {
   userId: string;
   role: "owner" | "admin" | "member";
-  walletAddress: string;
+  walletAddress: string | null;
   displayName: string | null;
+  privyId?: string | null;
 }
 
 interface MemberListProps {
@@ -38,9 +39,13 @@ export function MemberList({ orgId, members, currentUserId, currentUserRole }: M
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-text">
               {member.displayName ??
-                `${member.walletAddress.slice(0, 6)}...${member.walletAddress.slice(-4)}`}
+                (member.walletAddress
+                  ? `${member.walletAddress.slice(0, 6)}...${member.walletAddress.slice(-4)}`
+                  : (member.privyId ?? "Unknown"))}
             </p>
-            <p className="truncate text-xs text-dim">{member.walletAddress}</p>
+            <p className="truncate text-xs text-dim">
+              {member.walletAddress ?? member.privyId ?? "No address"}
+            </p>
           </div>
           <div className="flex items-center gap-2 ml-4">
             <span className="rounded-full bg-bg2 px-2.5 py-0.5 text-xs font-medium text-muted capitalize">

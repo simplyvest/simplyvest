@@ -15,9 +15,12 @@ interface OrgDetailProps {
 
 export function OrgDetail({ orgId }: OrgDetailProps) {
   const { data: org, isLoading, error } = useOrg(orgId);
-  const { publicKey } = useAuth();
+  const { publicKey, privyId } = useAuth();
 
-  const currentUserRole = org?.members.find((m) => m.walletAddress === publicKey?.toBase58())?.role;
+  const walletMatch = publicKey?.toBase58() ?? null;
+  const currentUserRole = org?.members.find(
+    (m) => (walletMatch && m.walletAddress === walletMatch) || (privyId && m.privyId === privyId),
+  )?.role;
 
   if (isLoading) {
     return (

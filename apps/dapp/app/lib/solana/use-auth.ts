@@ -5,6 +5,7 @@ import { useMemo } from "react";
 
 export interface AuthState {
   publicKey: PublicKey | null;
+  privyId: string | null;
   connected: boolean;
   connecting: boolean;
   user: {
@@ -27,6 +28,7 @@ export function useAuth(): AuthState {
   if (DEV_BYPASS) {
     return {
       publicKey: FAKE_PUBKEY,
+      privyId: "did:privy:e2e-bypass",
       connected: true,
       connecting: false,
       user: { email: "e2e@simplyvest.test" },
@@ -55,5 +57,5 @@ export function useAuth(): AuthState {
     };
   }, [user]);
 
-  return { publicKey, connected, connecting, user: userInfo };
+  return { publicKey, privyId: user?.id ?? null, connected, connecting, user: userInfo };
 }

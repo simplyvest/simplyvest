@@ -5,6 +5,7 @@ import { useState } from "react";
 import { LuX } from "react-icons/lu";
 
 import { useUpdateOrgToken } from "@/hooks/use-org-api";
+import { useAuth } from "@/lib/solana/use-auth";
 
 interface CreateOrgTokenModalProps {
   orgId: string;
@@ -13,17 +14,19 @@ interface CreateOrgTokenModalProps {
 
 export function CreateOrgTokenModal({ orgId, onClose }: CreateOrgTokenModalProps) {
   const updateToken = useUpdateOrgToken(orgId);
+  const { publicKey } = useAuth();
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
-  const [decimals, setDecimals] = useState(9);
   const [amount, setAmount] = useState("");
 
   const handleSubmit: React.SubmitEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
-    if (!name || !symbol || !amount) return;
+    if (!name || !symbol || !amount || !publicKey) return;
 
     updateToken.mutate(
-      { action: "create", name, symbol, decimals, amount },
+      // decimals fixed at 9 — the Solana ecosystem standard for SPL tokens (matching SOL).
+      // Varying decimals creates confusion in amount calculations and exchange integrations.
+      { action: "create", name, symbol, decimals: 9, amount, walletAddress: publicKey.toBase58() },
       { onSuccess: () => onClose() },
     );
   };
@@ -64,26 +67,14 @@ export function CreateOrgTokenModal({ orgId, onClose }: CreateOrgTokenModalProps
                   required
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-muted">Decimals</label>
-                  <Input
-                    type="number"
-                    min={0}
-                    max={9}
-                    value={decimals}
-                    onChange={(e) => setDecimals(Number(e.target.value))}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-muted">Total Supply</label>
-                  <Input
-                    placeholder="1000000"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    required
-                  />
-                </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted">Total Supply</label>
+                <Input
+                  placeholder="1000000"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  required
+                />
               </div>
               <p className="text-xs text-dim">
                 This creates a fixed-supply SPL token on Solana and links it to your organization.
@@ -94,7 +85,7 @@ export function CreateOrgTokenModal({ orgId, onClose }: CreateOrgTokenModalProps
                 </Button>
                 <Button
                   type="submit"
-                  disabled={updateToken.isPending || !name || !symbol || !amount}
+                  disabled={updateToken.isPending || !name || !symbol || !amount || !publicKey}
                 >
                   {updateToken.isPending ? "Creating..." : "Create Token"}
                 </Button>

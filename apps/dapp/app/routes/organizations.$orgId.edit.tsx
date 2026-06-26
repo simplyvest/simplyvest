@@ -20,12 +20,15 @@ function EditOrgPage() {
   const { orgId } = Route.useParams();
   const navigate = useNavigate();
   const { data: org, isLoading, error } = useOrg(orgId);
-  const { publicKey } = useAuth();
+  const { publicKey, privyId } = useAuth();
   const deleteOrg = useDeleteOrg();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [confirmName, setConfirmName] = useState("");
 
-  const currentUserRole = org?.members.find((m) => m.walletAddress === publicKey?.toBase58())?.role;
+  const walletMatch = publicKey?.toBase58() ?? null;
+  const currentUserRole = org?.members.find(
+    (m) => (walletMatch && m.walletAddress === walletMatch) || (privyId && m.privyId === privyId),
+  )?.role;
   const isOwner = currentUserRole === "owner";
   const nameMatch = confirmName === org?.name;
 
@@ -122,44 +125,42 @@ function EditOrgPage() {
             setConfirmName("");
           }}
         >
-          <div className="rounded-xl border border-border bg-bg1 p-6 max-w-md mx-auto mt-20">
-            <h3 className="text-lg font-semibold text-text">Delete Organization?</h3>
-            <p className="mt-2 text-sm text-muted leading-relaxed">
-              This action cannot be undone. Type <strong>{org.name}</strong> below to confirm.
-            </p>
-            <input
-              value={confirmName}
-              onChange={(e) => setConfirmName(e.target.value)}
-              placeholder={`Type "${org.name}" to confirm`}
-              className="mt-4 w-full rounded-lg border border-border bg-bg2 px-3 py-2 text-sm text-text placeholder:text-dim focus:outline-none focus:ring-2 focus:ring-primary/50"
-              autoFocus
-            />
-            <div className="mt-4 flex justify-end gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setShowDeleteConfirm(false);
-                  setConfirmName("");
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="destructive"
-                size="sm"
-                disabled={!nameMatch || deleteOrg.isPending}
-                onClick={handleDelete}
-              >
-                {deleteOrg.isPending ? "Deleting..." : "Delete"}
-              </Button>
-            </div>
-            {deleteOrg.isError && (
-              <p className="mt-2 text-xs text-warn">
-                {deleteOrg.error instanceof Error ? deleteOrg.error.message : "Failed to delete"}
-              </p>
-            )}
+          <h3 className="text-lg font-semibold text-text">Delete Organization?</h3>
+          <p className="mt-2 text-sm text-muted leading-relaxed">
+            This action cannot be undone. Type <strong>{org.name}</strong> below to confirm.
+          </p>
+          <input
+            value={confirmName}
+            onChange={(e) => setConfirmName(e.target.value)}
+            placeholder={`Type "${org.name}" to confirm`}
+            className="mt-4 w-full rounded-lg border border-border bg-bg2 px-3 py-2 text-sm text-text placeholder:text-dim focus:outline-none focus:ring-2 focus:ring-primary/50"
+            autoFocus
+          />
+          <div className="mt-4 flex justify-end gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setShowDeleteConfirm(false);
+                setConfirmName("");
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              disabled={!nameMatch || deleteOrg.isPending}
+              onClick={handleDelete}
+            >
+              {deleteOrg.isPending ? "Deleting..." : "Delete"}
+            </Button>
           </div>
+          {deleteOrg.isError && (
+            <p className="mt-2 text-xs text-warn">
+              {deleteOrg.error instanceof Error ? deleteOrg.error.message : "Failed to delete"}
+            </p>
+          )}
         </ModalOverlay>
       )}
     </div>

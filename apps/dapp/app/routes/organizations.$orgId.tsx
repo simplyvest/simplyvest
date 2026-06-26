@@ -1,4 +1,4 @@
-import { createRoute } from "@tanstack/react-router";
+import { createRoute, Outlet, useRouterState } from "@tanstack/react-router";
 
 import { OrgDetail } from "@/components/orgs/org-detail";
 
@@ -12,6 +12,13 @@ export const Route = createRoute({
 
 function OrgDetailPage() {
   const { orgId } = Route.useParams();
+  const location = useRouterState().location;
+
+  const isExactOrg = location.pathname === `/organizations/${orgId}`;
+
+  if (!isExactOrg) {
+    return <Outlet />;
+  }
 
   return <OrgDetail orgId={orgId} />;
 }

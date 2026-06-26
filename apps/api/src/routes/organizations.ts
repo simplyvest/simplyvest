@@ -1,3 +1,4 @@
+import { PublicKey } from "@solana/web3.js";
 import { Hono } from "hono";
 
 import type { Env } from "../../env";
@@ -178,22 +179,38 @@ orgRoutes.put("/:id/token", authMiddleware, async (c) => {
   }
 
   if (body.action === "create") {
-    if (!body.name || !body.symbol || body.decimals === undefined || !body.amount) {
-      return c.json({ error: "name, symbol, decimals, and amount are required for create" }, 400);
+    if (
+      !body.name ||
+      !body.symbol ||
+      body.decimals === undefined ||
+      !body.amount ||
+      !body.walletAddress
+    ) {
+      return c.json(
+        { error: "name, symbol, decimals, amount, and walletAddress are required for create" },
+        400,
+      );
+    }
+
+    let creatorAddress: string;
+    try {
+      creatorAddress = new PublicKey(body.walletAddress).toBase58();
+    } catch {
+      return c.json({ error: "walletAddress is not a valid Solana public key" }, 400);
     }
 
     const tokenService = createTokenService(db);
     const rpcUrl = c.env.SOLANA_RPC_URL ?? "https://api.devnet.solana.com";
 
-    const metadataUri = await uploadMetadataJson(
-      body.name,
-      body.symbol,
-      body.imageUrl,
-      c.env.TOKEN_ASSETS,
-      c.req.url,
-    );
-
     try {
+      const metadataUri = await uploadMetadataJson(
+        body.name,
+        body.symbol,
+        body.imageUrl,
+        c.env.TOKEN_ASSETS,
+        c.req.url,
+      );
+
       const result = await createPlatformToken({
         secretKeyJson: c.env.PLATFORM_SECRET_KEY,
         rpcUrl,
@@ -201,7 +218,7 @@ orgRoutes.put("/:id/token", authMiddleware, async (c) => {
         symbol: body.symbol,
         decimals: body.decimals,
         amount: body.amount,
-        creatorAddress: userId,
+        creatorAddress,
         metadataUri,
       });
 
@@ -224,6 +241,7 @@ orgRoutes.put("/:id/token", authMiddleware, async (c) => {
 
       return c.json(updated, 200);
     } catch (err) {
+      console.error("Token creation failed:", err);
       const msg = err instanceof Error ? err.message : "Unknown error";
       return c.json({ error: msg }, 500);
     }

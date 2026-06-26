@@ -25,7 +25,8 @@ interface OrgMember {
   userId: string;
   role: "owner" | "admin" | "member";
   joinedAt: Date;
-  walletAddress: string;
+  walletAddress: string | null;
+  privyId: string | null;
   displayName: string | null;
 }
 
@@ -40,7 +41,14 @@ interface CreateOrgInput {
 }
 
 type OrgTokenInput =
-  | { action: "create"; name: string; symbol: string; decimals: number; amount: string }
+  | {
+      action: "create";
+      name: string;
+      symbol: string;
+      decimals: number;
+      amount: string;
+      walletAddress: string;
+    }
   | {
       action: "link";
       mintAddress: string;

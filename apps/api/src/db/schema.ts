@@ -2,7 +2,8 @@ import { sqliteTable, text, integer, index, uniqueIndex } from "drizzle-orm/sqli
 
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
-  walletAddress: text("wallet_address").unique().notNull(),
+  walletAddress: text("wallet_address"),
+  privyId: text("privy_id"),
   displayName: text("display_name"),
   avatarUrl: text("avatar_url"),
   email: text("email"),

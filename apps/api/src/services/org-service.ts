@@ -77,6 +77,7 @@ export function createOrgService(db: Db) {
           role: orgMembers.role,
           joinedAt: orgMembers.joinedAt,
           walletAddress: users.walletAddress,
+          privyId: users.privyId,
           displayName: users.displayName,
         })
         .from(orgMembers)
