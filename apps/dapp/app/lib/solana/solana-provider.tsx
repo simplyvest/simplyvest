@@ -36,7 +36,6 @@ function LoginTracker() {
 export function SolanaProvider({ children }: { children: React.ReactNode }) {
   const appId = import.meta.env.VITE_PRIVY_APP_ID;
   const clientId = import.meta.env.VITE_PRIVY_CLIENT_ID;
-
   if (!appId) {
     throw new Error("Missing VITE_PRIVY_APP_ID. Add it to your .env file.");
   }
@@ -56,7 +55,9 @@ export function SolanaProvider({ children }: { children: React.ReactNode }) {
           solana: { createOnLogin: "users-without-wallets" },
         },
         externalWallets: {
-          solana: { connectors: toSolanaWalletConnectors({ shouldAutoConnect: false }) },
+          solana: {
+            connectors: toSolanaWalletConnectors({ shouldAutoConnect: false }),
+          },
         },
         // oxlint-disable-next-line typescript/no-unsafe-type-assertion
         solana: {
