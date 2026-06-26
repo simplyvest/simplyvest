@@ -17,8 +17,6 @@ jobs:
         working-directory: apps/solana-tdp-anchor
     env:
       CARGO_TARGET_DIR: ${{ github.workspace }}/apps/solana-tdp-anchor/target
-      RUSTC_WRAPPER: sccache
-      SCCACHE_GHA_ENABLED: "true"
     steps:
       - uses: actions/checkout@v6
 
@@ -48,9 +46,6 @@ jobs:
           workspaces: "apps/solana-tdp-anchor/programs/solana-tdp -> ../../target"
           key: solana-${{ env.SOLANA_VERSION }}
           cache-on-failure: true
-
-      - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.9
 
       - name: Set up PATH
         run: |

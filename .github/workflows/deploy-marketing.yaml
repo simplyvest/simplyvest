@@ -17,6 +17,7 @@ jobs:
       PUBLIC_DAPP_URL: ${{ vars.PUBLIC_DAPP_URL }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/pnpm-setup
