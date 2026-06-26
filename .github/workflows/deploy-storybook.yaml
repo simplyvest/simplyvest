@@ -24,4 +24,4 @@ jobs:
       - name: Build Storybook
         run: pnpm --filter @simplyvest/storybook build-storybook
       - name: Deploy to Cloudflare Pages
-        run: pnpm --filter @simplyvest/storybook deploy
+        run: pnpm --filter @simplyvest/storybook run deploy

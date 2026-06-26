@@ -23,4 +23,4 @@ jobs:
       - name: Build marketing
         run: pnpm --filter @simplyvest/marketing build
       - name: Deploy to Cloudflare Pages
-        run: pnpm --filter @simplyvest/marketing deploy
+        run: pnpm --filter @simplyvest/marketing run deploy

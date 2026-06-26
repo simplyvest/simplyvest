@@ -28,4 +28,4 @@ jobs:
       - name: Build dapp
         run: pnpm --filter @simplyvest/dapp build
       - name: Deploy to Cloudflare Pages
-        run: pnpm --filter @simplyvest/dapp deploy
+        run: pnpm --filter @simplyvest/dapp run deploy

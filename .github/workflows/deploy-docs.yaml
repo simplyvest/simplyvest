@@ -21,4 +21,4 @@ jobs:
       - name: Build docs
         run: pnpm --filter @simplyvest/docs build
       - name: Deploy to Cloudflare Pages
-        run: pnpm --filter @simplyvest/docs deploy
+        run: pnpm --filter @simplyvest/docs run deploy
