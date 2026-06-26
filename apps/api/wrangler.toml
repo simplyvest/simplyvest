@@ -18,3 +18,7 @@ GOOGLE_SHEET_NAME = "Sheet1"
 [[r2_buckets]]
 binding = "TOKEN_ASSETS"
 bucket_name = "simplyvest-token-assets"
+
+[[routes]]
+pattern = "api.simplyvest.xyz"
+custom_domain = true

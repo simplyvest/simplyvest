@@ -400,9 +400,10 @@ describe("Feature 5: security audit", () => {
         .rpc();
 
       const after = svm.getAccount(streamPDA);
-      if (after) {
-        expect(Buffer.from(after.data).every((b: number) => b === 0)).toBe(true);
+      if (!after) {
+        return; // Account was closed — already zeroed
       }
+      expect(Buffer.from(after.data).every((b: number) => b === 0)).toBe(true);
     });
 
     it("cancel_milestone sets cancelled before CPI", async () => {
@@ -423,9 +424,10 @@ describe("Feature 5: security audit", () => {
         .rpc();
 
       const after = svm.getAccount(streamPDA);
-      if (after) {
-        expect(Buffer.from(after.data).every((b: number) => b === 0)).toBe(true);
+      if (!after) {
+        return; // Account was closed — already zeroed
       }
+      expect(Buffer.from(after.data).every((b: number) => b === 0)).toBe(true);
     });
   });
 

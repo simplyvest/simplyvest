@@ -33,6 +33,8 @@ app.route("/api/orgs", orgRoutes);
 app.route("/api/reconcile", reconcileRoutes);
 app.route("/api/tokens", tokenRoutes);
 
+app.get("/", (c) => c.json({ status: "ok", name: "simplyvest-api" }));
+
 app.notFound((c) => c.json({ error: "Not found" }, 404));
 
 export default {

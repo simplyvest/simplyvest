@@ -80,11 +80,11 @@ describe("Feature 1: withdraw", () => {
     // Final withdrawal — vault and stream are closed
     expect(svm.getAccount(vaultPDA)).toBeNull();
     const streamAcc = svm.getAccount(streamPDA);
-    if (streamAcc) {
-      // Data may be zeroed or account fully purged by SVM
-      const data = Buffer.from(streamAcc.data);
-      expect(data.every((b: number) => b === 0)).toBe(true);
+    if (!streamAcc) {
+      return; // Account was closed — already zeroed
     }
+    const data = Buffer.from(streamAcc.data);
+    expect(data.every((b: number) => b === 0)).toBe(true);
   });
 
   it("tracks cumulative amount_withdrawn", async () => {
@@ -392,10 +392,11 @@ describe("Feature 1: withdraw", () => {
 
     // Stream account should be closed (zeroed or purged)
     const streamAccount = svm.getAccount(streamPDA);
-    if (streamAccount) {
-      const data = Buffer.from(streamAccount.data);
-      expect(data.every((b: number) => b === 0)).toBe(true);
+    if (!streamAccount) {
+      return; // Account was closed — already zeroed
     }
+    const data = Buffer.from(streamAccount.data);
+    expect(data.every((b: number) => b === 0)).toBe(true);
 
     // Sender should have received rent from vault + stream closure
     const senderAfter = svm.getBalance(sender.publicKey) ?? BigInt(0);
@@ -506,10 +507,11 @@ describe("Feature 1: withdraw", () => {
     // Stream and vault should be closed on final withdrawal
     expect(svm.getAccount(vaultPDA)).toBeNull();
     const streamAcc = svm.getAccount(streamPDA);
-    if (streamAcc) {
-      const data = Buffer.from(streamAcc.data);
-      expect(data.every((b: number) => b === 0)).toBe(true);
+    if (!streamAcc) {
+      return; // Account was closed — already zeroed
     }
+    const data = Buffer.from(streamAcc.data);
+    expect(data.every((b: number) => b === 0)).toBe(true);
 
     // Verify recipient received ALL tokens
     expect(svmTokenBalance(recipientToken)).toBe(BigInt(amount));

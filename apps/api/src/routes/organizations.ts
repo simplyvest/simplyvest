@@ -270,6 +270,30 @@ orgRoutes.delete("/:id/token", authMiddleware, async (c) => {
   return c.json({ ok: true });
 });
 
+// Delete organization (requires auth + owner role)
+orgRoutes.delete("/:id", authMiddleware, async (c) => {
+  const userId = getUserId(c);
+  const orgId = c.req.param("id");
+  if (!orgId) return c.json({ error: "Organization ID required" }, 400);
+
+  const db = createDb(c.env.DB);
+  const service = createOrgService(db);
+
+  const role = await service.getMemberRole(orgId, userId);
+  if (role !== "owner") {
+    return c.json({ error: "Only the owner can delete the organization" }, 403);
+  }
+
+  const org = await service.getOrgById(orgId);
+  if (!org) {
+    return c.json({ error: "Organization not found" }, 404);
+  }
+
+  await service.deleteOrg(orgId);
+
+  return c.json({ ok: true });
+});
+
 // List current user's organizations (requires auth)
 orgRoutes.get("/me/list", authMiddleware, async (c) => {
   const userId = getUserId(c);

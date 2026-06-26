@@ -1,0 +1,3 @@
+name = "simplyvest-storybook"
+pages_build_output_dir = "storybook-static"
+compatibility_date = "2025-05-01"

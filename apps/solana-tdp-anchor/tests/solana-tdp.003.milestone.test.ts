@@ -524,10 +524,11 @@ describe("Feature 3: milestone streams", () => {
     expect(svm.getAccount(vaultPDA)).toBeNull();
 
     const streamAcc = svm.getAccount(streamPDA);
-    if (streamAcc) {
-      const data = Buffer.from(streamAcc.data);
-      expect(data.every((b: number) => b === 0)).toBe(true);
+    if (!streamAcc) {
+      return; // Account was closed — already zeroed
     }
+    const data = Buffer.from(streamAcc.data);
+    expect(data.every((b: number) => b === 0)).toBe(true);
 
     const senderAfter = svm.getBalance(sender.publicKey) ?? BigInt(0);
     expect(senderAfter > senderBefore).toBe(true);

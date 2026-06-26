@@ -1,0 +1,12 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { Navbar } from "../components/navbar.tsx";
+import { App } from "../components/App.tsx";
+import { Footer } from "../components/footer.tsx";
+---
+
+<Layout title="SimplyVest — Token Vesting on Solana">
+  <Navbar client:load />
+  <App client:load />
+  <Footer client:load />
+</Layout>

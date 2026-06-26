@@ -9,4 +9,15 @@ dist/
 .tanstack/
 .wrangler/
 .env
+.env.*
 .dev.vars
+.astro/
+.reasonix/
+docs/reasonix/
+storybook-static/
+.superpowers/
+AGENTS.md
+.mcp.json
+.agents/
+docs/superpowers/
+test-results/

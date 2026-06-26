@@ -16,6 +16,21 @@ allowBuilds:
   usb: true
   utf-8-validate: true
   workerd: true
+overrides:
+  "@vitest/browser-playwright": "4.1.8"
+  "@vitest/browser": "4.1.8"
+  "@vitest/runner": "4.1.8"
+  "@vitest/expect": "4.1.8"
+  "@vitest/utils": "4.1.8"
+  "@vitest/spy": "4.1.8"
+  "@vitest/mocker": "4.1.8"
+  "@vitest/snapshot": "4.1.8"
+  "@vitest/pretty-format": "4.1.8"
+  "@vitest/coverage-v8": "4.1.8"
+  "playwright": "1.60.0"
+  "@playwright/test": "1.60.0"
+  "@tanstack/react-store": "0.11.0"
+  "@tanstack/store": "0.11.0"
 minimumReleaseAgeExclude:
   - "@typescript/native-preview-darwin-arm64@7.0.0-dev.20260618.1"
   - "@typescript/native-preview-darwin-x64@7.0.0-dev.20260618.1"
@@ -25,3 +40,5 @@ minimumReleaseAgeExclude:
   - "@typescript/native-preview-win32-arm64@7.0.0-dev.20260618.1"
   - "@typescript/native-preview-win32-x64@7.0.0-dev.20260618.1"
   - "@typescript/native-preview@7.0.0-dev.20260618.1"
+  - "@astrojs/markdown-satteri@0.3.1"
+  - astro@7.0.0

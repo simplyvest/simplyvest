@@ -1,0 +1,17 @@
+name: Test E2E
+
+on:
+  workflow_call:
+
+jobs:
+  test-e2e:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/pnpm-setup
+
+      - name: Install Playwright browsers
+        run: pnpm --filter @simplyvest/e2e exec playwright install chromium --with-deps
+
+      - name: Run e2e tests
+        run: pnpm test:e2e

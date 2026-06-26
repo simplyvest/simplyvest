@@ -249,6 +249,13 @@ export function createOrgService(db: Db) {
 
       return result[0] ?? null;
     },
+
+    async deleteOrg(orgId: string) {
+      // Delete member associations first
+      await db.delete(orgMembers).where(eq(orgMembers.orgId, orgId));
+      // Then delete the organization itself
+      await db.delete(organizations).where(eq(organizations.id, orgId));
+    },
   };
 }
 

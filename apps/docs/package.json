@@ -1,0 +1,28 @@
+{
+  "name": "@simplyvest/docs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
+    "build": "ASTRO_TELEMETRY_DISABLED=1 astro build",
+    "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview",
+    "typecheck": "ASTRO_TELEMETRY_DISABLED=1 astro check",
+    "deploy": "wrangler pages deploy dist --project-name=simplyvest-docs"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.40.0",
+    "astro": "^6.4.5",
+    "astro-mermaid": "^2.0.4",
+    "mermaid": "^11.15.0",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@simplyvest/ui": "workspace:*",
+    "@tailwindcss/postcss": "^4.3.0",
+    "postcss": "^8.5.0",
+    "tailwindcss": "^4.3.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "@simplyvest/ui",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "typecheck": "tsgo --noEmit"
+  },
+  "devDependencies": {
+    "@sentry/react": "^10.56.0",
+    "@storybook/tanstack-react": "^10.4.6",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "storybook": "^10.4.6",
+    "tailwind-merge": "^3.3.0",
+    "vitest": "^4.1.8"
+  }
+}

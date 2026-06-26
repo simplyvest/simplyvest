@@ -1,0 +1,13 @@
+name: Typecheck Docs
+
+on:
+  workflow_call:
+
+jobs:
+  typecheck-docs:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/pnpm-setup
+      - name: Typecheck docs
+        run: pnpm --filter @simplyvest/docs typecheck

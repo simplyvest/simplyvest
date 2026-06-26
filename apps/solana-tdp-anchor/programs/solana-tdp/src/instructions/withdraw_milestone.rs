@@ -16,6 +16,7 @@ pub struct WithdrawMilestone<'info> {
     pub recipient: Signer<'info>,
     #[account(
         mut,
+        close = sender,
         seeds = [b"milestone-stream", stream.creator.as_ref(), stream.recipient.as_ref(), stream.mint.as_ref(), &stream.vesting_count.to_le_bytes()],
         bump = stream.bump,
     )]
@@ -104,16 +105,6 @@ pub fn withdraw_milestone_handler(ctx: Context<WithdrawMilestone>) -> Result<()>
         },
         signer,
     ))?;
-
-    let stream_info = stream.to_account_info();
-    let lamports = stream_info.lamports();
-    **ctx
-        .accounts
-        .sender
-        .to_account_info()
-        .try_borrow_mut_lamports()? += lamports;
-    **stream_info.try_borrow_mut_lamports()? = 0;
-    stream_info.data.borrow_mut().fill(0);
 
     Ok(())
 }
