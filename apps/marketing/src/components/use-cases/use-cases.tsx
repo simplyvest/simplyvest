@@ -1,5 +1,4 @@
 import { SectionDecorations, BlobBlob } from "@simplyvest/ui/section-decorations";
-import * as React from "react";
 import { LuUsers, LuTarget, LuUser } from "react-icons/lu";
 
 import type { UseCaseItem } from "./use-case-card";

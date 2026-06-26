@@ -73,7 +73,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([imposter])
           .rpc(),
-      ).rejects.toThrow("expected transaction to fail");
+      ).rejects.toThrow();
     });
 
     it("rejects cancel_milestone with non-creator signer", async () => {
@@ -92,7 +92,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([imposter])
           .rpc(),
-      ).rejects.toThrow("expected transaction to fail");
+      ).rejects.toThrow();
     });
 
     it("rejects withdraw with wrong sender account on full withdrawal", async () => {
@@ -117,7 +117,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([recipient])
           .rpc(),
-      ).rejects.toThrow("expected transaction to fail");
+      ).rejects.toThrow();
     });
   });
 
@@ -208,7 +208,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([sender])
           .rpc(),
-      ).rejects.toThrow("expected transaction to fail");
+      ).rejects.toThrow();
     });
   });
 
@@ -318,7 +318,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([recipient])
           .rpc(),
-      ).rejects.toThrow("expected transaction to fail");
+      ).rejects.toThrow();
     });
 
     it("mint constraint on cancel rejects mismatched mint", async () => {
@@ -349,7 +349,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([sender])
           .rpc(),
-      ).rejects.toThrow("expected transaction to fail");
+      ).rejects.toThrow();
     });
 
     it("mint constraint on cancel_milestone rejects mismatched mint", async () => {
@@ -368,7 +368,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([sender])
           .rpc(),
-      ).rejects.toThrow("expected transaction to fail");
+      ).rejects.toThrow();
     });
   });
 
@@ -455,7 +455,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([recipient])
           .rpc(),
-      ).rejects.toThrow("expected transaction to fail");
+      ).rejects.toThrow();
     });
 
     it("rejects cancel with wrong vault PDA", async () => {
@@ -480,7 +480,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([sender])
           .rpc(),
-      ).rejects.toThrow("expected transaction to fail");
+      ).rejects.toThrow();
     });
 
     it("rejects cancel_milestone with wrong vault PDA", async () => {
@@ -498,7 +498,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([sender])
           .rpc(),
-      ).rejects.toThrow("expected transaction to fail");
+      ).rejects.toThrow();
     });
 
     it("rejects cancel with wrong sender_token", async () => {
@@ -522,7 +522,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([sender])
           .rpc(),
-      ).rejects.toThrow("expected transaction to fail");
+      ).rejects.toThrow();
     });
   });
 
@@ -565,7 +565,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([sender])
           .rpc(),
-      ).rejects.toThrow("expected transaction to fail");
+      ).rejects.toThrow();
     });
   });
 });

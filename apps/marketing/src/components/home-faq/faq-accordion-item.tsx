@@ -1,5 +1,4 @@
 import { cn } from "@simplyvest/ui/cn";
-import * as React from "react";
 import { LuChevronDown } from "react-icons/lu";
 
 export function FaqAccordionItem({

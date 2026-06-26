@@ -1,4 +1,3 @@
-import * as React from "react";
 import { LuBrackets, LuDollarSign, LuLock, LuZap } from "react-icons/lu";
 
 import { SecurityDecorations } from "./security-decorations";

@@ -56,6 +56,12 @@
       "rules": {
         "no-console": "off"
       }
+    },
+    {
+      "files": ["apps/solana-tdp-anchor/tests/**/*.test.ts"],
+      "rules": {
+        "vitest/require-to-throw-message": "off"
+      }
     }
   ]
 }

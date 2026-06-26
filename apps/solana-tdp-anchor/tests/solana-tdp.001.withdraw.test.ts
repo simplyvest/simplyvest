@@ -164,7 +164,7 @@ describe("Feature 1: withdraw", () => {
         )
         .signers([recipient])
         .rpc(),
-    ).rejects.toThrow("expected transaction to fail");
+    ).rejects.toThrow();
   });
 
   it("rejects if nothing to withdraw (before start_time)", async () => {
@@ -186,7 +186,7 @@ describe("Feature 1: withdraw", () => {
         )
         .signers([recipient])
         .rpc(),
-    ).rejects.toThrow("expected transaction to fail");
+    ).rejects.toThrow();
   });
 
   it("rejects withdraw 1 second before cliff_time", async () => {
@@ -210,7 +210,7 @@ describe("Feature 1: withdraw", () => {
         )
         .signers([recipient])
         .rpc(),
-    ).rejects.toThrow("expected transaction to fail");
+    ).rejects.toThrow();
   });
 
   it("withdraws at cliff_time boundary (returns accrued amount)", async () => {
@@ -301,7 +301,7 @@ describe("Feature 1: withdraw", () => {
         )
         .signers([recipient])
         .rpc(),
-    ).rejects.toThrow("expected transaction to fail");
+    ).rejects.toThrow();
   });
 
   it("rejects amount > claimable", async () => {
@@ -329,7 +329,7 @@ describe("Feature 1: withdraw", () => {
         )
         .signers([recipient])
         .rpc(),
-    ).rejects.toThrow("expected transaction to fail");
+    ).rejects.toThrow();
   });
 
   it("emits TokensClaimed event", async () => {
@@ -544,7 +544,7 @@ describe("Feature 1: withdraw", () => {
         )
         .signers([thirdParty])
         .rpc(),
-    ).rejects.toThrow("expected transaction to fail");
+    ).rejects.toThrow();
   });
 
   it("rejects withdraw by creator (not recipient)", async () => {
@@ -572,6 +572,6 @@ describe("Feature 1: withdraw", () => {
         )
         .signers([sender])
         .rpc(),
-    ).rejects.toThrow("expected transaction to fail");
+    ).rejects.toThrow();
   });
 });

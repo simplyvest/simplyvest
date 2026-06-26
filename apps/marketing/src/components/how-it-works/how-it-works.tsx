@@ -1,5 +1,4 @@
 import { SectionDecorations, BlobBlob } from "@simplyvest/ui/section-decorations";
-import * as React from "react";
 import { LuDownload, LuLock, LuRadio } from "react-icons/lu";
 
 import { StepCard } from "./step-card";
