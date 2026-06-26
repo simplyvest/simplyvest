@@ -49,7 +49,7 @@ export function ProfileMenu() {
             type="button"
             onClick={() => {
               setOpen(false);
-              void logout().then(() => void navigate({ to: "/" }));
+              void logout().then(() => void navigate({ to: "/", search: { tab: "created" } }));
             }}
             className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-muted transition-colors hover:bg-bg2 hover:text-text"
           >

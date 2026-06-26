@@ -163,7 +163,7 @@ describe("Feature 3: milestone streams", () => {
         .accountsPartial(getTriggerMilestoneAccounts(imposter.publicKey, streamPDA))
         .signers([imposter])
         .rpc(),
-    ).rejects.toThrow();
+    ).rejects.toThrow("expected transaction to fail");
   });
 
   it("rejects trigger if already cancelled", async () => {
@@ -185,7 +185,7 @@ describe("Feature 3: milestone streams", () => {
         .accountsPartial(getTriggerMilestoneAccounts(milestoneAuthority.publicKey, streamPDA))
         .signers([milestoneAuthority])
         .rpc(),
-    ).rejects.toThrow();
+    ).rejects.toThrow("expected transaction to fail");
   });
 
   it("rejects trigger if already reached", async () => {
@@ -208,7 +208,7 @@ describe("Feature 3: milestone streams", () => {
         .accountsPartial(getTriggerMilestoneAccounts(milestoneAuthority.publicKey, streamPDA))
         .signers([milestoneAuthority])
         .rpc(),
-    ).rejects.toThrow();
+    ).rejects.toThrow("expected transaction to fail");
   });
 
   // ── withdraw_milestone ───────────────────────────────────────────
@@ -308,7 +308,7 @@ describe("Feature 3: milestone streams", () => {
         )
         .signers([recipient])
         .rpc(),
-    ).rejects.toThrow();
+    ).rejects.toThrow("expected transaction to fail");
   });
 
   it("rejects withdraw after already withdrawn", async () => {
@@ -355,7 +355,7 @@ describe("Feature 3: milestone streams", () => {
         )
         .signers([recipient])
         .rpc(),
-    ).rejects.toThrow();
+    ).rejects.toThrow("expected transaction to fail");
   });
 
   it("rejects unauthorized withdraw after milestone by non-recipient", async () => {
@@ -388,7 +388,7 @@ describe("Feature 3: milestone streams", () => {
         )
         .signers([thirdParty])
         .rpc(),
-    ).rejects.toThrow();
+    ).rejects.toThrow("expected transaction to fail");
   });
 
   // ── cancel_milestone ─────────────────────────────────────────────
@@ -452,7 +452,7 @@ describe("Feature 3: milestone streams", () => {
         )
         .signers([imposter])
         .rpc(),
-    ).rejects.toThrow();
+    ).rejects.toThrow("expected transaction to fail");
   });
 
   it("rejects cancel_milestone if already cancelled", async () => {
@@ -479,7 +479,7 @@ describe("Feature 3: milestone streams", () => {
         )
         .signers([sender])
         .rpc(),
-    ).rejects.toThrow();
+    ).rejects.toThrow("expected transaction to fail");
   });
 
   it("rejects cancel_milestone after milestone reached", async () => {
@@ -502,7 +502,7 @@ describe("Feature 3: milestone streams", () => {
         )
         .signers([sender])
         .rpc(),
-    ).rejects.toThrow();
+    ).rejects.toThrow("expected transaction to fail");
   });
 
   it("closes vault and stream on cancel", async () => {
@@ -524,10 +524,11 @@ describe("Feature 3: milestone streams", () => {
     expect(svm.getAccount(vaultPDA)).toBeNull();
 
     const streamAcc = svm.getAccount(streamPDA);
-    if (streamAcc) {
-      const data = Buffer.from(streamAcc.data);
-      expect(data.every((b: number) => b === 0)).toBe(true);
+    if (!streamAcc) {
+      return; // Account was closed — already zeroed
     }
+    const data = Buffer.from(streamAcc.data);
+    expect(data.every((b: number) => b === 0)).toBe(true);
 
     const senderAfter = svm.getBalance(sender.publicKey) ?? BigInt(0);
     expect(senderAfter > senderBefore).toBe(true);

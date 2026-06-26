@@ -73,7 +73,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([imposter])
           .rpc(),
-      ).rejects.toThrow();
+      ).rejects.toThrow("expected transaction to fail");
     });
 
     it("rejects cancel_milestone with non-creator signer", async () => {
@@ -92,7 +92,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([imposter])
           .rpc(),
-      ).rejects.toThrow();
+      ).rejects.toThrow("expected transaction to fail");
     });
 
     it("rejects withdraw with wrong sender account on full withdrawal", async () => {
@@ -117,7 +117,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([recipient])
           .rpc(),
-      ).rejects.toThrow();
+      ).rejects.toThrow("expected transaction to fail");
     });
   });
 
@@ -208,7 +208,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([sender])
           .rpc(),
-      ).rejects.toThrow();
+      ).rejects.toThrow("expected transaction to fail");
     });
   });
 
@@ -318,7 +318,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([recipient])
           .rpc(),
-      ).rejects.toThrow();
+      ).rejects.toThrow("expected transaction to fail");
     });
 
     it("mint constraint on cancel rejects mismatched mint", async () => {
@@ -349,7 +349,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([sender])
           .rpc(),
-      ).rejects.toThrow();
+      ).rejects.toThrow("expected transaction to fail");
     });
 
     it("mint constraint on cancel_milestone rejects mismatched mint", async () => {
@@ -368,7 +368,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([sender])
           .rpc(),
-      ).rejects.toThrow();
+      ).rejects.toThrow("expected transaction to fail");
     });
   });
 
@@ -400,9 +400,10 @@ describe("Feature 5: security audit", () => {
         .rpc();
 
       const after = svm.getAccount(streamPDA);
-      if (after) {
-        expect(Buffer.from(after.data).every((b: number) => b === 0)).toBe(true);
+      if (!after) {
+        return; // Account was closed — already zeroed
       }
+      expect(Buffer.from(after.data).every((b: number) => b === 0)).toBe(true);
     });
 
     it("cancel_milestone sets cancelled before CPI", async () => {
@@ -423,9 +424,10 @@ describe("Feature 5: security audit", () => {
         .rpc();
 
       const after = svm.getAccount(streamPDA);
-      if (after) {
-        expect(Buffer.from(after.data).every((b: number) => b === 0)).toBe(true);
+      if (!after) {
+        return; // Account was closed — already zeroed
       }
+      expect(Buffer.from(after.data).every((b: number) => b === 0)).toBe(true);
     });
   });
 
@@ -453,7 +455,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([recipient])
           .rpc(),
-      ).rejects.toThrow();
+      ).rejects.toThrow("expected transaction to fail");
     });
 
     it("rejects cancel with wrong vault PDA", async () => {
@@ -478,7 +480,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([sender])
           .rpc(),
-      ).rejects.toThrow();
+      ).rejects.toThrow("expected transaction to fail");
     });
 
     it("rejects cancel_milestone with wrong vault PDA", async () => {
@@ -496,7 +498,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([sender])
           .rpc(),
-      ).rejects.toThrow();
+      ).rejects.toThrow("expected transaction to fail");
     });
 
     it("rejects cancel with wrong sender_token", async () => {
@@ -520,7 +522,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([sender])
           .rpc(),
-      ).rejects.toThrow();
+      ).rejects.toThrow("expected transaction to fail");
     });
   });
 
@@ -563,7 +565,7 @@ describe("Feature 5: security audit", () => {
           )
           .signers([sender])
           .rpc(),
-      ).rejects.toThrow();
+      ).rejects.toThrow("expected transaction to fail");
     });
   });
 });

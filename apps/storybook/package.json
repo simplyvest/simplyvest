@@ -8,6 +8,7 @@
     "build-storybook": "storybook build -o storybook-static",
     "preview:static": "wrangler pages dev storybook-static --port 8788",
     "deploy": "wrangler pages deploy storybook-static --project-name=simplyvest-storybook",
+    "typecheck": "tsgo --noEmit",
     "test:storybook": "vitest run",
     "test": "vitest run",
     "postinstall": "test -f ~/.cache/ms-playwright/.chromium-installed || (playwright install chromium 2>/dev/null && touch ~/.cache/ms-playwright/.chromium-installed)"

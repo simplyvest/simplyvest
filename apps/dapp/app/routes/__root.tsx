@@ -115,14 +115,10 @@ function RootComponent() {
             <div className="flex h-screen overflow-hidden bg-bg">
               <MobileDrawer open={mobileOpen} onClose={() => setMobileOpen(false)} />
 
-              <Sidebar collapsed={collapsed} />
+              <Sidebar collapsed={collapsed} onToggleCollapse={toggleCollapsed} />
 
               <div className="flex flex-1 flex-col overflow-hidden">
-                <TopBar
-                  onMenuClick={() => setMobileOpen(true)}
-                  onCollapse={toggleCollapsed}
-                  collapsed={collapsed}
-                />
+                <TopBar onMobileMenuToggle={() => setMobileOpen(true)} />
 
                 <main className="flex-1 overflow-y-auto p-6">
                   <a

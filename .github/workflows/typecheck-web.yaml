@@ -12,4 +12,4 @@ jobs:
       - name: Build SDK
         run: pnpm --filter @solana-tdp/sdk build
       - name: TypeScript check (dapp)
-        run: pnpm --filter @simplyvest/dapp check:ts
+        run: pnpm --filter @simplyvest/dapp typecheck

@@ -1,5 +1,6 @@
 import type { StoryObj } from "@storybook/tanstack-react";
 import { fn, userEvent, expect } from "storybook/test";
+import { vi } from "vitest";
 
 import { WaitlistForm } from "../../src/components/waitlist/waitlist-form";
 

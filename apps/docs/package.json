@@ -7,7 +7,7 @@
     "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
     "build": "ASTRO_TELEMETRY_DISABLED=1 astro build",
     "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview",
-    "check": "ASTRO_TELEMETRY_DISABLED=1 astro check",
+    "typecheck": "ASTRO_TELEMETRY_DISABLED=1 astro check",
     "deploy": "wrangler pages deploy dist --project-name=simplyvest-docs"
   },
   "dependencies": {

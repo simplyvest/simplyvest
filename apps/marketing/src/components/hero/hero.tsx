@@ -54,17 +54,12 @@ export function Hero() {
 
           {/* CTA buttons */}
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            <LinkButton
-              to="/app"
-              search={{ tab: "created" }}
-              variant="brand"
-              className="rounded-xl px-6 py-3"
-            >
+            <LinkButton href="/app" variant="brand" className="rounded-xl px-6 py-3">
               Try Beta App
               <LuArrowRight className="h-4 w-4" />
             </LinkButton>
 
-            <LinkButton to="/waitlist" variant="outline-brand" className="rounded-xl px-6 py-3">
+            <LinkButton href="/waitlist" variant="outline-brand" className="rounded-xl px-6 py-3">
               Join Waitlist
               <LuUsers className="h-4 w-4 text-purple-500 dark:text-purple-300" />
             </LinkButton>

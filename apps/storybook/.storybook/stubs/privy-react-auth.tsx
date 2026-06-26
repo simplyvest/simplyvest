@@ -25,4 +25,4 @@ export function useLogout() {
   return { logout: () => {} };
 }
 
-export { type WalletWithMetadata } from "@privy-io/react-auth";
+// Re-export not needed in story context

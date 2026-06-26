@@ -33,7 +33,7 @@ export function OrgDetail({ orgId }: OrgDetailProps) {
       <div className="rounded-xl border border-border bg-bg1 p-8 text-center">
         <p className="text-sm text-muted">Organization not found</p>
         <Link
-          to="/app/organizations"
+          to="/organizations"
           className="mt-2 inline-block text-sm text-primary hover:underline no-underline"
         >
           Back to organizations
@@ -46,7 +46,7 @@ export function OrgDetail({ orgId }: OrgDetailProps) {
     <div className="space-y-6">
       <div>
         <Link
-          to="/app/organizations"
+          to="/organizations"
           className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-text no-underline hover:no-underline mb-4"
         >
           <LuArrowLeft className="h-3.5 w-3.5" />

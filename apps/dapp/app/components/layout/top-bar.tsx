@@ -24,7 +24,7 @@ export function TopBar({ onMobileMenuToggle }: TopBarProps) {
         </Button>
 
         <Link
-          to="/app"
+          to="/"
           search={{ tab: "created" }}
           className="flex items-center gap-2 no-underline hover:no-underline"
         >

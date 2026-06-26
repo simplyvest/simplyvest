@@ -55,7 +55,7 @@ export function CTA() {
 
             <div className="mt-10">
               <LinkButton
-                to="/waitlist"
+                href="/waitlist"
                 variant="light-brand"
                 className="rounded-xl px-8 py-3.5 text-base"
               >

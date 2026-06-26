@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/tanstack-react";
+import { vi } from "vitest";
 
 import { Navbar } from "../src/components/navbar";
 

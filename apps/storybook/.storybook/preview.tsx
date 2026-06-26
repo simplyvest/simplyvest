@@ -7,13 +7,14 @@ import "../../dapp/app/styles.css";
 import { withProviders } from "./decorators";
 
 // Polyfill Buffer for @solana/spl-token in the browser
-if (typeof globalThis.Buffer === "undefined") {
-  globalThis.Buffer = Buffer;
+const g = globalThis as Record<string, unknown>;
+if (typeof g["Buffer"] === "undefined") {
+  g["Buffer"] = Buffer;
 }
 
 // Shim vi for story files that use vi.mock (no-op in dev server)
-if (typeof globalThis.vi === "undefined") {
-  globalThis.vi = { mock: () => {}, fn: () => {}, __esModule: true } as const;
+if (typeof g["vi"] === "undefined") {
+  g["vi"] = { mock: () => {}, fn: () => {}, __esModule: true };
 }
 
 const preview: Preview = {
@@ -41,11 +42,6 @@ const preview: Preview = {
         rules: [{ id: "svg-img-alt", enabled: false }],
       },
     },
-  },
-  // Sidebar ordering: Dapp pages first, then Marketing, then UI primitives
-  storySort: {
-    method: "alphabetical",
-    order: ["Dapp", "Marketing", "UI"],
   },
 };
 

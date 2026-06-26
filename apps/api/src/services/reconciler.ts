@@ -1,10 +1,9 @@
+import { decodeStreamAccount, decodeMilestoneStreamAccount } from "@solana-tdp/sdk";
 import { eq, and, sql } from "drizzle-orm";
 
 import type { Db } from "../db";
 
 import { streams, streamEvents } from "../db/schema";
-
-import { decodeStreamAccount, decodeMilestoneStreamAccount } from "@solana-tdp/sdk";
 
 interface ReconcileResult {
   processed: number;
@@ -196,6 +195,7 @@ async function fetchAccountInfo(rpcUrl: string, address: string): Promise<Accoun
 
     // Extract base64-encoded account data
     // The RPC response format is: { data: ["<base64>", "base64"], ... }
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     const value = data.result.value as { data?: [string, string]; [key: string]: unknown };
     const rawData = value.data?.[0];
     if (!rawData) {

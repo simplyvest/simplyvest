@@ -10,4 +10,4 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/pnpm-setup
       - name: Typecheck marketing
-        run: pnpm --filter @simplyvest/marketing check
+        run: pnpm --filter @simplyvest/marketing typecheck
