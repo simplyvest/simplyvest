@@ -56,7 +56,7 @@ export function SolanaProvider({ children }: { children: React.ReactNode }) {
           solana: { createOnLogin: "users-without-wallets" },
         },
         externalWallets: {
-          solana: { connectors: toSolanaWalletConnectors() },
+          solana: { connectors: toSolanaWalletConnectors({ shouldAutoConnect: false }) },
         },
         // oxlint-disable-next-line typescript/no-unsafe-type-assertion
         solana: {
