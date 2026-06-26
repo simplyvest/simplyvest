@@ -66,6 +66,21 @@ export const Route = createRootRoute({
 });
 
 function RootComponent() {
+  return (
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <SolanaProvider>
+          <ThemeProvider>
+            <RootInner />
+            <Toaster richColors />
+          </ThemeProvider>
+        </SolanaProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
+  );
+}
+
+function RootInner() {
   const routerState = useRouterState();
   const location = routerState.location;
   const { connected } = useAuth();
@@ -79,76 +94,60 @@ function RootComponent() {
 
   if (!connected) {
     return (
-      <ErrorBoundary>
-        <QueryClientProvider client={queryClient}>
-          <SolanaProvider>
-            <ThemeProvider>
-              <div className="flex min-h-screen items-center justify-center bg-bg p-4">
-                <div className="flex flex-col items-center gap-4 text-center">
-                  <img src="/logo.png" alt="SimplyVest" className="h-12 w-12" />
-                  <h1 className="text-2xl font-semibold tracking-tight text-text">SimplyVest</h1>
-                  <p className="max-w-sm text-sm text-muted">
-                    Connect your wallet to manage vesting streams and organizations.
-                  </p>
-                  <Button
-                    onClick={login}
-                    size="lg"
-                    className="mt-2 min-w-[200px] rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600"
-                  >
-                    Connect Wallet
-                  </Button>
-                </div>
-              </div>
-            </ThemeProvider>
-            <Toaster richColors />
-          </SolanaProvider>
-        </QueryClientProvider>
-      </ErrorBoundary>
+      <div className="flex min-h-screen items-center justify-center bg-bg p-4">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <div className="rounded-2xl bg-primary p-3">
+            <img src="/simplyvest.png" alt="SimplyVest" className="h-12 w-12" />
+          </div>
+          <h1 className="text-2xl font-semibold tracking-tight text-text">SimplyVest</h1>
+          <p className="max-w-sm text-sm text-muted">
+            Connect your wallet to manage vesting streams and organizations.
+          </p>
+          <Button
+            onClick={login}
+            size="lg"
+            className="mt-2 min-w-[200px] rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600"
+          >
+            Connect Wallet
+          </Button>
+        </div>
+      </div>
     );
   }
 
   return (
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <SolanaProvider>
-          <ThemeProvider>
-            <div className="flex h-screen overflow-hidden bg-bg">
-              <MobileDrawer open={mobileOpen} onClose={() => setMobileOpen(false)} />
+    <div className="flex h-screen overflow-hidden bg-bg">
+      <MobileDrawer open={mobileOpen} onClose={() => setMobileOpen(false)} />
 
-              <Sidebar collapsed={collapsed} onToggleCollapse={toggleCollapsed} />
+      <Sidebar collapsed={collapsed} onToggleCollapse={toggleCollapsed} />
 
-              <div className="flex flex-1 flex-col overflow-hidden">
-                <TopBar onMobileMenuToggle={() => setMobileOpen(true)} />
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <TopBar onMobileMenuToggle={() => setMobileOpen(true)} />
 
-                <main className="flex-1 overflow-y-auto p-6">
-                  <a
-                    href="#main-content"
-                    className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:no-underline"
-                  >
-                    Skip to main content
-                  </a>
-                  <div id="main-content">
-                    <Outlet />
-                  </div>
-                </main>
-              </div>
-            </div>
+        <main className="flex-1 overflow-y-auto p-6">
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:no-underline"
+          >
+            Skip to main content
+          </a>
+          <div id="main-content">
+            <Outlet />
+          </div>
+        </main>
+      </div>
 
-            {DEV && (
-              <TanStackDevtools
-                plugins={[
-                  { name: "TanStack Query", render: <ReactQueryDevtoolsPanel /> },
-                  {
-                    name: "TanStack Router",
-                    render: <TanStackRouterDevtoolsPanel />,
-                  },
-                ]}
-              />
-            )}
-          </ThemeProvider>
-          <Toaster richColors />
-        </SolanaProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
+      {DEV && (
+        <TanStackDevtools
+          plugins={[
+            { name: "TanStack Query", render: <ReactQueryDevtoolsPanel /> },
+            {
+              name: "TanStack Router",
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+          ]}
+        />
+      )}
+    </div>
   );
 }

@@ -41,6 +41,8 @@
 /* Gradient hero */
 .hero {
   background: linear-gradient(135deg, var(--sl-color-bg) 0%, #ede9fe 50%, var(--sl-color-bg) 100%);
+  padding-block: 4rem;
+  padding-inline: var(--sl-content-pad, 2rem);
 }
 
 [data-theme="dark"] .hero {
