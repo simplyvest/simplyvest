@@ -13,7 +13,7 @@ interface OrgCardProps {
 export function OrgCard({ id, name, slug, description, role, memberCount }: OrgCardProps) {
   return (
     <Link
-      to="/app/organizations/$orgId"
+      to="/organizations/$orgId"
       params={{ orgId: id }}
       className="flex flex-col rounded-xl border border-border bg-bg1 p-5 transition-colors hover:border-primary/30 hover:bg-bg2 no-underline hover:no-underline"
     >

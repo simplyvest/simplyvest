@@ -96,7 +96,7 @@ const meta = {
   parameters: {
     tanstack: {
       router: {
-        path: "/app/streams/$streamPda",
+        path: "/streams/$streamPda",
         params: { streamPda: baseStream.id },
       },
     },

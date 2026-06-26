@@ -13,7 +13,7 @@ import { useStreamDetail } from "@/hooks/use-stream-detail";
 import { useStreamRole } from "@/hooks/use-stream-role";
 import { useAuth } from "@/lib/solana/use-auth";
 
-export const Route = createFileRoute("/app/streams/$streamPda")({
+export const Route = createFileRoute("/streams/$streamPda")({
   component: StreamDetailPage,
 });
 

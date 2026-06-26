@@ -14,10 +14,10 @@ export interface SidebarLink {
 }
 
 export const sidebarLinks: SidebarLink[] = [
-  { to: "/app", label: "Dashboard", icon: LuLayoutDashboard },
-  { to: "/app/create", label: "Create Stream", icon: LuCirclePlus },
-  { to: "/app/organizations", label: "Organizations", icon: LuBuilding2 },
-  { to: "/app/activity", label: "Activity", icon: LuClock },
-  { to: "/app/analytics", label: "Analytics", icon: LuChartBar },
-  { to: "/app/tools/tokens", label: "Tools", icon: LuWrench },
+  { to: "/", label: "Dashboard", icon: LuLayoutDashboard },
+  { to: "/create", label: "Create Stream", icon: LuCirclePlus },
+  { to: "/organizations", label: "Organizations", icon: LuBuilding2 },
+  { to: "/activity", label: "Activity", icon: LuClock },
+  { to: "/analytics", label: "Analytics", icon: LuChartBar },
+  { to: "/tools/tokens", label: "Tools", icon: LuWrench },
 ];

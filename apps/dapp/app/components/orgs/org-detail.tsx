@@ -63,7 +63,7 @@ export function OrgDetail({ orgId }: OrgDetailProps) {
           </div>
           {(currentUserRole === "owner" || currentUserRole === "admin") && (
             <LinkButton
-              to="/app/organizations/$orgId/edit"
+              to="/organizations/$orgId/edit"
               params={{ orgId }}
               variant="outline"
               size="sm"

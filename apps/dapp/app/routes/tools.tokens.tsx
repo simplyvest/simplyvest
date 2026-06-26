@@ -1,7 +1,7 @@
 import { createRoute } from "@tanstack/react-router";
 import { lazy } from "react";
 
-import { Route as ToolsRoute } from "./app.tools";
+import { Route as ToolsRoute } from "./tools";
 
 const TokensPage = lazy(() =>
   import("./_tools/-tokens-page").then((m) => ({

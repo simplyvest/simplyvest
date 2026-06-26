@@ -9,37 +9,64 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as DocsRouteImport } from './routes/docs'
-import { Route as AppRouteImport } from './routes/app'
+import { Route as ToolsRouteImport } from './routes/tools'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as OrganizationsRouteImport } from './routes/organizations'
+import { Route as HelpRouteImport } from './routes/help'
+import { Route as CreateRouteImport } from './routes/create'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as ActivityRouteImport } from './routes/activity'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AppIndexRouteImport } from './routes/app.index'
-import { Route as AppToolsRouteImport } from './routes/app.tools'
-import { Route as AppSettingsRouteImport } from './routes/app.settings'
-import { Route as AppProfileRouteImport } from './routes/app.profile'
-import { Route as AppOrganizationsRouteImport } from './routes/app.organizations'
-import { Route as AppHelpRouteImport } from './routes/app.help'
-import { Route as AppCreateRouteImport } from './routes/app.create'
-import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
-import { Route as AppActivityRouteImport } from './routes/app.activity'
-import { Route as AppToolsTokensRouteImport } from './routes/app.tools.tokens'
-import { Route as AppToolsCreateTokenRouteImport } from './routes/app.tools.create-token'
-import { Route as AppStreamsStreamPdaRouteImport } from './routes/app.streams.$streamPda'
-import { Route as AppOrganizationsOrgIdRouteImport } from './routes/app.organizations.$orgId'
-import { Route as AppCreateMilestoneRouteImport } from './routes/app.create.milestone'
-import { Route as AppCreateLinearRouteImport } from './routes/app.create.linear'
-import { Route as AppCreateCliffRouteImport } from './routes/app.create.cliff'
-import { Route as AppToolsCreateTokenWalletRouteImport } from './routes/app.tools.create-token.wallet'
-import { Route as AppToolsCreateTokenPlatformRouteImport } from './routes/app.tools.create-token.platform'
-import { Route as AppOrganizationsOrgIdEditRouteImport } from './routes/app.organizations.$orgId.edit'
+import { Route as ToolsTokensRouteImport } from './routes/tools.tokens'
+import { Route as ToolsCreateTokenRouteImport } from './routes/tools.create-token'
+import { Route as StreamsStreamPdaRouteImport } from './routes/streams.$streamPda'
+import { Route as OrganizationsOrgIdRouteImport } from './routes/organizations.$orgId'
+import { Route as CreateMilestoneRouteImport } from './routes/create.milestone'
+import { Route as CreateLinearRouteImport } from './routes/create.linear'
+import { Route as CreateCliffRouteImport } from './routes/create.cliff'
+import { Route as ToolsCreateTokenWalletRouteImport } from './routes/tools.create-token.wallet'
+import { Route as ToolsCreateTokenPlatformRouteImport } from './routes/tools.create-token.platform'
+import { Route as OrganizationsOrgIdEditRouteImport } from './routes/organizations.$orgId.edit'
 
-const DocsRoute = DocsRouteImport.update({
-  id: '/docs',
-  path: '/docs',
+const ToolsRoute = ToolsRouteImport.update({
+  id: '/tools',
+  path: '/tools',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppRoute = AppRouteImport.update({
-  id: '/app',
-  path: '/app',
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrganizationsRoute = OrganizationsRouteImport.update({
+  id: '/organizations',
+  path: '/organizations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreateRoute = CreateRouteImport.update({
+  id: '/create',
+  path: '/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ActivityRoute = ActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -47,271 +74,257 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppIndexRoute = AppIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppToolsRoute = AppToolsRouteImport.update({
-  id: '/tools',
-  path: '/tools',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppSettingsRoute = AppSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppProfileRoute = AppProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppOrganizationsRoute = AppOrganizationsRouteImport.update({
-  id: '/organizations',
-  path: '/organizations',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppHelpRoute = AppHelpRouteImport.update({
-  id: '/help',
-  path: '/help',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppCreateRoute = AppCreateRouteImport.update({
-  id: '/create',
-  path: '/create',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppActivityRoute = AppActivityRouteImport.update({
-  id: '/activity',
-  path: '/activity',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppToolsTokensRoute = AppToolsTokensRouteImport.update({
+const ToolsTokensRoute = ToolsTokensRouteImport.update({
   id: '/tokens',
   path: '/tokens',
-  getParentRoute: () => AppToolsRoute,
+  getParentRoute: () => ToolsRoute,
 } as any)
-const AppToolsCreateTokenRoute = AppToolsCreateTokenRouteImport.update({
+const ToolsCreateTokenRoute = ToolsCreateTokenRouteImport.update({
   id: '/create-token',
   path: '/create-token',
-  getParentRoute: () => AppToolsRoute,
+  getParentRoute: () => ToolsRoute,
 } as any)
-const AppStreamsStreamPdaRoute = AppStreamsStreamPdaRouteImport.update({
+const StreamsStreamPdaRoute = StreamsStreamPdaRouteImport.update({
   id: '/streams/$streamPda',
   path: '/streams/$streamPda',
-  getParentRoute: () => AppRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppOrganizationsOrgIdRoute = AppOrganizationsOrgIdRouteImport.update({
+const OrganizationsOrgIdRoute = OrganizationsOrgIdRouteImport.update({
   id: '/$orgId',
   path: '/$orgId',
-  getParentRoute: () => AppOrganizationsRoute,
+  getParentRoute: () => OrganizationsRoute,
 } as any)
-const AppCreateMilestoneRoute = AppCreateMilestoneRouteImport.update({
+const CreateMilestoneRoute = CreateMilestoneRouteImport.update({
   id: '/milestone',
   path: '/milestone',
-  getParentRoute: () => AppCreateRoute,
+  getParentRoute: () => CreateRoute,
 } as any)
-const AppCreateLinearRoute = AppCreateLinearRouteImport.update({
+const CreateLinearRoute = CreateLinearRouteImport.update({
   id: '/linear',
   path: '/linear',
-  getParentRoute: () => AppCreateRoute,
+  getParentRoute: () => CreateRoute,
 } as any)
-const AppCreateCliffRoute = AppCreateCliffRouteImport.update({
+const CreateCliffRoute = CreateCliffRouteImport.update({
   id: '/cliff',
   path: '/cliff',
-  getParentRoute: () => AppCreateRoute,
+  getParentRoute: () => CreateRoute,
 } as any)
-const AppToolsCreateTokenWalletRoute =
-  AppToolsCreateTokenWalletRouteImport.update({
-    id: '/wallet',
-    path: '/wallet',
-    getParentRoute: () => AppToolsCreateTokenRoute,
-  } as any)
-const AppToolsCreateTokenPlatformRoute =
-  AppToolsCreateTokenPlatformRouteImport.update({
+const ToolsCreateTokenWalletRoute = ToolsCreateTokenWalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => ToolsCreateTokenRoute,
+} as any)
+const ToolsCreateTokenPlatformRoute =
+  ToolsCreateTokenPlatformRouteImport.update({
     id: '/platform',
     path: '/platform',
-    getParentRoute: () => AppToolsCreateTokenRoute,
+    getParentRoute: () => ToolsCreateTokenRoute,
   } as any)
-const AppOrganizationsOrgIdEditRoute =
-  AppOrganizationsOrgIdEditRouteImport.update({
-    id: '/edit',
-    path: '/edit',
-    getParentRoute: () => AppOrganizationsOrgIdRoute,
-  } as any)
+const OrganizationsOrgIdEditRoute = OrganizationsOrgIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => OrganizationsOrgIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/app': typeof AppRouteWithChildren
-  '/docs': typeof DocsRoute
-  '/app/activity': typeof AppActivityRoute
-  '/app/analytics': typeof AppAnalyticsRoute
-  '/app/create': typeof AppCreateRouteWithChildren
-  '/app/help': typeof AppHelpRoute
-  '/app/organizations': typeof AppOrganizationsRouteWithChildren
-  '/app/profile': typeof AppProfileRoute
-  '/app/settings': typeof AppSettingsRoute
-  '/app/tools': typeof AppToolsRouteWithChildren
-  '/app/': typeof AppIndexRoute
-  '/app/create/cliff': typeof AppCreateCliffRoute
-  '/app/create/linear': typeof AppCreateLinearRoute
-  '/app/create/milestone': typeof AppCreateMilestoneRoute
-  '/app/organizations/$orgId': typeof AppOrganizationsOrgIdRouteWithChildren
-  '/app/streams/$streamPda': typeof AppStreamsStreamPdaRoute
-  '/app/tools/create-token': typeof AppToolsCreateTokenRouteWithChildren
-  '/app/tools/tokens': typeof AppToolsTokensRoute
-  '/app/organizations/$orgId/edit': typeof AppOrganizationsOrgIdEditRoute
-  '/app/tools/create-token/platform': typeof AppToolsCreateTokenPlatformRoute
-  '/app/tools/create-token/wallet': typeof AppToolsCreateTokenWalletRoute
+  '/activity': typeof ActivityRoute
+  '/analytics': typeof AnalyticsRoute
+  '/create': typeof CreateRouteWithChildren
+  '/help': typeof HelpRoute
+  '/organizations': typeof OrganizationsRouteWithChildren
+  '/profile': typeof ProfileRoute
+  '/settings': typeof SettingsRoute
+  '/tools': typeof ToolsRouteWithChildren
+  '/create/cliff': typeof CreateCliffRoute
+  '/create/linear': typeof CreateLinearRoute
+  '/create/milestone': typeof CreateMilestoneRoute
+  '/organizations/$orgId': typeof OrganizationsOrgIdRouteWithChildren
+  '/streams/$streamPda': typeof StreamsStreamPdaRoute
+  '/tools/create-token': typeof ToolsCreateTokenRouteWithChildren
+  '/tools/tokens': typeof ToolsTokensRoute
+  '/organizations/$orgId/edit': typeof OrganizationsOrgIdEditRoute
+  '/tools/create-token/platform': typeof ToolsCreateTokenPlatformRoute
+  '/tools/create-token/wallet': typeof ToolsCreateTokenWalletRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/docs': typeof DocsRoute
-  '/app/activity': typeof AppActivityRoute
-  '/app/analytics': typeof AppAnalyticsRoute
-  '/app/create': typeof AppCreateRouteWithChildren
-  '/app/help': typeof AppHelpRoute
-  '/app/organizations': typeof AppOrganizationsRouteWithChildren
-  '/app/profile': typeof AppProfileRoute
-  '/app/settings': typeof AppSettingsRoute
-  '/app/tools': typeof AppToolsRouteWithChildren
-  '/app': typeof AppIndexRoute
-  '/app/create/cliff': typeof AppCreateCliffRoute
-  '/app/create/linear': typeof AppCreateLinearRoute
-  '/app/create/milestone': typeof AppCreateMilestoneRoute
-  '/app/organizations/$orgId': typeof AppOrganizationsOrgIdRouteWithChildren
-  '/app/streams/$streamPda': typeof AppStreamsStreamPdaRoute
-  '/app/tools/create-token': typeof AppToolsCreateTokenRouteWithChildren
-  '/app/tools/tokens': typeof AppToolsTokensRoute
-  '/app/organizations/$orgId/edit': typeof AppOrganizationsOrgIdEditRoute
-  '/app/tools/create-token/platform': typeof AppToolsCreateTokenPlatformRoute
-  '/app/tools/create-token/wallet': typeof AppToolsCreateTokenWalletRoute
+  '/activity': typeof ActivityRoute
+  '/analytics': typeof AnalyticsRoute
+  '/create': typeof CreateRouteWithChildren
+  '/help': typeof HelpRoute
+  '/organizations': typeof OrganizationsRouteWithChildren
+  '/profile': typeof ProfileRoute
+  '/settings': typeof SettingsRoute
+  '/tools': typeof ToolsRouteWithChildren
+  '/create/cliff': typeof CreateCliffRoute
+  '/create/linear': typeof CreateLinearRoute
+  '/create/milestone': typeof CreateMilestoneRoute
+  '/organizations/$orgId': typeof OrganizationsOrgIdRouteWithChildren
+  '/streams/$streamPda': typeof StreamsStreamPdaRoute
+  '/tools/create-token': typeof ToolsCreateTokenRouteWithChildren
+  '/tools/tokens': typeof ToolsTokensRoute
+  '/organizations/$orgId/edit': typeof OrganizationsOrgIdEditRoute
+  '/tools/create-token/platform': typeof ToolsCreateTokenPlatformRoute
+  '/tools/create-token/wallet': typeof ToolsCreateTokenWalletRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/app': typeof AppRouteWithChildren
-  '/docs': typeof DocsRoute
-  '/app/activity': typeof AppActivityRoute
-  '/app/analytics': typeof AppAnalyticsRoute
-  '/app/create': typeof AppCreateRouteWithChildren
-  '/app/help': typeof AppHelpRoute
-  '/app/organizations': typeof AppOrganizationsRouteWithChildren
-  '/app/profile': typeof AppProfileRoute
-  '/app/settings': typeof AppSettingsRoute
-  '/app/tools': typeof AppToolsRouteWithChildren
-  '/app/': typeof AppIndexRoute
-  '/app/create/cliff': typeof AppCreateCliffRoute
-  '/app/create/linear': typeof AppCreateLinearRoute
-  '/app/create/milestone': typeof AppCreateMilestoneRoute
-  '/app/organizations/$orgId': typeof AppOrganizationsOrgIdRouteWithChildren
-  '/app/streams/$streamPda': typeof AppStreamsStreamPdaRoute
-  '/app/tools/create-token': typeof AppToolsCreateTokenRouteWithChildren
-  '/app/tools/tokens': typeof AppToolsTokensRoute
-  '/app/organizations/$orgId/edit': typeof AppOrganizationsOrgIdEditRoute
-  '/app/tools/create-token/platform': typeof AppToolsCreateTokenPlatformRoute
-  '/app/tools/create-token/wallet': typeof AppToolsCreateTokenWalletRoute
+  '/activity': typeof ActivityRoute
+  '/analytics': typeof AnalyticsRoute
+  '/create': typeof CreateRouteWithChildren
+  '/help': typeof HelpRoute
+  '/organizations': typeof OrganizationsRouteWithChildren
+  '/profile': typeof ProfileRoute
+  '/settings': typeof SettingsRoute
+  '/tools': typeof ToolsRouteWithChildren
+  '/create/cliff': typeof CreateCliffRoute
+  '/create/linear': typeof CreateLinearRoute
+  '/create/milestone': typeof CreateMilestoneRoute
+  '/organizations/$orgId': typeof OrganizationsOrgIdRouteWithChildren
+  '/streams/$streamPda': typeof StreamsStreamPdaRoute
+  '/tools/create-token': typeof ToolsCreateTokenRouteWithChildren
+  '/tools/tokens': typeof ToolsTokensRoute
+  '/organizations/$orgId/edit': typeof OrganizationsOrgIdEditRoute
+  '/tools/create-token/platform': typeof ToolsCreateTokenPlatformRoute
+  '/tools/create-token/wallet': typeof ToolsCreateTokenWalletRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/app'
-    | '/docs'
-    | '/app/activity'
-    | '/app/analytics'
-    | '/app/create'
-    | '/app/help'
-    | '/app/organizations'
-    | '/app/profile'
-    | '/app/settings'
-    | '/app/tools'
-    | '/app/'
-    | '/app/create/cliff'
-    | '/app/create/linear'
-    | '/app/create/milestone'
-    | '/app/organizations/$orgId'
-    | '/app/streams/$streamPda'
-    | '/app/tools/create-token'
-    | '/app/tools/tokens'
-    | '/app/organizations/$orgId/edit'
-    | '/app/tools/create-token/platform'
-    | '/app/tools/create-token/wallet'
+    | '/activity'
+    | '/analytics'
+    | '/create'
+    | '/help'
+    | '/organizations'
+    | '/profile'
+    | '/settings'
+    | '/tools'
+    | '/create/cliff'
+    | '/create/linear'
+    | '/create/milestone'
+    | '/organizations/$orgId'
+    | '/streams/$streamPda'
+    | '/tools/create-token'
+    | '/tools/tokens'
+    | '/organizations/$orgId/edit'
+    | '/tools/create-token/platform'
+    | '/tools/create-token/wallet'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/docs'
-    | '/app/activity'
-    | '/app/analytics'
-    | '/app/create'
-    | '/app/help'
-    | '/app/organizations'
-    | '/app/profile'
-    | '/app/settings'
-    | '/app/tools'
-    | '/app'
-    | '/app/create/cliff'
-    | '/app/create/linear'
-    | '/app/create/milestone'
-    | '/app/organizations/$orgId'
-    | '/app/streams/$streamPda'
-    | '/app/tools/create-token'
-    | '/app/tools/tokens'
-    | '/app/organizations/$orgId/edit'
-    | '/app/tools/create-token/platform'
-    | '/app/tools/create-token/wallet'
+    | '/activity'
+    | '/analytics'
+    | '/create'
+    | '/help'
+    | '/organizations'
+    | '/profile'
+    | '/settings'
+    | '/tools'
+    | '/create/cliff'
+    | '/create/linear'
+    | '/create/milestone'
+    | '/organizations/$orgId'
+    | '/streams/$streamPda'
+    | '/tools/create-token'
+    | '/tools/tokens'
+    | '/organizations/$orgId/edit'
+    | '/tools/create-token/platform'
+    | '/tools/create-token/wallet'
   id:
     | '__root__'
     | '/'
-    | '/app'
-    | '/docs'
-    | '/app/activity'
-    | '/app/analytics'
-    | '/app/create'
-    | '/app/help'
-    | '/app/organizations'
-    | '/app/profile'
-    | '/app/settings'
-    | '/app/tools'
-    | '/app/'
-    | '/app/create/cliff'
-    | '/app/create/linear'
-    | '/app/create/milestone'
-    | '/app/organizations/$orgId'
-    | '/app/streams/$streamPda'
-    | '/app/tools/create-token'
-    | '/app/tools/tokens'
-    | '/app/organizations/$orgId/edit'
-    | '/app/tools/create-token/platform'
-    | '/app/tools/create-token/wallet'
+    | '/activity'
+    | '/analytics'
+    | '/create'
+    | '/help'
+    | '/organizations'
+    | '/profile'
+    | '/settings'
+    | '/tools'
+    | '/create/cliff'
+    | '/create/linear'
+    | '/create/milestone'
+    | '/organizations/$orgId'
+    | '/streams/$streamPda'
+    | '/tools/create-token'
+    | '/tools/tokens'
+    | '/organizations/$orgId/edit'
+    | '/tools/create-token/platform'
+    | '/tools/create-token/wallet'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppRoute: typeof AppRouteWithChildren
-  DocsRoute: typeof DocsRoute
+  ActivityRoute: typeof ActivityRoute
+  AnalyticsRoute: typeof AnalyticsRoute
+  CreateRoute: typeof CreateRouteWithChildren
+  HelpRoute: typeof HelpRoute
+  OrganizationsRoute: typeof OrganizationsRouteWithChildren
+  ProfileRoute: typeof ProfileRoute
+  SettingsRoute: typeof SettingsRoute
+  ToolsRoute: typeof ToolsRouteWithChildren
+  StreamsStreamPdaRoute: typeof StreamsStreamPdaRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/docs': {
-      id: '/docs'
-      path: '/docs'
-      fullPath: '/docs'
-      preLoaderRoute: typeof DocsRouteImport
+    '/tools': {
+      id: '/tools'
+      path: '/tools'
+      fullPath: '/tools'
+      preLoaderRoute: typeof ToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app': {
-      id: '/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppRouteImport
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/organizations': {
+      id: '/organizations'
+      path: '/organizations'
+      fullPath: '/organizations'
+      preLoaderRoute: typeof OrganizationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/create': {
+      id: '/create'
+      path: '/create'
+      fullPath: '/create'
+      preLoaderRoute: typeof CreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/activity': {
+      id: '/activity'
+      path: '/activity'
+      fullPath: '/activity'
+      preLoaderRoute: typeof ActivityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -321,241 +334,153 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app/': {
-      id: '/app/'
-      path: '/'
-      fullPath: '/app/'
-      preLoaderRoute: typeof AppIndexRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/tools': {
-      id: '/app/tools'
-      path: '/tools'
-      fullPath: '/app/tools'
-      preLoaderRoute: typeof AppToolsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/settings': {
-      id: '/app/settings'
-      path: '/settings'
-      fullPath: '/app/settings'
-      preLoaderRoute: typeof AppSettingsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/profile': {
-      id: '/app/profile'
-      path: '/profile'
-      fullPath: '/app/profile'
-      preLoaderRoute: typeof AppProfileRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/organizations': {
-      id: '/app/organizations'
-      path: '/organizations'
-      fullPath: '/app/organizations'
-      preLoaderRoute: typeof AppOrganizationsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/help': {
-      id: '/app/help'
-      path: '/help'
-      fullPath: '/app/help'
-      preLoaderRoute: typeof AppHelpRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/create': {
-      id: '/app/create'
-      path: '/create'
-      fullPath: '/app/create'
-      preLoaderRoute: typeof AppCreateRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/analytics': {
-      id: '/app/analytics'
-      path: '/analytics'
-      fullPath: '/app/analytics'
-      preLoaderRoute: typeof AppAnalyticsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/activity': {
-      id: '/app/activity'
-      path: '/activity'
-      fullPath: '/app/activity'
-      preLoaderRoute: typeof AppActivityRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/tools/tokens': {
-      id: '/app/tools/tokens'
+    '/tools/tokens': {
+      id: '/tools/tokens'
       path: '/tokens'
-      fullPath: '/app/tools/tokens'
-      preLoaderRoute: typeof AppToolsTokensRouteImport
-      parentRoute: typeof AppToolsRoute
+      fullPath: '/tools/tokens'
+      preLoaderRoute: typeof ToolsTokensRouteImport
+      parentRoute: typeof ToolsRoute
     }
-    '/app/tools/create-token': {
-      id: '/app/tools/create-token'
+    '/tools/create-token': {
+      id: '/tools/create-token'
       path: '/create-token'
-      fullPath: '/app/tools/create-token'
-      preLoaderRoute: typeof AppToolsCreateTokenRouteImport
-      parentRoute: typeof AppToolsRoute
+      fullPath: '/tools/create-token'
+      preLoaderRoute: typeof ToolsCreateTokenRouteImport
+      parentRoute: typeof ToolsRoute
     }
-    '/app/streams/$streamPda': {
-      id: '/app/streams/$streamPda'
+    '/streams/$streamPda': {
+      id: '/streams/$streamPda'
       path: '/streams/$streamPda'
-      fullPath: '/app/streams/$streamPda'
-      preLoaderRoute: typeof AppStreamsStreamPdaRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/streams/$streamPda'
+      preLoaderRoute: typeof StreamsStreamPdaRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/organizations/$orgId': {
-      id: '/app/organizations/$orgId'
+    '/organizations/$orgId': {
+      id: '/organizations/$orgId'
       path: '/$orgId'
-      fullPath: '/app/organizations/$orgId'
-      preLoaderRoute: typeof AppOrganizationsOrgIdRouteImport
-      parentRoute: typeof AppOrganizationsRoute
+      fullPath: '/organizations/$orgId'
+      preLoaderRoute: typeof OrganizationsOrgIdRouteImport
+      parentRoute: typeof OrganizationsRoute
     }
-    '/app/create/milestone': {
-      id: '/app/create/milestone'
+    '/create/milestone': {
+      id: '/create/milestone'
       path: '/milestone'
-      fullPath: '/app/create/milestone'
-      preLoaderRoute: typeof AppCreateMilestoneRouteImport
-      parentRoute: typeof AppCreateRoute
+      fullPath: '/create/milestone'
+      preLoaderRoute: typeof CreateMilestoneRouteImport
+      parentRoute: typeof CreateRoute
     }
-    '/app/create/linear': {
-      id: '/app/create/linear'
+    '/create/linear': {
+      id: '/create/linear'
       path: '/linear'
-      fullPath: '/app/create/linear'
-      preLoaderRoute: typeof AppCreateLinearRouteImport
-      parentRoute: typeof AppCreateRoute
+      fullPath: '/create/linear'
+      preLoaderRoute: typeof CreateLinearRouteImport
+      parentRoute: typeof CreateRoute
     }
-    '/app/create/cliff': {
-      id: '/app/create/cliff'
+    '/create/cliff': {
+      id: '/create/cliff'
       path: '/cliff'
-      fullPath: '/app/create/cliff'
-      preLoaderRoute: typeof AppCreateCliffRouteImport
-      parentRoute: typeof AppCreateRoute
+      fullPath: '/create/cliff'
+      preLoaderRoute: typeof CreateCliffRouteImport
+      parentRoute: typeof CreateRoute
     }
-    '/app/tools/create-token/wallet': {
-      id: '/app/tools/create-token/wallet'
+    '/tools/create-token/wallet': {
+      id: '/tools/create-token/wallet'
       path: '/wallet'
-      fullPath: '/app/tools/create-token/wallet'
-      preLoaderRoute: typeof AppToolsCreateTokenWalletRouteImport
-      parentRoute: typeof AppToolsCreateTokenRoute
+      fullPath: '/tools/create-token/wallet'
+      preLoaderRoute: typeof ToolsCreateTokenWalletRouteImport
+      parentRoute: typeof ToolsCreateTokenRoute
     }
-    '/app/tools/create-token/platform': {
-      id: '/app/tools/create-token/platform'
+    '/tools/create-token/platform': {
+      id: '/tools/create-token/platform'
       path: '/platform'
-      fullPath: '/app/tools/create-token/platform'
-      preLoaderRoute: typeof AppToolsCreateTokenPlatformRouteImport
-      parentRoute: typeof AppToolsCreateTokenRoute
+      fullPath: '/tools/create-token/platform'
+      preLoaderRoute: typeof ToolsCreateTokenPlatformRouteImport
+      parentRoute: typeof ToolsCreateTokenRoute
     }
-    '/app/organizations/$orgId/edit': {
-      id: '/app/organizations/$orgId/edit'
+    '/organizations/$orgId/edit': {
+      id: '/organizations/$orgId/edit'
       path: '/edit'
-      fullPath: '/app/organizations/$orgId/edit'
-      preLoaderRoute: typeof AppOrganizationsOrgIdEditRouteImport
-      parentRoute: typeof AppOrganizationsOrgIdRoute
+      fullPath: '/organizations/$orgId/edit'
+      preLoaderRoute: typeof OrganizationsOrgIdEditRouteImport
+      parentRoute: typeof OrganizationsOrgIdRoute
     }
   }
 }
 
-interface AppCreateRouteChildren {
-  AppCreateCliffRoute: typeof AppCreateCliffRoute
-  AppCreateLinearRoute: typeof AppCreateLinearRoute
-  AppCreateMilestoneRoute: typeof AppCreateMilestoneRoute
+interface CreateRouteChildren {
+  CreateCliffRoute: typeof CreateCliffRoute
+  CreateLinearRoute: typeof CreateLinearRoute
+  CreateMilestoneRoute: typeof CreateMilestoneRoute
 }
 
-const AppCreateRouteChildren: AppCreateRouteChildren = {
-  AppCreateCliffRoute: AppCreateCliffRoute,
-  AppCreateLinearRoute: AppCreateLinearRoute,
-  AppCreateMilestoneRoute: AppCreateMilestoneRoute,
+const CreateRouteChildren: CreateRouteChildren = {
+  CreateCliffRoute: CreateCliffRoute,
+  CreateLinearRoute: CreateLinearRoute,
+  CreateMilestoneRoute: CreateMilestoneRoute,
 }
 
-const AppCreateRouteWithChildren = AppCreateRoute._addFileChildren(
-  AppCreateRouteChildren,
+const CreateRouteWithChildren =
+  CreateRoute._addFileChildren(CreateRouteChildren)
+
+interface OrganizationsOrgIdRouteChildren {
+  OrganizationsOrgIdEditRoute: typeof OrganizationsOrgIdEditRoute
+}
+
+const OrganizationsOrgIdRouteChildren: OrganizationsOrgIdRouteChildren = {
+  OrganizationsOrgIdEditRoute: OrganizationsOrgIdEditRoute,
+}
+
+const OrganizationsOrgIdRouteWithChildren =
+  OrganizationsOrgIdRoute._addFileChildren(OrganizationsOrgIdRouteChildren)
+
+interface OrganizationsRouteChildren {
+  OrganizationsOrgIdRoute: typeof OrganizationsOrgIdRouteWithChildren
+}
+
+const OrganizationsRouteChildren: OrganizationsRouteChildren = {
+  OrganizationsOrgIdRoute: OrganizationsOrgIdRouteWithChildren,
+}
+
+const OrganizationsRouteWithChildren = OrganizationsRoute._addFileChildren(
+  OrganizationsRouteChildren,
 )
 
-interface AppOrganizationsOrgIdRouteChildren {
-  AppOrganizationsOrgIdEditRoute: typeof AppOrganizationsOrgIdEditRoute
+interface ToolsCreateTokenRouteChildren {
+  ToolsCreateTokenPlatformRoute: typeof ToolsCreateTokenPlatformRoute
+  ToolsCreateTokenWalletRoute: typeof ToolsCreateTokenWalletRoute
 }
 
-const AppOrganizationsOrgIdRouteChildren: AppOrganizationsOrgIdRouteChildren = {
-  AppOrganizationsOrgIdEditRoute: AppOrganizationsOrgIdEditRoute,
+const ToolsCreateTokenRouteChildren: ToolsCreateTokenRouteChildren = {
+  ToolsCreateTokenPlatformRoute: ToolsCreateTokenPlatformRoute,
+  ToolsCreateTokenWalletRoute: ToolsCreateTokenWalletRoute,
 }
 
-const AppOrganizationsOrgIdRouteWithChildren =
-  AppOrganizationsOrgIdRoute._addFileChildren(
-    AppOrganizationsOrgIdRouteChildren,
-  )
+const ToolsCreateTokenRouteWithChildren =
+  ToolsCreateTokenRoute._addFileChildren(ToolsCreateTokenRouteChildren)
 
-interface AppOrganizationsRouteChildren {
-  AppOrganizationsOrgIdRoute: typeof AppOrganizationsOrgIdRouteWithChildren
+interface ToolsRouteChildren {
+  ToolsCreateTokenRoute: typeof ToolsCreateTokenRouteWithChildren
+  ToolsTokensRoute: typeof ToolsTokensRoute
 }
 
-const AppOrganizationsRouteChildren: AppOrganizationsRouteChildren = {
-  AppOrganizationsOrgIdRoute: AppOrganizationsOrgIdRouteWithChildren,
+const ToolsRouteChildren: ToolsRouteChildren = {
+  ToolsCreateTokenRoute: ToolsCreateTokenRouteWithChildren,
+  ToolsTokensRoute: ToolsTokensRoute,
 }
 
-const AppOrganizationsRouteWithChildren =
-  AppOrganizationsRoute._addFileChildren(AppOrganizationsRouteChildren)
-
-interface AppToolsCreateTokenRouteChildren {
-  AppToolsCreateTokenPlatformRoute: typeof AppToolsCreateTokenPlatformRoute
-  AppToolsCreateTokenWalletRoute: typeof AppToolsCreateTokenWalletRoute
-}
-
-const AppToolsCreateTokenRouteChildren: AppToolsCreateTokenRouteChildren = {
-  AppToolsCreateTokenPlatformRoute: AppToolsCreateTokenPlatformRoute,
-  AppToolsCreateTokenWalletRoute: AppToolsCreateTokenWalletRoute,
-}
-
-const AppToolsCreateTokenRouteWithChildren =
-  AppToolsCreateTokenRoute._addFileChildren(AppToolsCreateTokenRouteChildren)
-
-interface AppToolsRouteChildren {
-  AppToolsCreateTokenRoute: typeof AppToolsCreateTokenRouteWithChildren
-  AppToolsTokensRoute: typeof AppToolsTokensRoute
-}
-
-const AppToolsRouteChildren: AppToolsRouteChildren = {
-  AppToolsCreateTokenRoute: AppToolsCreateTokenRouteWithChildren,
-  AppToolsTokensRoute: AppToolsTokensRoute,
-}
-
-const AppToolsRouteWithChildren = AppToolsRoute._addFileChildren(
-  AppToolsRouteChildren,
-)
-
-interface AppRouteChildren {
-  AppActivityRoute: typeof AppActivityRoute
-  AppAnalyticsRoute: typeof AppAnalyticsRoute
-  AppCreateRoute: typeof AppCreateRouteWithChildren
-  AppHelpRoute: typeof AppHelpRoute
-  AppOrganizationsRoute: typeof AppOrganizationsRouteWithChildren
-  AppProfileRoute: typeof AppProfileRoute
-  AppSettingsRoute: typeof AppSettingsRoute
-  AppToolsRoute: typeof AppToolsRouteWithChildren
-  AppIndexRoute: typeof AppIndexRoute
-  AppStreamsStreamPdaRoute: typeof AppStreamsStreamPdaRoute
-}
-
-const AppRouteChildren: AppRouteChildren = {
-  AppActivityRoute: AppActivityRoute,
-  AppAnalyticsRoute: AppAnalyticsRoute,
-  AppCreateRoute: AppCreateRouteWithChildren,
-  AppHelpRoute: AppHelpRoute,
-  AppOrganizationsRoute: AppOrganizationsRouteWithChildren,
-  AppProfileRoute: AppProfileRoute,
-  AppSettingsRoute: AppSettingsRoute,
-  AppToolsRoute: AppToolsRouteWithChildren,
-  AppIndexRoute: AppIndexRoute,
-  AppStreamsStreamPdaRoute: AppStreamsStreamPdaRoute,
-}
-
-const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+const ToolsRouteWithChildren = ToolsRoute._addFileChildren(ToolsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppRoute: AppRouteWithChildren,
-  DocsRoute: DocsRoute,
+  ActivityRoute: ActivityRoute,
+  AnalyticsRoute: AnalyticsRoute,
+  CreateRoute: CreateRouteWithChildren,
+  HelpRoute: HelpRoute,
+  OrganizationsRoute: OrganizationsRouteWithChildren,
+  ProfileRoute: ProfileRoute,
+  SettingsRoute: SettingsRoute,
+  ToolsRoute: ToolsRouteWithChildren,
+  StreamsStreamPdaRoute: StreamsStreamPdaRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

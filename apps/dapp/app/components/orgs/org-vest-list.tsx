@@ -51,7 +51,7 @@ export function OrgVestList({ streams, tokenDecimals }: OrgVestListProps) {
       {streams.map((stream) => (
         <Link
           key={stream.id}
-          to="/app/streams/$streamPda"
+          to="/streams/$streamPda"
           params={{ streamPda: stream.id }}
           className="flex items-center justify-between border-t border-border px-4 py-3 hover:bg-bg2 no-underline"
         >

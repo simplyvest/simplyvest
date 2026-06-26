@@ -11,7 +11,7 @@ export function TokensPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-text">Your Tokens</h2>
-        <Button variant="outline" onClick={() => navigate({ to: "/app/tools/create-token" })}>
+        <Button variant="outline" onClick={() => navigate({ to: "/tools/create-token" })}>
           <LuPlus className="mr-2 h-4 w-4" />
           Create Token
         </Button>

@@ -2,17 +2,17 @@ import { createRoute, Outlet, useRouterState } from "@tanstack/react-router";
 
 import { CreateTypeSelector } from "@/components/streams/create-stream/create-type-selector";
 
-import { Route as AppRoute } from "./app";
+import { Route as RootRoute } from "./__root";
 
 export const Route = createRoute({
-  getParentRoute: () => AppRoute,
+  getParentRoute: () => RootRoute,
   path: "/create",
   component: CreatePage,
 });
 
 function CreatePage() {
   const location = useRouterState().location;
-  const isExactCreate = location.pathname === "/app/create";
+  const isExactCreate = location.pathname === "/create";
 
   if (!isExactCreate) {
     return <Outlet />;

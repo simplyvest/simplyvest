@@ -196,7 +196,7 @@ export function TokenPickerDialog({
                         <p className="px-3 py-2 text-sm text-muted">
                           No tokens found.{" "}
                           <a
-                            href="/app/tools/create-token"
+                            href="/tools/create-token"
                             className="text-primary underline-offset-2 hover:underline"
                           >
                             Create one in Tools

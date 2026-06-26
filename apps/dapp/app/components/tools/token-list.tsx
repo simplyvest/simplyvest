@@ -62,7 +62,7 @@ export function TokenList() {
         <Button
           variant="outline"
           className="mt-4"
-          onClick={() => navigate({ to: "/app/tools/create-token" })}
+          onClick={() => navigate({ to: "/tools/create-token" })}
         >
           <LuPlus className="mr-2 h-4 w-4" />
           Create your first token
@@ -104,7 +104,7 @@ export function TokenList() {
                 className="flex items-center gap-4 rounded-xl border border-border bg-bg1 p-4 cursor-pointer hover:border-border2 transition-colors"
                 onClick={() =>
                   navigate({
-                    to: "/app/create",
+                    to: "/create",
                     search: { mint: mintStr },
                   })
                 }

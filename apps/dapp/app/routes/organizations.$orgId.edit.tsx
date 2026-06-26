@@ -8,7 +8,7 @@ import { ModalOverlay } from "@/components/ui/modal-overlay";
 import { useDeleteOrg, useOrg } from "@/hooks/use-org-api";
 import { useAuth } from "@/lib/solana/use-auth";
 
-import { Route as OrganizationsRoute } from "./app.organizations";
+import { Route as OrganizationsRoute } from "./organizations";
 
 export const Route = createRoute({
   getParentRoute: () => OrganizationsRoute,
@@ -32,7 +32,7 @@ function EditOrgPage() {
   const handleDelete = () => {
     deleteOrg.mutate(orgId, {
       onSuccess: () => {
-        void navigate({ to: "/app/organizations" });
+        void navigate({ to: "/organizations" });
       },
     });
   };
@@ -52,7 +52,7 @@ function EditOrgPage() {
       <div className="rounded-xl border border-border bg-bg1 p-8 text-center">
         <p className="text-sm text-muted">Organization not found</p>
         <Link
-          to="/app/organizations"
+          to="/organizations"
           className="mt-2 inline-block text-sm text-primary hover:underline no-underline"
         >
           Back to organizations
@@ -65,7 +65,7 @@ function EditOrgPage() {
     <div className="space-y-8">
       <div>
         <Link
-          to="/app/organizations/$orgId"
+          to="/organizations/$orgId"
           params={{ orgId }}
           className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-text no-underline hover:no-underline mb-4"
         >

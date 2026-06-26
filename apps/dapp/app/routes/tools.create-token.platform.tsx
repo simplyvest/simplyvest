@@ -1,7 +1,7 @@
 import { createRoute } from "@tanstack/react-router";
 import { lazy } from "react";
 
-import { Route as CreateTokenRoute } from "./app.tools.create-token";
+import { Route as CreateTokenRoute } from "./tools.create-token";
 
 const PlatformFlow = lazy(() =>
   import("./_tools/-create-token-platform").then((m) => ({

@@ -61,7 +61,7 @@ export function TokenCreatorSuccess({
           variant="outline"
           onClick={() =>
             navigate({
-              to: "/app/create",
+              to: "/create",
               search: { mint: mintAddress },
             })
           }
@@ -69,7 +69,7 @@ export function TokenCreatorSuccess({
           <LuPlus className="mr-2 h-4 w-4" />
           Create Stream with this Token
         </Button>
-        <Button variant="ghost" onClick={() => navigate({ to: "/app/tools/tokens" })}>
+        <Button variant="ghost" onClick={() => navigate({ to: "/tools/tokens" })}>
           View All Tokens
         </Button>
       </div>

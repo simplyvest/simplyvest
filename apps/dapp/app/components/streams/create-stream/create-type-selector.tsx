@@ -3,7 +3,7 @@ import { LuTimer, LuSnowflake, LuTrophy } from "react-icons/lu";
 
 const streamTypes = [
   {
-    to: "/app/create/linear",
+    to: "/create/linear",
     icon: LuTimer,
     title: "Linear",
     description: "Continuous token streaming over a set period. Tokens unlock every second.",
@@ -11,7 +11,7 @@ const streamTypes = [
     bg: "bg-primary/5 border-primary/20 hover:border-primary/40",
   },
   {
-    to: "/app/create/cliff",
+    to: "/create/cliff",
     icon: LuSnowflake,
     title: "Cliff",
     description: "Tokens are locked until a cliff date, then stream linearly until end.",
@@ -19,7 +19,7 @@ const streamTypes = [
     bg: "bg-info/5 border-info/20 hover:border-info/40",
   },
   {
-    to: "/app/create/milestone",
+    to: "/create/milestone",
     icon: LuTrophy,
     title: "Milestone",
     description: "Tokens are released when a milestone authority approves each milestone.",

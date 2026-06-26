@@ -3,7 +3,7 @@ import { LuBuilding, LuWallet } from "react-icons/lu";
 
 const modes = [
   {
-    to: "/app/tools/create-token/platform",
+    to: "/tools/create-token/platform",
     icon: LuBuilding,
     title: "Create on Platform",
     description:
@@ -12,7 +12,7 @@ const modes = [
     bg: "bg-primary/5 border-primary/20 hover:border-primary/40",
   },
   {
-    to: "/app/tools/create-token/wallet",
+    to: "/tools/create-token/wallet",
     icon: LuWallet,
     title: "Create with Wallet",
     description:

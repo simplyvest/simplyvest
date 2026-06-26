@@ -29,13 +29,13 @@ export function SidebarBottom({ collapsed, onToggleCollapse }: SidebarBottomProp
     }
   };
 
-  const profileActive = location.pathname === "/app/profile";
-  const helpActive = location.pathname === "/app/help";
+  const profileActive = location.pathname === "/profile";
+  const helpActive = location.pathname === "/help";
 
   return (
     <div className="flex flex-col gap-1 border-t border-border pt-3">
       <Link
-        to="/app/profile"
+        to="/profile"
         title={collapsed ? "Profile" : undefined}
         className={cn(
           "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors no-underline hover:no-underline",
@@ -50,7 +50,7 @@ export function SidebarBottom({ collapsed, onToggleCollapse }: SidebarBottomProp
       </Link>
 
       <Link
-        to="/app/help"
+        to="/help"
         title={collapsed ? "Help & Support" : undefined}
         className={cn(
           "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors no-underline hover:no-underline",

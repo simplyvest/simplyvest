@@ -81,7 +81,7 @@ export function CreateTokenWallet() {
           <div className="mb-5 flex items-center justify-between">
             <p className="text-xs text-muted">Creating with Wallet</p>
             <Link
-              to="/app/tools/create-token"
+              to="/tools/create-token"
               className="text-xs text-dim no-underline transition-colors hover:text-text hover:no-underline"
             >
               Change mode

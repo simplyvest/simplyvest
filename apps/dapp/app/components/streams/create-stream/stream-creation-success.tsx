@@ -34,7 +34,7 @@ export function StreamCreationSuccess({
         <Button variant="outline" onClick={onReset}>
           Create Another
         </Button>
-        <Button onClick={() => navigate({ to: "/app/streams/$streamPda", params: { streamPda } })}>
+        <Button onClick={() => navigate({ to: "/streams/$streamPda", params: { streamPda } })}>
           View Stream
         </Button>
       </div>

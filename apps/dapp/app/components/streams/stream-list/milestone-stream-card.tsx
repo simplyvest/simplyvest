@@ -36,7 +36,7 @@ export function MilestoneStreamCard({
     <div className="rounded-xl border border-border bg-bg1 px-5 py-4">
       <div className="flex items-start justify-between gap-4">
         <Link
-          to="/app/streams/$streamPda"
+          to="/streams/$streamPda"
           params={{ streamPda: stream.id }}
           className="min-w-0 flex-1 space-y-1 no-underline hover:no-underline"
         >

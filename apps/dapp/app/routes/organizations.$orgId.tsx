@@ -2,7 +2,7 @@ import { createRoute } from "@tanstack/react-router";
 
 import { OrgDetail } from "@/components/orgs/org-detail";
 
-import { Route as OrganizationsRoute } from "./app.organizations";
+import { Route as OrganizationsRoute } from "./organizations";
 
 export const Route = createRoute({
   getParentRoute: () => OrganizationsRoute,

@@ -6,10 +6,10 @@ import { CreateOrgModal } from "@/components/orgs/create-org-modal";
 import { OrgList } from "@/components/orgs/org-list";
 import { useUserOrgs } from "@/hooks/use-org-api";
 
-import { Route as AppRoute } from "./app";
+import { Route as RootRoute } from "./__root";
 
 export const Route = createRoute({
-  getParentRoute: () => AppRoute,
+  getParentRoute: () => RootRoute,
   path: "/organizations",
   component: OrganizationsPage,
 });
@@ -20,7 +20,7 @@ function OrganizationsPage() {
   const { data: orgs, isLoading } = useUserOrgs();
   const [createOpen, setCreateOpen] = useState(false);
 
-  const isExactOrgs = location.pathname === "/app/organizations";
+  const isExactOrgs = location.pathname === "/organizations";
   const hasOrgs = orgs && orgs.length > 0;
 
   return (
@@ -57,7 +57,7 @@ function OrganizationsPage() {
             onClose={() => setCreateOpen(false)}
             onSuccess={(orgId) => {
               setCreateOpen(false);
-              void navigate({ to: "/app/organizations/$orgId", params: { orgId } });
+              void navigate({ to: "/organizations/$orgId", params: { orgId } });
             }}
           />
         </>

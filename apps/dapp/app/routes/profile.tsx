@@ -2,10 +2,10 @@ import { createRoute } from "@tanstack/react-router";
 
 import { ProfileForm } from "@/components/profile/profile-form";
 
-import { Route as AppRoute } from "./app";
+import { Route as RootRoute } from "./__root";
 
 export const Route = createRoute({
-  getParentRoute: () => AppRoute,
+  getParentRoute: () => RootRoute,
   path: "/profile",
   component: ProfilePage,
 });
