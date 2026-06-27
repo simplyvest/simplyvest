@@ -80,6 +80,15 @@ export function TokenCreatorForm({
 
   return (
     <div className="space-y-5">
+      <Field label="Token Name" required>
+        <Input
+          placeholder="My Token"
+          value={form.name}
+          onChange={(e) => update("name", e.target.value)}
+          maxLength={32}
+        />
+      </Field>
+
       <div>
         <Field label="Symbol" required>
           <Input
@@ -91,15 +100,6 @@ export function TokenCreatorForm({
         </Field>
         <p className="mt-1 text-xs text-muted">Max 10 characters, uppercase</p>
       </div>
-
-      <Field label="Token Name" required>
-        <Input
-          placeholder="My Token"
-          value={form.name}
-          onChange={(e) => update("name", e.target.value)}
-          maxLength={32}
-        />
-      </Field>
 
       <div>
         <Field label="Initial Supply" required>
