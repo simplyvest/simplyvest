@@ -4,6 +4,7 @@ const ALLOWED_ORIGINS = [
   "http://localhost:5173",
   "http://localhost:4173",
   "https://simplyvest.pages.dev",
+  "https://app.simplyvest.xyz",
   "https://www.simplyvest.xyz",
 ];
 
