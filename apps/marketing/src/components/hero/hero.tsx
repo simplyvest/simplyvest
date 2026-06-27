@@ -1,7 +1,7 @@
 import { BlobBlob, SectionDecorations } from "@simplyvest/ui/section-decorations";
 import { LuArrowRight, LuBookOpen, LuUsers } from "react-icons/lu";
 
-import { DOCS_URL } from "../../constants";
+import { DAPP_URL, DOCS_URL } from "../../constants";
 import { LinkButton } from "../link-button";
 import { HeroStatsCards } from "./hero-stats-cards";
 
@@ -55,7 +55,13 @@ export function Hero() {
 
           {/* CTA buttons */}
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            <LinkButton href="/app" variant="brand" className="rounded-xl px-6 py-3">
+            <LinkButton
+              href={DAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="brand"
+              className="rounded-xl px-6 py-3"
+            >
               Try Beta App
               <LuArrowRight className="h-4 w-4" />
             </LinkButton>
