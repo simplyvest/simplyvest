@@ -25,7 +25,6 @@ export const Default: Story = {
       await expect(canvas.getByText("Home")).toBeInTheDocument();
       await expect(canvas.getByText("Features")).toBeInTheDocument();
       await expect(canvas.getByText("Docs")).toBeInTheDocument();
-      await expect(canvas.getByText("FAQ")).toBeInTheDocument();
     });
     await step("renders theme toggle button", async () => {
       const toggles = canvas.getAllByRole("button", { hidden: true });

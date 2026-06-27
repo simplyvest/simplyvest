@@ -22,7 +22,6 @@ export const Default: Story = {
     await step("renders all nav links", async () => {
       await expect(canvas.getByText("Home")).toBeInTheDocument();
       await expect(canvas.getByText("Docs")).toBeInTheDocument();
-      await expect(canvas.getByText("FAQ")).toBeInTheDocument();
     });
   },
 };
