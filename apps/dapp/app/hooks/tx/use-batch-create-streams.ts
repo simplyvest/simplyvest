@@ -1,3 +1,4 @@
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import type { PublicKey, TransactionInstruction } from "@solana/web3.js";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -31,6 +32,9 @@ interface BatchInput {
   endTime: number;
   cliffTime: number;
   orgId?: string;
+  tokenName?: string | null;
+  tokenSymbol?: string | null;
+  tokenDecimals?: number | null;
 }
 
 interface StreamResult {
@@ -55,6 +59,10 @@ export function useBatchCreateStreams() {
       if (!publicKey || !wallet) throw new Error("Wallet not connected");
 
       const program = buildReadProgram(connection);
+
+      // TODO(sdk): move senderToken computation into getCreateStreamAccounts
+      // so callers don't need to compute it manually. See AGENTS.md conversation.
+      const senderToken = getAssociatedTokenAddressSync(input.mint, publicKey, true);
 
       const [creatorConfigPda] = getCreatorConfigPda(publicKey, PROGRAM_ID);
       const creatorConfig = await program.account.creatorConfig.fetchNullable(creatorConfigPda);
@@ -96,7 +104,7 @@ export function useBatchCreateStreams() {
               input.mint,
               streamPda,
               vaultPda,
-              publicKey, // senderToken
+              senderToken,
               creatorConfigPda,
             ),
           )
@@ -134,6 +142,9 @@ export function useBatchCreateStreams() {
               startTime: input.startTime,
               endTime: input.endTime,
               cliffTime: input.cliffTime,
+              tokenName: input.tokenName ?? undefined,
+              tokenSymbol: input.tokenSymbol ?? undefined,
+              tokenDecimals: input.tokenDecimals ?? undefined,
               creationTx: signature,
               createdAt: Math.floor(Date.now() / 1000),
             }),

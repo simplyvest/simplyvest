@@ -96,6 +96,9 @@ function IndividualVestPage() {
         cliffTime: cliff > 0 ? start + cliff : start,
         senderToken: getAssociatedTokenAddressSync(mint, publicKey, true),
         orgId,
+        tokenName: org?.tokenName,
+        tokenSymbol: org?.tokenSymbol,
+        tokenDecimals: org?.tokenDecimals,
       },
       { onSuccess: () => setStep("success") },
     );

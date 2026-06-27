@@ -119,6 +119,9 @@ function AllVestPage() {
         endTime: start + duration,
         cliffTime: cliff > 0 ? start + cliff : start,
         orgId,
+        tokenName: org?.tokenName,
+        tokenSymbol: org?.tokenSymbol,
+        tokenDecimals: org?.tokenDecimals,
       },
       { onSettled: () => setStep("summary") },
     );

@@ -34,6 +34,9 @@ export function useCreateStream() {
       cliffTime: number;
       senderToken: PublicKey;
       orgId?: string;
+      tokenName?: string | null;
+      tokenSymbol?: string | null;
+      tokenDecimals?: number | null;
     }) => {
       if (!publicKey || !wallet) throw new Error("Wallet not connected");
       const program = buildReadProgram(connection);
@@ -90,6 +93,9 @@ export function useCreateStream() {
           startTime: result.input.startTime,
           endTime: result.input.endTime,
           cliffTime: result.input.cliffTime,
+          tokenName: result.input.tokenName ?? undefined,
+          tokenSymbol: result.input.tokenSymbol ?? undefined,
+          tokenDecimals: result.input.tokenDecimals ?? undefined,
           creationTx: result.tx,
           createdAt: Math.floor(Date.now() / 1000),
         });
