@@ -9,6 +9,7 @@ export const Route = createRoute({
 });
 
 function HelpPage() {
+  const docsUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.xyz";
   return (
     <div className="space-y-6">
       <div>
@@ -18,21 +19,19 @@ function HelpPage() {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <a
-          href={import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.xyz"}
+          href={docsUrl}
           className="rounded-lg border border-border bg-bg1 p-6 transition-colors hover:border-primary/30 hover:bg-bg2 no-underline block"
         >
           <h3 className="text-base font-semibold text-text">Documentation</h3>
-          <p className="mt-1 text-sm text-muted">Learn how to use SimplyVest</p>
+          <p className="mt-1 text-sm text-muted">Guides, reference, and tutorials</p>
         </a>
 
         <a
-          href={`${import.meta.env.VITE_SITE_URL ?? "https://simplyvest.xyz"}/faq`}
-          target="_blank"
-          rel="noopener noreferrer"
+          href={`${docsUrl}/appendix/troubleshooting/`}
           className="rounded-lg border border-border bg-bg1 p-6 transition-colors hover:border-primary/30 hover:bg-bg2 no-underline block"
         >
           <h3 className="text-base font-semibold text-text">FAQ</h3>
-          <p className="mt-1 text-sm text-muted">Frequently asked questions</p>
+          <p className="mt-1 text-sm text-muted">Frequently asked questions and troubleshooting</p>
         </a>
       </div>
     </div>

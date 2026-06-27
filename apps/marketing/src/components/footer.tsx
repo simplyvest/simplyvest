@@ -12,7 +12,7 @@ const footerLinks = {
   ],
   resources: [
     { name: "Docs", href: DOCS_URL },
-    { name: "FAQ", href: "/faq" },
+    { name: "FAQ", href: DOCS_URL + "/appendix/troubleshooting/" },
     { name: "Support", href: "/waitlist" },
   ],
   company: [

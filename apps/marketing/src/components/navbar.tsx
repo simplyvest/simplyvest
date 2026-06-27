@@ -9,7 +9,7 @@ import { ThemeToggle } from "./navbar/theme-toggle";
 
 const links = [
   { to: "/", label: "Home" },
-  { to: "/faq", label: "FAQ" },
+  { to: "/waitlist", label: "Waitlist" },
   { to: "/waitlist", label: "Waitlist" },
 ];
 

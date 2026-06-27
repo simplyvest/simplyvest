@@ -10,7 +10,6 @@ const meta = {
     links: [
       { to: "/", label: "Home" },
       { to: "/docs", label: "Docs" },
-      { to: "/faq", label: "FAQ" },
     ],
   },
 } satisfies Meta<typeof NavLinks>;
