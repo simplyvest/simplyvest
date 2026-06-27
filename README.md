@@ -45,35 +45,6 @@ SimplyVest is a tokenized equity vesting platform that combines:
 | Open source       | No                   | No           | MIT                      |
 | Target audience   | Traditional startups | Crypto teams | Hybrid teams             |
 
-## Project structure
-
-A monorepo managed by pnpm workspaces. The core vesting engine (Anchor program) sits alongside a web2-first dApp, Cloudflare API, and TypeScript SDK.
-
-Domain: [simplyvest.xyz](https://simplyvest.xyz) · Docs: [docs.simplyvest.xyz](https://docs.simplyvest.xyz) · Waitlist: open at simplyvest.xyz
-
-```txt
-CONTRIBUTING.md               # Branch workflow, commit conventions, pre-commit hook
-SECURITY.md                   # Security policy and reporting
-apps/
-├── api/                      # Cloudflare Worker API (Hono + D1 + R2)
-├── solana-tdp-anchor/        # Anchor program (on-chain vesting logic)
-│   ├── programs/solana-tdp/src/ # lib.rs, errors.rs, events.rs, state/, instructions/
-│   └── tests/                # Integration tests (vitest + anchor-litesvm)
-└── dapp/                     # React frontend (Vite + TanStack Router + Storybook)
-packages/
-└── solana-tdp-sdk/           # TypeScript SDK (IDL types, PDA helpers, event parsing)
-docs/
-├── RESEARCH.md               # Vesting types, competitive landscape, market gap, user research
-├── ARCHITECTURE.md           # Account model, program instructions, data flow, events/errors
-├── REFERENCE.md              # Full program reference with TypeScript code examples per instruction
-├── INTEGRATION_GUIDE.md      # Step-by-step integration guide with working code snippets
-├── adr/                      # Architecture Decision Records (ADR-001 through ADR-005)
-├── TOOLING.md                # Solana tooling decisions, testing strategy, conventions
-├── DEPLOYMENT.md             # Build, test, deploy guides, CI/CD
-├── OBSERVATIONS.md           # Deferred v2 decisions
-└── SECURITY_TESTING_PRESENTATION.md # Security architecture, test coverage, known gaps
-```
-
 ## Quick start
 
 ### Prerequisites
