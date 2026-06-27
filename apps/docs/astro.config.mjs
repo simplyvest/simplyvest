@@ -80,6 +80,7 @@ export default defineConfig({
             },
             { label: "Troubleshooting & FAQ", slug: "appendix/troubleshooting" },
             { label: "Glossary", slug: "appendix/glossary" },
+            { label: "Important Links", slug: "appendix/links" },
             { label: "Observations", slug: "appendix/observations" },
             { label: "Research & Background", slug: "appendix/research" },
           ],
