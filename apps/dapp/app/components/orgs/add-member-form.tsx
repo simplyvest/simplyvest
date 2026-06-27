@@ -2,10 +2,18 @@ import { Button } from "@simplyvest/ui/button";
 import { cn } from "@simplyvest/ui/cn";
 import { Field } from "@simplyvest/ui/field";
 import { Input } from "@simplyvest/ui/input";
+import { PublicKey } from "@solana/web3.js";
 import { useState } from "react";
 
-import { isValidPubkey } from "@/components/streams/create-stream/utils";
 import { useAddOrgMember } from "@/hooks/use-org-api";
+
+function isValidAddress(s: string): boolean {
+  try {
+    return !!new PublicKey(s);
+  } catch {
+    return false;
+  }
+}
 
 interface AddMemberFormProps {
   orgId: string;
@@ -16,19 +24,25 @@ export function AddMemberForm({ orgId, currentUserRole }: AddMemberFormProps) {
   const addMember = useAddOrgMember();
   const [wallet, setWallet] = useState("");
   const [role, setRole] = useState<"admin" | "member">("member");
+  const [validationError, setValidationError] = useState<string | null>(null);
 
-  const walletError = wallet && !isValidPubkey(wallet) ? "Invalid wallet address" : "";
-  const canSubmit = wallet && !walletError && !addMember.isPending;
+  const canSubmit = wallet && !validationError && !addMember.isPending;
 
   const handleSubmit: React.SubmitEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
-    if (!canSubmit) return;
+    if (!wallet) return;
+    if (!isValidAddress(wallet)) {
+      setValidationError("Invalid wallet address");
+      return;
+    }
+    setValidationError(null);
     addMember.mutate(
       { orgId, userId: wallet, role },
       {
         onSuccess: () => {
           setWallet("");
           setRole("member");
+          setValidationError(null);
         },
       },
     );
@@ -39,10 +53,13 @@ export function AddMemberForm({ orgId, currentUserRole }: AddMemberFormProps) {
       <h4 className="text-sm font-medium text-text mb-3">Add Member</h4>
       <div className="flex gap-3 items-end">
         <div className="flex-1">
-          <Field label="Wallet Address" error={walletError}>
+          <Field label="Wallet Address" error={validationError ?? undefined}>
             <Input
               value={wallet}
-              onChange={(e) => setWallet(e.target.value)}
+              onChange={(e) => {
+                setWallet(e.target.value);
+                setValidationError(null);
+              }}
               placeholder="Wallet address"
             />
           </Field>
