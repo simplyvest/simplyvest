@@ -80,7 +80,9 @@ function computeDetailFromApi(api: StreamWithEvents): StreamDetail {
     } else if (clockTime >= startTime) {
       const elapsed = clockTime - startTime;
       const duration = endTime - startTime;
-      const vested = amount.muln(elapsed).divn(duration);
+      // Use BN .div() / .mul() instead of .divn() / .muln() because bn.js v5 limits
+      // those to divisors/factors under ~67M — duration can exceed that for multi-year streams.
+      const vested = amount.mul(new BN(elapsed)).div(new BN(duration));
       claimable = vested.sub(amountWithdrawn);
       if (claimable.lt(new BN(0))) claimable = new BN(0);
       vestedPercent = amount.gt(new BN(0)) ? vested.muln(100).div(amount).toNumber() : 0;

@@ -35,7 +35,9 @@ export function calcClaimable(
   }
 
   // Linear vesting: vested = amount * elapsed / duration
-  const vested = amount.muln(elapsed).divn(duration);
+  // Use BN .div() / .mul() instead of .divn() / .muln() because bn.js v5 limits
+  // those to divisors/factors under ~67M — duration can exceed that for multi-year streams.
+  const vested = amount.mul(new BN(elapsed)).div(new BN(duration));
   const claimable = vested.sub(amountWithdrawn);
 
   return claimable.lt(new BN(0)) ? new BN(0) : claimable;
