@@ -14,10 +14,16 @@ const typeLabels: Record<StreamType, string> = {
 export function StreamDetailLayout({
   streamType,
   status,
+  tokenName,
+  tokenSymbol,
+  mintAddress,
   children,
 }: {
   streamType: StreamType;
   status: StreamStatus;
+  tokenName?: string;
+  tokenSymbol?: string;
+  mintAddress?: string;
   children: ReactNode;
 }) {
   return (
@@ -26,9 +32,17 @@ export function StreamDetailLayout({
         <Link to="/" search={{ tab: "created" }} className="text-sm text-dim hover:text-text">
           ← Back
         </Link>
-        <div className="flex items-center gap-3">
-          <h1 className="text-lg font-semibold text-text">{typeLabels[streamType]}</h1>
-          <StreamStatusBadge status={status} />
+        <div className="min-w-0 flex-1">
+          <h1 className="text-lg font-semibold text-text leading-tight">
+            {tokenName ?? (mintAddress ? mintAddress.slice(0, 8) + "..." : "Stream")}
+            {tokenSymbol && (
+              <span className="ml-1.5 font-mono text-sm font-normal text-dim">({tokenSymbol})</span>
+            )}
+          </h1>
+          <div className="flex items-center gap-2 mt-0.5">
+            <span className="text-xs text-dim">{typeLabels[streamType]}</span>
+            <StreamStatusBadge status={status} />
+          </div>
         </div>
       </div>
       {children}

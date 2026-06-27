@@ -61,23 +61,24 @@ export function StreamCard({
           params={{ streamPda: stream.id }}
           className="min-w-0 flex-1 space-y-2 no-underline hover:no-underline"
         >
-          <div className="flex items-center gap-2">
-            <Badge variant={statusColor}>{status}</Badge>
-            <span className="font-mono text-xs text-dim">
-              {stream.tokenSymbol ?? stream.mintAddress.slice(0, 8)}
-            </span>
-            {stream.creatorDisplayName && (
-              <span className="text-xs text-dim">by {stream.creatorDisplayName}</span>
-            )}
+          <div className="space-y-1">
+            <p className="text-base font-semibold text-text leading-tight">
+              {stream.tokenName ?? stream.mintAddress.slice(0, 8) + "..."}
+              {stream.tokenSymbol && (
+                <span className="ml-1.5 font-mono text-sm font-normal text-dim">
+                  ({stream.tokenSymbol})
+                </span>
+              )}
+            </p>
+            <div className="flex items-center gap-2">
+              <Badge variant={statusColor}>{status}</Badge>
+              {stream.creatorDisplayName && (
+                <span className="text-xs text-dim">by {stream.creatorDisplayName}</span>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-sm">
-            <div>
-              <span className="text-dim">Token</span>
-              <p className="font-mono text-text">
-                {stream.tokenName ?? stream.mintAddress.slice(0, 8) + "..."}
-              </p>
-            </div>
             <div>
               <span className="text-dim">{isSender ? "Recipient" : "Sender"}</span>
               <p className="font-mono text-text">

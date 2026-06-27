@@ -43,7 +43,13 @@ function StreamDetailPage() {
   }
 
   return (
-    <StreamDetailLayout streamType={detail.streamType} status={detail.status}>
+    <StreamDetailLayout
+      streamType={detail.streamType}
+      status={detail.status}
+      tokenName={detail.tokenName}
+      tokenSymbol={detail.tokenSymbol}
+      mintAddress={detail.mint}
+    >
       <StreamDetailGrid>
         <StreamAddresses detail={detail} />
         <StreamAmounts detail={detail} />
