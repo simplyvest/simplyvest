@@ -44,7 +44,7 @@ Copy `.env.example` to `.env` and configure:
 ## Project Structure
 
 ```
-apps/web/
+apps/dapp/
 ├── app/
 │   ├── components/
 │   │   ├── docs/          # Documentation pages

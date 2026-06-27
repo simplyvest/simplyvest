@@ -213,7 +213,7 @@ No secrets, API keys, or environment variables are needed — the docs site is p
 
 ## Frontend deployment
 
-The React frontend (`apps/dapp`) is deployed to Cloudflare Pages via GitHub Actions. A push to `main` that touches `apps/web/` or `packages/solana-tdp-sdk/` triggers an automatic build and deploy.
+The React frontend (`apps/dapp`) is deployed to Cloudflare Pages via GitHub Actions. A push to `main` that touches `apps/dapp/` or `packages/solana-tdp-sdk/` triggers an automatic build and deploy.
 
 **Production URL:** [simplyvest.pages.dev](https://simplyvest.pages.dev)
 

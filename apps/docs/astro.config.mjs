@@ -57,6 +57,7 @@ export default defineConfig({
               items: [
                 { label: "Vesting to Members", slug: "platform/vesting/vesting-to-members" },
                 { label: "Managing Vests", slug: "platform/vesting/managing-vests" },
+                { label: "Claiming Tokens", slug: "platform/claiming" },
               ],
             },
           ],
@@ -77,6 +78,8 @@ export default defineConfig({
               collapsed: false,
               items: [{ autogenerate: { directory: "appendix/adr" } }],
             },
+            { label: "Troubleshooting & FAQ", slug: "appendix/troubleshooting" },
+            { label: "Glossary", slug: "appendix/glossary" },
             { label: "Observations", slug: "appendix/observations" },
             { label: "Research & Background", slug: "appendix/research" },
           ],

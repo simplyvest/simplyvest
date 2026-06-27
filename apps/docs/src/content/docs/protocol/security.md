@@ -35,7 +35,7 @@ graph LR
 monorepo/
 ├── apps/
 │   ├── solana-tdp-anchor/   ← Anchor program (Rust)
-│   ├── web/                 ← React frontend (Vite)
+│   ├── dapp/                ← React frontend (Vite)
 │   └── api/                 ← Cloudflare Worker
 ├── packages/
 │   └── solana-tdp-sdk/      ← TypeScript SDK

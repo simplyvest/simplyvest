@@ -155,7 +155,7 @@ apps/
 │       ├── fixtures.ts
 │       ├── helpers.ts
 │       └── utils.ts
-├── web/                         # React frontend (Vite + TanStack Router)
+├── dapp/                        # React frontend (Vite + TanStack Router)
 │   ├── app/
 │   │   ├── components/
 │   │   │   ├── solana/          # Wallet/auth components

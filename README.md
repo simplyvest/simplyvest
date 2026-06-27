@@ -33,12 +33,14 @@ Solana TDP is a token vesting protocol on Solana that combines:
 A monorepo managed by pnpm workspaces.
 
 ```txt
+CONTRIBUTING.md               # Branch workflow, commit conventions, pre-commit hook
+SECURITY.md                   # Security policy and reporting
 apps/
 ├── api/                      # Cloudflare Worker API (Hono + D1 + R2)
 ├── solana-tdp-anchor/        # Anchor program (on-chain vesting logic)
 │   ├── programs/solana-tdp/src/ # lib.rs, errors.rs, events.rs, state/, instructions/
 │   └── tests/                # Integration tests (vitest + anchor-litesvm)
-└── web/                      # React frontend (Vite + TanStack Router + Storybook)
+└── dapp/                     # React frontend (Vite + TanStack Router + Storybook)
 packages/
 └── solana-tdp-sdk/           # TypeScript SDK (IDL types, PDA helpers, event parsing)
 docs/
@@ -49,7 +51,6 @@ docs/
 ├── adr/                      # Architecture Decision Records (ADR-001 through ADR-005)
 ├── TOOLING.md                # Solana tooling decisions, testing strategy, conventions
 ├── DEPLOYMENT.md             # Build, test, deploy guides, CI/CD
-├── CONTRIBUTING.md           # Branch workflow, commit conventions, pre-commit hook
 ├── OBSERVATIONS.md           # Deferred v2 decisions
 └── SECURITY_TESTING_PRESENTATION.md # Security architecture, test coverage, known gaps
 ```
@@ -126,7 +127,7 @@ Update `declare_id!("...")` in `programs/solana-tdp/src/lib.rs` and `[programs.l
 | [ADRs](./docs/adr/)                                         | Architecture Decision Records: PDA seeds, vault design, derived status, vesting curve, batch creation                           |
 | [Tooling](./docs/TOOLING.md)                                | Framework, testing setup, repo layout, code conventions                                                                         |
 | [Deployment](./docs/DEPLOYMENT.md)                          | Building, testing, program deployment, frontend deployment, CI/CD, browser compatibility                                        |
-| [Contributing](./docs/CONTRIBUTING.md)                      | Branch workflow, commit conventions, pre-commit hook behavior                                                                   |
+| [Contributing](./CONTRIBUTING.md)                           | Branch workflow, commit conventions, pre-commit hook behavior                                                                   |
 | [Observations](./docs/OBSERVATIONS.md)                      | Deferred v2 decisions: global config, batch creation, Token-2022 hooks                                                          |
 | [Security Testing](./docs/SECURITY_TESTING_PRESENTATION.md) | Security architecture, test coverage (~147 tests), CI/CD pipeline, known gaps                                                   |
 

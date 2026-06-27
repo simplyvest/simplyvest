@@ -166,7 +166,7 @@ Custom alpha-sort sequencer ensures deterministic test order.
 
 Setup: `@testing-library/jest-dom` matchers + `Buffer` polyfill
 
-Run with: `pnpm test` in `apps/web/`
+Run with: `pnpm test` in `apps/dapp/`
 
 ---
 
