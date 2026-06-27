@@ -27,7 +27,10 @@ import { Route as CreateLinearRouteImport } from './routes/create.linear'
 import { Route as CreateCliffRouteImport } from './routes/create.cliff'
 import { Route as ToolsCreateTokenWalletRouteImport } from './routes/tools.create-token.wallet'
 import { Route as ToolsCreateTokenPlatformRouteImport } from './routes/tools.create-token.platform'
+import { Route as OrganizationsOrgIdVestRouteImport } from './routes/organizations.$orgId.vest'
 import { Route as OrganizationsOrgIdEditRouteImport } from './routes/organizations.$orgId.edit'
+import { Route as OrganizationsOrgIdVestIndividualRouteImport } from './routes/organizations.$orgId.vest.individual'
+import { Route as OrganizationsOrgIdVestAllRouteImport } from './routes/organizations.$orgId.vest.all'
 
 const ToolsRoute = ToolsRouteImport.update({
   id: '/tools',
@@ -120,11 +123,28 @@ const ToolsCreateTokenPlatformRoute =
     path: '/platform',
     getParentRoute: () => ToolsCreateTokenRoute,
   } as any)
+const OrganizationsOrgIdVestRoute = OrganizationsOrgIdVestRouteImport.update({
+  id: '/vest',
+  path: '/vest',
+  getParentRoute: () => OrganizationsOrgIdRoute,
+} as any)
 const OrganizationsOrgIdEditRoute = OrganizationsOrgIdEditRouteImport.update({
   id: '/edit',
   path: '/edit',
   getParentRoute: () => OrganizationsOrgIdRoute,
 } as any)
+const OrganizationsOrgIdVestIndividualRoute =
+  OrganizationsOrgIdVestIndividualRouteImport.update({
+    id: '/individual',
+    path: '/individual',
+    getParentRoute: () => OrganizationsOrgIdVestRoute,
+  } as any)
+const OrganizationsOrgIdVestAllRoute =
+  OrganizationsOrgIdVestAllRouteImport.update({
+    id: '/all',
+    path: '/all',
+    getParentRoute: () => OrganizationsOrgIdVestRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -144,8 +164,11 @@ export interface FileRoutesByFullPath {
   '/tools/create-token': typeof ToolsCreateTokenRouteWithChildren
   '/tools/tokens': typeof ToolsTokensRoute
   '/organizations/$orgId/edit': typeof OrganizationsOrgIdEditRoute
+  '/organizations/$orgId/vest': typeof OrganizationsOrgIdVestRouteWithChildren
   '/tools/create-token/platform': typeof ToolsCreateTokenPlatformRoute
   '/tools/create-token/wallet': typeof ToolsCreateTokenWalletRoute
+  '/organizations/$orgId/vest/all': typeof OrganizationsOrgIdVestAllRoute
+  '/organizations/$orgId/vest/individual': typeof OrganizationsOrgIdVestIndividualRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -165,8 +188,11 @@ export interface FileRoutesByTo {
   '/tools/create-token': typeof ToolsCreateTokenRouteWithChildren
   '/tools/tokens': typeof ToolsTokensRoute
   '/organizations/$orgId/edit': typeof OrganizationsOrgIdEditRoute
+  '/organizations/$orgId/vest': typeof OrganizationsOrgIdVestRouteWithChildren
   '/tools/create-token/platform': typeof ToolsCreateTokenPlatformRoute
   '/tools/create-token/wallet': typeof ToolsCreateTokenWalletRoute
+  '/organizations/$orgId/vest/all': typeof OrganizationsOrgIdVestAllRoute
+  '/organizations/$orgId/vest/individual': typeof OrganizationsOrgIdVestIndividualRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -187,8 +213,11 @@ export interface FileRoutesById {
   '/tools/create-token': typeof ToolsCreateTokenRouteWithChildren
   '/tools/tokens': typeof ToolsTokensRoute
   '/organizations/$orgId/edit': typeof OrganizationsOrgIdEditRoute
+  '/organizations/$orgId/vest': typeof OrganizationsOrgIdVestRouteWithChildren
   '/tools/create-token/platform': typeof ToolsCreateTokenPlatformRoute
   '/tools/create-token/wallet': typeof ToolsCreateTokenWalletRoute
+  '/organizations/$orgId/vest/all': typeof OrganizationsOrgIdVestAllRoute
+  '/organizations/$orgId/vest/individual': typeof OrganizationsOrgIdVestIndividualRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -210,8 +239,11 @@ export interface FileRouteTypes {
     | '/tools/create-token'
     | '/tools/tokens'
     | '/organizations/$orgId/edit'
+    | '/organizations/$orgId/vest'
     | '/tools/create-token/platform'
     | '/tools/create-token/wallet'
+    | '/organizations/$orgId/vest/all'
+    | '/organizations/$orgId/vest/individual'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -231,8 +263,11 @@ export interface FileRouteTypes {
     | '/tools/create-token'
     | '/tools/tokens'
     | '/organizations/$orgId/edit'
+    | '/organizations/$orgId/vest'
     | '/tools/create-token/platform'
     | '/tools/create-token/wallet'
+    | '/organizations/$orgId/vest/all'
+    | '/organizations/$orgId/vest/individual'
   id:
     | '__root__'
     | '/'
@@ -252,8 +287,11 @@ export interface FileRouteTypes {
     | '/tools/create-token'
     | '/tools/tokens'
     | '/organizations/$orgId/edit'
+    | '/organizations/$orgId/vest'
     | '/tools/create-token/platform'
     | '/tools/create-token/wallet'
+    | '/organizations/$orgId/vest/all'
+    | '/organizations/$orgId/vest/individual'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -397,12 +435,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsCreateTokenPlatformRouteImport
       parentRoute: typeof ToolsCreateTokenRoute
     }
+    '/organizations/$orgId/vest': {
+      id: '/organizations/$orgId/vest'
+      path: '/vest'
+      fullPath: '/organizations/$orgId/vest'
+      preLoaderRoute: typeof OrganizationsOrgIdVestRouteImport
+      parentRoute: typeof OrganizationsOrgIdRoute
+    }
     '/organizations/$orgId/edit': {
       id: '/organizations/$orgId/edit'
       path: '/edit'
       fullPath: '/organizations/$orgId/edit'
       preLoaderRoute: typeof OrganizationsOrgIdEditRouteImport
       parentRoute: typeof OrganizationsOrgIdRoute
+    }
+    '/organizations/$orgId/vest/individual': {
+      id: '/organizations/$orgId/vest/individual'
+      path: '/individual'
+      fullPath: '/organizations/$orgId/vest/individual'
+      preLoaderRoute: typeof OrganizationsOrgIdVestIndividualRouteImport
+      parentRoute: typeof OrganizationsOrgIdVestRoute
+    }
+    '/organizations/$orgId/vest/all': {
+      id: '/organizations/$orgId/vest/all'
+      path: '/all'
+      fullPath: '/organizations/$orgId/vest/all'
+      preLoaderRoute: typeof OrganizationsOrgIdVestAllRouteImport
+      parentRoute: typeof OrganizationsOrgIdVestRoute
     }
   }
 }
@@ -422,12 +481,31 @@ const CreateRouteChildren: CreateRouteChildren = {
 const CreateRouteWithChildren =
   CreateRoute._addFileChildren(CreateRouteChildren)
 
+interface OrganizationsOrgIdVestRouteChildren {
+  OrganizationsOrgIdVestAllRoute: typeof OrganizationsOrgIdVestAllRoute
+  OrganizationsOrgIdVestIndividualRoute: typeof OrganizationsOrgIdVestIndividualRoute
+}
+
+const OrganizationsOrgIdVestRouteChildren: OrganizationsOrgIdVestRouteChildren =
+  {
+    OrganizationsOrgIdVestAllRoute: OrganizationsOrgIdVestAllRoute,
+    OrganizationsOrgIdVestIndividualRoute:
+      OrganizationsOrgIdVestIndividualRoute,
+  }
+
+const OrganizationsOrgIdVestRouteWithChildren =
+  OrganizationsOrgIdVestRoute._addFileChildren(
+    OrganizationsOrgIdVestRouteChildren,
+  )
+
 interface OrganizationsOrgIdRouteChildren {
   OrganizationsOrgIdEditRoute: typeof OrganizationsOrgIdEditRoute
+  OrganizationsOrgIdVestRoute: typeof OrganizationsOrgIdVestRouteWithChildren
 }
 
 const OrganizationsOrgIdRouteChildren: OrganizationsOrgIdRouteChildren = {
   OrganizationsOrgIdEditRoute: OrganizationsOrgIdEditRoute,
+  OrganizationsOrgIdVestRoute: OrganizationsOrgIdVestRouteWithChildren,
 }
 
 const OrganizationsOrgIdRouteWithChildren =

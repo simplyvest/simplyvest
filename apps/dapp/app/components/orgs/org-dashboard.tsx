@@ -1,5 +1,5 @@
 import { Button } from "@simplyvest/ui/button";
-import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 
 import type { Organization } from "@/hooks/use-org-api";
 import { useApiStreams } from "@/hooks/use-stream-api";
@@ -7,7 +7,6 @@ import { useApiStreams } from "@/hooks/use-stream-api";
 import { OrgTokenCard } from "./org-token-card";
 import { OrgTokenStats } from "./org-token-stats";
 import { OrgVestList } from "./org-vest-list";
-import { VestToMemberModal } from "./vest-to-member-modal";
 
 interface OrgDashboardProps {
   org: Organization;
@@ -15,7 +14,6 @@ interface OrgDashboardProps {
 }
 
 export function OrgDashboard({ org, currentUserRole }: OrgDashboardProps) {
-  const [showVest, setShowVest] = useState(false);
   const { data: streams = [] } = useApiStreams({ org: org.id });
 
   const tokenStreams = org.mintAddress
@@ -40,23 +38,13 @@ export function OrgDashboard({ org, currentUserRole }: OrgDashboardProps) {
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-text">Vesting Activity</h2>
             {isOwner && (
-              <Button size="sm" onClick={() => setShowVest(true)}>
-                Vest to Member
-              </Button>
+              <Link to="/organizations/$orgId/vest" params={{ orgId: org.id }}>
+                <Button size="sm">Vest to Member</Button>
+              </Link>
             )}
           </div>
 
           <OrgVestList streams={tokenStreams} tokenDecimals={org.tokenDecimals ?? 9} />
-
-          {showVest && org.mintAddress && (
-            <VestToMemberModal
-              orgId={org.id}
-              mintAddress={org.mintAddress}
-              tokenSymbol={org.tokenSymbol ?? ""}
-              tokenDecimals={org.tokenDecimals ?? 9}
-              onClose={() => setShowVest(false)}
-            />
-          )}
         </>
       )}
     </div>
