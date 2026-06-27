@@ -15,6 +15,7 @@ interface Organization {
   tokenName: string | null;
   tokenSymbol: string | null;
   tokenDecimals: number | null;
+  tokenSupply: string | null;
 }
 
 interface UserOrg extends Organization {

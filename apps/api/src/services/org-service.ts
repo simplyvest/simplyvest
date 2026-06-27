@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import type { Db } from "../db";
 
-import { organizations, orgMembers, users } from "../db/schema";
+import { organizations, orgMembers, users, tokenCreations } from "../db/schema";
 
 export interface CreateOrgInput {
   name: string;
@@ -84,7 +84,17 @@ export function createOrgService(db: Db) {
         .innerJoin(users, eq(orgMembers.userId, users.id))
         .where(eq(orgMembers.orgId, id));
 
-      return { ...org, members };
+      let tokenSupply: string | null = null;
+      if (org.mintAddress) {
+        const tokenRecord = await db
+          .select({ supply: tokenCreations.supply })
+          .from(tokenCreations)
+          .where(eq(tokenCreations.mintAddress, org.mintAddress))
+          .limit(1);
+        tokenSupply = tokenRecord[0]?.supply ?? null;
+      }
+
+      return { ...org, members, tokenSupply };
     },
 
     async updateOrg(id: string, input: { name?: string; description?: string | null }) {

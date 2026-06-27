@@ -53,6 +53,11 @@ function AllVestPage() {
   const tokenSymbol = org?.tokenSymbol ?? "tokens";
   const tokenDecimals = org?.tokenDecimals ?? 9;
   const mintAddress = org?.mintAddress ?? "";
+  const tokenSupplyDisplay = org?.tokenSupply
+    ? (Number(org.tokenSupply) / 10 ** tokenDecimals).toLocaleString(undefined, {
+        maximumFractionDigits: tokenDecimals,
+      })
+    : null;
 
   const eligibleMembers: EligibleMember[] = (org?.members ?? []).filter(
     (m): m is EligibleMember => m.role !== "owner" && typeof m.walletAddress === "string",
@@ -141,6 +146,11 @@ function AllVestPage() {
               onChange={(e) => setPoolAmount(e.target.value)}
             />
           </Field>
+          {tokenSupplyDisplay && (
+            <p className="text-xs text-dim -mt-3">
+              Total supply: {tokenSupplyDisplay} {tokenSymbol}
+            </p>
+          )}
 
           {poolAmount && Number(poolAmount) > 0 && (
             <div className="rounded-lg border border-border bg-bg1 p-4 space-y-2">
