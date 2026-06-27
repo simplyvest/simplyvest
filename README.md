@@ -1,36 +1,55 @@
-# Solana Token Distribution Protocol
+# SimplyVest
 
-**Plan, simulate, and automate token distribution on Solana — without spreadsheets or smart contract code.**
+**Issue, vest, and manage tokenized equity for your team — no crypto wallet required.**
 
-A full-stack protocol for creating, managing, and claiming token vesting schedules. Built on Anchor for trustless on-chain custody, wrapped in a hybrid dApp that non-technical founders can use from day one.
+A full-stack platform for tokenized equity vesting on Solana. Web2/web3 hybrid — log in with email or Google, create your organization, issue equity tokens to team members, and vest them on customizable schedules. Built on Anchor for non-custodial on-chain settlement, wrapped in a web2-first UX that anyone can use.
 
-> **Status:** Active development. On-chain program deployed to devnet with 7 instructions, API live with D1 + R2, web frontend with dashboard and claim UI, SDK with PDA helpers and event parsing, 147+ tests across 4 layers, full CI/CD with 14 GitHub Actions workflows.
+> **Status:** Active development — pivoting from pure solana token distribution protocol infra to tokenized equity with web2-first UX.
 
 ## The problem
 
-Founders launching tokens on Solana face a fragmented toolchain. They model allocations and unlock schedules in Excel (error-prone), then manually transfer tokens through multisig wallets when cliffs hit. Existing vesting tools cover one or two distribution types but lack milestone support, batch creation for large teams, and post-creation flexibility. Worse, the tools that exist assume blockchain literacy — PDAs, CPIs, wallets — locking out non-technical founders.
+Founders building Web3-native companies face a broken choice.
 
-User interviews with 5 founders and builders confirmed the same pain point: **"The biggest problem is calculate and simulate. Founders struggle here before they even get to token engineering."** — Alex, founder and Solana developer
+Use traditional equity tools like Carta — built for paper stock, manual grants, and teams that all live in one country. Or use crypto vesting tools like Streamflow — which assume everyone has a wallet, knows what gas is, and understands Solana.
+
+Neither works for a hybrid team where some members are technical, some aren't, and everyone is remote. Founders end up in spreadsheets — error-prone, manual, and impossible to scale.
 
 ## The solution
 
-Solana TDP is a token vesting protocol on Solana that combines:
+SimplyVest is a tokenized equity vesting platform that combines:
 
-- **On-chain program** — Anchor-based program with PDA-custodied vesting schedules. Supports cliff and linear vesting. Only the program can move tokens.
-- **Tokenomics simulator** — Client-side tool to model allocations, stress-test unlock schedules, and catch dump risk before any tokens are locked.
-- **Fullstack application** — Hybrid dApp with embedded wallets (Privy/Dynamic), real-time dashboard (Convex), and recipient-facing claim UI.
+- **Web2-first UX** — log in with email or Google via Privy. An embedded Solana wallet is created automatically. No browser extension, no seed phrases, no "what's gas?"
+- **On-chain program** — Anchor-based program with PDA-custodied vesting vaults. Supports linear, milestone, and cliff schedules. Only the program can move tokens. Fully open source (MIT).
+- **Organizations & equity tokens** — create your company, issue or link an SPL token as your equity token, and vest it to team members.
+- **Fullstack application** — React dashboard for founders, web2 API (Cloudflare D1) for fast queries, recipient-facing claim interface. 147+ tests across 4 testing layers.
 
 ### Target audience
 
-| Who                                    | Pain point                                                                 |
-| -------------------------------------- | -------------------------------------------------------------------------- |
-| **Web3 founders** launching new tokens | Manual Excel calculations, no simulation, high dump risk                   |
-| **Non-technical project owners**       | Current tools assume blockchain literacy — steep learning curve            |
-| **Launchpads & ecosystem operators**   | No way to stress-test whether a project's distribution plan is sustainable |
+| Who                                  | Pain point                                                             |
+| ------------------------------------ | ---------------------------------------------------------------------- |
+| **Web3 founders** launching tokens   | Manual Excel calculations, no simulation, high dump risk               |
+| **Non-technical project owners**     | Current tools assume blockchain literacy — steep learning curve        |
+| **Hybrid teams**                     | Some members are crypto-native, some aren't — need one tool that works |
+| **Launchpads & ecosystem operators** | No way to stress-test distribution plans before launch                 |
+
+## Why not just use existing tools?
+
+|                   | Carta                | Streamflow   | SimplyVest               |
+| ----------------- | -------------------- | ------------ | ------------------------ |
+| Equity focus      | Yes                  | No           | Yes                      |
+| Wallet required   | N/A (web2 only)      | Yes          | No (email/Google login)  |
+| Milestone vesting | No                   | No           | Yes                      |
+| Linear + cliff    | Yes                  | Yes          | Yes                      |
+| Hybrid models     | No                   | No           | Yes (all three combined) |
+| On-chain custody  | No                   | Yes          | Yes (PDA vaults)         |
+| Open source       | No                   | No           | MIT                      |
+| Target audience   | Traditional startups | Crypto teams | Hybrid teams             |
 
 ## Project structure
 
-A monorepo managed by pnpm workspaces.
+A monorepo managed by pnpm workspaces. The core vesting engine (Anchor program) sits alongside a web2-first dApp, Cloudflare API, and TypeScript SDK.
+
+Domain: [simplyvest.xyz](https://simplyvest.xyz) · Docs: [docs.simplyvest.xyz](https://docs.simplyvest.xyz) · Waitlist: open at simplyvest.xyz
 
 ```txt
 CONTRIBUTING.md               # Branch workflow, commit conventions, pre-commit hook
