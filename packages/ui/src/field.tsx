@@ -16,8 +16,8 @@ function Field({ label, required, error, children, className }: FieldProps) {
       <label className="text-sm font-medium text-text">
         {label}
         {required && <span className="ml-0.5 text-warn">*</span>}
-        {children}
       </label>
+      {children}
       {error && (
         <p className="text-xs text-warn" role="alert">
           {error}
