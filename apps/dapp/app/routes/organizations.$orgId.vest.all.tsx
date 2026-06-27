@@ -53,8 +53,9 @@ function AllVestPage() {
   const tokenSymbol = org?.tokenSymbol ?? "tokens";
   const tokenDecimals = org?.tokenDecimals ?? 9;
   const mintAddress = org?.mintAddress ?? "";
-  const tokenSupplyDisplay = org?.tokenSupply
-    ? (Number(org.tokenSupply) / 10 ** tokenDecimals).toLocaleString(undefined, {
+  const tokenSupplyRaw = org?.tokenSupply ? Number(org.tokenSupply) : null;
+  const tokenSupplyDisplay = tokenSupplyRaw
+    ? (tokenSupplyRaw / 10 ** tokenDecimals).toLocaleString(undefined, {
         maximumFractionDigits: tokenDecimals,
       })
     : null;
@@ -80,7 +81,12 @@ function AllVestPage() {
 
   const poolRaw = Math.round(perMemberAmount * 10 ** tokenDecimals);
 
-  const canSubmitPool = publicKey && poolAmount && Number(poolAmount) > 0 && memberCount > 0;
+  const poolExceedsSupply =
+    poolAmount !== "" &&
+    tokenSupplyRaw !== null &&
+    Number(poolAmount) * 10 ** tokenDecimals > tokenSupplyRaw;
+  const canSubmitPool =
+    publicKey && poolAmount && Number(poolAmount) > 0 && memberCount > 0 && !poolExceedsSupply;
   const canExecute = canSubmitPool && perMemberAmount > 0;
 
   function getStartUnix(): number {
@@ -141,15 +147,24 @@ function AllVestPage() {
             <Input
               type="number"
               min="0"
+              max={tokenSupplyRaw !== null ? tokenSupplyRaw / 10 ** tokenDecimals : undefined}
               placeholder="500000"
               value={poolAmount}
               onChange={(e) => setPoolAmount(e.target.value)}
+              invalid={poolExceedsSupply}
             />
           </Field>
           {tokenSupplyDisplay && (
-            <p className="text-xs text-dim -mt-3">
-              Total supply: {tokenSupplyDisplay} {tokenSymbol}
-            </p>
+            <div className="-mt-1 flex justify-between text-xs">
+              <span className="text-dim">
+                Total supply: {tokenSupplyDisplay} {tokenSymbol}
+              </span>
+              {poolAmount &&
+                tokenSupplyRaw &&
+                Number(poolAmount) * 10 ** tokenDecimals > tokenSupplyRaw && (
+                  <span className="text-warn">Pool exceeds total supply</span>
+                )}
+            </div>
           )}
 
           {poolAmount && Number(poolAmount) > 0 && (
