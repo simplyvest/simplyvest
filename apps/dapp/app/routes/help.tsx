@@ -1,5 +1,6 @@
 import { createRoute } from "@tanstack/react-router";
 
+import { DOCS_URL, FAQ_PATH } from "../lib/constants";
 import { Route as RootRoute } from "./__root";
 
 export const Route = createRoute({
@@ -9,7 +10,7 @@ export const Route = createRoute({
 });
 
 function HelpPage() {
-  const docsUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.xyz";
+  const docsUrl = import.meta.env.VITE_DOCS_URL ?? DOCS_URL;
   return (
     <div className="space-y-6">
       <div>
@@ -27,7 +28,7 @@ function HelpPage() {
         </a>
 
         <a
-          href={`${docsUrl}/appendix/troubleshooting/`}
+          href={`${docsUrl}${FAQ_PATH}`}
           className="rounded-lg border border-border bg-bg1 p-6 transition-colors hover:border-primary/30 hover:bg-bg2 no-underline block"
         >
           <h3 className="text-base font-semibold text-text">FAQ</h3>

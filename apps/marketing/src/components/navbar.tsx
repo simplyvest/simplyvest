@@ -1,6 +1,7 @@
 import { ThemeProvider } from "@simplyvest/ui/theme";
 import * as React from "react";
 
+import { DOCS_URL as DOCS_BASE } from "../constants";
 import { LinkButton } from "./link-button";
 import { HamburgerButton } from "./navbar/hamburger-button";
 import { MobileMenu } from "./navbar/mobile-menu";
@@ -10,10 +11,9 @@ import { ThemeToggle } from "./navbar/theme-toggle";
 const links = [
   { to: "/", label: "Home" },
   { to: "/waitlist", label: "Waitlist" },
-  { to: "/waitlist", label: "Waitlist" },
 ];
 
-const DOCS_URL = import.meta.env.PUBLIC_DOCS_URL ?? "http://localhost:4324";
+const DOCS_URL = import.meta.env.PUBLIC_DOCS_URL ?? DOCS_BASE;
 const DAPP_URL = import.meta.env.PUBLIC_DAPP_URL ?? "http://localhost:5173";
 
 export function Navbar() {

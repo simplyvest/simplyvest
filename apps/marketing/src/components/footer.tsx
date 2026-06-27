@@ -1,7 +1,9 @@
 import { ThemeProvider } from "@simplyvest/ui/theme";
 import { SiGithub, SiX } from "react-icons/si";
 
-const DOCS_URL = import.meta.env.PUBLIC_DOCS_URL ?? "http://localhost:4324";
+import { DOCS_URL as DOCS_BASE, FAQ_PATH } from "../constants";
+
+const DOCS_URL = import.meta.env.PUBLIC_DOCS_URL ?? DOCS_BASE;
 const DAPP_URL = import.meta.env.PUBLIC_DAPP_URL ?? "http://localhost:5173";
 
 const footerLinks = {
@@ -12,7 +14,7 @@ const footerLinks = {
   ],
   resources: [
     { name: "Docs", href: DOCS_URL },
-    { name: "FAQ", href: DOCS_URL + "/appendix/troubleshooting/" },
+    { name: "FAQ", href: `${DOCS_URL}${FAQ_PATH}` },
     { name: "Support", href: "/waitlist" },
   ],
   company: [

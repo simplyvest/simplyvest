@@ -2,6 +2,7 @@ import { SectionDecorations, BlobBlob } from "@simplyvest/ui/section-decorations
 import * as React from "react";
 import { LuArrowRight, LuCircleAlert } from "react-icons/lu";
 
+import { DOCS_URL, FAQ_PATH } from "../../constants";
 import { FaqAccordionItem } from "./faq-accordion-item";
 import { faqs } from "./faq-data";
 
@@ -41,7 +42,7 @@ export function HomeFAQ() {
             <span className="text-sm">Still have questions?</span>
           </div>
           <a
-            href="https://docs.simplyvest.xyz/appendix/troubleshooting/"
+            href={`${DOCS_URL}${FAQ_PATH}`}
             className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-primary no-underline transition-colors hover:text-[#6d28d9] hover:no-underline focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
           >
             View full FAQ

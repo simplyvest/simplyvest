@@ -11,7 +11,7 @@ const meta = {
       { to: "/", label: "Home" },
       { to: "/features", label: "Features" },
     ],
-    docsUrl: import.meta.env.VITE_DOCS_URL ?? "https://docs.simplyvest.xyz",
+    docsUrl: import.meta.env.PUBLIC_DOCS_URL ?? "https://docs.simplyvest.xyz",
     dappUrl: import.meta.env.VITE_DAPP_URL ?? "https://app.simplyvest.xyz",
     onClose: fn(),
   },
