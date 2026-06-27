@@ -1,6 +1,7 @@
 import starlight from "@astrojs/starlight";
 import mermaid from "astro-mermaid";
 import { defineConfig } from "astro/config";
+import starlightPageActions from "starlight-page-actions";
 
 export default defineConfig({
   site: "https://docs.simplyvest.xyz",
@@ -21,6 +22,12 @@ export default defineConfig({
       editLink: {
         baseUrl: "https://github.com/simplyvest/simplyvest/edit/main/apps/docs/",
       },
+      plugins: [
+        starlightPageActions({
+          baseUrl: "https://docs.simplyvest.xyz",
+          share: true,
+        }),
+      ],
       social: [
         { icon: "github", label: "GitHub", href: "https://github.com/simplyvest/simplyvest" },
       ],
