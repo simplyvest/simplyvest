@@ -167,7 +167,7 @@ function AllVestPage() {
             </div>
           )}
 
-          {poolAmount && Number(poolAmount) > 0 && (
+          {poolAmount && Number(poolAmount) > 0 && !poolExceedsSupply && (
             <div className="rounded-lg border border-border bg-bg1 p-4 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-muted">Eligible members</span>
