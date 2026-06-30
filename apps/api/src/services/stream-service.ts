@@ -1,3 +1,8 @@
+import {
+  decodeStreamAccount,
+  decodeMilestoneStreamAccount,
+  fetchAccountInfo,
+} from "@solana-tdp/sdk";
 import { eq, and, desc, type SQL } from "drizzle-orm";
 
 import type { Db } from "../db";
@@ -135,22 +140,12 @@ export function createStreamService(db: Db) {
 
       // Fetch on-chain state
       try {
-        const response = await fetch(rpcUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            jsonrpc: "2.0",
-            id: 1,
-            method: "getAccountInfo",
-            params: [streamId, { commitment: "confirmed" }],
-          }),
-        });
+        const accountInfo = await fetchAccountInfo(rpcUrl, streamId);
 
-        // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-        const data = (await response.json()) as { result?: { value: unknown } };
-        const accountExists = data.result?.value != null;
-
-        if (!accountExists && stream.status === "active") {
+        if (accountInfo.status === "error") {
+          // On error, still update sync time to avoid hammering
+          await db.update(streams).set({ lastSyncedAt: now }).where(eq(streams.id, streamId));
+        } else if (accountInfo.status === "not_found" && stream.status === "active") {
           // Account closed - mark as completed
           await db
             .update(streams)
@@ -160,11 +155,33 @@ export function createStreamService(db: Db) {
               closedAt: now,
             })
             .where(eq(streams.id, streamId));
-        } else if (accountExists) {
+        } else if (accountInfo.status === "exists") {
           // Account exists - decode and update state
-          // For now, just update sync time
-          // TODO: Decode account data to get amountWithdrawn, milestoneReached
-          await db.update(streams).set({ lastSyncedAt: now }).where(eq(streams.id, streamId));
+          let amountWithdrawn: string | undefined;
+          let milestoneReached: boolean | undefined;
+
+          try {
+            const raw = Buffer.from(accountInfo.data, "base64");
+            if (stream.type === "milestone") {
+              const decoded = decodeMilestoneStreamAccount(raw);
+              amountWithdrawn = decoded.amountWithdrawn.toString();
+              milestoneReached = decoded.milestoneReached;
+            } else {
+              const decoded = decodeStreamAccount(raw);
+              amountWithdrawn = decoded.amountWithdrawn.toString();
+            }
+          } catch {
+            // If decoding fails, just fall through and update sync time
+          }
+
+          await db
+            .update(streams)
+            .set({
+              lastSyncedAt: now,
+              ...(amountWithdrawn !== undefined ? { amountWithdrawn } : {}),
+              ...(milestoneReached !== undefined ? { milestoneReached } : {}),
+            })
+            .where(eq(streams.id, streamId));
         } else {
           // Just update sync time
           await db.update(streams).set({ lastSyncedAt: now }).where(eq(streams.id, streamId));

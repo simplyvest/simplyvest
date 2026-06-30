@@ -42,7 +42,10 @@
       "plugins": ["vitest"],
       "env": { "vitest": true },
       "rules": {
-        "import/no-unassigned-import": "off"
+        "import/no-unassigned-import": "off",
+        "typescript/no-explicit-any": "off",
+        "typescript/no-unsafe-type-assertion": "off",
+        "vitest/require-mock-type-parameters": "off"
       }
     },
     {

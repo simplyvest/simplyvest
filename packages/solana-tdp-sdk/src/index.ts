@@ -5,6 +5,7 @@ export * from "./accounts";
 export * from "./vesting";
 export * from "./decode";
 export * from "./fetch";
+export * from "./rpc";
 export * from "./metadata";
 export * from "./token";
 export * from "./program";
