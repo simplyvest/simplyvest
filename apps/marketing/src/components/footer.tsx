@@ -1,3 +1,4 @@
+import { Logo } from "@simplyvest/ui/logo/logo";
 import { ThemeProvider } from "@simplyvest/ui/theme";
 import { SiGithub, SiX } from "react-icons/si";
 
@@ -32,9 +33,7 @@ export function Footer() {
             {/* Logo & Description */}
             <div className="col-span-2">
               <a href="/" className="flex items-center gap-2 mb-4 no-underline hover:no-underline">
-                <div className="flex items-center rounded-lg bg-primary p-1">
-                  <img src="/simplyvest.png" alt="" className="h-6 w-auto" />
-                </div>
+                <Logo size={24} />
                 <span className="text-lg font-semibold text-gray-900 dark:text-slate-100">
                   SimplyVest
                 </span>

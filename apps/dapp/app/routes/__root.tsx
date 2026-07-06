@@ -1,6 +1,7 @@
 import { useLogin } from "@privy-io/react-auth";
 import { Button } from "@simplyvest/ui/button";
 import { ErrorBoundary } from "@simplyvest/ui/error-boundary";
+import { Logo } from "@simplyvest/ui/logo/logo";
 import { ThemeProvider } from "@simplyvest/ui/theme";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -96,9 +97,7 @@ function RootInner() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-bg p-4">
         <div className="flex flex-col items-center gap-4 text-center">
-          <div className="rounded-2xl bg-primary p-3">
-            <img src="/simplyvest.png" alt="SimplyVest" className="h-12 w-12" />
-          </div>
+          <Logo size={48} title="SimplyVest" />
           <h1 className="text-2xl font-semibold tracking-tight text-text">SimplyVest</h1>
           <p className="max-w-sm text-sm text-muted">
             Connect your wallet to manage vesting streams and organizations.

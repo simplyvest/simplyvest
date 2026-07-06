@@ -16,7 +16,7 @@ export default defineConfig({
       title: "SimplyVest Docs",
       head: [{ tag: "link", attrs: { rel: "icon", type: "image/png", href: "/favicon.png" } }],
       logo: {
-        src: "./public/logo.png",
+        src: "./public/logo.svg",
         replacesTitle: true,
       },
       editLink: {

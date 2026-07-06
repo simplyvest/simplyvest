@@ -8,7 +8,7 @@
   --text: #1f2937;
   --muted: #4b5563;
   --dim: #6b7280;
-  --primary: #433ae6;
+  --primary: #9945ff;
   --success: #047857;
   --info: #0369a1;
   --warn: #b91c1c;
@@ -20,7 +20,7 @@
   --badge-green-text: #065f46;
   --badge-blue: #e0f2fe;
   --badge-blue-text: #0c4a6e;
-  --glow: 0 0 40px rgba(67, 58, 230, 0.08);
+  --glow: 0 0 40px rgba(153, 69, 255, 0.08);
 }
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -35,7 +35,7 @@
   --text: #f1f5f9;
   --muted: #94a3b8;
   --dim: #64748b;
-  --primary: #818cf8;
+  --primary: #b794ff;
   --success: #34d399;
   --info: #38bdf8;
   --warn: #f87171;
@@ -47,7 +47,7 @@
   --badge-green-text: #34d399;
   --badge-blue: #0c4a6e;
   --badge-blue-text: #38bdf8;
-  --glow: 0 0 40px rgba(129, 140, 248, 0.15);
+  --glow: 0 0 40px rgba(183, 148, 255, 0.15);
 }
 
 @theme inline {
