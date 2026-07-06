@@ -33,7 +33,7 @@ function StepCard({ step }: { step: Step }) {
       </div>
 
       {/* ---- Card ---- */}
-      <div className="group relative flex-1 rounded-3xl border border-gray-200 bg-white p-5 shadow-sm transition-all duration-300 hover:border-purple-200 hover:shadow-md dark:border-slate-600 dark:bg-slate-900 sm:p-8">
+      <div className="group relative flex-1 rounded-3xl border border-border bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-md dark:border-slate-600 dark:bg-slate-900 sm:p-8">
         {/* Hover gradient overlay */}
         <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-50/0 to-purple-100/0 dark:from-purple-950/0 dark:to-purple-900/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 

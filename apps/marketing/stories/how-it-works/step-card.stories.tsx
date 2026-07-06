@@ -1,19 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/tanstack-react";
+import { LuUserPlus } from "react-icons/lu";
 
 import { StepCard } from "../../src/components/how-it-works/step-card";
-
-const Icon = (props: { className?: string; strokeWidth?: number }) => (
-  <svg
-    className={props.className}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={props.strokeWidth ?? 1.5}
-  >
-    <path d="M21 12a9 9 0 1 1-9-9" />
-    <polyline points="22 4 12 14.01 9 11.01" />
-  </svg>
-);
 
 const meta = {
   title: "Marketing/How It Works/Card",
@@ -21,12 +9,12 @@ const meta = {
   args: {
     step: {
       number: 1,
-      title: "Connect Wallet",
-      icon: Icon,
-      label: "Step 1",
+      title: "Sign Up",
+      icon: LuUserPlus,
+      label: "email · google",
       description:
-        "Connect your Solana wallet to get started. SimplyVest supports Phantom, Backpack, and all major wallets.",
-      details: ["Install wallet", "Connect to app", "Approve signature"],
+        "Log in with email or Google. An embedded Solana wallet is created automatically — no extension, no seed phrase.",
+      details: ["Email or Google via Privy", "Embedded wallet created", "Approve signature"],
     },
   },
 } satisfies Meta<typeof StepCard>;

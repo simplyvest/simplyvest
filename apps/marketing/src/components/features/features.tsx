@@ -1,32 +1,59 @@
-import { CancelAnytimeCard } from "./cancel-anytime-card";
-import { LinearVestingCard } from "./linear-vesting-card";
-import { MilestonePaymentsCard } from "./milestone-payments-card";
-import { PdaVaultsCard } from "./pda-vaults-card";
+import { LuFlag, LuMail, LuShield, LuTrendingUp } from "react-icons/lu";
+
+import { Reveal } from "../reveal";
+import { SECTION_PADDING, SectionHeader } from "../section-header";
+import { FeatureCard } from "./feature-card";
+
+const features = [
+  {
+    icon: LuMail,
+    title: "No wallet required",
+    description:
+      "Sign in with email or Google. Embedded wallets are created automatically so your whole team can participate.",
+  },
+  {
+    icon: LuTrendingUp,
+    title: "Flexible vesting schedules",
+    description:
+      "Linear unlocks, cliffs, and custom timelines — configured from a dashboard, enforced on-chain.",
+  },
+  {
+    icon: LuFlag,
+    title: "Milestone-based grants",
+    description:
+      "Tie equity releases to product launches, fundraising, or performance targets you define.",
+  },
+  {
+    icon: LuShield,
+    title: "On-chain custody",
+    description:
+      "Every grant lives in a program-derived vault. Tokens move only according to the vesting schedule.",
+  },
+] as const;
 
 export function Features() {
   return (
-    <section className="bg-gradient-to-b from-white dark:from-slate-950 via-purple-50/20 dark:via-purple-950/30 to-gray-50 dark:to-slate-950 py-24">
-      <div className="mx-auto max-w-6xl px-6">
-        {/* Section header */}
-        <div className="mb-16 max-w-2xl space-y-4">
-          <span className="inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold tracking-widest text-gray-800 dark:bg-slate-800 dark:text-slate-300">
-            01
-          </span>
-          <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-slate-100 sm:text-5xl">
-            Features
-          </h2>
-          <p className="text-lg text-gray-500 dark:text-slate-400">
-            Everything you need to build trustless vesting schedules on Solana — from linear unlocks
-            to milestone-based releases, all secured by program-derived vaults.
-          </p>
-        </div>
+    <section
+      id="features"
+      className={`${SECTION_PADDING} bg-gradient-to-b from-white dark:from-slate-950 via-purple-50/20 dark:via-purple-950/30 to-gray-50 dark:to-slate-950`}
+    >
+      <div className="mx-auto max-w-4xl px-6">
+        <Reveal>
+          <SectionHeader
+            number="01"
+            title="Platform"
+            description="Tokenized equity vesting with web2 UX and on-chain settlement. Everything your team needs in one place."
+            align="center"
+            className="mb-12"
+          />
+        </Reveal>
 
-        {/* Bento grid */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
-          <LinearVestingCard />
-          <MilestonePaymentsCard />
-          <PdaVaultsCard />
-          <CancelAnytimeCard />
+        <div className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2">
+          {features.map((feature, index) => (
+            <Reveal key={feature.title} className="h-full" delay={index * 80}>
+              <FeatureCard {...feature} />
+            </Reveal>
+          ))}
         </div>
       </div>
     </section>

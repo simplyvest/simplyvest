@@ -8,7 +8,7 @@ const meta = {
   args: {
     question: "What is SimplyVest?",
     answer:
-      "SimplyVest is a token vesting and distribution platform built on Solana. It enables projects to create custom vesting schedules, manage token grants, and automate distributions with non-custodial security.",
+      "SimplyVest is a tokenized equity vesting platform for modern teams. Create your organization, issue or link an SPL token as your equity token, and vest it to team members with web2 login and on-chain custody.",
     index: 0,
   },
 } satisfies Meta<typeof FaqItem>;

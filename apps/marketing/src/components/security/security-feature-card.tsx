@@ -1,6 +1,5 @@
 import { cn } from "@simplyvest/ui/cn";
 import * as React from "react";
-import { LuCheck } from "react-icons/lu";
 
 export interface FeatureCardProps {
   feature: {
@@ -9,82 +8,33 @@ export interface FeatureCardProps {
     title: string;
     description: string;
   };
-  highlighted?: boolean;
+  className?: string;
 }
 
-export function FeatureCard({ feature, highlighted }: FeatureCardProps) {
+export function FeatureCard({ feature, className }: FeatureCardProps) {
   const Icon = feature.icon;
 
   return (
     <div
       className={cn(
-        "relative flex flex-col gap-4 rounded-2xl p-6",
-        highlighted
-          ? "bg-gradient-to-br from-purple-600 to-purple-500 text-white"
-          : "border border-white/60 bg-white/60 backdrop-blur-sm dark:border-slate-700/60 dark:bg-slate-900/60",
+        "group relative flex h-full flex-col gap-4 rounded-2xl border border-white/60 bg-white/60 p-6 backdrop-blur-sm transition-all duration-300",
+        "hover:-translate-y-0.5 hover:border-primary/25 hover:bg-white/80 hover:shadow-md hover:shadow-purple-600/5",
+        "dark:border-slate-700/60 dark:bg-slate-900/60 dark:hover:border-purple-700/60 dark:hover:bg-slate-900/80",
+        className,
       )}
     >
-      <div className="flex items-center justify-between">
-        <div
-          className={cn(
-            "flex h-10 w-10 items-center justify-center rounded-xl",
-            highlighted
-              ? "bg-white/20 text-white"
-              : "bg-gradient-to-br from-purple-600 to-purple-500 text-white",
-          )}
-        >
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 to-purple-500 text-white transition-transform duration-300 group-hover:scale-105">
           <Icon className="h-5 w-5" />
         </div>
-        <div className="flex items-center gap-1.5">
-          {highlighted ? (
-            <span className="font-mono text-3xl font-bold">{feature.label}</span>
-          ) : (
-            <>
-              <span
-                className={cn(
-                  "font-mono text-xs font-medium",
-                  highlighted ? "text-white/80" : "text-purple-600 dark:text-purple-400",
-                )}
-              >
-                {feature.label}
-              </span>
-              <span
-                className={cn(
-                  "text-xs font-medium",
-                  highlighted ? "text-white/80" : "text-purple-600 dark:text-purple-400",
-                )}
-              >
-                {feature.title}
-              </span>
-            </>
-          )}
-        </div>
+        <span className="font-mono text-xs font-semibold uppercase tracking-widest text-primary">
+          {feature.label}
+        </span>
       </div>
 
-      {highlighted ? (
-        <>
-          <h3 className="text-2xl font-bold">{feature.title}</h3>
-          <p className="text-sm leading-relaxed text-purple-100">{feature.description}</p>
-        </>
-      ) : (
-        <>
-          <div>
-            <span className="font-mono text-[0.65rem] font-semibold uppercase tracking-widest text-purple-600 dark:text-purple-400">
-              {feature.label}
-            </span>
-            <h3 className="mt-1 text-lg font-bold text-gray-900 dark:text-slate-100">
-              {feature.title}
-            </h3>
-          </div>
-          <p className="text-sm leading-relaxed text-gray-600 dark:text-slate-300">
-            {feature.description}
-          </p>
-          <div className="flex items-center gap-1.5 text-emerald-500">
-            <LuCheck className="h-4 w-4" />
-            <span className="text-xs font-medium">Verified</span>
-          </div>
-        </>
-      )}
+      <h3 className="text-lg font-bold text-text">{feature.title}</h3>
+
+      <p className="flex-1 text-sm leading-relaxed text-muted">{feature.description}</p>
     </div>
   );
 }

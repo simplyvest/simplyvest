@@ -20,12 +20,11 @@ const meta = {
   args: {
     feature: {
       icon: Icon,
-      label: "SECURITY",
-      title: "Audited",
+      label: "PDA",
+      title: "Vaults",
       description:
-        "Professionally audited by leading firms. All smart contracts are open source and verified.",
+        "All tokens secured in program-derived addresses with mathematical guarantees. No admin keys or backdoors.",
     },
-    highlighted: true,
   },
 } satisfies Meta<typeof FeatureCard>;
 
@@ -33,3 +32,15 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
+
+export const ProtocolFees: Story = {
+  args: {
+    feature: {
+      icon: Icon,
+      label: "0",
+      title: "Protocol Fees",
+      description:
+        "Zero protocol fees forever. Pay only network transaction costs. No hidden charges or revenue extraction.",
+    },
+  },
+};

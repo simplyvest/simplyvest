@@ -40,8 +40,8 @@ export function Footer() {
                 </span>
               </a>
               <p className="text-sm text-gray-500 dark:text-slate-400 leading-relaxed max-w-xs">
-                Non-custodial, programmable token vesting on Solana. Time-based streams and
-                milestone releases, secured by math.
+                Tokenized equity vesting with web2 UX. Issue equity tokens, vest to your team, and
+                settle on-chain — no wallet required.
               </p>
             </div>
 

@@ -1,23 +1,23 @@
 const faqs = [
   {
     q: "What is SimplyVest?",
-    a: "SimplyVest is a non-custodial token vesting protocol on Solana. It lets you lock SPL tokens in a program-owned vault and release them to a recipient on a schedule — either time-based (linear vesting) or milestone-gated (triggered by a third party).",
+    a: "SimplyVest is a tokenized equity vesting platform for modern teams. Create your organization, issue or link an SPL token as your equity token, and vest it to team members on customizable schedules — with web2 login and on-chain custody.",
   },
   {
-    q: "What's the difference between time-based and milestone vesting?",
-    a: "Time-based streams unlock tokens continuously from start to end, with an optional cliff before the first release. Milestone vesting holds all tokens until a designated authority triggers the release — then the full amount becomes claimable.",
+    q: "Do my team members need a crypto wallet?",
+    a: "No. Team members log in with email or Google. An embedded Solana wallet is created automatically via Privy — no browser extension, seed phrase, or crypto onboarding required.",
+  },
+  {
+    q: "How is this different from Carta or Streamflow?",
+    a: "Carta is built for paper equity and can't do on-chain token custody. Streamflow assumes everyone has a wallet and understands Solana. SimplyVest combines Carta-simple UX with on-chain settlement — milestone, linear, and cliff vesting for hybrid teams.",
   },
   {
     q: "Is SimplyVest custodial?",
-    a: "No. SimplyVest is fully non-custodial. Tokens are held in a program-derived vault PDA. Only the Solana program can authorize transfers — not even the creator can move tokens outside the vesting schedule.",
+    a: "No. Equity tokens are held in program-derived vaults on Solana. Only the vesting program can authorize transfers according to the schedule — not even the grant issuer can move unvested tokens.",
   },
   {
-    q: "Can I cancel a stream?",
-    a: "Yes, stream creators can cancel at any time. The recipient keeps everything that has already vested, and the unvested portion returns to the creator. Both accounts are closed to recover rent.",
-  },
-  {
-    q: "What happens when a stream completes?",
-    a: "When a stream completes, the recipient withdraws the last vested tokens and the stream and vault accounts are automatically closed. The rent-exempt SOL is returned to the creator.",
+    q: "What vesting schedules are supported?",
+    a: "Linear vesting with optional cliffs, milestone-gated releases, and hybrid combinations. Founders configure schedules from the dashboard; recipients claim as equity unlocks.",
   },
   {
     q: "Does SimplyVest charge fees?",
@@ -25,7 +25,7 @@ const faqs = [
   },
   {
     q: "How do I get started?",
-    a: "SimplyVest is currently in development. Join the waitlist to be notified when the beta launches, or read the documentation to learn how the protocol works under the hood.",
+    a: "SimplyVest is currently in beta. Join the waitlist to get early access, or try the beta app if you already have access. Read the docs to learn how organizations and equity tokens work.",
   },
 ];
 

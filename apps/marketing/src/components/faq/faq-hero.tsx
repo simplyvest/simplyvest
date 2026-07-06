@@ -15,7 +15,7 @@ export function FaqHero() {
           Frequently Asked Questions
         </h1>
         <p className="mt-4 text-lg text-gray-600 dark:text-slate-300">
-          Common questions about SimplyVest, token vesting, and the protocol.
+          Common questions about tokenized equity vesting, web2 login, and on-chain custody.
         </p>
       </div>
     </section>

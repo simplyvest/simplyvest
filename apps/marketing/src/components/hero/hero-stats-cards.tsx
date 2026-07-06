@@ -1,11 +1,10 @@
-import { LuCalendar, LuTrendingUp, LuLock } from "react-icons/lu";
+import { LuBuilding2, LuCalendar, LuShield } from "react-icons/lu";
 
 const barValues = [30, 45, 60, 75, 85, 95];
 
 function HeroStatsCards() {
   return (
     <>
-      {/* Connecting SVG lines */}
       <svg
         className="absolute inset-0 h-full w-full"
         viewBox="0 0 400 520"
@@ -33,47 +32,40 @@ function HeroStatsCards() {
       </svg>
 
       <div className="flex flex-col items-center gap-12">
-        {/* Card 1 — Vesting Schedule */}
-        <div className="group w-80 rounded-2xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 p-5 shadow-lg shadow-gray-900/5 dark:shadow-slate-950/20 transition-transform duration-300 hover:scale-105">
+        <div className="group w-80 rounded-2xl border border-border bg-white p-5 shadow-lg shadow-gray-900/5 transition-transform duration-300 hover:-translate-y-1 dark:border-slate-600 dark:bg-slate-900 dark:shadow-slate-950/20">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-900">
-              <LuCalendar className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-badge-purple">
+              <LuBuilding2 className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <div className="text-sm font-semibold text-gray-900 dark:text-slate-100">
-                Vesting Schedule
-              </div>
-              <p className="text-xs text-gray-500 dark:text-slate-400">Team Token Grant</p>
+              <div className="text-sm font-semibold text-text">Acme Labs</div>
+              <p className="text-xs text-muted">Organization · 4 grants</p>
             </div>
           </div>
 
           <div className="mt-4">
-            <div className="flex items-center justify-between text-xs text-gray-500 dark:text-slate-400">
-              <span>8 / 12 months</span>
-              <span className="font-medium text-purple-600 dark:text-purple-400">67 %</span>
+            <div className="flex items-center justify-between text-xs text-muted">
+              <span>ACME Equity Token</span>
+              <span className="font-medium text-primary">2.4M issued</span>
             </div>
-            <div className="mt-2 h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-slate-700">
-              <div className="h-full w-[67%] rounded-full bg-gradient-to-r from-purple-500 to-purple-400" />
+            <div className="mt-2 h-2 overflow-hidden rounded-full bg-bg2">
+              <div className="h-full w-[72%] rounded-full bg-gradient-to-r from-primary to-purple-400" />
             </div>
-            <p className="mt-2 text-xs text-gray-400 dark:text-slate-500">6,700 / 10,000 tokens</p>
+            <p className="mt-2 text-xs text-dim">1.7M vested · 700K remaining</p>
           </div>
         </div>
 
-        {/* Card 2 — Token Stream */}
-        <div className="group w-80 rounded-2xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 p-5 shadow-lg shadow-gray-900/5 dark:shadow-slate-950/20 transition-transform duration-300 hover:scale-105">
+        <div className="group w-80 rounded-2xl border border-border bg-white p-5 shadow-lg shadow-gray-900/5 transition-transform duration-300 hover:-translate-y-1 dark:border-slate-600 dark:bg-slate-900 dark:shadow-slate-950/20">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100 dark:bg-green-900/50">
-              <LuTrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-badge-green">
+              <LuCalendar className="h-5 w-5 text-success" />
             </div>
             <div>
-              <div className="text-sm font-semibold text-gray-900 dark:text-slate-100">
-                Token Stream
-              </div>
-              <p className="text-xs text-gray-500 dark:text-slate-400">Active Distribution</p>
+              <div className="text-sm font-semibold text-text">Advisor Grant</div>
+              <p className="text-xs text-muted">4-year vest · 1-year cliff</p>
             </div>
           </div>
 
-          {/* Mini bar chart */}
           <div className="mt-4 flex h-12 items-end gap-1.5">
             {barValues.map((val) => (
               <div
@@ -84,31 +76,29 @@ function HeroStatsCards() {
             ))}
           </div>
 
-          <p className="mt-3 text-xs text-gray-400 dark:text-slate-500">
-            <span className="font-medium text-green-600 dark:text-green-400">+41.6 tokens</span>{" "}
-            streamed
+          <p className="mt-3 text-xs text-dim">
+            <span className="font-medium text-success">67% vested</span> · claimable now
           </p>
         </div>
 
-        {/* Card 3 — Security Badge */}
-        <div className="group w-80 rounded-2xl bg-gradient-to-br from-purple-600 to-purple-500 p-5 text-white shadow-lg shadow-purple-500/25 dark:shadow-purple-900/30 transition-transform duration-300 hover:scale-105">
+        <div className="group w-80 rounded-2xl bg-gradient-to-br from-purple-600 to-purple-500 p-5 text-white shadow-lg shadow-purple-500/25 transition-transform duration-300 hover:-translate-y-1 dark:shadow-purple-900/30">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20">
-              <LuLock className="h-5 w-5 text-white" />
+              <LuShield className="h-5 w-5 text-white" />
             </div>
             <div>
-              <div className="text-sm font-semibold">Security Badge</div>
-              <p className="text-xs text-purple-200">Vault Protection</p>
+              <div className="text-sm font-semibold">On-Chain Custody</div>
+              <p className="text-xs text-purple-200">PDA vault · non-custodial</p>
             </div>
           </div>
 
           <div className="mt-4 flex items-center gap-3">
-            <span className="text-lg font-bold">PDA Vault</span>
+            <span className="text-lg font-bold">MIT Licensed</span>
             <span className="relative flex h-3 w-3">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
               <span className="relative inline-flex h-3 w-3 rounded-full bg-green-500" />
             </span>
-            <span className="text-xs text-purple-200">Secured</span>
+            <span className="text-xs text-purple-200">Open source</span>
           </div>
         </div>
       </div>

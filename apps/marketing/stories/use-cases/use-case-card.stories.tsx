@@ -27,7 +27,6 @@ const meta = {
       description:
         "Issue tokens to contributors with custom vesting schedules and cliff conditions.",
       features: ["Custom schedule", "Cliff", "Revocable"],
-      highlighted: true,
     },
   },
 } satisfies Meta<typeof UseCaseCard>;

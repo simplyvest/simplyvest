@@ -13,10 +13,10 @@ type Story = StoryObj<typeof meta>;
 
 const faqHeadings = [
   "What is SimplyVest?",
-  "What's the difference between time-based and milestone vesting?",
+  "Do my team members need a crypto wallet?",
+  "How is this different from Carta or Streamflow?",
   "Is SimplyVest custodial?",
-  "Can I cancel a stream?",
-  "What happens when a stream completes?",
+  "What vesting schedules are supported?",
   "Does SimplyVest charge fees?",
   "How do I get started?",
 ];
@@ -32,24 +32,24 @@ export const Default: Story = {
     });
 
     await step("answers are hidden by default", async () => {
-      const answers = canvas.queryAllByText(/non-custodial token vesting protocol/);
+      const answers = canvas.queryAllByText(/tokenized equity vesting platform/);
       await expect(answers.length).toBe(0);
     });
 
     await step("clicking a question reveals its answer", async () => {
       await userEvent.click(canvas.getByText(faqHeadings[0]));
-      await expect(canvas.getByText(/SimplyVest is a non-custodial/)).toBeInTheDocument();
+      await expect(canvas.getByText(/tokenized equity vesting platform/)).toBeInTheDocument();
     });
 
     await step("clicking another question closes the first", async () => {
       await userEvent.click(canvas.getByText(faqHeadings[3]));
-      await expect(canvas.queryByText(/SimplyVest is a non-custodial/)).not.toBeInTheDocument();
-      await expect(canvas.getByText(/Yes, stream creators can cancel/)).toBeInTheDocument();
+      await expect(canvas.queryByText(/tokenized equity vesting platform/)).not.toBeInTheDocument();
+      await expect(canvas.getByText(/program-derived vaults on Solana/)).toBeInTheDocument();
     });
 
     await step("clicking the open question closes it", async () => {
       await userEvent.click(canvas.getByText(faqHeadings[3]));
-      await expect(canvas.queryByText(/Yes, stream creators can cancel/)).not.toBeInTheDocument();
+      await expect(canvas.queryByText(/program-derived vaults on Solana/)).not.toBeInTheDocument();
     });
 
     await step("renders link to full FAQ page", async () => {

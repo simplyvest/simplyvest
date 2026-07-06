@@ -1,15 +1,15 @@
 export function WaitlistHero() {
   return (
     <div className="mb-12 text-center">
-      <span className="inline-block rounded-full bg-purple-100 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-purple-700 dark:bg-purple-900 dark:text-purple-300">
+      <span className="inline-flex items-center rounded-full border border-primary/20 bg-badge-purple px-4 py-1.5 font-mono text-xs font-medium uppercase tracking-wider text-badge-purple-text">
         Waitlist
       </span>
-      <h1 className="mt-6 text-4xl font-bold tracking-tight text-gray-900 md:text-5xl dark:text-slate-100">
-        Waitlist SimplyVest
+      <h1 className="mt-6 font-display text-4xl font-bold tracking-tight text-text md:text-5xl">
+        Join SimplyVest
       </h1>
-      <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-gray-500 dark:text-slate-400">
-        We help you transfer your money in a safer way — with commitment from both the sender and
-        the receiver.
+      <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-muted">
+        Be the first to issue tokenized equity with web2 UX. No wallet required for your team — just
+        email login and on-chain vesting.
       </p>
     </div>
   );
